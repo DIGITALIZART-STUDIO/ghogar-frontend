@@ -1,9 +1,9 @@
 export type FacetedFilter<TValue> = {
   column: string;
   title: string;
-  options: {
+  options: Array<{
     label: string;
     value: TValue;
     icon?: React.ComponentType<{ className?: string }>;
-  }[];
+  }>;
 };

@@ -59,37 +59,35 @@ const SidebarMenuLink = ({ item, pathname }: { item: NavLink; pathname: string }
   );
 };
 
-const SidebarMenuCollapsedDropdown = ({ item, pathname }: { item: NavCollapsible; pathname: string }) => {
-  return (
-    <SidebarMenuItem>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuButton tooltip={item.title} isActive={checkIsActive(pathname, item)}>
-            {item.icon && <item.icon className="text-primary" />}
-            <span>{item.title}</span>
-            {item.badge && <NavBadge>{item.badge}</NavBadge>}
-            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-          </SidebarMenuButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="right" align="start" sideOffset={4}>
-          <DropdownMenuLabel>
-            {item.title} {item.badge ? `(${item.badge})` : ""}
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {item.items.map((sub) => (
-            <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
-              <Link href={sub.url} className={`${checkIsActive(pathname, sub) ? "bg-secondary" : ""}`}>
-                {sub.icon && <sub.icon className="text-primary" />}
-                <span className="max-w-52 text-wrap">{sub.title}</span>
-                {sub.badge && <span className="ml-auto text-xs">{sub.badge}</span>}
-              </Link>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </SidebarMenuItem>
-  );
-};
+const SidebarMenuCollapsedDropdown = ({ item, pathname }: { item: NavCollapsible; pathname: string }) => (
+  <SidebarMenuItem>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton tooltip={item.title} isActive={checkIsActive(pathname, item)}>
+          {item.icon && <item.icon className="text-primary" />}
+          <span>{item.title}</span>
+          {item.badge && <NavBadge>{item.badge}</NavBadge>}
+          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+        </SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="right" align="start" sideOffset={4}>
+        <DropdownMenuLabel>
+          {item.title} {item.badge ? `(${item.badge})` : ""}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {item.items.map((sub) => (
+          <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
+            <Link href={sub.url} className={`${checkIsActive(pathname, sub) ? "bg-secondary" : ""}`}>
+              {sub.icon && <sub.icon className="text-primary" />}
+              <span className="max-w-52 text-wrap">{sub.title}</span>
+              {sub.badge && <span className="ml-auto text-xs">{sub.badge}</span>}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </SidebarMenuItem>
+);
 
 const SidebarMenuCollapsible = ({ item, pathname }: { item: NavCollapsible; pathname: string }) => {
   const { setOpenMobile } = useSidebar();
@@ -135,9 +133,13 @@ export function NavGroup({ title, items }: NavGroup) {
         {items.map((item) => {
           const key = `${item.title}-${item.url}`;
 
-          if (!item.items) return <SidebarMenuLink key={key} item={item} pathname={pathname} />;
+          if (!item.items) {
+            return <SidebarMenuLink key={key} item={item} pathname={pathname} />;
+          }
 
-          if (state === "collapsed") return <SidebarMenuCollapsedDropdown key={key} item={item} pathname={pathname} />;
+          if (state === "collapsed") {
+            return <SidebarMenuCollapsedDropdown key={key} item={item} pathname={pathname} />;
+          }
 
           return <SidebarMenuCollapsible key={key} item={item} pathname={pathname} />;
         })}

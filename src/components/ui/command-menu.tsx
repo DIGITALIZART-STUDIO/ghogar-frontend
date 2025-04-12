@@ -40,7 +40,7 @@ export function CommandMenu() {
           {sidebarData.navGroups.map((group) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem, i) => {
-                if (navItem.url)
+                if (navItem.url) {
                   return (
                     <CommandItem
                       key={`${navItem.url}-${i}`}
@@ -55,6 +55,7 @@ export function CommandMenu() {
                       {navItem.title}
                     </CommandItem>
                   );
+                }
 
                 return navItem.items?.map((subItem, i) => (
                   <CommandItem

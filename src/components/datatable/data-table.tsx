@@ -26,7 +26,9 @@ import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilter } from "./facetedFilters";
 
 // Función de filtrado global correcta para TanStack Table v8
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getValue = (row: Row<any>) => {
     // Accede a los valores originales de la fila
     const rowValue = columnId === "_all" ? Object.values(row.original).join(" ") : row.getValue(columnId);
@@ -40,11 +42,11 @@ const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
 };
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  columns: Array<ColumnDef<TData, TValue>>;
+  data: Array<TData>;
   toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
   filterPlaceholder?: string;
-  facetedFilters?: FacetedFilter<TValue>[];
+  facetedFilters?: Array<FacetedFilter<TValue>>;
   // Nuevas props para paginación del servidor
   serverPagination?: ServerPaginationTanstackTableConfig;
 }

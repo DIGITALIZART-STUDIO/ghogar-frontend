@@ -20,11 +20,11 @@ import { cn } from "@/lib/utils";
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
-  options: {
+  options: Array<{
     label: string;
     value: TValue; // Usamos TValue directamente
     icon?: React.ComponentType<{ className?: string }>;
-  }[];
+  }>;
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -43,7 +43,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 
     // Si es un array, lo convertimos directamente a Set
     if (Array.isArray(filterValue)) {
-      return new Set<TValue>(filterValue as TValue[]);
+      return new Set<TValue>(filterValue as Array<TValue>);
     }
 
     // Si es un valor único (como un booleano), lo envolvemos en un array

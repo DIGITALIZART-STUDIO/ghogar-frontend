@@ -11,7 +11,7 @@ interface DataTableToolbarProps<TData, TValue> {
   table: Table<TData>;
   toolbarActions?: React.ReactNode | ((table: Table<TData>) => React.ReactNode);
   filterPlaceholder?: string;
-  facetedFilters?: FacetedFilter<TValue>[];
+  facetedFilters?: Array<FacetedFilter<TValue>>;
 }
 
 export function DataTableToolbar<TData, TValue>({

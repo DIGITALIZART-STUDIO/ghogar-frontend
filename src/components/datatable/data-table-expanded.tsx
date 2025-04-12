@@ -28,7 +28,9 @@ import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilter } from "./facetedFilters";
 
 // Función de filtrado global correcta para TanStack Table v8
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getValue = (row: Row<any>) => {
     // Si es _all, busca en todos los valores concatenados
     if (columnId === "_all") {
@@ -49,11 +51,11 @@ const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
 };
 
 interface DataTableExpandedProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  columns: Array<ColumnDef<TData, TValue>>;
+  data: Array<TData>;
   toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
   filterPlaceholder?: string;
-  facetedFilters?: FacetedFilter<TValue>[];
+  facetedFilters?: Array<FacetedFilter<TValue>>;
   renderExpandedRow?: (row: TData) => React.ReactNode; // Nueva prop para el contenido expandido
   onClickRow?: (row: TData) => void;
   columnVisibilityConfig?: Partial<Record<keyof TData, boolean>>;
@@ -81,7 +83,7 @@ export function DataTableExpanded<TData, TValue>({
     right: ["actions"],
   });
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
-    (columnVisibilityConfig as VisibilityState) ?? {} //OJO: When defining visibility, at least 1 field must be present
+    (columnVisibilityConfig as VisibilityState) ?? {}
   );
 
   // Usamos el estado expandedState de tanstack table directamente
@@ -192,7 +194,9 @@ export function DataTableExpanded<TData, TValue>({
                   <TableRow
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => {
-                      if (onClickRow) onClickRow(row.original);
+                      if (onClickRow) {
+                        onClickRow(row.original);
+                      }
                       // Ya no expandimos la fila al hacer clic en la fila completa
                     }}
                   >

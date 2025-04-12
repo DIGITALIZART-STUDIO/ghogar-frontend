@@ -14,11 +14,11 @@ import {
 import { cn } from "@/lib/utils";
 
 interface TopNavProps extends React.HTMLAttributes<HTMLElement> {
-  links: {
+  links: Array<{
     title: string;
     href: string;
     disabled?: boolean;
-  }[];
+  }>;
 }
 
 export function TopNav({ className, links, ...props }: TopNavProps) {

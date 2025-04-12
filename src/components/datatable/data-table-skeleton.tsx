@@ -14,7 +14,7 @@ interface DataTableSkeletonProps {
   showPagination?: boolean;
   showColumnHeader?: boolean;
   cellHeight?: number;
-  columnWidths?: number[];
+  columnWidths?: Array<number>;
   className?: string;
 }
 

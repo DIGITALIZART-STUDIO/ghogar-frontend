@@ -9,7 +9,7 @@
     "lint": "next lint --fix",
     "prepare": "husky",
     "lint:fix": "eslint \"./**/*.+(ts|tsx)\" --fix",
-    "generate": "openapi-typescript http://localhost:5233/openapi/v1.json -o ./src/types/api.d.ts"
+    "generate": "openapi-typescript http://localhost:5165/openapi/v1.json -o ./src/types/api.d.ts"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [

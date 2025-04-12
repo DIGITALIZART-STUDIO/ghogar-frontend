@@ -1,63 +1,128 @@
-/* eslint-disable import/no-anonymous-default-export */
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import typescriptEslintEslintPlugin from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import prettier from "eslint-plugin-prettier";
+import reactPlugin from "eslint-plugin-react";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
 });
 
-export default [
-  ...compat.extends("next", "next/core-web-vitals", "prettier"),
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
-    plugins: {
-      prettier,
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     rules: {
-      "prettier/prettier": "error",
-      camelcase: "off",
-      "import/prefer-default-export": "off",
-      "react/jsx-filename-extension": "off",
-      "react/jsx-props-no-spreading": "off",
-      "react/no-unused-prop-types": "off",
-      "react/require-default-props": "off",
-      "react/no-unescaped-entities": "off",
-      "import/extensions": [
+      "@typescript-eslint/array-type": ["error", { default: "generic" }],
+      "@typescript-eslint/prefer-nullish-coalescing": [
         "error",
-        "ignorePackages",
         {
-          ts: "never",
-          tsx: "never",
-          js: "never",
-          jsx: "never",
+          ignoreConditionalTests: true,
+          ignoreMixedLogicalExpressions: true,
         },
       ],
     },
   },
-  ...compat.extends("plugin:@typescript-eslint/recommended", "prettier").map((config) => ({
-    ...config,
-    files: ["**/*.+(ts|tsx)"],
-  })),
   {
-    files: ["**/*.+(ts|tsx)"],
+    files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
+    plugins: {
+      reactPlugin,
+    },
     languageOptions: {
-      parser: tsParser,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
     rules: {
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
-      "no-use-before-define": [0],
-      "@typescript-eslint/no-use-before-define": [1],
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-var-requires": "off",
+      "react/jsx-boolean-value": "error",
+      "react/jsx-closing-bracket-location": "error",
+      "react/jsx-closing-tag-location": "error",
+      "react/jsx-one-expression-per-line": "error",
+      "react/jsx-pascal-case": "error",
+      "react/jsx-no-useless-fragment": "error",
+      "react/jsx-tag-spacing": "error",
+      "react/self-closing-comp": "error",
+      "react/jsx-first-prop-new-line": ["error", "multiline-multiprop"],
+      "react/jsx-indent": ["warn", 4],
+      "react/jsx-indent-props": ["warn", 4],
+    },
+  },
+  {
+    rules: {
+      "@next/next/no-img-element": "off",
+      indent: ["error", 4],
+      "brace-style": ["error", "1tbs"],
+      "no-tabs": "off",
+      quotes: ["error", "double"],
+      semi: ["error", "always"],
+      "semi-spacing": ["error", { before: false, after: true }],
+      camelcase: [
+        "error",
+        {
+          ignoreDestructuring: true,
+          ignoreImports: true,
+          ignoreGlobals: true,
+          properties: "never",
+        },
+      ],
+      "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 1 }],
+      "prefer-const": "error",
+      "no-const-assign": "error",
+      "no-var": "error",
+      "array-callback-return": "error",
+      "prefer-template": "error",
+      "template-curly-spacing": "error",
+      "no-useless-escape": "error",
+      "wrap-iife": "error",
+      "no-loop-func": "error",
+      "default-param-last": "error",
+      "space-before-function-paren": ["error", "never"],
+      "space-before-blocks": "error",
+      "no-param-reassign": "error",
+      "function-paren-newline": "error",
+      "comma-dangle": ["error", "always-multiline"],
+      "arrow-spacing": "error",
+      "arrow-parens": "error",
+      "arrow-body-style": "error",
+      "no-confusing-arrow": "error",
+      "implicit-arrow-linebreak": "error",
+      "no-duplicate-imports": "error",
+      "object-curly-newline": "error",
+      "dot-notation": "error",
+      "one-var": ["error", "never"],
+      "no-multi-assign": "error",
+      "no-plusplus": "error",
+      "operator-linebreak": "error",
+      eqeqeq: "error",
+      "no-case-declarations": "error",
+      "no-nested-ternary": "off",
+      "no-unneeded-ternary": "error",
+      "no-mixed-operators": "error",
+      "nonblock-statement-body-position": "error",
+      "keyword-spacing": "error",
+      "space-infix-ops": "error",
+      "eol-last": "error",
+      "newline-per-chained-call": "error",
+      "no-whitespace-before-property": "error",
+      "space-in-parens": "error",
+      "array-bracket-spacing": "error",
+      "key-spacing": "error",
+      "no-trailing-spaces": "error",
+      "comma-style": "error",
+      radix: "error",
+      "no-new-wrappers": "error",
+      curly: ["error", "all"],
     },
   },
 ];
+
+export default eslintConfig;

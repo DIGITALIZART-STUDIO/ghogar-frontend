@@ -18,7 +18,7 @@ type NavLink = BaseNavItem & {
 };
 
 type NavCollapsible = BaseNavItem & {
-  items: (BaseNavItem & { url: LinkProps["href"] })[];
+  items: Array<BaseNavItem & { url: LinkProps["href"] }>;
   url?: never;
 };
 
@@ -26,12 +26,12 @@ type NavItem = NavCollapsible | NavLink;
 
 interface NavGroup {
   title: string;
-  items: NavItem[];
+  items: Array<NavItem>;
 }
 
 interface SidebarData {
   user: User;
-  navGroups: NavGroup[];
+  navGroups: Array<NavGroup>;
 }
 
 export type { NavCollapsible, NavGroup, NavItem, NavLink, SidebarData };

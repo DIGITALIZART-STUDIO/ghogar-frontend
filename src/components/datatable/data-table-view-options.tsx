@@ -4,11 +4,11 @@ import { SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 interface DataTableViewOptionsProps<TData> {
@@ -16,32 +16,34 @@ interface DataTableViewOptionsProps<TData> {
 }
 
 export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
-  return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
-          <SlidersHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Columnas</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide())
-          .map((column) => {
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                <span className="truncate">{column.columnDef.meta?.title ?? column.id}</span>
-              </DropdownMenuCheckboxItem>
-            );
-          })}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+    return (
+        <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+                    <SlidersHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[150px]">
+                <DropdownMenuLabel>
+                    Columnas
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                    .getAllColumns()
+                    .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide())
+                    .map((column) => (
+                        <DropdownMenuCheckboxItem
+                            key={column.id}
+                            className="capitalize"
+                            checked={column.getIsVisible()}
+                            onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                        >
+                            <span className="truncate">
+                                {column.columnDef.meta?.title ?? column.id}
+                            </span>
+                        </DropdownMenuCheckboxItem>
+                    ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
 }

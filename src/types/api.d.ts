@@ -120,9 +120,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Client"][];
-                        "application/json": components["schemas"]["Client"][];
-                        "text/json": components["schemas"]["Client"][];
+                        "text/plain": Array<components["schemas"]["Client"]>;
+                        "application/json": Array<components["schemas"]["Client"]>;
+                        "text/json": Array<components["schemas"]["Client"]>;
                     };
                 };
             };
@@ -249,9 +249,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": string[];
-                    "text/json": string[];
-                    "application/*+json": string[];
+                    "application/json": Array<string>;
+                    "text/json": Array<string>;
+                    "application/*+json": Array<string>;
                 };
             };
             responses: {
@@ -291,9 +291,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": string[];
-                    "text/json": string[];
-                    "application/*+json": string[];
+                    "application/json": Array<string>;
+                    "text/json": Array<string>;
+                    "application/*+json": Array<string>;
                 };
             };
             responses: {
@@ -338,9 +338,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Client"][];
-                        "application/json": components["schemas"]["Client"][];
-                        "text/json": components["schemas"]["Client"][];
+                        "text/plain": Array<components["schemas"]["Client"]>;
+                        "application/json": Array<components["schemas"]["Client"]>;
+                        "text/json": Array<components["schemas"]["Client"]>;
                     };
                 };
             };
@@ -397,9 +397,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": string[];
-                    "text/json": string[];
-                    "application/*+json": string[];
+                    "application/json": Array<string>;
+                    "text/json": Array<string>;
+                    "application/*+json": Array<string>;
                 };
             };
             responses: {
@@ -521,9 +521,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": string[];
-                    "text/json": string[];
-                    "application/*+json": string[];
+                    "application/json": Array<string>;
+                    "text/json": Array<string>;
+                    "application/*+json": Array<string>;
                 };
             };
             responses: {
@@ -543,8 +543,8 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         BatchOperationResult: {
-            successIds?: string[];
-            failedIds?: string[];
+            successIds?: Array<string>;
+            failedIds?: Array<string>;
             /** Format: int32 */
             totalProcessed?: number;
             allSucceeded?: boolean;

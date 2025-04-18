@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 
 import "./globals.css";
 
@@ -21,11 +22,22 @@ export const metadata: Metadata = {
 export default function RootLayout({
     children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
     return (
         <html suppressHydrationWarning lang="en">
             <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                <Toaster
+                    richColors
+                    position="top-center"
+                    toastOptions={{
+                        style: {
+                            background: "#fff",
+                            borderBlockColor: "#e2e8f0",
+                        },
+                    }}
+                    closeButton
+                />
                 {children}
             </body>
         </html>

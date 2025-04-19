@@ -1,4 +1,4 @@
-import { LinkProps } from "next/link";
+import type { LinkProps } from "next/dist/client/link";
 
 interface User {
   name: string;

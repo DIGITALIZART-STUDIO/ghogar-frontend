@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Hash } from "lucide-react";
 
+import { LogoGestionHogar } from "@/assets/icons/LogoGestionHogar";
+import LogoGestionHogarMobile from "@/assets/icons/LogoGestionHogarMobile";
 import { useSidebar } from "../ui/sidebar";
 
 export function NavLogo() {
@@ -11,7 +12,7 @@ export function NavLogo() {
 
     return (
         <Link href="/" className="flex items-center justify-center p-2 hover:opacity-80 transition-opacity">
-            {state === "collapsed" ? <Hash className="size-5 text-primary" /> : <Hash className="size-5 text-primary" />}
+            {state === "collapsed" ? <LogoGestionHogarMobile /> : <LogoGestionHogar />}
         </Link>
     );
 }

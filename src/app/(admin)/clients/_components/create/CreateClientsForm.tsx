@@ -43,15 +43,15 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                     </FormControl>
                                     <SelectContent>
                                         <SelectGroup>
-                                            {Object.values(ClientTypes).map((documentType) => {
-                                                const documentTypeConfig = ClientTypesLabels[documentType];
-                                                const Icon = documentTypeConfig.icon;
+                                            {Object.values(ClientTypes).map((clientTypes) => {
+                                                const clientTypesConfig = ClientTypesLabels[clientTypes];
+                                                const Icon = clientTypesConfig.icon;
 
                                                 return (
-                                                    <SelectItem key={documentType} value={documentType} className="flex items-center gap-2">
-                                                        <Icon className={`size-4 ${documentTypeConfig.className}`} />
+                                                    <SelectItem key={clientTypes} value={clientTypes} className="flex items-center gap-2">
+                                                        <Icon className={`size-4 ${clientTypesConfig.className}`} />
                                                         <span>
-                                                            {documentTypeConfig.label}
+                                                            {clientTypesConfig.label}
                                                         </span>
                                                     </SelectItem>
                                                 );

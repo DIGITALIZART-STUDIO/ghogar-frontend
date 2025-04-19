@@ -32,36 +32,26 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                         name="type"
                         render={({ field }) => (
                             <FormItem className="md:col-span-2">
-                                <FormLabel>
+                                <FormLabel htmlFor="documentType">
                                     Tipo de Cliente
                                 </FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value ?? ""}>
                                     <FormControl>
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Selecciona el tipo de cliente">
-                                                {field.value && (
-                                                    <>
-                                                        {React.createElement(ClientTypesLabels[field.value as ClientTypes].icon, {
-                                                            className: `h-4 w-4 ${ClientTypesLabels[field.value as ClientTypes].className}`,
-                                                        })}
-                                                        <span className="ml-2">
-                                                            {ClientTypesLabels[field.value as ClientTypes].label}
-                                                        </span>
-                                                    </>
-                                                )}
-                                            </SelectValue>
+                                            <SelectValue placeholder="Selecciona un tipo de cliente" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         <SelectGroup>
-                                            {Object.entries(ClientTypesLabels).map(([type, { label, icon, className }]) => {
-                                                const Icon = icon;
+                                            {Object.values(ClientTypes).map((documentType) => {
+                                                const documentTypeConfig = ClientTypesLabels[documentType];
+                                                const Icon = documentTypeConfig.icon;
 
                                                 return (
-                                                    <SelectItem key={type} value={type} className="flex items-center gap-2">
-                                                        <Icon className={`h-4 w-4 ${className}`} />
+                                                    <SelectItem key={documentType} value={documentType} className="flex items-center gap-2">
+                                                        <Icon className={`size-4 ${documentTypeConfig.className}`} />
                                                         <span>
-                                                            {label}
+                                                            {documentTypeConfig.label}
                                                         </span>
                                                     </SelectItem>
                                                 );

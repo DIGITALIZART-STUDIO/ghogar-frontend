@@ -31,7 +31,7 @@ export const clientSchema = z
                 if (data.dni.length !== 8) {
                     return false;
                 }
-            } else if (data.type === ClientType.Juridico) {
+            } else if (data.type === ClientTypes.Juridico) {
                 // Para cliente Jurídico, se requiere RUC y debe tener 11 caracteres
                 if (!data.ruc) {
                     return false;
@@ -49,7 +49,7 @@ export const clientSchema = z
         },
     )
     .superRefine((data, ctx) => {
-        if (data.type === ClientType.Natural) {
+        if (data.type === ClientTypes.Natural) {
             if (data.dni && data.dni.length !== 8) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
@@ -57,7 +57,7 @@ export const clientSchema = z
                     path: ["dni"],
                 });
             }
-        } else if (data.type === ClientType.Juridico) {
+        } else if (data.type === ClientTypes.Juridico) {
             if (data.ruc && data.ruc.length !== 11) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,

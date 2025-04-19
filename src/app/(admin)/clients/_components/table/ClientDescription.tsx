@@ -51,12 +51,12 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
 
     return (
         <Card className="mx-auto w-full max-w-4xl overflow-hidden shadow-md pt-0 pb-2">
-            <CardHeader className={`bg-gradient-to-r ${typeConfig.bgClass} py-2 px-6`}>
+            <CardHeader className={`bg-gradient-to-r ${typeConfig.bgClass} py-4 px-6 pb-2`}>
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                     {/* Avatar with styled border */}
                     <div className="shrink-0">
                         <div className={cn("p-1.5 rounded-full", `border-3 ${typeConfig.className}`)}>
-                            <Avatar className="h-24 w-24 capitalize bg-white">
+                            <Avatar className="h-20 w-20 capitalize bg-white">
                                 <AvatarFallback className="bg-gradient-to-br from-white to-gray-50 text-primary">
                                     <span className="text-3xl font-medium">
                                         {getInitials(displayName)}
@@ -130,7 +130,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
             <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
                     {/* Personal information section */}
-                    <div className="p-6 space-y-5">
+                    <div className="px-6 py-2 space-y-5">
                         <div className="flex items-center text-sm font-medium text-primary mb-4 pb-2 border-b">
                             <User className="mr-2 h-4 w-4 shrink-0" />
                             <h3>
@@ -207,7 +207,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                     </div>
 
                     {/* Business information section */}
-                    <div className="p-6 space-y-5">
+                    <div className="px-6 py-2 space-y-5">
                         <div className="flex items-center text-sm font-medium text-primary mb-4 pb-2 border-b">
                             <Building className="mr-2 h-4 w-4 shrink-0" />
                             <h3>

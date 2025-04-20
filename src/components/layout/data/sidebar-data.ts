@@ -1,25 +1,22 @@
 import {
-    BedDouble,
+    BookUser,
     CalendarCheck,
-    CreditCard,
-    Hotel,
+    ClipboardList,
+    FileCheck,
+    FileText,
     LayoutDashboard,
-    Package,
-    PackageMinus,
-    PackagePlus,
-    Tag,
-    UserCircle,
+    LineChart,
+    ListChecks,
     Users,
-    Warehouse,
 } from "lucide-react";
 
 import { type SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
     user: {
-        name: "satnaing",
-        email: "satnaingdev@gmail.com",
-        avatar: "/avatars/shadcn.jpg",
+        name: "Nombre Usuario",
+        email: "usuario@empresa.com",
+        avatar: "/avatars/default.jpg",
     },
     navGroups: [
         {
@@ -32,71 +29,63 @@ export const sidebarData: SidebarData = {
                 },
             ],
         },
-
         {
-            title: "Inventario",
+            title: "Clientes y Leads",
             items: [
                 {
-                    title: "Movimientos",
-                    icon: Package,
-                    items: [
-                        {
-                            title: "Entradas",
-                            url: "/inventory/input",
-                            icon: PackagePlus,
-                        },
-                        {
-                            title: "Salidas",
-                            url: "/inventory/outputs",
-                            icon: PackageMinus,
-                        },
-                    ],
+                    title: "Clientes",
+                    url: "/clients",
+                    icon: BookUser,
                 },
                 {
-                    title: "Almacén",
-                    url: "/inventory/warehouse",
-                    icon: Warehouse,
-                },
-                {
-                    title: "Productos",
-                    url: "/inventory/products",
-                    icon: Package,
+                    title: "Leads",
+                    url: "/leads",
+                    icon: Users,
                 },
             ],
         },
         {
-            title: "Gestión Hotelera",
+            title: "Ventas",
             items: [
                 {
-                    title: "Habitaciones",
-                    icon: Hotel,
-                    items: [
-                        {
-                            title: "Listado",
-                            url: "/rooms/list",
-                            icon: BedDouble,
-                        },
-                        {
-                            title: "Tipos",
-                            url: "/rooms/room-types",
-                            icon: Tag,
-                        },
-                    ],
+                    title: "Cotizaciones",
+                    url: "/quotes",
+                    icon: FileText,
                 },
                 {
-                    title: "Reservas",
-                    url: "/reservation",
+                    title: "Separaciones",
+                    url: "/reservations",
+                    icon: FileCheck,
+                },
+                {
+                    title: "Cronogramas",
+                    url: "/schedules",
                     icon: CalendarCheck,
                 },
+            ],
+        },
+        {
+            title: "Tareas",
+            items: [
                 {
-                    title: "Clientes",
-                    url: "/customers",
-                    icon: UserCircle,
+                    title: "Mis Tareas",
+                    url: "/tasks",
+                    icon: ListChecks,
                 },
                 {
-                    title: "Pagos",
-                    url: "/payments",
-                    icon: CreditCard,
+                    title: "Asignaciones",
+                    url: "/assignments",
+                    icon: ClipboardList,
+                },
+            ],
+        },
+        {
+            title: "Reportes",
+            items: [
+                {
+                    title: "Reportes",
+                    url: "/reports",
+                    icon: LineChart,
                 },
             ],
         },
@@ -105,7 +94,7 @@ export const sidebarData: SidebarData = {
             items: [
                 {
                     title: "Usuarios",
-                    url: "/users",
+                    url: "/admin/users",
                     icon: Users,
                 },
             ],

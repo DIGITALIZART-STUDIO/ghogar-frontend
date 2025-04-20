@@ -39,12 +39,12 @@ export async function CreateClient(client: components["schemas"]["ClientCreateDt
         body: client,
     }));
 
-    revalidatePath("/(admin)/clients", "page");
-
     if (error) {
         console.log("Error creating client:", error);
         return err(error);
     }
+
+    revalidatePath("/(admin)/clients", "page");
     return ok(response);
 }
 

@@ -360,7 +360,32 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get current user
+         * @description Gets information about the currently logged-in user
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["User"];
+                        "application/json": components["schemas"]["User"];
+                        "text/json": components["schemas"]["User"];
+                    };
+                };
+            };
+        };
         put?: never;
         /**
          * Create User
@@ -610,6 +635,34 @@ export interface components {
         NullableOfClientType: "Natural" | "Juridico" | null;
         RefreshRequest: {
             refreshToken: string;
+        };
+        User: {
+            /** Format: date-time */
+            lastLogin?: string | null;
+            isActive?: boolean;
+            mustChangePassword?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            /** Format: uuid */
+            id?: string;
+            userName?: string | null;
+            normalizedUserName?: string | null;
+            email?: string | null;
+            normalizedEmail?: string | null;
+            emailConfirmed?: boolean;
+            passwordHash?: string | null;
+            securityStamp?: string | null;
+            concurrencyStamp?: string | null;
+            phoneNumber?: string | null;
+            phoneNumberConfirmed?: boolean;
+            twoFactorEnabled?: boolean;
+            /** Format: date-time */
+            lockoutEnd?: string | null;
+            lockoutEnabled?: boolean;
+            /** Format: int32 */
+            accessFailedCount?: number;
         };
     };
     responses: never;

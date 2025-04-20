@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface InputWithIconProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  Icon: LucideIcon;
-  iconClassName?: string;
-  wrapperClassName?: string;
+    Icon: LucideIcon;
+    iconClassName?: string;
+    wrapperClassName?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [k: string]: any;
 }
 
 const InputWithIcon = React.forwardRef<HTMLInputElement, InputWithIconProps>(({ className, Icon, iconClassName, wrapperClassName, ...props }, ref) => (

@@ -12,21 +12,21 @@ export interface ClientsTableToolbarActionsProps {
 }
 
 export function ClientsTableToolbarActions({ table }: ClientsTableToolbarActionsProps) {
-  return (
-      <div className="flex flex-wrap items-center justify-end gap-2">
-          {table && table.getFilteredSelectedRowModel().rows.length > 0 ? (
-              <>
-                  <DeleteClientsDialog
-                      clients={table.getFilteredSelectedRowModel().rows.map((row) => row.original)}
-                      onSuccess={() => table.toggleAllRowsSelected(false)}
-                  />
-                  <ReactivateClientsDialog
-                      clients={table.getFilteredSelectedRowModel().rows.map((row) => row.original)}
-                      onSuccess={() => table.toggleAllRowsSelected(false)}
-                  />
-              </>
-      ) : null}
-          <CreateClientsDialog />
-      </div>
-  );
+    return (
+        <div className="flex flex-wrap items-center justify-end gap-2">
+            {table && table.getFilteredSelectedRowModel().rows.length > 0 ? (
+                <>
+                    <DeleteClientsDialog
+                        clients={table.getFilteredSelectedRowModel().rows.map((row) => row.original)}
+                        onSuccess={() => table.toggleAllRowsSelected(false)}
+                    />
+                    <ReactivateClientsDialog
+                        clients={table.getFilteredSelectedRowModel().rows.map((row) => row.original)}
+                        onSuccess={() => table.toggleAllRowsSelected(false)}
+                    />
+                </>
+            ) : null}
+            <CreateClientsDialog />
+        </div>
+    );
 }

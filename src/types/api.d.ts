@@ -353,6 +353,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Clients/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/LeadTasks": {
         parameters: {
             query?: never;
@@ -1157,6 +1194,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/users/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Users": {
         parameters: {
             query?: never;
@@ -1402,6 +1476,13 @@ export interface components {
             address: string;
             type: components["schemas"]["ClientType"];
         };
+        ClientSummaryDto: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            dni?: string | null;
+            ruc?: string | null;
+        };
         /** @enum {unknown} */
         ClientType: "Natural" | "Juridico";
         ClientUpdateDto: {
@@ -1561,6 +1642,11 @@ export interface components {
             /** Format: int32 */
             accessFailedCount?: number;
         } | null;
+        UserSummaryDto: {
+            /** Format: uuid */
+            id?: string;
+            userName?: string;
+        };
     };
     responses: never;
     parameters: never;

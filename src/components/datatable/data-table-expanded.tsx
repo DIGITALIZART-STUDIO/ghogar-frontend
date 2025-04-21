@@ -26,13 +26,14 @@ import { Empty } from "../common/Empty";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilter } from "./facetedFilters";
+import { useEffect } from "react";
 
 // Función de filtrado global correcta para TanStack Table v8
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getValue = (row: Row<any>) => {
-    // Si es _all, busca en todos los valores concatenados
+        // Si es _all, busca en todos los valores concatenados
         if (columnId === "_all") {
             const allValues = Object.values(row.original)
                 .filter((val) => val !== null && val !== undefined)
@@ -51,16 +52,16 @@ const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
 };
 
 interface DataTableExpandedProps<TData, TValue> {
-  columns: Array<ColumnDef<TData, TValue>>;
-  data: Array<TData>;
-  toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
-  filterPlaceholder?: string;
-  facetedFilters?: Array<FacetedFilter<TValue>>;
-  renderExpandedRow?: (row: TData) => React.ReactNode; // Nueva prop para el contenido expandido
-  onClickRow?: (row: TData) => void;
-  columnVisibilityConfig?: Partial<Record<keyof TData, boolean>>;
-  // Nuevas props para paginación del servidor
-  serverPagination?: ServerPaginationTanstackTableConfig;
+    columns: Array<ColumnDef<TData, TValue>>;
+    data: Array<TData>;
+    toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
+    filterPlaceholder?: string;
+    facetedFilters?: Array<FacetedFilter<TValue>>;
+    renderExpandedRow?: (row: TData) => React.ReactNode; // Nueva prop para el contenido expandido
+    onClickRow?: (row: TData) => void;
+    columnVisibilityConfig?: Partial<Record<keyof TData, boolean>>;
+    // Nuevas props para paginación del servidor
+    serverPagination?: ServerPaginationTanstackTableConfig;
 }
 
 export function DataTableExpanded<TData, TValue>({
@@ -92,6 +93,17 @@ export function DataTableExpanded<TData, TValue>({
         pageIndex: serverPagination?.pageIndex ?? 0,
         pageSize: serverPagination?.pageSize ?? 10,
     });
+
+    // Estado para carga de paginación
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    useEffect(() => {
+        if (serverPagination?.onPaginationChange) {
+            setIsLoading(true);
+            serverPagination.onPaginationChange(pagination.pageIndex, pagination.pageSize)
+                .finally(() => setIsLoading(false));
+        }
+    }, [pagination.pageIndex, pagination.pageSize, serverPagination]);
 
     // Manejar cambios de paginación
     const handlePaginationChange = React.useCallback(
@@ -186,7 +198,16 @@ export function DataTableExpanded<TData, TValue>({
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {isLoading ? (
+                            // Show loading state while fetching data
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <div className="flex justify-center">
+                                        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" />
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <React.Fragment key={row.id}>
                                     <TableRow

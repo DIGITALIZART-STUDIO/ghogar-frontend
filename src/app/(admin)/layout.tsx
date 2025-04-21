@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 
 export default async function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
     // Get logged user info
-    const [user, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
+    const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
     if (error !== null) {
         if (error.statusCode === 401 || error.statusCode === 403) {
             redirect("/login");
@@ -28,19 +28,19 @@ export default async function AdminLayoutWrapper({ children }: { children: React
         );
     }
 
-    const username = user.userName!;
+    const username = userData.user.userName!;
     const initials = username.split(" ").map((n) => n[0].toUpperCase())
         .slice(0, 2)
         .join("");
 
     return (
-        <AdminLayout name={username} email={user.email!} initials={initials} >
+        <AdminLayout name={username} email={userData.user.email!} initials={initials} >
             {/* ===== Top Heading ===== */}
             <Header>
                 <Search />
                 <div className="ml-auto flex items-center space-x-4">
                     <ThemeSwitch />
-                    <ProfileDropdown name={username} email={user.email!} initials={initials} />
+                    <ProfileDropdown name={username} email={userData.user.email!} initials={initials} />
                 </div>
             </Header>
             {/* ===== Main Content ===== */}

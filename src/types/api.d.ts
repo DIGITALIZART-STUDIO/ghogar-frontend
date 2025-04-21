@@ -379,9 +379,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["User"];
-                        "application/json": components["schemas"]["User"];
-                        "text/json": components["schemas"]["User"];
+                        "text/plain": components["schemas"]["UserGetDTO"];
+                        "application/json": components["schemas"]["UserGetDTO"];
+                        "text/json": components["schemas"]["UserGetDTO"];
                     };
                 };
             };
@@ -437,6 +437,50 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all users
+         * @description Gets information about all users
+         */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -633,6 +677,17 @@ export interface components {
         };
         /** @enum {unknown|null} */
         NullableOfClientType: "Natural" | "Juridico" | null;
+        PaginatedResponseOfUserGetDTO: {
+            items: Array<components["schemas"]["UserGetDTO"]>;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages: number;
+        };
         RefreshRequest: {
             refreshToken: string;
         };
@@ -663,6 +718,10 @@ export interface components {
             lockoutEnabled?: boolean;
             /** Format: int32 */
             accessFailedCount?: number;
+        };
+        UserGetDTO: {
+            user: components["schemas"]["User"];
+            roles: Array<string>;
         };
     };
     responses: never;

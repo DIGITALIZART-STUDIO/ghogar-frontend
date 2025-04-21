@@ -2,9 +2,20 @@
 
 import { createContext, useContext } from "react";
 
-export type Role = "SuperAdmin"
+export type Role = "SuperAdmin" | "Admin" | "Supervisor" | "SalesAdvisor" | "Manager"
 export type Module = "Users"
 export type Claim = "CREATE" | "READ" | "UPDATE" | "DELETE"
+
+type RolesTypes = Omit<{
+    [key in Role]: string
+}, "SuperAdmin">
+
+export const roles: RolesTypes = {
+    "Admin": "Administrador",
+    "Supervisor": "Supervisor",
+    "SalesAdvisor": "Asesor",
+    "Manager": "Gerente",
+};
 
 const AuthContext = createContext<Array<Role> | null>(null);
 const Permissions: Readonly<Record<Module, Record<Claim, Array<Role>>>> = Object.freeze({

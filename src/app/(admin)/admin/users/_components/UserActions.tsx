@@ -2,6 +2,7 @@
 
 import { components } from "@/types/api";
 import { type Table } from "@tanstack/react-table";
+import { UserCreateDialog } from "./UserCreateDialog";
 
 type UserGetDTO = components["schemas"]["UserGetDTO"];
 
@@ -12,7 +13,7 @@ export interface ClientsTableToolbarActionsProps {
 export function UsersTableToolbarActions({ }: ClientsTableToolbarActionsProps) {
     return (
         <div className="flex flex-wrap items-center justify-end gap-2">
-            --Acciones--
+            <UserCreateDialog />
         </div>
     );
 }

@@ -13,7 +13,8 @@ export default async function AdminLayoutWrapper({ children }: { children: React
     const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
     if (error !== null) {
         if (error.statusCode === 401 || error.statusCode === 403) {
-            redirect("/login");
+            console.error("layout, redirecting due to 401/403");
+            redirect("/logout");
         }
 
         return (

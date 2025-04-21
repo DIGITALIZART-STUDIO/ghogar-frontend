@@ -398,7 +398,13 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserCreateDTO"];
+                    "text/json": components["schemas"]["UserCreateDTO"];
+                    "application/*+json": components["schemas"]["UserCreateDTO"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -718,6 +724,12 @@ export interface components {
             lockoutEnabled?: boolean;
             /** Format: int32 */
             accessFailedCount?: number;
+        };
+        UserCreateDTO: {
+            name: string;
+            email: string;
+            phone: string;
+            role: string;
         };
         UserGetDTO: {
             user: components["schemas"]["User"];

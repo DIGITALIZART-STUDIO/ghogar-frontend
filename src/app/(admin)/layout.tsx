@@ -6,6 +6,7 @@ import { Search } from "@/components/ui/search";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { backend, wrapper } from "@/types/backend";
 import { redirect } from "next/navigation";
+import { AuthorizationContext, Role } from "./_authorization_context";
 
 export default async function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
     // Get logged user info
@@ -21,7 +22,9 @@ export default async function AdminLayoutWrapper({ children }: { children: React
                 {" "}
                 {error.message}
                 <br />
+                <br />
                 Por favor, recargue la página o inicie sesión nuevamente.
+                <br />
                 <br />
                 Si el problema persiste, contacte al administrador del sistema.
             </p>
@@ -35,18 +38,20 @@ export default async function AdminLayoutWrapper({ children }: { children: React
 
     return (
         <AdminLayout name={username} email={userData.user.email!} initials={initials} >
-            {/* ===== Top Heading ===== */}
-            <Header>
-                <Search />
-                <div className="ml-auto flex items-center space-x-4">
-                    <ThemeSwitch />
-                    <ProfileDropdown name={username} email={userData.user.email!} initials={initials} />
-                </div>
-            </Header>
-            {/* ===== Main Content ===== */}
-            <Main>
-                {children}
-            </Main>
+            <AuthorizationContext roles={userData.roles as Array<Role>}>
+                {/* ===== Top Heading ===== */}
+                <Header>
+                    <Search />
+                    <div className="ml-auto flex items-center space-x-4">
+                        <ThemeSwitch />
+                        <ProfileDropdown name={username} email={userData.user.email!} initials={initials} />
+                    </div>
+                </Header>
+                {/* ===== Main Content ===== */}
+                <Main>
+                    {children}
+                </Main>
+            </AuthorizationContext>
         </AdminLayout>
     );
 }

@@ -65,17 +65,17 @@ export const sidebarData: SidebarData = {
             ],
         },
         {
-            title: "Tareas",
+            title: "Gestión de Actividades",
             items: [
-                {
-                    title: "Mis Tareas",
-                    url: "/tasks",
-                    icon: ListChecks,
-                },
                 {
                     title: "Asignaciones",
                     url: "/assignments",
                     icon: ClipboardList,
+                },
+                {
+                    title: "Mis Tareas",
+                    url: "/tasks",
+                    icon: ListChecks,
                 },
             ],
         },

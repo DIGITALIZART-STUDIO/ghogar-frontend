@@ -565,9 +565,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTasksResponseDto"];
+                        "application/json": components["schemas"]["LeadTasksResponseDto"];
+                        "text/json": components["schemas"]["LeadTasksResponseDto"];
                     };
                 };
             };
@@ -1551,6 +1551,25 @@ export interface components {
             address: string;
             type: components["schemas"]["ClientType"];
         };
+        ClientDTO: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            coOwner?: string | null;
+            dni?: string | null;
+            ruc?: string | null;
+            companyName?: string | null;
+            phoneNumber?: string | null;
+            email?: string | null;
+            address?: string | null;
+            type?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            displayName?: string;
+        };
         ClientSummaryDto: {
             /** Format: uuid */
             id?: string;
@@ -1613,6 +1632,23 @@ export interface components {
             status: components["schemas"]["LeadStatus"];
             procedency: string;
         };
+        LeadDTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string;
+            client?: components["schemas"]["ClientDTO"];
+            /** Format: uuid */
+            assignedToId?: string;
+            assignedTo?: components["schemas"]["UserBasicDTO"];
+            status?: string;
+            procedency?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         /** @enum {unknown} */
         LeadStatus: "Registered" | "Attended";
         LeadTask: {
@@ -1645,6 +1681,31 @@ export interface components {
             description: string;
             scheduledDate: string;
             type?: components["schemas"]["TaskType"];
+        };
+        LeadTaskDTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            leadId?: string;
+            /** Format: uuid */
+            assignedToId?: string;
+            assignedTo?: components["schemas"]["UserBasicDTO"];
+            description?: string;
+            /** Format: date-time */
+            scheduledDate?: string;
+            /** Format: date-time */
+            completedDate?: string | null;
+            isCompleted?: boolean;
+            type?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        LeadTasksResponseDto: {
+            lead?: components["schemas"]["LeadDTO"];
+            tasks?: Array<components["schemas"]["LeadTaskDTO"]>;
         };
         LeadTaskUpdateDto: {
             /** Format: uuid */
@@ -1757,6 +1818,21 @@ export interface components {
             lockoutEnabled?: boolean;
             /** Format: int32 */
             accessFailedCount?: number;
+        };
+        UserBasicDTO: {
+            /** Format: uuid */
+            id?: string;
+            userName?: string;
+            email?: string;
+            phoneNumber?: string | null;
+            name?: string;
+            /** Format: date-time */
+            lastLogin?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
         };
         UserCreateDTO: {
             name: string;

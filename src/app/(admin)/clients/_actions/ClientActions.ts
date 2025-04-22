@@ -39,12 +39,12 @@ export async function CreateClient(client: components["schemas"]["ClientCreateDt
         body: client,
     }));
 
-    revalidatePath("/(admin)/clients", "page");
-
     if (error) {
         console.log("Error creating client:", error);
         return err(error);
     }
+
+    revalidatePath("/(admin)/clients", "page");
     return ok(response);
 }
 
@@ -53,8 +53,9 @@ export async function UpdateClient(
     id: string,
     client: components["schemas"]["ClientUpdateDto"],
 ): Promise<Result<components["schemas"]["Client"], FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.PUT(`/api/Clients/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/Clients/{id}", {
         ...auth,
+        params: { path: { id } },
         body: client,
     }));
 
@@ -101,8 +102,9 @@ export async function ActivateClients(ids: Array<string>): Promise<Result<compon
 
 // Obtener un cliente específico
 export async function GetClient(id: string): Promise<Result<components["schemas"]["Client"], FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/Clients/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Clients/{id}", {
         ...auth,
+        params: { path: { id } },
     }));
 
     if (error) {

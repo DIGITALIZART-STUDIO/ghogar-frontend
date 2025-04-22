@@ -14,8 +14,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
+import { LogoutAction } from "@/app/(auth)/login/actions";
 
-export function NavUser() {
+type NavUserProps = {
+    name: string
+    email: string
+    initials: string
+}
+
+export function NavUser({ name, email, initials }: NavUserProps) {
     const { isMobile } = useSidebar();
 
     return (
@@ -30,15 +37,15 @@ export function NavUser() {
                             <Avatar className="h-8 w-8 rounded-lg">
                                 <AvatarImage src="/avatars/01.png" alt={"Super Admin"} />
                                 <AvatarFallback className="rounded-lg">
-                                    SA
+                                    {initials}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-semibold">
-                                    Super Amin
+                                    {name}
                                 </span>
                                 <span className="truncate text-xs">
-                                    admin@admin.com
+                                    {email}
                                 </span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
@@ -55,15 +62,15 @@ export function NavUser() {
                                 <Avatar className="h-8 w-8 rounded-lg">
                                     <AvatarImage src="/avatars/01.png" alt={"Super Admin"} />
                                     <AvatarFallback className="rounded-lg">
-                                        SA
+                                        {initials}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">
-                                        Super Admin
+                                        {name}
                                     </span>
                                     <span className="truncate text-xs">
-                                        admin@admin.com
+                                        {email}
                                     </span>
                                 </div>
                             </div>
@@ -78,7 +85,10 @@ export function NavUser() {
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="flex items-center gap-2">
+                        <DropdownMenuItem
+                            className="flex items-center gap-2"
+                            onClick={LogoutAction}
+                        >
                             <LogOut />
                             Cerrar Sesión
                         </DropdownMenuItem>

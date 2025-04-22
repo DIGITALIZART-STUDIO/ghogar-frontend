@@ -7,14 +7,18 @@ import { SidebarProvider } from "../ui/sidebar";
 import SkipToMain from "../ui/skip-to-main";
 import { AppSidebar } from "./app-sidebar";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ name, email, initials, children }: { children: React.ReactNode } & {
+    name: string
+    email: string
+    initials: string
+}) {
     const defaultOpen = Cookies.get("sidebar:state") !== "false";
     return (
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <SearchProvider>
                 <SidebarProvider defaultOpen={defaultOpen}>
                     <SkipToMain />
-                    <AppSidebar />
+                    <AppSidebar name={name} email={email} initials={initials} />
                     <div
                         id="content"
                         className={cn(

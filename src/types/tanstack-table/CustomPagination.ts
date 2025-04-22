@@ -6,7 +6,7 @@ export type CustomPaginationTableParams = {
 };
 
 //In tanstack table pageIndex is used instead of page
-export type ServerPaginationChangeEventCallback = (pageIndex: number, pageSize: number) => void;
+export type ServerPaginationChangeEventCallback = (pageIndex: number, pageSize: number) => Promise<void>;
 
 /**
    * Si la API retorna una paginación que comienza con 1 debemos procesar el index de la paginación para Tanstack Table

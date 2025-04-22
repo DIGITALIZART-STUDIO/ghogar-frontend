@@ -14,8 +14,13 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LogoutAction } from "@/app/(auth)/login/actions";
 
-export function ProfileDropdown() {
+export function ProfileDropdown({ name, email, initials }: {
+    name: string
+    email: string
+    initials: string
+}) {
     return (
         <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
@@ -23,7 +28,7 @@ export function ProfileDropdown() {
                     <Avatar className="h-8 w-8">
                         <AvatarImage src="/avatars/01.png" alt="@shadcn" />
                         <AvatarFallback>
-                            SA
+                            {initials}
                         </AvatarFallback>
                     </Avatar>
                 </Button>
@@ -32,10 +37,10 @@ export function ProfileDropdown() {
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                            Super Admin
+                            {name}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            admin@admin.com
+                            {email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
@@ -51,7 +56,9 @@ export function ProfileDropdown() {
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={LogoutAction}
+                >
                     Cerrar Sesión
                     <DropdownMenuShortcut>
                         ⇧⌘Q

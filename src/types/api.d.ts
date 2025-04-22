@@ -1238,7 +1238,32 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get current user
+         * @description Gets information about the currently logged-in user
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserGetDTO"];
+                        "application/json": components["schemas"]["UserGetDTO"];
+                        "text/json": components["schemas"]["UserGetDTO"];
+                    };
+                };
+            };
+        };
         put?: never;
         /**
          * Create User
@@ -1251,7 +1276,13 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserCreateDTO"];
+                    "text/json": components["schemas"]["UserCreateDTO"];
+                    "application/*+json": components["schemas"]["UserCreateDTO"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -1290,6 +1321,50 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all users
+         * @description Gets information about all users
+         */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1609,6 +1684,17 @@ export interface components {
         NullableOfLeadStatus: "Registered" | "Attended" | null;
         /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
+        PaginatedResponseOfUserGetDTO: {
+            items: Array<components["schemas"]["UserGetDTO"]>;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages: number;
+        };
         RefreshRequest: {
             refreshToken: string;
         };
@@ -1617,6 +1703,7 @@ export interface components {
         User: {
             /** Format: date-time */
             lastLogin?: string | null;
+            name: string;
             isActive?: boolean;
             mustChangePassword?: boolean;
             /** Format: date-time */
@@ -1642,6 +1729,45 @@ export interface components {
             /** Format: int32 */
             accessFailedCount?: number;
         } | null;
+        User2: {
+            /** Format: date-time */
+            lastLogin?: string | null;
+            name: string;
+            isActive?: boolean;
+            mustChangePassword?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            /** Format: uuid */
+            id?: string;
+            userName?: string | null;
+            normalizedUserName?: string | null;
+            email?: string | null;
+            normalizedEmail?: string | null;
+            emailConfirmed?: boolean;
+            passwordHash?: string | null;
+            securityStamp?: string | null;
+            concurrencyStamp?: string | null;
+            phoneNumber?: string | null;
+            phoneNumberConfirmed?: boolean;
+            twoFactorEnabled?: boolean;
+            /** Format: date-time */
+            lockoutEnd?: string | null;
+            lockoutEnabled?: boolean;
+            /** Format: int32 */
+            accessFailedCount?: number;
+        };
+        UserCreateDTO: {
+            name: string;
+            email: string;
+            phone: string;
+            role: string;
+        };
+        UserGetDTO: {
+            user: components["schemas"]["User2"];
+            roles: Array<string>;
+        };
         UserSummaryDto: {
             /** Format: uuid */
             id?: string;

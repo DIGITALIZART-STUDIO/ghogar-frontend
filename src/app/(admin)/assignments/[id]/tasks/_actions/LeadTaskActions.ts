@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { LeadTasksByLeadId } from "../_types/leadTask";
 
 // Obtener todas las tareas
 export async function GetAllTasks(): Promise<Result<Array<components["schemas"]["LeadTask"]>, FetchError>> {
@@ -33,7 +34,7 @@ export async function GetTask(id: string): Promise<Result<components["schemas"][
 }
 
 // Obtener tareas por ID de lead
-export async function GetTasksByLead(leadId: string): Promise<Result<Array<components["schemas"]["LeadTask"]>, FetchError>> {
+export async function GetTasksByLead(leadId: string): Promise<Result<LeadTasksByLeadId, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET(`/api/LeadTasks/lead/${leadId}`, {
         ...auth,
     }));

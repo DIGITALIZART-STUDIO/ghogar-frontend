@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
     // if there's no access token, attempt to refresh.
     // at this point there is a refresh token
     if (!accessToken) {
-    // do session refresh here
+        // do session refresh here
         const [newCookies, err] = await refresh(refreshToken.value);
         if (err) {
             devlog("error refreshing!");
@@ -91,7 +91,7 @@ function parseSetCookie(cookieString: string) {
     };
 }
 
-function logoutAndRedirectLogin(request: NextRequest) {
+export function logoutAndRedirectLogin(request: NextRequest) {
     devlog("nuking cookies and redirecting to login\n\n");
 
     const response = NextResponse.redirect(new URL("/login", request.url));

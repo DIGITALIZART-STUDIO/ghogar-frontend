@@ -6,7 +6,11 @@ import { NavGroup } from "./nav-group";
 import { NavLogo } from "./nav-logo";
 import { NavUser } from "./nav-user";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ name, email, initials, ...props }: React.ComponentProps<typeof Sidebar> & {
+    name: string
+    email: string
+    initials: string
+}) {
     return (
         <Sidebar collapsible="icon" variant="inset" {...props} className="bg-sidebar">
             <SidebarHeader>
@@ -18,7 +22,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ))}
             </SidebarContent>
             <SidebarFooter>
-                <NavUser />
+                <NavUser name={name} email={email} initials={initials} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

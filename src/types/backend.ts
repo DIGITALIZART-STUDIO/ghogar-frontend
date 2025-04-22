@@ -8,25 +8,25 @@ import type { paths } from "./api";
 /**
  * Client for connecting with the backend
  */
-export const backend = createClient<paths>({ baseUrl: process.env.INTERNAL_BACKEND_URL ?? "http://localhost:5233" });
+export const backend = createClient<paths>({ baseUrl: process.env.INTERNAL_BACKEND_URL ?? "http://localhost:5165" });
 
 type AuthHeader = {
-  headers: {
-    Authorization: string;
-  };
+    headers: {
+        Authorization: string;
+    };
 };
 
 type FetchResult<A, B> = {
-  data?: A;
-  error?: B;
-  response: Response;
+    data?: A;
+    error?: B;
+    response: Response;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FetchError<T = any> = {
-  statusCode: number;
-  message: string;
-  error: T;
+    statusCode: number;
+    message: string;
+    error: T;
 };
 
 /**
@@ -48,6 +48,13 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
         if (data.response.ok) {
             return ok(data.data!);
+        }
+
+        let defaultError = "Error del servidor";
+        if (data.response.status === 401) {
+            defaultError = "Sesión expirada, vuelve a iniciar sesión";
+        } else if (data.response.status === 403) {
+            defaultError = "No autorizado";
         }
 
         if (data.error) {
@@ -87,13 +94,13 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
 
             return err({
                 statusCode: data.response.status,
-                message: "Error interno del servidor",
+                message: defaultError,
                 error: data.error,
             });
         } else {
             return err({
                 statusCode: data.response.status,
-                message: "Error interno del servidor",
+                message: defaultError,
                 error: data.error!,
             });
         }

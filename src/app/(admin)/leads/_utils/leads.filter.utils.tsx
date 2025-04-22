@@ -1,6 +1,7 @@
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Lead } from "../_types/lead";
 import { LeadStatusLabels } from "./leads.utils";
 
 // Componentes de icono con estilos integrados
@@ -21,20 +22,26 @@ const LeadStatusIcons = Object.fromEntries(Object.entries(LeadStatusLabels).map(
     return [leadStatus, IconComponent];
 }));
 
+// Definición de la interfaz Identifier
+export interface Identifier {
+  value: string;
+  type: "DNI" | "RUC";
+}
+
 // Función para extraer identificadores únicos (DNI o RUC) de los leads
 export const getUniqueIdentifiers = (leads: Array<Lead>): Array<Identifier> => {
     const identifiers: Array<Identifier> = [];
 
     // Extraer DNIs
     leads.forEach((lead) => {
-        if (lead.client?.dni) {
+        if (lead?.client?.dni) {
             identifiers.push({
                 value: lead.client.dni,
                 type: "DNI",
             });
         }
 
-        if (lead.client?.ruc) {
+        if (lead?.client?.ruc) {
             identifiers.push({
                 value: lead.client.ruc,
                 type: "RUC",
@@ -44,17 +51,6 @@ export const getUniqueIdentifiers = (leads: Array<Lead>): Array<Identifier> => {
 
     // Eliminar duplicados (por valor y tipo)
     return identifiers.filter((identifier, index, self) => index === self.findIndex((i) => i.value === identifier.value && i.type === identifier.type));
-};
-
-// Mantener la función anterior para compatibilidad
-export const getUniqueDNIs = (leads: Array<Lead>): Array<string> => {
-    const dnis = leads
-        .filter((lead) => lead.client?.dni)
-        .map((lead) => lead.client.dni)
-        .filter(Boolean) as Array<string>;
-
-    // Eliminar duplicados
-    return [...new Set(dnis)];
 };
 
 export const facetedFilters = [

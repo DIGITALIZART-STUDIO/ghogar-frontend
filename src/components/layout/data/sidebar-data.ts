@@ -1,6 +1,5 @@
 import {
     BookUser,
-    CalendarCheck,
     ClipboardList,
     FileCheck,
     FileText,
@@ -57,25 +56,20 @@ export const sidebarData: SidebarData = {
                     url: "/reservations",
                     icon: FileCheck,
                 },
-                {
-                    title: "Cronogramas",
-                    url: "/schedules",
-                    icon: CalendarCheck,
-                },
             ],
         },
         {
-            title: "Tareas",
+            title: "Gestión de Actividades",
             items: [
+                {
+                    title: "Mis Leads",
+                    url: "/assignments",
+                    icon: ClipboardList,
+                },
                 {
                     title: "Mis Tareas",
                     url: "/tasks",
                     icon: ListChecks,
-                },
-                {
-                    title: "Asignaciones",
-                    url: "/assignments",
-                    icon: ClipboardList,
                 },
             ],
         },

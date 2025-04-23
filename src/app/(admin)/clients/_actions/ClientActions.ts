@@ -113,3 +113,18 @@ export async function GetClient(id: string): Promise<Result<components["schemas"
     }
     return ok(response);
 }
+
+// Obtener resumen de clientes
+export async function GetClientsSummary(): Promise<
+  Result<Array<components["schemas"]["ClientSummaryDto"]>, FetchError>
+  > {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Clients/summary", {
+        ...auth,
+    }));
+
+    if (error) {
+        console.log("Error getting clients summary:", error);
+        return err(error);
+    }
+    return ok(response);
+}

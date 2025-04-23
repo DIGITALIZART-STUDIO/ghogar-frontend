@@ -149,7 +149,7 @@ export function UserCreateDialog() {
                                         </FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value} >
                                             <FormControl>
-                                                <SelectTrigger className="w-[180px]">
+                                                <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Rol" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -167,7 +167,7 @@ export function UserCreateDialog() {
                             />
 
                             <Button type="submit">
-                                Submit
+                                Crear
                             </Button>
                         </form>
                     </Form>

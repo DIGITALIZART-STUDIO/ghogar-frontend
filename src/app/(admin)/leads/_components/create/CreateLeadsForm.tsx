@@ -10,9 +10,9 @@ import { CreateLeadSchema } from "../../_schemas/createLeadsSchema";
 import { GetClientsSummary } from "../../../clients/_actions/ClientActions";
 
 interface CreateLeadsFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
-  children: React.ReactNode;
-  form: UseFormReturn<CreateLeadSchema>;
-  onSubmit: (data: CreateLeadSchema) => void;
+    children: React.ReactNode;
+    form: UseFormReturn<CreateLeadSchema>;
+    onSubmit: (data: CreateLeadSchema) => void;
 }
 
 export default function CreateLeadsForm({ children, form, onSubmit }: CreateLeadsFormProps) {
@@ -68,7 +68,7 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                                 ? `${client.dni} - ${client.name}`
                                 : client.ruc
                                     ? `${client.ruc} - ${client.name}`
-                                    : client.name,
+                                    : client.name!,
                         }));
 
                         setClientOptions(options);

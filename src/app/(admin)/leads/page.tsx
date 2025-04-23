@@ -24,7 +24,11 @@ export default async function LeadsPage() {
         <div>
             <HeaderPage title="Leads" description="Prospectos y contactos comerciales potenciales." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <LeadsTable data={leadsData} />
+                <LeadsTable
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    data={leadsData}
+                />
             </div>
         </div>
     );

@@ -14,10 +14,10 @@ import { LeadTaskDetail, TaskTypes } from "../_types/leadTask";
 import { getTaskClasses, getTaskIcon, getTaskLabel } from "../_utils/tasks.utils";
 
 interface TaskTimelineProps {
-  tasks: Array<LeadTaskDetail>;
-  onToggleCompletion: (taskId: string) => void;
-  onEdit: (task: LeadTaskDetail) => void;
-  onDelete: (taskId: string) => void;
+    tasks: Array<LeadTaskDetail>;
+    onToggleCompletion: (taskId: string) => void;
+    onEdit: (task: LeadTaskDetail) => void;
+    onDelete: (taskId: string) => void;
 }
 
 export function TaskTimeline({ tasks, onToggleCompletion, onEdit, onDelete }: TaskTimelineProps) {
@@ -66,8 +66,8 @@ export function TaskTimeline({ tasks, onToggleCompletion, onEdit, onDelete }: Ta
                 const taskDate = parseISO(task.scheduledDate);
                 return (
                     taskDate.getDate() === currentDate.getDate() &&
-          taskDate.getMonth() === currentDate.getMonth() &&
-          taskDate.getFullYear() === currentDate.getFullYear()
+                    taskDate.getMonth() === currentDate.getMonth() &&
+                    taskDate.getFullYear() === currentDate.getFullYear()
                 );
             });
         } else {
@@ -187,8 +187,7 @@ export function TaskTimeline({ tasks, onToggleCompletion, onEdit, onDelete }: Ta
                                             {tasksForTime.map((task) => (
                                                 <div
                                                     key={task.id}
-                                                    className={`flex items-start gap-3 p-3 rounded-lg border ${
-                                                        task.completed ? "bg-muted/30" : "bg-background"
+                                                    className={`flex items-start gap-3 p-3 rounded-lg border ${task.isCompleted ? "bg-muted/30" : "bg-background"
                                                     }`}
                                                 >
                                                     <Button

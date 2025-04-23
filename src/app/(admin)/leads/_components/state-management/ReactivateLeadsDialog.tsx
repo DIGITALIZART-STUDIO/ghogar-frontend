@@ -30,11 +30,12 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { toastWrapper } from "@/types/toasts";
 import { ActivateLeads } from "../../_actions/LeadActions";
 import { Lead } from "../../_types/lead";
+import { toast } from "sonner";
 
 interface ReactivateLeadsDialogProps extends ComponentPropsWithoutRef<typeof AlertDialog> {
-  leads: Array<Row<Lead>["original"]>;
-  showTrigger?: boolean;
-  onSuccess?: () => void;
+    leads: Array<Row<Lead>["original"]>;
+    showTrigger?: boolean;
+    onSuccess?: () => void;
 }
 
 export const ReactivateLeadsDialog = ({
@@ -53,9 +54,7 @@ export const ReactivateLeadsDialog = ({
 
             // Si no hay IDs válidos, mostrar error y salir
             if (leadIds.length === 0) {
-                toastWrapper(Promise.reject(new Error("No hay leads válidas para reactivar")), {
-                    error: (e) => e.message,
-                });
+                toast.error("No hay leads válidas para reactivar");
                 return;
             }
 

@@ -30,11 +30,12 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { toastWrapper } from "@/types/toasts";
 import { DeleteLeads } from "../../_actions/LeadActions";
 import { Lead } from "../../_types/lead";
+import { toast } from "sonner";
 
 interface DeleteLeadsDialogProps extends ComponentPropsWithoutRef<typeof AlertDialog> {
-  leads: Array<Row<Lead>["original"]>;
-  showTrigger?: boolean;
-  onSuccess?: () => void;
+    leads: Array<Row<Lead>["original"]>;
+    showTrigger?: boolean;
+    onSuccess?: () => void;
 }
 
 export function DeleteLeadsDialog({ leads, showTrigger = true, onSuccess, ...props }: DeleteLeadsDialogProps) {
@@ -48,9 +49,7 @@ export function DeleteLeadsDialog({ leads, showTrigger = true, onSuccess, ...pro
 
             // Si no hay IDs válidos, mostrar error y salir
             if (leadIds.length === 0) {
-                toastWrapper(Promise.reject(new Error("No hay leads válidas para eliminar")), {
-                    error: (e) => e.message,
-                });
+                toast.error("No hay leads válidas para eliminar");
                 return;
             }
 

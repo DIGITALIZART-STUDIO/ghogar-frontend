@@ -22,21 +22,33 @@ export async function GetAllTasks(): Promise<Result<Array<components["schemas"][
 
 // Obtener una tarea específica por ID
 export async function GetTask(id: string): Promise<Result<components["schemas"]["LeadTask"], FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/LeadTasks/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/LeadTasks/{id}", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
     }));
 
     if (error) {
         console.log(`Error getting task ${id}:`, error);
         return err(error);
     }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return ok(response);
 }
 
 // Obtener tareas por ID de lead
 export async function GetTasksByLead(leadId: string): Promise<Result<LeadTasksByLeadId, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/LeadTasks/lead/${leadId}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/LeadTasks/lead/{leadId}", {
         ...auth,
+        params: {
+            path: {
+                leadId,
+            },
+        },
     }));
 
     if (error) {
@@ -44,13 +56,20 @@ export async function GetTasksByLead(leadId: string): Promise<Result<LeadTasksBy
         return err(error);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return ok(response);
 }
 
 // Obtener tareas por ID de usuario asignado
 export async function GetTasksByUser(userId: string): Promise<Result<Array<components["schemas"]["LeadTask"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/LeadTasks/user/${userId}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/LeadTasks/user/{userId}", {
         ...auth,
+        params: {
+            path: {
+                userId,
+            },
+        },
     }));
 
     if (error) {
@@ -125,8 +144,13 @@ export async function UpdateTask(
     id: string,
     task: components["schemas"]["LeadTaskUpdateDto"],
 ): Promise<Result<components["schemas"]["LeadTask"], FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.PUT(`/api/LeadTasks/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/LeadTasks/{id}", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
         body: task,
     }));
 
@@ -142,8 +166,13 @@ export async function UpdateTask(
 
 // Completar una tarea
 export async function CompleteTask(id: string): Promise<Result<void, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.POST(`/api/LeadTasks/${id}/complete`, {
+    const [response, error] = await wrapper((auth) => backend.POST("/api/LeadTasks/{id}/complete", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
     }));
 
     revalidatePath("/(admin)/assignments/[id]/tasks", "page");
@@ -157,8 +186,13 @@ export async function CompleteTask(id: string): Promise<Result<void, FetchError>
 
 // Eliminar una tarea
 export async function DeleteTask(id: string): Promise<Result<void, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.DELETE(`/api/LeadTasks/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.DELETE("/api/LeadTasks/{id}", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
     }));
 
     revalidatePath("/(admin)/assignments/[id]/tasks", "page");

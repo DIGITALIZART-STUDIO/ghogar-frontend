@@ -10,7 +10,7 @@ import { procedencyConfig } from "../../_utils/assignments.filter.utils";
 import { statusConfig } from "../../_utils/assignments.utils";
 
 interface AssignmentDescriptionProps {
-  row: Lead;
+    row: Lead;
 }
 
 export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
@@ -258,10 +258,10 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                {formatDate(row.createdAt)}
+                                                {formatDate(row.createdAt!)}
                                             </p>
                                             <span className="text-xs text-slate-500 dark:text-slate-400">
-                                                {formatTime(row.createdAt)}
+                                                {formatTime(row.createdAt!)}
                                             </span>
                                         </div>
                                     </div>
@@ -281,10 +281,10 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                {formatDate(row.modifiedAt)}
+                                                {formatDate(row.modifiedAt!)}
                                             </p>
                                             <span className="text-xs text-slate-500 dark:text-slate-400">
-                                                {formatTime(row.modifiedAt)}
+                                                {formatTime(row.modifiedAt!)}
                                             </span>
                                         </div>
                                     </div>

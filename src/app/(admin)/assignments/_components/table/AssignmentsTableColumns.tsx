@@ -77,6 +77,8 @@ export const assignmentsColumns = (handleTaskasInterface: (id: string) => void):
             );
         },
         // Mejorar la función de filtrado para DNI o RUC
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         filterFn: (row, value) => {
             const client = row.original?.client;
 
@@ -235,7 +237,7 @@ export const assignmentsColumns = (handleTaskasInterface: (id: string) => void):
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onSelect={() => handleTaskasInterface(row.original.id)}>
+                            <DropdownMenuItem onSelect={() => handleTaskasInterface(row.original.id!)}>
                                 Mis tareas
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

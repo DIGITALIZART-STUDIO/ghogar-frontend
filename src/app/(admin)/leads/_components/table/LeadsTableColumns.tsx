@@ -62,7 +62,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         accessorKey: "client.name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
         cell: ({ row }) => {
-            const client = row.original.client;
+            const client = row.original.client!;
             const identifier = client.dni ? `DNI: ${client.dni}` : client.ruc ? `RUC: ${client.ruc}` : "";
 
             return (
@@ -77,6 +77,8 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             );
         },
         // Mejorar la función de filtrado para DNI o RUC
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         filterFn: (row, id, value) => {
             const client = row.original.client;
 

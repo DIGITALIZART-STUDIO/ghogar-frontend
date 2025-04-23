@@ -53,8 +53,13 @@ export async function UpdateLead(
     id: string,
     lead: components["schemas"]["LeadUpdateDto"],
 ): Promise<Result<components["schemas"]["Lead2"], FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.PUT(`/api/Leads/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/Leads/{id}", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
         body: lead,
     }));
 
@@ -101,8 +106,13 @@ export async function ActivateLeads(ids: Array<string>): Promise<Result<componen
 
 // Obtener un lead específico
 export async function GetLead(id: string): Promise<Result<components["schemas"]["Lead2"], FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/Leads/${id}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/{id}", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
     }));
 
     if (error) {
@@ -114,8 +124,13 @@ export async function GetLead(id: string): Promise<Result<components["schemas"][
 
 // Eliminar un lead
 export async function DeleteLead(id: string): Promise<Result<void, FetchError>> {
-    const [, error] = await wrapper((auth) => backend.DELETE(`/api/Leads/${id}`, {
+    const [, error] = await wrapper((auth) => backend.DELETE("/api/Leads/{id}", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
     }));
 
     revalidatePath("/(admin)/leads", "page");
@@ -129,8 +144,13 @@ export async function DeleteLead(id: string): Promise<Result<void, FetchError>> 
 
 // Activar un lead específico
 export async function ActivateLead(id: string): Promise<Result<void, FetchError>> {
-    const [, error] = await wrapper((auth) => backend.POST(`/api/Leads/${id}/activate`, {
+    const [, error] = await wrapper((auth) => backend.POST("/api/Leads/{id}/activate", {
         ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
     }));
 
     revalidatePath("/(admin)/leads", "page");
@@ -144,8 +164,13 @@ export async function ActivateLead(id: string): Promise<Result<void, FetchError>
 
 // Obtener leads por cliente
 export async function GetLeadsByClient(clientId: string): Promise<Result<Array<components["schemas"]["Lead2"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/Leads/client/${clientId}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/client/{clientId}", {
         ...auth,
+        params: {
+            path: {
+                clientId,
+            },
+        },
     }));
 
     if (error) {
@@ -157,8 +182,13 @@ export async function GetLeadsByClient(clientId: string): Promise<Result<Array<c
 
 // Obtener leads por usuario asignado
 export async function GetLeadsByAssignedTo(userId: string): Promise<Result<Array<components["schemas"]["Lead2"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/Leads/assignedto/${userId}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assignedto/{userId}", {
         ...auth,
+        params: {
+            path: {
+                userId,
+            },
+        },
     }));
 
     if (error) {
@@ -170,8 +200,13 @@ export async function GetLeadsByAssignedTo(userId: string): Promise<Result<Array
 
 // Obtener leads por estado
 export async function GetLeadsByStatus(status: components["schemas"]["LeadStatus"]): Promise<Result<Array<components["schemas"]["Lead2"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET(`/api/Leads/status/${status}`, {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/status/{status}", {
         ...auth,
+        params: {
+            path: {
+                status,
+            },
+        },
     }));
 
     if (error) {

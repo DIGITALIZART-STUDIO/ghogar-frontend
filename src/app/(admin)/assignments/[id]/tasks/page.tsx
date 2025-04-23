@@ -6,11 +6,12 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbS
 import { GetTasksByLead } from "./_actions/LeadTaskActions";
 import ManageLeadTasks from "./_components/ManageLeadTasks";
 
-export default async function TaskPage({ params }: { params: { id: string } }) {
+export default async function TaskPage({ params }: { params: Promise<{ id: string }> }) {
     // Cargar datos directamente en el servidor
-    const tasksResult = await GetTasksByLead(params.id);
+    const { id } = await params;
+    const [tasksResult, error] = await GetTasksByLead(id);
 
-    if (tasksResult.error) {
+    if (error) {
         return (
             <div>
                 <HeaderPage title="Tareas del Lead" description="Gestión de tareas asociadas al lead seleccionado." />
@@ -18,7 +19,7 @@ export default async function TaskPage({ params }: { params: { id: string } }) {
             </div>
         );
     } // Formateo especial de los datos según el requisito
-    const data = Array.isArray(tasksResult) && tasksResult[0] ? tasksResult[0] : [];
+    const data = tasksResult;
 
     if (!data) {
         return (

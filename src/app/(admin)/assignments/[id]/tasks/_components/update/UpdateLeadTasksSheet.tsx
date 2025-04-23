@@ -18,62 +18,64 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import { toastWrapper } from "@/types/toasts";
-import { UpdateLead } from "../../_actions/LeadActions";
-import { CreateLeadSchema, leadSchema } from "../../_schemas/createLeadsSchema";
-import { Lead } from "../../_types/lead";
-import UpdateLeadsForm from "./UpdateLeadsForm";
+import { UpdateTask } from "../../_actions/LeadTaskActions";
+import { CreateLeadTasksSchema, leadTaskSchema } from "../../_schemas/createLeadTasksSchema";
+import { LeadTaskDetail, TaskTypes } from "../../_types/leadTask";
+import UpdateLeadsForm from "./UpdateLeadTasksForm";
 
 const infoSheet = {
-    title: "Actualizar Lead",
-    description: "Actualiza la información del lead y guarda los cambios",
+    title: "Actualizar Tarea",
+    description: "Actualiza la tarea del lead",
 };
 
-interface UpdateLeadSheetProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
-  lead: Lead;
+interface UpdateLeadTasksSheetProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
+  task: LeadTaskDetail;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetProps) {
+export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTasksSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const form = useForm<CreateLeadSchema>({
-        resolver: zodResolver(leadSchema),
+    console.log("task", JSON.stringify(task, null, 2));
+
+    const form = useForm<CreateLeadTasksSchema>({
+        resolver: zodResolver(leadTaskSchema),
         defaultValues: {
-            clientId: lead?.clientId ?? "",
-            assignedToId: lead?.assignedToId ?? "",
-            procedency: lead?.procedency ?? "",
+            type: (task?.type as TaskTypes) ?? undefined,
+            description: task?.description ?? "",
+            scheduledDate: task?.scheduledDate ?? "",
         },
     });
 
     useEffect(() => {
         if (open) {
             form.reset({
-                clientId: lead?.clientId ?? "",
-                assignedToId: lead?.assignedToId ?? "",
-                procedency: lead?.procedency ?? "",
+                type: (task?.type as TaskTypes) ?? undefined,
+                description: task?.description ?? "",
+                scheduledDate: task?.scheduledDate ?? "",
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, lead]);
+    }, [open, task]);
 
-    const onSubmit = async(input: CreateLeadSchema) => {
+    const onSubmit = async(input: CreateLeadTasksSchema) => {
         startTransition(async() => {
             // Preparar los datos según el tipo de cliente
             const clientData = {
-                clientId: input.clientId,
-                assignedToId: input.assignedToId,
-                procedency: input.procedency,
+                type: input.type,
+                description: input.description,
+                scheduledDate: input.scheduledDate,
             };
 
-            if (!lead?.id) {
+            if (!task?.id) {
                 throw new Error("Lead ID is required");
             }
-            const [, error] = await toastWrapper(UpdateLead(lead.id, clientData), {
-                loading: "Actualizando lead...",
-                success: "Lead actualizada exitosamente",
-                error: (e) => `Error al actualizar lead: ${e.message}`,
+            const [, error] = await toastWrapper(UpdateTask(task.id, clientData), {
+                loading: "Actualizando tarea...",
+                success: "Tarea actualizada exitosamente",
+                error: (e) => `Error al actualizar tarea: ${e.message}`,
             });
 
             if (!error) {
@@ -98,7 +100,7 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
                     <SheetTitle className="flex flex-col items-start">
                         {infoSheet.title}
                         <Badge className="bg-emerald-100 capitalize text-emerald-700" variant="secondary">
-                            {lead?.client?.dni ?? lead?.client?.ruc}
+                            {task?.lead?.client?.dni ?? task?.lead?.client?.ruc}
                         </Badge>
                     </SheetTitle>
                     <SheetDescription>

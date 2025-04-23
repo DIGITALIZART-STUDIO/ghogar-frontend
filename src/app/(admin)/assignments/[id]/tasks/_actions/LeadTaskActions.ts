@@ -43,6 +43,7 @@ export async function GetTasksByLead(leadId: string): Promise<Result<LeadTasksBy
         console.log(`Error getting tasks for lead ${leadId}:`, error);
         return err(error);
     }
+
     return ok(response);
 }
 
@@ -109,6 +110,7 @@ export async function CreateTask(task: components["schemas"]["LeadTaskCreateDto"
         body: task,
     }));
 
+    revalidatePath("/(admin)/assignments/[id]/tasks", "page");
     revalidatePath("/(admin)/assignments", "page");
 
     if (error) {
@@ -128,6 +130,7 @@ export async function UpdateTask(
         body: task,
     }));
 
+    revalidatePath("/(admin)/assignments/[id]/tasks", "page");
     revalidatePath("/(admin)/assignments", "page");
 
     if (error) {
@@ -143,7 +146,7 @@ export async function CompleteTask(id: string): Promise<Result<void, FetchError>
         ...auth,
     }));
 
-    revalidatePath("/(admin)/assignments", "page");
+    revalidatePath("/(admin)/assignments/[id]/tasks", "page");
 
     if (error) {
         console.log(`Error completing task ${id}:`, error);
@@ -158,7 +161,7 @@ export async function DeleteTask(id: string): Promise<Result<void, FetchError>> 
         ...auth,
     }));
 
-    revalidatePath("/(admin)/assignments", "page");
+    revalidatePath("/(admin)/assignments/[id]/tasks", "page");
 
     if (error) {
         console.log(`Error deleting task ${id}:`, error);

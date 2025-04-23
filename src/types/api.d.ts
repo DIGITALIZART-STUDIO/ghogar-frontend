@@ -1555,7 +1555,6 @@ export interface components {
             /** Format: uuid */
             id?: string;
             name?: string;
-            coOwner?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
@@ -1564,11 +1563,6 @@ export interface components {
             address?: string | null;
             type?: string;
             isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-            displayName?: string;
         };
         ClientSummaryDto: {
             /** Format: uuid */
@@ -1644,11 +1638,20 @@ export interface components {
             status?: string;
             procedency?: string;
             isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
         };
+        LeadDTO2: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string;
+            client?: components["schemas"];
+            /** Format: uuid */
+            assignedToId?: string;
+            assignedTo?: components["schemas"];
+            status?: string;
+            procedency?: string;
+            isActive?: boolean;
+        } | null;
         /** @enum {unknown} */
         LeadStatus: "Registered" | "Attended";
         LeadTask: {
@@ -1687,6 +1690,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             leadId?: string;
+            lead?: components["schemas"]["LeadDTO2"];
             /** Format: uuid */
             assignedToId?: string;
             assignedTo?: components["schemas"]["UserBasicDTO"];
@@ -1698,10 +1702,6 @@ export interface components {
             isCompleted?: boolean;
             type?: string;
             isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
         };
         LeadTasksResponseDto: {
             lead?: components["schemas"]["LeadDTO"];
@@ -1823,16 +1823,8 @@ export interface components {
             /** Format: uuid */
             id?: string;
             userName?: string;
-            email?: string;
-            phoneNumber?: string | null;
             name?: string;
-            /** Format: date-time */
-            lastLogin?: string | null;
             isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
         };
         UserCreateDTO: {
             name: string;

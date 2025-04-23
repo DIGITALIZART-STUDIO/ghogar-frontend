@@ -68,6 +68,7 @@ export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: C
                 leadId: leadId,
             };
 
+            // Solo pasar revalidateId si está definido
             const [, error] = await toastWrapper(CreateTask(leadData), {
                 loading: "Creando tarea...",
                 success: "Tarea creada exitosamente",
@@ -90,6 +91,7 @@ export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: C
             setOpen(false);
             setIsSuccess(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, form]);
 
     if (isDesktop) {

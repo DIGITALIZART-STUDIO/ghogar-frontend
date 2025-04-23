@@ -68,9 +68,11 @@ export const assignmentsColumns = (handleTaskasInterface: (id: string) => void):
                     <div className="truncate capitalize">
                         {row.getValue("Cliente")}
                     </div>
-                    {identifier && <div className="text-xs text-muted-foreground">
-                        {identifier}
-                    </div>}
+                    {identifier && (
+                        <div className="text-xs text-muted-foreground">
+                            {identifier}
+                        </div>
+                    )}
                 </div>
             );
         },

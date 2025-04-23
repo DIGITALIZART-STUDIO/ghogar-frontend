@@ -45,7 +45,6 @@ const eslintConfig = [
     rules: {
       "react/jsx-boolean-value": "error",
       "react/jsx-closing-bracket-location": "error",
-      "react/jsx-closing-tag-location": "error",
       "react/jsx-one-expression-per-line": "error",
       "react/jsx-pascal-case": "error",
       "react/jsx-no-useless-fragment": "error",

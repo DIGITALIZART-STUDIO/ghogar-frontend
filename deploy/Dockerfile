@@ -15,6 +15,15 @@ RUN pnpm i
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY public public
+COPY src src
+COPY next.config.js next.config.js
+COPY package.json package.json
+COPY pnpm-lock.yaml pnpm-lock.yaml
+COPY pnpm-workspace.yaml pnpm-workspace.yaml
+COPY postcss.config.js postcss.config.js
+COPY tailwind.config.js tailwind.config.js
+COPY tsconfig.json tsconfig.json
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1

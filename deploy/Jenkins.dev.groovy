@@ -16,7 +16,7 @@ pipeline {
         REMOTE_USER = "fernando"
         REMOTE_IP = "157.180.33.183"
         // Folder where docker-compose and .env files are placed
-        REMOTE_FOLDER = "/opt/docker/compose/core/trazo"
+        REMOTE_FOLDER = "/home/fernando/services/gestionhogar"
 
         //
         // Docker registry setup

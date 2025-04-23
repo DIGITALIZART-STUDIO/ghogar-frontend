@@ -7,7 +7,7 @@ pipeline {
         // prefix of the image to build, config triplet
         PROJECT_NAME = "gestionhogar"
         PROJECT_SERVICE = "frontend"
-        PROJECT_STAGE = "development"
+        PROJECT_STAGE = "develop"
         PROJECT_TRIPLET = "${PROJECT_NAME}-${PROJECT_SERVICE}-${PROJECT_STAGE}"
 
         //
@@ -68,7 +68,7 @@ pipeline {
 #!/bin/bash
 cat << EOF
 # Non-sensitive variables
-TRAZO_FRONTEND_VERSION=${BUILD_NUMBER}
+GESTIONHOGAR_FRONTEND_VERSION=${BUILD_NUMBER}
 ${nonSensitiveVars.join('\n')}
 # Sensitive variables
 ${sensitiveVars.collect { varName -> "${varName}=\${${varName}}" }.join('\n')}

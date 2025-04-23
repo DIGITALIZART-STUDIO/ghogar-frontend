@@ -24,7 +24,6 @@ COPY pnpm-workspace.yaml pnpm-workspace.yaml
 COPY postcss.config.mjs postcss.config.mjs
 COPY tailwind.config.js tailwind.config.js
 COPY tsconfig.json tsconfig.json
-COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 

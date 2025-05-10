@@ -37,7 +37,7 @@ export function UsersTable({ data: _data, pageSize, pageIndex, pageCount, totalI
             data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} />}
-            filterPlaceholder="Buscar clientes..."
+            filterPlaceholder="Buscar usuarios..."
             serverPagination={{
                 pageIndex: pagination.pageIndex,
                 pageSize: pagination.pageSize,

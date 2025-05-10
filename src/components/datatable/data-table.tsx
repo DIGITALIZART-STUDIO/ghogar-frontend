@@ -71,17 +71,26 @@ export function DataTable<TData, TValue>({
         pageSize: serverPagination?.pageSize ?? 10,
     });
 
+    // Estado para carga de paginación
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    React.useEffect(() => {
+    // Solo activar carga y llamar al servidor si serverPagination está definido
+        if (serverPagination?.onPaginationChange) {
+            setIsLoading(true);
+            serverPagination.onPaginationChange(pagination.pageIndex, pagination.pageSize).finally(() => {
+                setIsLoading(false);
+            });
+        }
+    }, [pagination.pageIndex, pagination.pageSize, serverPagination]);
+
     // Manejar cambios de paginación
     const handlePaginationChange = React.useCallback(
         (updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState)) => {
             const newPagination = typeof updaterOrValue === "function" ? updaterOrValue(pagination) : updaterOrValue;
-
             setPagination(newPagination);
-            if (serverPagination?.onPaginationChange) {
-                serverPagination.onPaginationChange(newPagination.pageIndex, newPagination.pageSize);
-            }
         },
-        [pagination, serverPagination],
+        [pagination],
     );
 
     const table = useReactTable({
@@ -104,6 +113,7 @@ export function DataTable<TData, TValue>({
         onPaginationChange: handlePaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        // Usar paginación del cliente si no hay serverPagination, de lo contrario undefined
         getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
@@ -113,9 +123,15 @@ export function DataTable<TData, TValue>({
         filterFns: {
             global: globalFilterFn,
         },
-        // Configuración para paginación del servidor
-        pageCount: serverPagination?.pageCount ?? -1,
-        manualPagination: !!serverPagination,
+        // Configuración para paginación del servidor solo si serverPagination está definido
+        ...(serverPagination
+            ? {
+                pageCount: serverPagination.pageCount,
+                manualPagination: true,
+            }
+            : {
+                manualPagination: false,
+            }),
     });
 
     return (
@@ -140,7 +156,16 @@ export function DataTable<TData, TValue>({
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {isLoading && serverPagination ? (
+                        // Mostrar indicador de carga solo cuando se está cargando y hay paginación del servidor
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <div className="flex justify-center">
+                                        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" />
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                                     {row.getVisibleCells().map((cell) => (

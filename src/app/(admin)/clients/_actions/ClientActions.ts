@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 
 // Obtener todos los clientes
@@ -127,4 +127,44 @@ export async function GetClientsSummary(): Promise<
         return err(error);
     }
     return ok(response);
+}
+
+export async function ImportClients(file: File): Promise<Result<components["schemas"]["ImportResult"], FetchError>> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const [response, error] = await wrapper((auth) => backend.POST("/api/Clients/import", {
+        ...auth,
+        body: formData as unknown as { file?: string | undefined },
+        // Importante: al enviar FormData, no debemos establecer el Content-Type
+        // para que el navegador lo establezca automáticamente con el boundary correcto
+        formData: true,
+    }));
+
+    revalidatePath("/(admin)/clients", "page");
+
+    if (error) {
+        console.log("Error importing clients:", error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Descargar plantilla de importación de clientes
+export async function DownloadImportTemplate(): Promise<Result<Blob, FetchError>> {
+    // Usar la función DownloadFile específica para descargas de archivos
+    const result = await DownloadFile(
+        "/api/Clients/template", // URL del endpoint
+        "GET", // Método HTTP
+        undefined, // Sin cuerpo para GET
+    );
+
+    if (!result[0]) {
+    // Si hay un error (segundo elemento no es null)
+        const error = result[1];
+        console.log("Error downloading import template:", error);
+        return err(error);
+    }
+
+    return result; // Devuelve el resultado tal cual
 }

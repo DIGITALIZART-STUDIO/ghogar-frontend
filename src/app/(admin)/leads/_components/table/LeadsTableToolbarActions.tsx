@@ -4,6 +4,7 @@ import { type Table } from "@tanstack/react-table";
 
 import { Lead } from "../../_types/lead";
 import { CreateLeadsDialog } from "../create/CreateLeadssDialog";
+import { ImportLeadsDialog } from "../imports/ImportLeadsDialog";
 import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
 import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog";
 
@@ -26,6 +27,7 @@ export function LeadsTableToolbarActions({ table }: LeadsTableToolbarActionsProp
                     />
                 </>
             ) : null}
+            <ImportLeadsDialog />
             <CreateLeadsDialog />
         </div>
     );

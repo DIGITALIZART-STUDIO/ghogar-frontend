@@ -409,7 +409,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -1683,8 +1684,6 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -1826,6 +1825,7 @@ export interface components {
             assignedToId?: string | null;
             description?: string | null;
             scheduledDate?: string | null;
+            completedDate?: string | null;
             type?: components["schemas"]["NullableOfTaskType"];
             isCompleted?: boolean | null;
         };

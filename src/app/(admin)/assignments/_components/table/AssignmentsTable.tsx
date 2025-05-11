@@ -15,14 +15,14 @@ import { AssignmentsTableToolbarActions } from "./AssignmentsTableToolbarActions
 export function AssignmentsTable({ data }: { data: Array<Lead> }) {
     const router = useRouter();
 
-    const handleTaskasInterface = useCallback(
+    const handleTasksInterface = useCallback(
         (id: string) => {
             router.push(`/assignments/${id}/tasks`);
         },
         [router],
     );
 
-    const columns = useMemo(() => assignmentsColumns(handleTaskasInterface), [handleTaskasInterface]);
+    const columns = useMemo(() => assignmentsColumns(handleTasksInterface), [handleTasksInterface]);
 
     // Crear el filtro dinámico para identificadores (DNI/RUC)
     const uniqueIdentifiers = useMemo(() => getUniqueIdentifiers(data), [data]);

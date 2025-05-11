@@ -310,7 +310,7 @@ export function AdminTasksViewer({
                                                                             Lead:
                                                                             {" "}
                                                                             <span>
-                                                                                {getLeadName(task.lead?.clientId)}
+                                                                                {getLeadName(task.lead?.clientId ?? "")}
                                                                             </span>
                                                                         </div>
                                                                         <div className="flex items-center gap-1">

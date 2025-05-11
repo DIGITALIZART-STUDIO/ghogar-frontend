@@ -203,3 +203,18 @@ export async function DeleteTask(id: string): Promise<Result<void, FetchError>> 
     }
     return ok(response);
 }
+
+export async function GetTasksWithFilters(filter: components["schemas"]["TaskFilterRequest"]): Promise<Result<Array<components["schemas"]["LeadTask"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.POST("/api/LeadTasks/filter", {
+        ...auth,
+        body: filter,
+    }));
+
+    if (error) {
+        console.log("Error filtering tasks:", error);
+        return err(error);
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return ok(response);
+}

@@ -4,6 +4,8 @@ import { components } from "@/types/api";
 // Define el tipo LeadTask basado en el esquema de tu API
 export type LeadTask = components["schemas"]["LeadTask"];
 
+export type TaskFilters = components["schemas"]["TaskFilterRequest"];
+
 export type LeadTasksByLeadId = {
   lead: LeadBydLeadId;
   tasks: Array<LeadTaskDetail>;

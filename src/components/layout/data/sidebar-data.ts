@@ -41,6 +41,11 @@ export const sidebarData: SidebarData = {
                     url: "/leads",
                     icon: Users,
                 },
+                {
+                    title: "Tareas",
+                    url: "/tasks",
+                    icon: ListChecks,
+                },
             ],
         },
         {

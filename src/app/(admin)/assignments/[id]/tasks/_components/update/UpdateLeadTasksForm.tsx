@@ -1,4 +1,4 @@
-import { format,  parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { UseFormReturn } from "react-hook-form";
 
 import DatePicker from "@/components/ui/date-time-picker";
@@ -106,32 +106,35 @@ export default function UpdateLeadTasksForm({ children, form, onSubmit }: Update
                     )}
                 />
 
-                <FormField
-                    control={form.control}
-                    name="completedDate"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel htmlFor="completedDate">
-                                Fecha de Completado
-                            </FormLabel>
-                            <FormControl>
-                                <DatePicker
-                                    value={field.value ? parseISO(field.value) : undefined}
-                                    withTime
-                                    onChange={(date) => {
-                                        if (date) {
-                                            const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss");
-                                            field.onChange(formattedDate);
-                                        } else {
-                                            field.onChange("");
-                                        }
-                                    }}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                {form.watch("completedDate") && (
+                    <FormField
+                        control={form.control}
+                        name="completedDate"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="completedDate">
+                                    Fecha de Completado
+                                </FormLabel>
+                                <FormControl>
+                                    <DatePicker
+                                        value={field.value ? parseISO(field.value) : undefined}
+                                        withTime
+                                        onChange={(date) => {
+                                            if (date) {
+                                                const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss");
+                                                field.onChange(formattedDate);
+                                            } else {
+                                                field.onChange("");
+                                            }
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                )}
+
                 {children}
             </form>
         </Form>

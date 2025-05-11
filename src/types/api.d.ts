@@ -668,6 +668,98 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/LeadTasks/filter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TaskFilterRequest"];
+                    "text/json": components["schemas"]["TaskFilterRequest"];
+                    "application/*+json": components["schemas"]["TaskFilterRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["LeadTaskDTO"]>;
+                        "application/json": Array<components["schemas"]["LeadTaskDTO"]>;
+                        "text/json": Array<components["schemas"]["LeadTaskDTO"]>;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TaskFilterRequest"];
+                    "text/json": components["schemas"]["TaskFilterRequest"];
+                    "application/*+json": components["schemas"]["TaskFilterRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["LeadTaskDTO"]>;
+                        "application/json": Array<components["schemas"]["LeadTaskDTO"]>;
+                        "text/json": Array<components["schemas"]["LeadTaskDTO"]>;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/LeadTasks/user/{userId}": {
         parameters: {
             query?: never;
@@ -1868,6 +1960,14 @@ export interface components {
             /** Format: int32 */
             totalPages: number;
         };
+        ProblemDetails: {
+            type?: string | null;
+            title?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            detail?: string | null;
+            instance?: string | null;
+        };
         RefreshRequest: {
             refreshToken: string;
         };
@@ -1879,6 +1979,18 @@ export interface components {
             length?: number;
             value?: string | null;
             hasValue?: boolean;
+        };
+        TaskFilterRequest: {
+            /** Format: date-time */
+            from?: string;
+            /** Format: date-time */
+            to?: string;
+            /** Format: uuid */
+            assignedToId?: string | null;
+            /** Format: uuid */
+            leadId?: string | null;
+            type?: string | null;
+            isCompleted?: boolean | null;
         };
         /** @enum {unknown} */
         TaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other";

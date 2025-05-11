@@ -38,14 +38,13 @@ export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTas
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    console.log("task", JSON.stringify(task, null, 2));
-
     const form = useForm<CreateLeadTasksSchema>({
         resolver: zodResolver(leadTaskSchema),
         defaultValues: {
             type: (task?.type as TaskTypes) ?? undefined,
             description: task?.description ?? "",
             scheduledDate: task?.scheduledDate ?? "",
+            completedDate: task?.completedDate ?? "",
         },
     });
 
@@ -55,6 +54,7 @@ export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTas
                 type: (task?.type as TaskTypes) ?? undefined,
                 description: task?.description ?? "",
                 scheduledDate: task?.scheduledDate ?? "",
+                completedDate: task?.completedDate ?? "",
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,16 +62,19 @@ export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTas
 
     const onSubmit = async(input: CreateLeadTasksSchema) => {
         startTransition(async() => {
-            // Preparar los datos según el tipo de cliente
+            // Preparar los datos según si la tarea está completada o no
             const clientData = {
                 type: input.type,
                 description: input.description,
                 scheduledDate: input.scheduledDate,
+                // Solo incluir completedDate si isCompleted es true
+                ...(input.completedDate ? { completedDate: input.completedDate } : {}),
             };
 
             if (!task?.id) {
                 throw new Error("Lead ID is required");
             }
+
             const [, error] = await toastWrapper(UpdateTask(task.id, clientData), {
                 loading: "Actualizando tarea...",
                 success: "Tarea actualizada exitosamente",

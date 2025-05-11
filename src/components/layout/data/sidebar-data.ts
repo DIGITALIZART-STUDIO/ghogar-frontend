@@ -1,97 +1,88 @@
-import {
-  BookUser,
-  ClipboardList,
-  FileCheck,
-  FileText,
-  LayoutDashboard,
-  LineChart,
-  ListChecks,
-  Users,
-} from "lucide-react";
+import { BookUser, ClipboardList, FileCheck, FileText, LayoutDashboard, LineChart, ListChecks, Users } from "lucide-react";
 
 import { type SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
-  user: {
-    name: "Nombre Usuario",
-    email: "usuario@empresa.com",
-    avatar: "/avatars/default.jpg",
-  },
-  navGroups: [
-    {
-      title: "General",
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: LayoutDashboard,
-        },
-      ],
+    user: {
+        name: "Nombre Usuario",
+        email: "usuario@empresa.com",
+        avatar: "/avatars/default.jpg",
     },
-    {
-      title: "Clientes y Leads",
-      items: [
+    navGroups: [
         {
-          title: "Clientes",
-          url: "/clients",
-          icon: BookUser,
+            title: "General",
+            items: [
+                {
+                    title: "Dashboard",
+                    url: "/dashboard",
+                    icon: LayoutDashboard,
+                },
+            ],
         },
         {
-          title: "Leads",
-          url: "/leads",
-          icon: Users,
+            title: "Clientes y Leads",
+            items: [
+                {
+                    title: "Clientes",
+                    url: "/clients",
+                    icon: BookUser,
+                },
+                {
+                    title: "Leads",
+                    url: "/leads",
+                    icon: Users,
+                },
+                {
+                    title: "Tareas",
+                    url: "/tasks",
+                    icon: ListChecks,
+                },
+            ],
         },
         {
-          title: "Tareas",
-          url: "/tasks",
-          icon: ListChecks,
+            title: "Ventas",
+            items: [
+                {
+                    title: "Cotizaciones",
+                    url: "/quotation",
+                    icon: FileText,
+                },
+                {
+                    title: "Separaciones",
+                    url: "/reservations",
+                    icon: FileCheck,
+                },
+            ],
         },
-      ],
-    },
-    {
-      title: "Ventas",
-      items: [
         {
-          title: "Cotizaciones",
-          url: "/quotes",
-          icon: FileText,
+            title: "Gestión de Actividades",
+            items: [
+                {
+                    title: "Mis Leads",
+                    url: "/assignments",
+                    icon: ClipboardList,
+                },
+            ],
         },
         {
-          title: "Separaciones",
-          url: "/reservations",
-          icon: FileCheck,
+            title: "Reportes",
+            items: [
+                {
+                    title: "Reportes",
+                    url: "/reports",
+                    icon: LineChart,
+                },
+            ],
         },
-      ],
-    },
-    {
-      title: "Gestión de Actividades",
-      items: [
         {
-          title: "Mis Leads",
-          url: "/assignments",
-          icon: ClipboardList,
+            title: "Administración",
+            items: [
+                {
+                    title: "Usuarios",
+                    url: "/admin/users",
+                    icon: Users,
+                },
+            ],
         },
-      ],
-    },
-    {
-      title: "Reportes",
-      items: [
-        {
-          title: "Reportes",
-          url: "/reports",
-          icon: LineChart,
-        },
-      ],
-    },
-    {
-      title: "Administración",
-      items: [
-        {
-          title: "Usuarios",
-          url: "/admin/users",
-          icon: Users,
-        },
-      ],
-    },
-  ],
+    ],
 };

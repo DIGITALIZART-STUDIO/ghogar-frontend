@@ -151,7 +151,12 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                                         Nombre de la Empresa
                                     </FormLabel>
                                     <FormControl>
-                                        <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} value={field.value ?? ""} />
+                                        <InputWithIcon
+                                            Icon={Building2}
+                                            placeholder="Ejm: Empresa S.A.C."
+                                            {...field}
+                                            value={field.value ?? ""}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

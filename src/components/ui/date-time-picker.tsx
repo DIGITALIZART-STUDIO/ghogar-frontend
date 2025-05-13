@@ -102,7 +102,7 @@ export default function DatePicker({
         }
 
         if (withTime && value) {
-        // Mantener la hora seleccionada al cambiar la fecha
+            // Mantener la hora seleccionada al cambiar la fecha
             const [hours, minutes] = timeValue.split(":").map((num) => Number.parseInt(num, 10));
             date.setHours(hours);
             date.setMinutes(minutes);
@@ -138,7 +138,10 @@ export default function DatePicker({
             <PopoverTrigger asChild>
                 <Button
                     variant={"outline"}
-                    className={cn("w-full justify-start text-left font-normal", !value && "text-muted-foreground")}
+                    className={cn(
+                        "w-full justify-start text-left font-normal bg-card border-input",
+                        !value && "text-muted-foreground",
+                    )}
                     tabIndex={0}
                 >
                     {withTime ? (

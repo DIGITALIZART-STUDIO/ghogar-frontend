@@ -1,7 +1,7 @@
-import { CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Lead } from "../_types/lead";
+import { Lead, LeadStatus } from "../_types/lead";
 import { LeadStatusLabels } from "./leads.utils";
 
 // Componentes de icono con estilos integrados
@@ -81,3 +81,29 @@ export const facetedFilters = [
         })),
     },
 ];
+
+export const getStatusDetails = (status: LeadStatus) => {
+    switch (status) {
+    case LeadStatus.Registered:
+        return {
+            label: "Registrado",
+            icon: <Clock className="h-5 w-5" />, // Cambiado a Clock para coincidir con LeadStatusLabels
+            color: "bg-amber-100 text-amber-600", // Adaptado para coincidir con "text-amber-600 border-amber-200"
+            description: "El lead está registrado pero aún no ha sido atendido.",
+        };
+    case LeadStatus.Attended:
+        return {
+            label: "Atendido",
+            icon: <CheckCircle className="h-5 w-5" />, // Cambiado a CheckCircle para coincidir con LeadStatusLabels
+            color: "bg-green-100 text-green-600", // Adaptado para coincidir con "text-green-600 border-green-200"
+            description: "El lead ha sido atendido por un asesor.",
+        };
+    default:
+        return {
+            label: "Desconocido",
+            icon: <AlertTriangle className="h-5 w-5" />,
+            color: "bg-gray-100 text-gray-700", // Color por defecto
+            description: "Estado desconocido.",
+        };
+    }
+};

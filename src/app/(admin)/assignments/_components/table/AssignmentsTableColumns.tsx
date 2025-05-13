@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight, Ellipsis, NotebookPen } from "lucide-react";
+import { AlertTriangle, CheckCircle, ChevronDown, ChevronRight, Clock, Ellipsis, NotebookPen } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
@@ -12,15 +12,9 @@ import { DataTableColumnHeader } from "@/components/datatable/data-table-column-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CreateLeadTasksDialog } from "../../[id]/tasks/_components/create/CreateLeadTasksDialog";
+import { LeadStatusToggleDialog } from "../state-management/LeadStatusTogleDialog";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -68,11 +62,9 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                     <div className="truncate capitalize">
                         {row.getValue("Cliente")}
                     </div>
-                    {identifier && (
-                        <div className="text-xs text-muted-foreground">
-                            {identifier}
-                        </div>
-                    )}
+                    {identifier && <div className="text-xs text-muted-foreground">
+                        {identifier}
+                    </div>}
                 </div>
             );
         },
@@ -218,7 +210,33 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
     {
         id: "actions",
         cell: function Cell({ row }) {
+            const { id, client, status } = row.original;
             const [createTaskDialog, setCreateTaskDialog] = useState(false);
+            const [toggleStatusDialog, setToggleStatusDialog] = useState(false);
+            const handleCloseStatusChange = () => {
+                setToggleStatusDialog(false);
+            };
+
+            // Determinar el texto y el icono según el estado actual
+            const getStatusToggleText = () => {
+                if (status === LeadStatus.Registered) {
+                    return {
+                        text: "Marcar como atendido",
+                        icon: <CheckCircle className="size-4" aria-hidden="true" />,
+                    };
+                } else if (status === LeadStatus.Attended) {
+                    return {
+                        text: "Marcar como registrado",
+                        icon: <Clock className="size-4" aria-hidden="true" />,
+                    };
+                } else {
+                    return {
+                        text: "Cambiar estado",
+                        icon: <AlertTriangle className="size-4" aria-hidden="true" />,
+                    };
+                }
+            };
+            const { text, icon } = getStatusToggleText();
             return (
                 <div>
                     {createTaskDialog && (
@@ -229,6 +247,16 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                             leadId={row.original?.id ?? ""}
                         />
                     )}
+                    {toggleStatusDialog && (
+                        <LeadStatusToggleDialog
+                            isOpen={toggleStatusDialog}
+                            onClose={handleCloseStatusChange}
+                            leadId={id ?? ""}
+                            leadName={client?.name ?? ""}
+                            currentStatus={status as LeadStatus}
+                        />
+                    )}
+
                     <div />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -245,6 +273,12 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                                 Crear tarea
                                 <DropdownMenuShortcut>
                                     <NotebookPen className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setToggleStatusDialog(true)}>
+                                {text}
+                                <DropdownMenuShortcut>
+                                    {icon}
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

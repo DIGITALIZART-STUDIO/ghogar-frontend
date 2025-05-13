@@ -259,7 +259,6 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             const [showReactivateDialog, setShowReactivateDialog] = useState(false);
             const [showEditDialog, setShowEditDialog] = useState(false);
 
-            // @ts-expect-error Property 'isActive' is not explicitly defined in Lead type
             const { isActive } = row.original;
             return (
                 <div>

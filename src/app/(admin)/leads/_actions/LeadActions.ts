@@ -72,6 +72,25 @@ export async function UpdateLead(
     return ok(response);
 }
 
+// Cambiar estado de un lead (toggle)
+export async function ToggleLeadStatus(id: string): Promise<Result<components["schemas"]["Lead2"], FetchError>> {
+    // Usar la ruta correcta que coincide con tu backend
+    // @ts-expect-error Server response type doesn't match the expected type structure
+    const [response, error] = await wrapper((auth) => backend.PUT(`/api/Leads/${id}/toggle-status`, {
+        ...auth,
+    }));
+
+    // Revalidar la ruta para refrescar los datos
+    revalidatePath("/(admin)/assignments", "page");
+
+    if (error) {
+        console.log(`Error toggling lead status ${id}:`, error);
+        return err(error);
+    }
+    // @ts-expect-error Server response type doesn't match the expected type structure
+    return ok(response);
+}
+
 // Desactivar múltiples leads (eliminar)
 export async function DeleteLeads(ids: Array<string>): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.DELETE("/api/Leads/batch", {
@@ -224,6 +243,24 @@ export async function GetUsersSummary(): Promise<Result<Array<components["schema
 
     if (error) {
         console.log("Error getting users summary:", error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Obtener resumen de leads asignados a un usuario específico
+export async function GetAssignedLeadsSummary(assignedToId: string): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/summary", {
+        ...auth,
+        params: {
+            path: {
+                assignedToId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting leads summary for user ${assignedToId}:`, error);
         return err(error);
     }
     return ok(response);

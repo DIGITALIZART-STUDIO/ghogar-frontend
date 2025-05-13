@@ -93,7 +93,7 @@ export default function QuotationViewContent({
                     <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span className="text-sm">
-                            {format(parseISO(data.quotationDate), "dd 'de' MMMM yyyy", { locale: es })}
+                            {data.quotationDate ? format(parseISO(data.quotationDate), "dd 'de' MMMM yyyy", { locale: es }) : "No disponible"}
                         </span>
                     </div>
 

@@ -72,6 +72,25 @@ export async function UpdateLead(
     return ok(response);
 }
 
+// Cambiar estado de un lead (toggle)
+export async function ToggleLeadStatus(id: string): Promise<Result<components["schemas"]["Lead2"], FetchError>> {
+    // Usar la ruta correcta que coincide con tu backend
+    // @ts-expect-error Server response type doesn't match the expected type structure
+    const [response, error] = await wrapper((auth) => backend.PUT(`/api/Leads/${id}/toggle-status`, {
+        ...auth,
+    }));
+
+    // Revalidar la ruta para refrescar los datos
+    revalidatePath("/(admin)/assignments", "page");
+
+    if (error) {
+        console.log(`Error toggling lead status ${id}:`, error);
+        return err(error);
+    }
+    // @ts-expect-error Server response type doesn't match the expected type structure
+    return ok(response);
+}
+
 // Desactivar múltiples leads (eliminar)
 export async function DeleteLeads(ids: Array<string>): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.DELETE("/api/Leads/batch", {

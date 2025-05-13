@@ -62,6 +62,9 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         accessorKey: "client.name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
         cell: ({ row }) => {
+            if (!row.original) {
+                return null;
+            };
             const client = row.original.client!;
             const identifier = client.dni ? `DNI: ${client.dni}` : client.ruc ? `RUC: ${client.ruc}` : "";
 
@@ -80,6 +83,9 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         filterFn: (row, id, value) => {
+            if (!row.original) {
+                return false;
+            }
             const client = row.original.client;
 
             if (!client) {
@@ -253,6 +259,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             const [showReactivateDialog, setShowReactivateDialog] = useState(false);
             const [showEditDialog, setShowEditDialog] = useState(false);
 
+            // @ts-expect-error Property 'isActive' is not explicitly defined in Lead type
             const { isActive } = row.original;
             return (
                 <div>

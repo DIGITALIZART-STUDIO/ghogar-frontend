@@ -146,7 +146,7 @@ export default function DatePicker({
                     ) : (
                         <CalendarIcon className={`mr-2 h-4 w-4 ${iconColor ? `${iconColor}` : ""}`} />
                     )}
-                    <span className="truncate text-ellipsis">
+                    <span className="max-w-[150px] sm:max-w-full truncate text-ellipsis">
                         {getFormattedDate()}
                     </span>
                 </Button>

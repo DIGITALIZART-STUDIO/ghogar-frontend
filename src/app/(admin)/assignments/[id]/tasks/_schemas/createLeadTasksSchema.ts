@@ -16,5 +16,6 @@ export const leadTaskSchema = z.object({
             required_error: "La fecha programada es obligatoria",
         })
         .min(1, "Debes seleccionar una fecha válida"),
+    completedDate: z.string().optional(),
 });
 export type CreateLeadTasksSchema = z.infer<typeof leadTaskSchema>;

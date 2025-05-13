@@ -1,13 +1,4 @@
-import {
-    BookUser,
-    ClipboardList,
-    FileCheck,
-    FileText,
-    LayoutDashboard,
-    LineChart,
-    ListChecks,
-    Users,
-} from "lucide-react";
+import { BookUser, ClipboardList, FileCheck, FileText, LayoutDashboard, LineChart, ListChecks, Users } from "lucide-react";
 
 import { type SidebarData } from "../types";
 
@@ -41,6 +32,11 @@ export const sidebarData: SidebarData = {
                     url: "/leads",
                     icon: Users,
                 },
+                {
+                    title: "Tareas",
+                    url: "/tasks",
+                    icon: ListChecks,
+                },
             ],
         },
         {
@@ -48,7 +44,7 @@ export const sidebarData: SidebarData = {
             items: [
                 {
                     title: "Cotizaciones",
-                    url: "/quotes",
+                    url: "/quotation",
                     icon: FileText,
                 },
                 {
@@ -65,11 +61,6 @@ export const sidebarData: SidebarData = {
                     title: "Mis Leads",
                     url: "/assignments",
                     icon: ClipboardList,
-                },
-                {
-                    title: "Mis Tareas",
-                    url: "/tasks",
-                    icon: ListChecks,
                 },
             ],
         },

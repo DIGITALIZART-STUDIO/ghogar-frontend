@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import {
     Column,
     ColumnDef,
@@ -26,14 +27,13 @@ import { Empty } from "../common/Empty";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilter } from "./facetedFilters";
-import { useEffect } from "react";
 
 // Función de filtrado global correcta para TanStack Table v8
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getValue = (row: Row<any>) => {
-        // Si es _all, busca en todos los valores concatenados
+    // Si es _all, busca en todos los valores concatenados
         if (columnId === "_all") {
             const allValues = Object.values(row.original)
                 .filter((val) => val !== null && val !== undefined)
@@ -52,16 +52,16 @@ const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
 };
 
 interface DataTableExpandedProps<TData, TValue> {
-    columns: Array<ColumnDef<TData, TValue>>;
-    data: Array<TData>;
-    toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
-    filterPlaceholder?: string;
-    facetedFilters?: Array<FacetedFilter<TValue>>;
-    renderExpandedRow?: (row: TData) => React.ReactNode; // Nueva prop para el contenido expandido
-    onClickRow?: (row: TData) => void;
-    columnVisibilityConfig?: Partial<Record<keyof TData, boolean>>;
-    // Nuevas props para paginación del servidor
-    serverPagination?: ServerPaginationTanstackTableConfig;
+  columns: Array<ColumnDef<TData, TValue>>;
+  data: Array<TData>;
+  toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
+  filterPlaceholder?: string;
+  facetedFilters?: Array<FacetedFilter<TValue>>;
+  renderExpandedRow?: (row: TData) => React.ReactNode; // Nueva prop para el contenido expandido
+  onClickRow?: (row: TData) => void;
+  columnVisibilityConfig?: Partial<Record<keyof TData, boolean>>;
+  // Nuevas props para paginación del servidor
+  serverPagination?: ServerPaginationTanstackTableConfig;
 }
 
 export function DataTableExpanded<TData, TValue>({
@@ -100,8 +100,7 @@ export function DataTableExpanded<TData, TValue>({
     useEffect(() => {
         if (serverPagination?.onPaginationChange) {
             setIsLoading(true);
-            serverPagination.onPaginationChange(pagination.pageIndex, pagination.pageSize)
-                .finally(() => setIsLoading(false));
+            serverPagination.onPaginationChange(pagination.pageIndex, pagination.pageSize).finally(() => setIsLoading(false));
         }
     }, [pagination.pageIndex, pagination.pageSize, serverPagination]);
 
@@ -146,14 +145,20 @@ export function DataTableExpanded<TData, TValue>({
         onPaginationChange: handlePaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(),
+        getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(), // Usar la paginación de cliente si no hay serverPagination
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         globalFilterFn: globalFilterFn,
-        // Configuración para paginación del servidor
-        pageCount: serverPagination?.pageCount ?? -1,
-        manualPagination: !!serverPagination,
+        // Configuración para paginación del servidor solo si serverPagination está definido
+        ...(serverPagination
+            ? {
+                pageCount: serverPagination.pageCount,
+                manualPagination: true,
+            }
+            : {
+                manualPagination: false,
+            }),
     });
 
     // Estilos para columnas fijadas
@@ -199,7 +204,7 @@ export function DataTableExpanded<TData, TValue>({
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
-                            // Show loading state while fetching data
+                        // Show loading state while fetching data
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
                                     <div className="flex justify-center">

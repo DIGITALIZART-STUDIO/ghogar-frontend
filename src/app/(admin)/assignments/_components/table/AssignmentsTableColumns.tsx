@@ -27,7 +27,7 @@ import { CreateLeadTasksDialog } from "../../[id]/tasks/_components/create/Creat
  * @param isSuperAdmin Valor si el usuario es super administrador
  * @returns Columnas de la tabla de usuarios
  */
-export const assignmentsColumns = (handleTaskasInterface: (id: string) => void): Array<ColumnDef<Lead>> => [
+export const assignmentsColumns = (handleTasksInterface: (id: string) => void): Array<ColumnDef<Lead>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -237,7 +237,7 @@ export const assignmentsColumns = (handleTaskasInterface: (id: string) => void):
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onSelect={() => handleTaskasInterface(row.original.id!)}>
+                            <DropdownMenuItem onSelect={() => row.original?.id && handleTasksInterface(row.original.id)}>
                                 Mis tareas
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

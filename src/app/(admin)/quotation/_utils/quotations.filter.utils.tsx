@@ -1,5 +1,7 @@
+import { AlertCircle, CheckCircle, FileText, XCircle } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { SummaryQuotation } from "../_types/quotation";
+import { QuotationStatus, SummaryQuotation } from "../_types/quotation";
 import { Identifier } from "../../leads/_utils/leads.filter.utils";
 import { QuotationStatusLabels } from "./quotations.utils";
 
@@ -49,3 +51,36 @@ export const facetedFilters = [
         })),
     },
 ];
+
+export const getStatusDetails = (status: QuotationStatus) => {
+    switch (status) {
+    case QuotationStatus.ISSUED:
+        return {
+            label: "Emitida",
+            icon: <FileText className="h-5 w-5" />, // Cambiado de Clock a FileText
+            color: "bg-blue-100 text-blue-700", // Ajustado para coincidir con "text-blue-700 border-blue-200"
+            description: "La cotización ha sido emitida y está pendiente de respuesta.",
+        };
+    case QuotationStatus.ACCEPTED:
+        return {
+            label: "Aceptada",
+            icon: <CheckCircle className="h-5 w-5" />, // Se mantiene
+            color: "bg-green-100 text-green-700", // Ajustado para coincidir con "text-green-700 border-green-200"
+            description: "La cotización ha sido aceptada por el cliente.",
+        };
+    case QuotationStatus.CANCELED:
+        return {
+            label: "Cancelada",
+            icon: <XCircle className="h-5 w-5" />, // Se mantiene
+            color: "bg-red-100 text-red-700", // Ajustado para coincidir con "text-red-700 border-red-200"
+            description: "La cotización ha sido cancelada.",
+        };
+    default:
+        return {
+            label: "Desconocido",
+            icon: <AlertCircle className="h-5 w-5" />,
+            color: "bg-gray-100 text-gray-700", // Adaptado al estilo general
+            description: "Estado desconocido.",
+        };
+    }
+};

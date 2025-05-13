@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil } from "lucide-react";
+import { ArrowRightLeft, Ellipsis, Pencil } from "lucide-react";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { QuotationStatus, SummaryQuotation } from "../../_types/quotation";
 import { QuotationStatusLabels } from "../../_utils/quotations.utils";
+import { QuotationStatusChangeDialog } from "../managements-status/QuotationStatusChangeDialog";
 import { QuotationViewDialog } from "../view/QuotationViewDialog";
 
 /**
@@ -185,11 +186,29 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
     {
         id: "actions",
         cell: function Cell({ row }) {
-            const { id } = row.original;
+            const { id, status, code } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
+            const [openChangeStatusDialog, setOpenChangeStatusDialog] = useState(false);
+            // Función para cerrar el diálogo de cambio de estado
+            const handleCloseStatusChange = () => {
+                setOpenChangeStatusDialog(false);
+            };
+
             return (
                 <div>
-                    <QuotationViewDialog open={openViewDialog} onOpenChange={setOpenViewDialog} quotation={row.original} />
+                    {openViewDialog && (
+                        <QuotationViewDialog open={openViewDialog} onOpenChange={setOpenViewDialog} quotation={row.original} />
+                    )}
+                    {openChangeStatusDialog && (
+                        <QuotationStatusChangeDialog
+                            isOpen={openChangeStatusDialog}
+                            onClose={handleCloseStatusChange}
+                            currentStatus={status as QuotationStatus}
+                            quotationCode={code as string}
+                            quotationId={id as string}
+                        />
+                    )}
+
                     <div />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -208,24 +227,12 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <Pencil className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            {/*             {isSuperAdmin && ( */}
-                            {/*               <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive}>
-                Reactivar
-                <DropdownMenuShortcut>
-                  <RefreshCcwDot className="size-4" aria-hidden="true" />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem> */}
-                            {/*       )} */}
-                            {/*              <DropdownMenuItem
-                onSelect={() => setShowDeleteDialog(true)}
-                disabled={!isActive}
-                className="text-red-700"
-              >
-                Eliminar
-                <DropdownMenuShortcut>
-                  <Trash className="size-4 text-red-700" aria-hidden="true" />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem> */}
+                            <DropdownMenuItem onSelect={() => setOpenChangeStatusDialog(true)}>
+                                Cambiar estado
+                                <DropdownMenuShortcut>
+                                    <ArrowRightLeft className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

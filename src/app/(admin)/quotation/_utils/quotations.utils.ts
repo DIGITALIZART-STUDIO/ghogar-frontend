@@ -26,3 +26,4 @@ export const QuotationStatusLabels: Record<
         className: "text-blue-700 border-blue-200",
     },
 };
+

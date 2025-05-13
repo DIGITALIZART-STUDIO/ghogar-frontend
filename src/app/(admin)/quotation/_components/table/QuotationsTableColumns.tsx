@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Ellipsis, Pencil } from "lucide-react";
 
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { QuotationStatus, SummaryQuotation } from "../../_types/quotation";
 import { QuotationStatusLabels } from "../../_utils/quotations.utils";
-/* import { QuotationViewDialog } from "../view/QuotationViewDialog"; */
+import { QuotationViewDialog } from "../view/QuotationViewDialog";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -186,13 +186,10 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
         id: "actions",
         cell: function Cell({ row }) {
             const { id } = row.original;
-            /*       const [openViewDialog, setOpenViewDialog] = useState(false);
-      const onClose = () => {
-        setOpenViewDialog(false);
-      }; */
+            const [openViewDialog, setOpenViewDialog] = useState(false);
             return (
                 <div>
-                    {/* <QuotationViewDialog isOpen={openViewDialog} onClose={onClose} data={row.original} /> */}
+                    <QuotationViewDialog open={openViewDialog} onOpenChange={setOpenViewDialog} quotation={row.original} />
                     <div />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -201,7 +198,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onSelect={() => id && handleEditInterface(id)}>
+                            <DropdownMenuItem onSelect={() => setOpenViewDialog(true)}>
                                 Ver
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

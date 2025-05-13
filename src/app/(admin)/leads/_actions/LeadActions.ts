@@ -228,3 +228,21 @@ export async function GetUsersSummary(): Promise<Result<Array<components["schema
     }
     return ok(response);
 }
+
+// Obtener resumen de leads asignados a un usuario específico
+export async function GetAssignedLeadsSummary(assignedToId: string): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/summary", {
+        ...auth,
+        params: {
+            path: {
+                assignedToId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting leads summary for user ${assignedToId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}

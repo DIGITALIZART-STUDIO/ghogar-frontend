@@ -261,7 +261,7 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
                                                 Tipo de tarea
                                             </Label>
                                             <Select value={filters.type} onValueChange={(value) => setFilters({ ...filters, type: value })}>
-                                                <SelectTrigger id="type-filter">
+                                                <SelectTrigger id="type-filter" className="w-full">
                                                     <SelectValue placeholder="Todos los tipos" />
                                                 </SelectTrigger>
                                                 <SelectContent>

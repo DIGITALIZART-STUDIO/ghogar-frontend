@@ -60,11 +60,9 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
         id: "nombre",
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nombre" />,
-        cell: ({ row }) => (
-            <div className="min-w-40 truncate capitalize">
-                {row.getValue("nombre")}
-            </div>
-        ),
+        cell: ({ row }) => <div className="min-w-40 truncate capitalize">
+            {row.getValue("nombre")}
+        </div>,
     },
     {
         id: "correo",
@@ -72,18 +70,14 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Correo" />,
         cell: ({ row }) => {
             if (!row.getValue("correo")) {
-                return (
-                    <div className="text-muted-foreground text-sm italic">
-                        No registrado
-                    </div>
-                );
+                return <div className="text-muted-foreground text-sm italic">
+                    No registrado
+                </div>;
             }
 
-            return (
-                <div>
-                    {row.getValue("correo")}
-                </div>
-            );
+            return <div>
+                {row.getValue("correo")}
+            </div>;
         },
     },
     {
@@ -93,11 +87,9 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
         cell: ({ row }) => {
             const phone = row.getValue("teléfono") as string;
             if (!phone) {
-                return (
-                    <div>
-                        -
-                    </div>
-                );
+                return <div>
+                    -
+                </div>;
             }
 
             try {
@@ -121,11 +113,9 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
                 );
             } catch {
                 // Si hay algún error al parsear el número, mostramos el número original
-                return (
-                    <div>
-                        {phone}
-                    </div>
-                );
+                return <div>
+                    {phone}
+                </div>;
             }
         },
     },
@@ -139,11 +129,9 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
             const documentTypeConfig = ClientTypesLabels[documentType];
 
             if (!documentTypeConfig) {
-                return (
-                    <div>
-                        No registrado
-                    </div>
-                );
+                return <div>
+                    No registrado
+                </div>;
             }
 
             const Icon = documentTypeConfig.icon;
@@ -189,11 +177,9 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
             }
 
             if (!documentNumber) {
-                return (
-                    <div className="text-muted-foreground text-sm italic">
-                        No disponible
-                    </div>
-                );
+                return <div className="text-muted-foreground text-sm italic">
+                    No disponible
+                </div>;
             }
 
             return (

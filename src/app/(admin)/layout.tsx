@@ -8,12 +8,22 @@ import { Search } from "@/components/ui/search";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { backend as api } from "@/types/backend2";
 import { AuthorizationContext, Role } from "./_authorization_context";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
+    const router = useRouter();
+
     // NOTE: reject humanity (server actions), return to monke (client fetch)
     const { data, error, isLoading } = api.useQuery("get", "/api/Users", undefined, {
         retry: false,
     });
+
+    useEffect(() => {
+        if (!!error) {
+            router.replace("/login");
+        }
+    }, [error, router]);
 
     if (isLoading) {
         return (
@@ -24,11 +34,7 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
     }
     if (!!error) {
         console.error("Error cargando usuario", error);
-        return (
-            <div>
-                Error cargando usuario
-            </div>
-        );
+        return;
     }
     if (!data) {
         console.error("Error cargando usuario?", error);

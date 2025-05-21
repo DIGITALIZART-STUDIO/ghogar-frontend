@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { AuthorizationContext, Role } from "./_authorization_context";
 
 export default async function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
+    // FIXME: reject humanity (server actions), return to monke (client fetch)
     // Get logged user info
     const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
     if (error !== null) {

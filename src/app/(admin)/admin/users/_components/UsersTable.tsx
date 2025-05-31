@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState } from "react";
 import { ColumnDef, Table as TableInstance } from "@tanstack/react-table";
 
 import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
@@ -23,7 +23,7 @@ export function UsersTable() {
         pageSize: 10,
     });
 
-    const { data, error, isLoading } = backend.useQuery("get", "/api/Users/all", {
+    const { data, error, isFetching } = backend.useQuery("get", "/api/Users/all", {
         params: {
             query: {
                 page: pagination.pageIndex + 1,
@@ -40,26 +40,16 @@ export function UsersTable() {
 
     const columns = useMemo(() => clientsColumns(), []);
 
-    const fetchData = useCallback(async(pageIndex: number, pageSize: number) => {
-        // Update pagination state which will automatically trigger a new query
-        setPagination({ pageIndex, pageSize });
-    }, []);
-
     const serverPaginationConfig = useMemo(() => ({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         pageCount: pageCount,
-        onPaginationChange: fetchData,
+        onPaginationChange: async(pageIndex: number, pageSize: number) => {
+            setPagination({ pageIndex, pageSize });
+        },
         total: totalItems,
     }), [pagination.pageIndex, pagination.pageSize, pageCount, totalItems]);
 
-    if (isLoading) {
-        return (
-            <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-                Cargando
-            </div>
-        );
-    }
     if (error) {
         return (
             <ErrorGeneral />
@@ -73,6 +63,7 @@ export function UsersTable() {
             toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} />}
             filterPlaceholder="Buscar usuarios..."
             serverPagination={serverPaginationConfig}
+            isLoading={isFetching}
             renderExpandedRow={(row) => (
                 <p>
                     {row.user.userName}

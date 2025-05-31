@@ -15,6 +15,11 @@ if (!BACKEND_URL) {
 
 // Create a custom fetch implementation that better handles errors
 const enhancedFetch = async(input: RequestInfo | URL, init?: RequestInit) => {
+
+    if (process.env.NODE_ENV === "development") {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
     let response: Response;
     try {
         response = await fetch(input, {

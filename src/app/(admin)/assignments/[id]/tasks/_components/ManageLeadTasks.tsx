@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { isBefore, isThisWeek, isToday, parseISO } from "date-fns";
 import { CheckCircle2, Clock, Filter, Plus } from "lucide-react";
@@ -22,14 +22,14 @@ import { UpdateLeadTasksSheet } from "./update/UpdateLeadTasksSheet";
 export type ColumnId = "pending" | "completed";
 
 interface ManageLeadTasksProps {
-  data: LeadTasksByLeadId;
-  leadId: string;
-  assignedToId: string;
+    data: LeadTasksByLeadId;
+    leadId: string;
+    assignedToId: string;
 }
 
 // Componente principal
 export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLeadTasksProps) {
-    const tasks = data.tasks ?? [];
+    const tasks = useMemo(() => data.tasks ?? [], [data.tasks]);
     const [filteredTasks, setFilteredTasks] = useState<Array<LeadTaskDetail>>(tasks);
     const [createTaskDialog, setCreateTaskDialog] = useState(false);
     const [updateTaskSheet, setUpdateTaskSheet] = useState(false);
@@ -73,7 +73,7 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
 
     // Función para marcar una tarea como completada
     const toggleTaskCompletion = (taskId: string) => {
-    // 1. Actualización optimista de la UI
+        // 1. Actualización optimista de la UI
         const taskToToggle = filteredTasks.find((t) => t.id === taskId);
         if (!taskToToggle) {
             return;
@@ -111,7 +111,7 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
 
     // Función para eliminar una tarea
     const deleteTask = (taskId: string) => {
-    // 1. Actualización optimista de la UI - eliminamos la tarea inmediatamente
+        // 1. Actualización optimista de la UI - eliminamos la tarea inmediatamente
         const updatedTasks = filteredTasks.filter((task) => task.id !== taskId);
         setFilteredTasks(updatedTasks);
 
@@ -353,10 +353,9 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
                                                     <div
                                                         ref={provided.innerRef}
                                                         {...provided.droppableProps}
-                                                        className={`min-h-[200px] rounded-md p-2 transition-colors ${
-                                                            snapshot.isDraggingOver
-                                                                ? "bg-primary/10 border-2 border-primary/50"
-                                                                : "border border-muted-foreground/20"
+                                                        className={`min-h-[200px] rounded-md p-2 transition-colors ${snapshot.isDraggingOver
+                                                            ? "bg-primary/10 border-2 border-primary/50"
+                                                            : "border border-muted-foreground/20"
                                                         }`}
                                                     >
                                                         {pendingTasks.map((task, index) => (
@@ -416,10 +415,9 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
                                                     <div
                                                         ref={provided.innerRef}
                                                         {...provided.droppableProps}
-                                                        className={`min-h-[200px] rounded-md p-2 transition-colors ${
-                                                            snapshot.isDraggingOver
-                                                                ? "bg-primary/10 border-2 border-primary/50"
-                                                                : "border border-muted-foreground/20"
+                                                        className={`min-h-[200px] rounded-md p-2 transition-colors ${snapshot.isDraggingOver
+                                                            ? "bg-primary/10 border-2 border-primary/50"
+                                                            : "border border-muted-foreground/20"
                                                         }`}
                                                     >
                                                         {completedTasks.map((task, index) => (

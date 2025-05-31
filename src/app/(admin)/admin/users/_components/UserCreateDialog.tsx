@@ -17,10 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { CreateUser } from "../actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { roles } from "@/app/(admin)/_authorization_context";
-import { toastWrapper } from "@/types/toasts";
+import { backend } from "@/types/backend2";
+import { toast } from "sonner";
+import { queryClient } from "@/app/layout";
 
 export const userCreateSchema = z.object({
     name: z.string({ message: "El nombre es obligatorio" }).min(1, { message: "El nombre es obligatorio" })
@@ -52,17 +53,26 @@ export function UserCreateDialog() {
         },
     });
 
+    const {mutateAsync } = backend.useMutation("post", "/api/Users", {
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users/all"] });
+            setOpen(false);
+            form.reset();
+        },
+        onError: (error) => {
+            console.error("Error creating user:", error);
+        },
+    });
+
     async function onSubmit(values: UserCreateDTO) {
-        const [, error] = await toastWrapper(CreateUser(values), {
+        const mutationPromise = mutateAsync({
+            body: values,
+        });
+        toast.promise(mutationPromise, {
             loading: "Creando usuario...",
             success: "Usuario creado correctamente",
+            error: "Error al crear el usuario",
         });
-        if (error) {
-            console.error("Error creating user:", error);
-            return;
-        }
-        form.reset();
-        setOpen(false);
     }
 
     return (

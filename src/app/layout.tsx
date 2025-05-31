@@ -5,10 +5,11 @@ import {
     QueryClientProvider,
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 export default function RootLayout({
     children,
@@ -23,6 +24,7 @@ export default function RootLayout({
             >
                 <QueryClientProvider client={queryClient}>
                     {children}
+                    <ReactQueryDevtools initialIsOpen={false} />
                 </QueryClientProvider>
                 <Toaster
                     position="top-right"

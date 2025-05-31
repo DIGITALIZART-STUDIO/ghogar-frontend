@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { ColumnDef, Table as TableInstance } from "@tanstack/react-table";
 
 import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
@@ -18,33 +18,40 @@ import ErrorGeneral from "@/components/errors/general-error";
 type UserGetDTO = components["schemas"]["UserGetDTO"];
 
 export function UsersTable() {
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+
     const { data, error, isLoading } = backend.useQuery("get", "/api/Users/all", {
         params: {
             query: {
-                page: 1,
-                pageSize: 10,
+                page: pagination.pageIndex + 1,
+                pageSize: pagination.pageSize,
             },
         },
+    }, {
+        staleTime: 60000,
     });
 
-    const pageSize = data?.pageSize ?? 10;
-    const pageIndex = data?.page ?? 0;
+    // Get pagination info from API response
     const pageCount = data?.totalPages ?? 0;
     const totalItems = data?.totalCount ?? 0;
+
     const columns = useMemo(() => clientsColumns(), []);
-    const [pagination] = useState({
-        pageIndex: pageIndex,
-        pageSize: pageSize,
+
+    const fetchData = useCallback(async(pageIndex: number, pageSize: number) => {
+        // Update pagination state which will automatically trigger a new query
+        setPagination({ pageIndex, pageSize });
+    }, []);
+
+    const serverPaginationConfig = useMemo(() => ({
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
         pageCount: pageCount,
-        totalItems: totalItems,
-    });
-
-    const fetchData = async() => {
-
-        // ...
-        // TODO: Actually fetch data for pagination
-        console.log("TODO: Actually fetch data...");
-    };
+        onPaginationChange: fetchData,
+        total: totalItems,
+    }), [pagination.pageIndex, pagination.pageSize, pageCount, totalItems]);
 
     if (isLoading) {
         return (
@@ -65,13 +72,7 @@ export function UsersTable() {
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} />}
             filterPlaceholder="Buscar usuarios..."
-            serverPagination={{
-                pageIndex: pagination.pageIndex,
-                pageSize: pagination.pageSize,
-                pageCount: pagination.pageCount,
-                onPaginationChange: fetchData,
-                total: pagination.totalItems,
-            }}
+            serverPagination={serverPaginationConfig}
             renderExpandedRow={(row) => (
                 <p>
                     {row.user.userName}

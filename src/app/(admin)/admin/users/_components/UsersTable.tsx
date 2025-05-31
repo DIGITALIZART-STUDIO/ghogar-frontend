@@ -12,13 +12,26 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { components } from "@/types/api";
+import { backend } from "@/types/backend2";
+import ErrorGeneral from "@/components/errors/general-error";
 
 type UserGetDTO = components["schemas"]["UserGetDTO"];
 
-export function UsersTable({ data: _data, pageSize, pageIndex, pageCount, totalItems }:
-    { data: Array<UserGetDTO>, pageSize: number, pageIndex: number, pageCount: number, totalItems: number }) {
+export function UsersTable() {
+    const { data, error, isLoading } = backend.useQuery("get", "/api/Users/all", {
+        params: {
+            query: {
+                page: 1,
+                pageSize: 10,
+            },
+        },
+    });
+
+    const pageSize = data?.pageSize ?? 10;
+    const pageIndex = data?.page ?? 0;
+    const pageCount = data?.totalPages ?? 0;
+    const totalItems = data?.totalCount ?? 0;
     const columns = useMemo(() => clientsColumns(), []);
-    const [data] = useState(_data);
     const [pagination] = useState({
         pageIndex: pageIndex,
         pageSize: pageSize,
@@ -27,14 +40,28 @@ export function UsersTable({ data: _data, pageSize, pageIndex, pageCount, totalI
     });
 
     const fetchData = async() => {
+
         // ...
         // TODO: Actually fetch data for pagination
         console.log("TODO: Actually fetch data...");
     };
 
+    if (isLoading) {
+        return (
+            <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
+                Cargando
+            </div>
+        );
+    }
+    if (error) {
+        return (
+            <ErrorGeneral />
+        );
+    }
+
     return (
         <DataTableExpanded
-            data={data}
+            data={data?.items ?? []}
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} />}
             filterPlaceholder="Buscar usuarios..."

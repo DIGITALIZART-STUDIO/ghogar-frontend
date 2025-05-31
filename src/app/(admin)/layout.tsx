@@ -6,10 +6,12 @@ import { Main } from "@/components/layout/main";
 import { ProfileDropdown } from "@/components/ui/profile-dropdown";
 import { Search } from "@/components/ui/search";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
+import { FullPageLoader } from "@/components/ui/loading-spinner";
 import { backend as api } from "@/types/backend2";
 import { AuthorizationContext, Role } from "./_authorization_context";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import ErrorGeneral from "@/components/errors/general-error";
 
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -26,22 +28,14 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
     }, [error, router]);
 
     if (isLoading) {
-        return (
-            <div>
-                cargando usuario...
-            </div>
-        );
+        return <FullPageLoader text="Cargando aplicación..." />;
     }
-    if (!!error) {
-        console.error("Error cargando usuario", error);
-        return;
-    }
-    if (!data) {
+    if (!data || (!!error && (error.statusCode === 401 || error.statusCode === 403))) {
         console.error("Error cargando usuario?", error);
         console.error("data?", data);
         return (
             <div>
-                Error cargando usuario??
+                <ErrorGeneral />
             </div>
         );
     }

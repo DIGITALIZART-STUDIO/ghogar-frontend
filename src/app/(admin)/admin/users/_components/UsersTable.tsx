@@ -64,11 +64,6 @@ export function UsersTable() {
             filterPlaceholder="Buscar usuarios..."
             serverPagination={serverPaginationConfig}
             isLoading={isFetching}
-            renderExpandedRow={(row) => (
-                <p>
-                    {row.user.userName}
-                </p>
-            )}
         />
     );
 }

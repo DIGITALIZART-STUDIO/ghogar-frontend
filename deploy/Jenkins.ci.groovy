@@ -1,6 +1,9 @@
 pipeline {
     agent any
     stages {
+        environment {
+            NEXT_PUBLIC_BACKEND_URL = "https://gestionhogar-frontend-develop.araozu.dev"
+        }
         stage('Build Nextjs static project') {
             agent {
                 docker {

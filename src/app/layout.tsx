@@ -9,7 +9,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 
-export const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 export default function RootLayout({
     children,

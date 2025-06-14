@@ -15,6 +15,7 @@ export function ClientsTable({ data }: { data: Array<Client> }) {
 
     return (
         <DataTableExpanded
+            isLoading={false}
             data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<Client>) => <ClientsTableToolbarActions table={table} />}

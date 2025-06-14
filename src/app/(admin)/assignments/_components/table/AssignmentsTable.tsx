@@ -48,6 +48,7 @@ export function AssignmentsTable({ data }: { data: Array<Lead> }) {
 
     return (
         <DataTableExpanded
+            isLoading={false}
             data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<Lead>) => <AssignmentsTableToolbarActions table={table} />}

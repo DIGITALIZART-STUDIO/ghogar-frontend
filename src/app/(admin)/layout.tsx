@@ -30,7 +30,10 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
     if (isLoading) {
         return <FullPageLoader text="Cargando aplicación..." />;
     }
-    if (!data || (!!error && (error.statusCode === 401 || error.statusCode === 403))) {
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const e = error as any;
+    if (!data || (!!e && (e.statusCode === 401 || e.statusCode === 403))) {
         console.error("Error cargando usuario?", error);
         console.error("data?", data);
         return (

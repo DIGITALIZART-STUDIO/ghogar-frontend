@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { roles } from "@/app/(admin)/_authorization_context";
 import { backend } from "@/types/backend2";
 import { toast } from "sonner";
-import { queryClient } from "@/app/layout";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const userCreateSchema = z.object({
     name: z.string({ message: "El nombre es obligatorio" }).min(1, { message: "El nombre es obligatorio" })
@@ -41,6 +41,7 @@ const dataForm = {
 };
 
 export function UserCreateDialog() {
+    const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
 
     const form = useForm<UserCreateDTO>({
@@ -53,7 +54,7 @@ export function UserCreateDialog() {
         },
     });
 
-    const {mutateAsync } = backend.useMutation("post", "/api/Users", {
+    const { mutateAsync } = backend.useMutation("post", "/api/Users", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Users/all"] });
             setOpen(false);

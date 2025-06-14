@@ -12,44 +12,58 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { components } from "@/types/api";
+import { backend } from "@/types/backend2";
+import ErrorGeneral from "@/components/errors/general-error";
 
 type UserGetDTO = components["schemas"]["UserGetDTO"];
 
-export function UsersTable({ data: _data, pageSize, pageIndex, pageCount, totalItems }:
-    { data: Array<UserGetDTO>, pageSize: number, pageIndex: number, pageCount: number, totalItems: number }) {
-    const columns = useMemo(() => clientsColumns(), []);
-    const [data] = useState(_data);
-    const [pagination] = useState({
-        pageIndex: pageIndex,
-        pageSize: pageSize,
-        pageCount: pageCount,
-        totalItems: totalItems,
+export function UsersTable() {
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
     });
 
-    const fetchData = async() => {
-        // ...
-        // TODO: Actually fetch data for pagination
-        console.log("TODO: Actually fetch data...");
-    };
+    const { data, error, isFetching } = backend.useQuery("get", "/api/Users/all", {
+        params: {
+            query: {
+                page: pagination.pageIndex + 1,
+                pageSize: pagination.pageSize,
+            },
+        },
+    }, {
+        staleTime: 60000,
+    });
+
+    // Get pagination info from API response
+    const pageCount = data?.totalPages ?? 0;
+    const totalItems = data?.totalCount ?? 0;
+
+    const columns = useMemo(() => clientsColumns(), []);
+
+    const serverPaginationConfig = useMemo(() => ({
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        pageCount: pageCount,
+        onPaginationChange: async(pageIndex: number, pageSize: number) => {
+            setPagination({ pageIndex, pageSize });
+        },
+        total: totalItems,
+    }), [pagination.pageIndex, pagination.pageSize, pageCount, totalItems]);
+
+    if (error) {
+        return (
+            <ErrorGeneral />
+        );
+    }
 
     return (
         <DataTableExpanded
-            data={data}
+            data={data?.items ?? []}
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} />}
             filterPlaceholder="Buscar usuarios..."
-            serverPagination={{
-                pageIndex: pagination.pageIndex,
-                pageSize: pagination.pageSize,
-                pageCount: pagination.pageCount,
-                onPaginationChange: fetchData,
-                total: pagination.totalItems,
-            }}
-            renderExpandedRow={(row) => (
-                <p>
-                    {row.user.userName}
-                </p>
-            )}
+            serverPagination={serverPaginationConfig}
+            isLoading={isFetching}
         />
     );
 }

@@ -7,7 +7,7 @@ import { backend, FetchError, wrapper } from "@/types/backend";
 import { ok, err, Result } from "@/utils/result";
 
 export async function LoginAction(email: string, password: string)
-	: Promise<Result<null, FetchError>> {
+    : Promise<Result<null, FetchError>> {
     const [data, error] = await wrapper(() => backend.POST("/api/Auth/login", {
         body: { email, password },
     }));

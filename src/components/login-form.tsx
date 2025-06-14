@@ -8,14 +8,14 @@ import { Key, Mail, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { LoginAction } from "@/app/(auth)/login/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { toastWrapper } from "@/types/toasts";
 import loginImage from "../assets/images/ImageLogin.webp";
+import { backend } from "@/types/backend2";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
     email: z
@@ -32,17 +32,20 @@ type LoginSchema = z.infer<typeof loginSchema>;
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
     const router = useRouter();
+    const { mutateAsync } = backend.useMutation("post", "/api/Auth/login");
 
     async function login(values: LoginSchema) {
-        const loginPromise = LoginAction(values.email, values.password);
-        toastWrapper(loginPromise, {
+        const loginPromise = mutateAsync({
+            body: values,
+        });
+
+        toast.promise(loginPromise, {
             loading: "Iniciando sesión...",
+            error: "Error al iniciar sesión",
             success: "Sesión iniciada, redirigiendo...",
         });
-        const [, error] = await loginPromise;
-        if (!error) {
-            router.push("/");
-        }
+
+        loginPromise.then(() => router.push("/"));
     }
 
     const form = useForm<LoginSchema>({

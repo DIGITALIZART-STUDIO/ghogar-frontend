@@ -1,12 +1,15 @@
-import type { Metadata } from "next/types";
+"use client";
+
+import {
+    QueryClient,
+    QueryClientProvider,
+} from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 
-export const metadata: Metadata = {
-    title: "Gestión Hogar CRM",
-    description: "Sistema de gestión para el hogar",
-};
+const queryClient = new QueryClient();
 
 export default function RootLayout({
     children,
@@ -19,7 +22,10 @@ export default function RootLayout({
                 suppressHydrationWarning
                 className="font-montserrat text-base leading-normal antialiased bg-background text-foreground"
             >
-                {children}
+                <QueryClientProvider client={queryClient}>
+                    {children}
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </QueryClientProvider>
                 <Toaster
                     position="top-right"
                     richColors

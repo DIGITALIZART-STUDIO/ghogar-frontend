@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { ArrowRightLeft, Ellipsis, Pencil } from "lucide-react";
+import { ArrowRightLeft, Download, Ellipsis, Pencil } from "lucide-react";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import { QuotationStatus, SummaryQuotation } from "../../_types/quotation";
 import { QuotationStatusLabels } from "../../_utils/quotations.utils";
 import { QuotationStatusChangeDialog } from "../managements-status/QuotationStatusChangeDialog";
 import { QuotationViewDialog } from "../view/QuotationViewDialog";
+import { QuotationDownloadDialog } from "../managements-status/QuotationDownloadDialog";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -70,7 +71,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
             const type = row.original?.clientIdentificationType;
             const clientIdentification = row.original?.clientIdentification;
             const identifier =
-        type === "DNI" ? `DNI: ${clientIdentification}` : type === "RUC" ? `RUC: ${clientIdentification}` : "";
+                type === "DNI" ? `DNI: ${clientIdentification}` : type === "RUC" ? `RUC: ${clientIdentification}` : "";
 
             return (
                 <div className="min-w-32">
@@ -105,7 +106,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                 // Verificar si el DNI o RUC están en el array de valores de filtro
                 return (
                     (clientIdentification && value.includes(clientIdentification)) ??
-          (clientIdentification && value.includes(clientIdentification))
+                    (clientIdentification && value.includes(clientIdentification))
                 );
             }
 
@@ -188,6 +189,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
         cell: function Cell({ row }) {
             const { id, status, code } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
+            const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
             const [openChangeStatusDialog, setOpenChangeStatusDialog] = useState(false);
             // Función para cerrar el diálogo de cambio de estado
             const handleCloseStatusChange = () => {
@@ -206,6 +208,13 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                             currentStatus={status as QuotationStatus}
                             quotationCode={code as string}
                             quotationId={id as string}
+                        />
+                    )}
+                    {openDownloadDialog && (
+                        <QuotationDownloadDialog
+                            quotationId={row.original.id!}
+                            isOpen={openDownloadDialog}
+                            onOpenChange={setOpenDownloadDialog}
                         />
                     )}
 
@@ -231,6 +240,12 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                 Cambiar estado
                                 <DropdownMenuShortcut>
                                     <ArrowRightLeft className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenDownloadDialog(true)}>
+                                Descargar PDF
+                                <DropdownMenuShortcut>
+                                    <Download className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

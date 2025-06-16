@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Key, Mail, User } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -13,9 +14,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import loginImage from "../assets/images/ImageLogin.webp";
 import { backend } from "@/types/backend2";
-import { toast } from "sonner";
+import loginImage from "../assets/images/ImageLogin.webp";
 
 const loginSchema = z.object({
     email: z

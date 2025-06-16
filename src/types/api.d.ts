@@ -745,8 +745,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file?: string;
+                        file?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -3173,6 +3172,8 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        /** Format: binary */
+        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;

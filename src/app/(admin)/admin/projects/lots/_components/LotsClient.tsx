@@ -11,7 +11,7 @@ import { LotData, LotStatus } from "../_types/lot";
 import { LotCard } from "./LotCard";
 
 interface LotsClientProps {
-  lots: Array<LotData>;
+  lots: Array<LotData> | undefined;
   blockId?: string;
   projectId?: string;
 }
@@ -38,7 +38,10 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
     );
 
     // Proyectos únicos para el filtro
-    const uniqueProjects = useMemo(() => Array.from(new Set(lots.map((lot) => lot.projectName).filter(Boolean))), [lots]);
+    const uniqueProjects = useMemo(
+        () => Array.from(new Set((lots ?? []).map((lot) => lot.projectName).filter(Boolean))),
+        [lots],
+    );
 
     // Calcular estadísticas - CORREGIDO para usar strings
     const stats = useMemo(
@@ -58,7 +61,7 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
         setProjectFilter("all");
     };
 
-    if (lots.length === 0) {
+    if (lots?.length === 0) {
         return (
             <div className="text-center py-12">
                 <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />

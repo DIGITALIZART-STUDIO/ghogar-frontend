@@ -4,10 +4,11 @@ import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet } from "@/components/ui/sheet";
 import { CreateLotSchema } from "../../_schemas/createLotsSchema";
 import { BlockData } from "../../../[id]/blocks/_types/block";
 
-interface CreateLotsFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
+interface UpdateLotsFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
   form: UseFormReturn<CreateLotSchema>;
   onSubmit: (data: CreateLotSchema) => void;
@@ -15,17 +16,16 @@ interface CreateLotsFormProps extends Omit<React.ComponentPropsWithRef<"form">, 
   selectedBlockId?: string; // ID del bloque preseleccionado
 }
 
-export default function CreateLotsForm({ children, form, onSubmit, blocks, selectedBlockId }: CreateLotsFormProps) {
+export default function UpdateLotsForm({ children, form, onSubmit, blocks, selectedBlockId }: UpdateLotsFormProps) {
     const area = form.watch("area");
     const price = form.watch("price");
     const watchedBlockId = form.watch("blockId");
 
     const pricePerSquareMeter = area > 0 && price > 0 ? price / area : 0;
     const selectedBlock = blocks.find((block) => block.id === watchedBlockId);
-
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">

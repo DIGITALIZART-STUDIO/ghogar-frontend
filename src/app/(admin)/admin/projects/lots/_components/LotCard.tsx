@@ -6,41 +6,39 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LotData, LotStatus } from "../_types/lot";
 import { LotFormDialog } from "./LotFormDialog";
 
 interface LotCardProps {
-  lot: {
-    id: string;
-    lotNumber: string;
-    area: number;
-    price: number;
-    status: "Available" | "Quoted" | "Reserved" | "Sold";
-    blockId: string;
-    blockName: string;
-    projectName: string;
-    projectLocation: string;
-    isActive: boolean;
-    createdAt: string;
-    modifiedAt: string;
-  };
+  lot: LotData;
 }
 
-const statusLabels = {
-    Available: "Disponible",
-    Quoted: "Cotizado",
-    Reserved: "Reservado",
-    Sold: "Vendido",
+const statusLabels: Record<LotStatus, string> = {
+    [LotStatus.Available]: "Disponible",
+    [LotStatus.Quoted]: "Cotizado",
+    [LotStatus.Reserved]: "Reservado",
+    [LotStatus.Sold]: "Vendido",
 };
 
-const statusStyles = {
-    Available: "status-available text-white",
-    Quoted: "status-quoted text-white",
-    Reserved: "status-reserved text-white",
-    Sold: "status-sold text-white",
+const statusStyles: Record<LotStatus, string> = {
+    [LotStatus.Available]: "status-available text-white",
+    [LotStatus.Quoted]: "status-quoted text-white",
+    [LotStatus.Reserved]: "status-reserved text-white",
+    [LotStatus.Sold]: "status-sold text-white",
 };
 
 export function LotCard({ lot }: LotCardProps) {
-    const pricePerSquareMeter = lot.price / lot.area;
+    // Validar que los datos necesarios existan
+    if (!lot?.id || !lot?.lotNumber) {
+        return null;
+    }
+
+    console.log("Rendering LotCard for lot:", JSON.stringify(lot, null, 2));
+
+    const area = lot.area ?? 0;
+    const price = lot.price ?? 0;
+    const status = lot.status ?? LotStatus.Available;
+    const pricePerSquareMeter = area > 0 ? price / area : 0;
 
     const handleStatusChange = (newStatus: string) => {
         console.log(`Changing lot ${lot.id} status to ${newStatus}`);
@@ -59,11 +57,11 @@ export function LotCard({ lot }: LotCardProps) {
                             <Building2 className="mr-1 h-3 w-3" />
                             Bloque
                             {" "}
-                            {lot.blockName}
+                            {lot.blockName ?? "Sin nombre"}
                         </CardDescription>
                     </div>
-                    <Badge className={`${statusStyles[lot.status]} font-medium`}>
-                        {statusLabels[lot.status]}
+                    <Badge className={`${statusStyles[status]} font-medium`}>
+                        {statusLabels[status]}
                     </Badge>
                 </div>
             </CardHeader>
@@ -72,11 +70,14 @@ export function LotCard({ lot }: LotCardProps) {
                 {/* Project Info */}
                 <div className="space-y-2">
                     <h4 className="font-semibold text-gray-900">
-                        {lot.projectName}
+                        {lot.projectName ?? "Sin proyecto"}
                     </h4>
                     <p className="text-sm text-gray-600 flex items-center">
                         <MapPin className="mr-1 h-3 w-3" />
-                        {lot.projectLocation}
+                        {lot.blockName ?? "Sin bloque"}
+                        {" "}
+                        -
+                        {lot.projectName ?? "Sin proyecto"}
                     </p>
                 </div>
 
@@ -90,7 +91,7 @@ export function LotCard({ lot }: LotCardProps) {
                             </span>
                         </div>
                         <div className="text-lg font-bold text-blue-700">
-                            {lot.area.toFixed(1)}
+                            {area.toFixed(1)}
                             {" "}
                             m²
                         </div>
@@ -104,7 +105,7 @@ export function LotCard({ lot }: LotCardProps) {
                         </div>
                         <div className="text-lg font-bold text-green-700">
                             $
-                            {lot.price.toLocaleString()}
+                            {price.toLocaleString()}
                         </div>
                     </div>
                 </div>
@@ -127,21 +128,21 @@ export function LotCard({ lot }: LotCardProps) {
                     <label className="text-sm font-medium text-gray-700">
                         Cambiar Estado:
                     </label>
-                    <Select value={lot.status} onValueChange={handleStatusChange}>
+                    <Select value={status} onValueChange={handleStatusChange}>
                         <SelectTrigger className="w-full">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Available">
+                            <SelectItem value={LotStatus.Available}>
                                 🟢 Disponible
                             </SelectItem>
-                            <SelectItem value="Quoted">
+                            <SelectItem value={LotStatus.Quoted}>
                                 🔵 Cotizado
                             </SelectItem>
-                            <SelectItem value="Reserved">
+                            <SelectItem value={LotStatus.Reserved}>
                                 🟡 Reservado
                             </SelectItem>
-                            <SelectItem value="Sold">
+                            <SelectItem value={LotStatus.Sold}>
                                 🔴 Vendido
                             </SelectItem>
                         </SelectContent>
@@ -155,10 +156,7 @@ export function LotCard({ lot }: LotCardProps) {
                             Editar
                         </Button>
                     </LotFormDialog>
-                    <Button
-                        size="sm"
-                        className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
-                    >
+                    <Button size="sm" className="flex-1">
                         Ver Detalles
                     </Button>
                 </div>
@@ -168,7 +166,7 @@ export function LotCard({ lot }: LotCardProps) {
                     <Calendar className="mr-1 h-3 w-3" />
                     Creado:
                     {" "}
-                    {new Date(lot.createdAt).toLocaleDateString()}
+                    {lot.createdAt ? new Date(lot.createdAt).toLocaleDateString() : "Fecha no disponible"}
                 </div>
             </CardContent>
         </Card>

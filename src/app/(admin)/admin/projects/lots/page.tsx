@@ -15,6 +15,7 @@ import { GetBlock } from "../[id]/blocks/_actions/BlockActions";
 import { GetAllLots, GetLotsByBlock, GetLotsByProject } from "./_actions/LotActions";
 import { CreateLotsDialog } from "./_components/create/CreateLotsDialog";
 import { LotsClient } from "./_components/LotsClient";
+import { LotData } from "./_types/lot";
 
 interface LotsPageProps {
   searchParams: {
@@ -22,6 +23,36 @@ interface LotsPageProps {
     projectId?: string;
   };
 }
+
+// Función para validar y limpiar los datos del lote
+const validateLotData = (rawLot: unknown): LotData | null => {
+    if (!rawLot || typeof rawLot !== "object") {
+        return null;
+    }
+
+    const lot = rawLot as Record<string, unknown>;
+
+    if (!lot?.id || !lot?.lotNumber) {
+        return null;
+    }
+
+    return {
+        id: lot.id ?? "",
+        lotNumber: lot.lotNumber ?? "",
+        area: lot.area ?? 0,
+        price: lot.price ?? 0,
+        status: lot.status ?? "Available",
+        statusText: lot.statusText ?? "",
+        blockId: lot.blockId ?? "",
+        blockName: lot.blockName ?? "",
+        projectId: lot.projectId ?? "",
+        projectName: lot.projectName ?? "",
+        isActive: lot.isActive ?? true,
+        createdAt: lot.createdAt ?? new Date().toISOString(),
+        modifiedAt: lot.modifiedAt ?? new Date().toISOString(),
+        pricePerSquareMeter: lot.pricePerSquareMeter ?? 0,
+    } as LotData;
+};
 
 export default async function LotsPage({ searchParams }: LotsPageProps) {
     const { blockId, projectId } = searchParams;
@@ -33,6 +64,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
     let description;
     let projectData = null;
     let blockData = null;
+    let finalProjectId = projectId; // Variable para el projectId final
 
     if (blockId) {
     // Si hay blockId, obtener lotes del bloque específico y datos del bloque
@@ -44,6 +76,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
         if (blockData?.projectId) {
             const [projectResult] = await GetProject(blockData.projectId);
             projectData = projectResult;
+            finalProjectId = blockData.projectId; // Usar el projectId del bloque
         }
 
         title = `Lotes - Manzana ${blockData?.name ?? "Sin nombre"}`;
@@ -72,7 +105,12 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
         );
     }
 
-    const lots = lotsResult ?? [];
+    // Validar y limpiar los datos de los lotes
+    const rawLots = lotsResult ?? [];
+    const lots = rawLots.map(validateLotData).filter((lot): lot is LotData => lot !== null);
+
+    // No mostrar el botón de crear si no tenemos un projectId válido
+    const canCreateLot = !!finalProjectId;
 
     return (
         <div className="space-y-6">
@@ -142,7 +180,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                 <div className="flex-1">
                     <HeaderPage title={title} description={description} />
                 </div>
-                <CreateLotsDialog projectId={projectId ?? ""} />
+                {canCreateLot && <CreateLotsDialog projectId={finalProjectId ?? ""} blockId={blockId} />}
             </div>
 
             {/* Client Component que maneja los filtros y la interactividad */}
@@ -150,7 +188,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                 Cargando lotes...
             </div>}
             >
-                <LotsClient lots={lots} blockId={blockId} projectId={projectId} />
+                <LotsClient lots={lots} blockId={blockId} projectId={finalProjectId} />
             </Suspense>
         </div>
     );

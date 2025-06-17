@@ -58,8 +58,6 @@ export function QuotationDownloadDialog({
                     </DialogTitle>
                 </DialogHeader>
                 <div className="px-6">
-                    :D
-
                     {!!pdfUrl ? (
                         <iframe
                             src={pdfUrl}

@@ -1,4 +1,13 @@
-import { BookUser, ClipboardList, FileCheck, FileText, LayoutDashboard, LineChart, ListChecks, Users } from "lucide-react";
+import {
+    BookUser,
+    ClipboardList,
+    FileCheck,
+    FileText,
+    LayoutDashboard,
+    LineChart,
+    ListChecks,
+    Users,
+} from "lucide-react";
 
 import { type SidebarData } from "../types";
 
@@ -81,6 +90,11 @@ export const sidebarData: SidebarData = {
                     title: "Usuarios",
                     url: "/admin/users",
                     icon: Users,
+                },
+                {
+                    title: "Proyectos",
+                    url: "/admin/projects",
+                    icon: BookUser,
                 },
             ],
         },

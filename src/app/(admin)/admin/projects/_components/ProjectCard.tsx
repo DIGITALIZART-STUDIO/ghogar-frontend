@@ -38,7 +38,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
     safeProject.totalLots > 0 ? Math.round((safeProject.soldLots / safeProject.totalLots) * 100) : 0;
 
     return (
-        <Card className="overflow-hidden hover-lift border-0 pt-0 bg-white">
+        <Card className="overflow-hidden hover-lift border-0 pt-0 bg-white dark:bg-gray-950">
             {/* Project Image */}
             <div className="relative h-48 overflow-hidden">
                 <img
@@ -68,7 +68,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             <CardContent className="p-6 space-y-4">
                 {/* Project Info */}
-                <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span className="flex items-center">
                         <DollarSign className="mr-1 h-4 w-4" />
                         {safeProject.currency}
@@ -77,7 +77,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                         <Building2 className="mr-1 h-4 w-4" />
                         {safeProject.totalBlocks}
                         {" "}
-                        bloques
+                        manzanas
                     </span>
                     <span className="flex items-center">
                         <Calendar className="mr-1 h-4 w-4" />
@@ -88,10 +88,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 {/* Progress Bar */}
                 <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                             Progreso de ventas
                         </span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="font-semibold text-gray-900 dark:text-gray-100">
                             {completionRate}
                             %
                         </span>

@@ -65,14 +65,6 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
         },
     });
 
-    // Cargar bloques activos cuando se abre el dialog
-    useEffect(() => {
-        if (open && projectId) {
-            loadActiveBlocks();
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, projectId]);
-
     const loadActiveBlocks = async() => {
         setIsLoadingBlocks(true);
         try {
@@ -97,6 +89,14 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
             setIsLoadingBlocks(false);
         }
     };
+
+    // Cargar bloques activos cuando se abre el dialog
+    useEffect(() => {
+        if (open && projectId) {
+            loadActiveBlocks();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, projectId]);
 
     const onSubmit = async(input: CreateLotSchema) => {
         startTransition(async() => {

@@ -745,7 +745,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -1977,7 +1978,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    status: components["schemas"]["LotStatus"];
+                    status: number;
                 };
                 cookie?: never;
             };
@@ -3172,8 +3173,6 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -3379,7 +3378,8 @@ export interface components {
             /** Format: double */
             pricePerSquareMeter?: number;
         };
-        LotStatus: number;
+        /** @enum {unknown} */
+        LotStatus: "Available" | "Quoted" | "Reserved" | "Sold";
         LotStatusUpdateDTO: {
             status: components["schemas"]["LotStatus"];
         };
@@ -3396,7 +3396,8 @@ export interface components {
         NullableOfClientType: "Natural" | "Juridico" | null;
         /** @enum {unknown|null} */
         NullableOfLeadStatus: "Registered" | "Attended" | null;
-        NullableOfLotStatus: number | null;
+        /** @enum {unknown|null} */
+        NullableOfLotStatus: "Available" | "Quoted" | "Reserved" | "Sold" | null;
         /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
         PaginatedResponseOfUserGetDTO: {

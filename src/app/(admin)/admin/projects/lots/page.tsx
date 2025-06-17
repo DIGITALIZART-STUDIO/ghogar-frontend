@@ -148,7 +148,6 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem className="capitalize">
                                     <Link href={`/admin/projects/lots?blockId=${blockData.id}`}>
-                                        Manzana
                                         {blockData.name}
                                     </Link>
                                 </BreadcrumbItem>

@@ -1,11 +1,8 @@
 "use client";
 
-import {
-    QueryClient,
-    QueryClientProvider,
-} from "@tanstack/react-query";
-import { Toaster } from "sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "sonner";
 
 import "./globals.css";
 
@@ -18,6 +15,14 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="es" suppressHydrationWarning>
+            <head>
+                <title>
+                    Gestión Hogar
+                </title>
+                <meta name="description" content="Sistema de gestión para el hogar" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="icon" href="/favicon.ico" />
+            </head>
             <body
                 suppressHydrationWarning
                 className="font-montserrat text-base leading-normal antialiased bg-background text-foreground"

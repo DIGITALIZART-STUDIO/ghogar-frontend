@@ -21,7 +21,9 @@ import { toastWrapper } from "@/types/toasts";
 import { UpdateLot } from "../../_actions/LotActions";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
 import { LotData, LotStatus } from "../../_types/lot";
-import UpdateBlocksForm from "./UpdateLotsForm";
+import { GetActiveBlocksByProject } from "../../../[id]/blocks/_actions/BlockActions";
+import { BlockData } from "../../../[id]/blocks/_types/block";
+import UpdateLotsForm from "./UpdateLotsForm";
 
 const infoSheet = {
     title: "Actualizar Lote",
@@ -35,9 +37,11 @@ interface UpdateLotsSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
   onOpenChange: (open: boolean) => void;
 }
 
-export function UpdateLotsSheet({ lot, open, onOpenChange }: UpdateLotsSheetProps) {
+export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLotsSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
+    const [blocks, setBlocks] = useState<Array<BlockData>>([]);
+    const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
 
     const form = useForm<CreateLotSchema>({
         resolver: zodResolver(lotSchema),
@@ -49,6 +53,34 @@ export function UpdateLotsSheet({ lot, open, onOpenChange }: UpdateLotsSheetProp
             blockId: lot?.blockId ?? "",
         },
     });
+
+    const loadActiveBlocks = async() => {
+        setIsLoadingBlocks(true);
+        try {
+            const [result, error] = await GetActiveBlocksByProject(projectId);
+
+            if (error) {
+                console.error("Error loading active blocks:", error);
+                setBlocks([]);
+                return;
+            }
+
+            setBlocks(result || []);
+        } catch (error) {
+            console.error("Error loading active blocks:", error);
+            setBlocks([]);
+        } finally {
+            setIsLoadingBlocks(false);
+        }
+    };
+
+    // Cargar bloques activos cuando se abre el dialog
+    useEffect(() => {
+        if (open && projectId) {
+            loadActiveBlocks();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, projectId]);
 
     useEffect(() => {
         if (open) {
@@ -113,21 +145,30 @@ export function UpdateLotsSheet({ lot, open, onOpenChange }: UpdateLotsSheetProp
                     </SheetDescription>
                 </SheetHeader>
                 <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
-                    <UpdateBlocksForm form={form} onSubmit={onSubmit}>
-                        <SheetFooter className="gap-2 pt-2 sm:space-x-0">
-                            <div className="flex flex-row-reverse gap-2">
-                                <Button type="submit" disabled={isPending}>
-                                    {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-                                    Actualizar
-                                </Button>
-                                <SheetClose asChild>
-                                    <Button type="button" variant="outline">
-                                        Cancelar
+                    {isLoadingBlocks ? (
+                        <div className="flex items-center justify-center py-8">
+                            <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
+                            <span>
+                                Cargando manzanas activas...
+                            </span>
+                        </div>
+                    ) : (
+                        <UpdateLotsForm form={form} onSubmit={onSubmit} blocks={blocks}>
+                            <SheetFooter className="gap-2 pt-2 sm:space-x-0">
+                                <div className="flex flex-row-reverse gap-2">
+                                    <Button type="submit" disabled={isPending}>
+                                        {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                                        Actualizar
                                     </Button>
-                                </SheetClose>
-                            </div>
-                        </SheetFooter>
-                    </UpdateBlocksForm>
+                                    <SheetClose asChild>
+                                        <Button type="button" variant="outline">
+                                            Cancelar
+                                        </Button>
+                                    </SheetClose>
+                                </div>
+                            </SheetFooter>
+                        </UpdateLotsForm>
+                    )}
                 </ScrollArea>
             </SheetContent>
         </Sheet>

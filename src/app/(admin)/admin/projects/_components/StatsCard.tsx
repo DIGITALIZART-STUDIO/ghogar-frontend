@@ -26,16 +26,16 @@ export function StatsCard({ title, value, total, icon: Icon, gradient, descripti
     gradientClasses[gradient as keyof typeof gradientClasses] || "bg-gradient-to-r from-gray-500 to-gray-600";
 
     return (
-        <Card className="overflow-hidden hover-lift border-0 pt-0">
+        <Card className="overflow-hidden hover-lift border-0 pt-0 bg-white dark:bg-gray-950">
             <div className={`h-2 ${gradientClass}`} />
             <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                     <div className="space-y-2">
-                        <p className="text-sm font-medium text-gray-600">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                             {title}
                         </p>
                         <div className="flex items-baseline space-x-2">
-                            <p className="text-3xl font-bold text-gray-900">
+                            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                                 {value}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -53,10 +53,10 @@ export function StatsCard({ title, value, total, icon: Icon, gradient, descripti
                 </div>
                 <div className="mt-4">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                             Progreso
                         </span>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
                             {percentage}
                             %
                         </span>

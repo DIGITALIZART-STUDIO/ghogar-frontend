@@ -157,9 +157,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["BlockDTO"][];
+                        "application/json": components["schemas"]["BlockDTO"][];
+                        "text/json": components["schemas"]["BlockDTO"][];
                     };
                 };
             };
@@ -223,9 +223,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["BlockDTO"][];
+                        "application/json": components["schemas"]["BlockDTO"][];
+                        "text/json": components["schemas"]["BlockDTO"][];
                     };
                 };
             };
@@ -262,9 +262,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["BlockDTO"][];
+                        "application/json": components["schemas"]["BlockDTO"][];
+                        "text/json": components["schemas"]["BlockDTO"][];
                     };
                 };
             };
@@ -456,9 +456,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Client"]>;
-                        "application/json": Array<components["schemas"]["Client"]>;
-                        "text/json": Array<components["schemas"]["Client"]>;
+                        "text/plain": components["schemas"]["Client"][];
+                        "application/json": components["schemas"]["Client"][];
+                        "text/json": components["schemas"]["Client"][];
                     };
                 };
             };
@@ -585,9 +585,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -627,9 +627,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -674,9 +674,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Client"]>;
-                        "application/json": Array<components["schemas"]["Client"]>;
-                        "text/json": Array<components["schemas"]["Client"]>;
+                        "text/plain": components["schemas"]["Client"][];
+                        "application/json": components["schemas"]["Client"][];
+                        "text/json": components["schemas"]["Client"][];
                     };
                 };
             };
@@ -711,9 +711,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ClientSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["ClientSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "text/plain": components["schemas"]["ClientSummaryDto"][];
+                        "application/json": components["schemas"]["ClientSummaryDto"][];
+                        "text/json": components["schemas"]["ClientSummaryDto"][];
                     };
                 };
             };
@@ -836,9 +836,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1026,9 +1026,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1065,9 +1065,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1104,9 +1104,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1143,9 +1143,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1212,9 +1212,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -1254,9 +1254,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -1301,9 +1301,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
+                        "text/plain": components["schemas"]["UserSummaryDto"][];
+                        "application/json": components["schemas"]["UserSummaryDto"][];
+                        "text/json": components["schemas"]["UserSummaryDto"][];
                     };
                 };
             };
@@ -1340,9 +1340,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "text/plain": components["schemas"]["LeadSummaryDto"][];
+                        "application/json": components["schemas"]["LeadSummaryDto"][];
+                        "text/json": components["schemas"]["LeadSummaryDto"][];
                     };
                 };
             };
@@ -1377,9 +1377,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1575,9 +1575,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTaskDTO"]>;
-                        "application/json": Array<components["schemas"]["LeadTaskDTO"]>;
-                        "text/json": Array<components["schemas"]["LeadTaskDTO"]>;
+                        "text/plain": components["schemas"]["LeadTaskDTO"][];
+                        "application/json": components["schemas"]["LeadTaskDTO"][];
+                        "text/json": components["schemas"]["LeadTaskDTO"][];
                     };
                 };
                 /** @description Bad Request */
@@ -1623,9 +1623,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1660,9 +1660,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1697,9 +1697,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1737,9 +1737,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1809,9 +1809,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1875,9 +1875,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1914,9 +1914,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1951,9 +1951,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1978,7 +1978,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    status: components["schemas"]["LotStatus2"];
+                    status: number;
                 };
                 cookie?: never;
             };
@@ -1990,9 +1990,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -2229,9 +2229,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectDTO"]>;
-                        "application/json": Array<components["schemas"]["ProjectDTO"]>;
-                        "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                        "text/plain": components["schemas"]["ProjectDTO"][];
+                        "application/json": components["schemas"]["ProjectDTO"][];
+                        "text/json": components["schemas"]["ProjectDTO"][];
                     };
                 };
             };
@@ -2293,9 +2293,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectDTO"]>;
-                        "application/json": Array<components["schemas"]["ProjectDTO"]>;
-                        "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                        "text/plain": components["schemas"]["ProjectDTO"][];
+                        "application/json": components["schemas"]["ProjectDTO"][];
+                        "text/json": components["schemas"]["ProjectDTO"][];
                     };
                 };
             };
@@ -2487,9 +2487,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationDTO"]>;
+                        "text/plain": components["schemas"]["QuotationDTO"][];
+                        "application/json": components["schemas"]["QuotationDTO"][];
+                        "text/json": components["schemas"]["QuotationDTO"][];
                     };
                 };
             };
@@ -2640,9 +2640,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationDTO"]>;
+                        "text/plain": components["schemas"]["QuotationDTO"][];
+                        "application/json": components["schemas"]["QuotationDTO"][];
+                        "text/json": components["schemas"]["QuotationDTO"][];
                     };
                 };
             };
@@ -2679,9 +2679,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationSummaryDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                        "text/plain": components["schemas"]["QuotationSummaryDTO"][];
+                        "application/json": components["schemas"]["QuotationSummaryDTO"][];
+                        "text/json": components["schemas"]["QuotationSummaryDTO"][];
                     };
                 };
             };
@@ -2811,41 +2811,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Quotations/{id}/pdf-separation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Reservations": {
         parameters: {
             query?: never;
@@ -2868,9 +2833,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ReservationDto"]>;
-                        "application/json": Array<components["schemas"]["ReservationDto"]>;
-                        "text/json": Array<components["schemas"]["ReservationDto"]>;
+                        "text/plain": components["schemas"]["ReservationDto"][];
+                        "application/json": components["schemas"]["ReservationDto"][];
+                        "text/json": components["schemas"]["ReservationDto"][];
                     };
                 };
             };
@@ -2992,9 +2957,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ReservationDto"]>;
-                        "application/json": Array<components["schemas"]["ReservationDto"]>;
-                        "text/json": Array<components["schemas"]["ReservationDto"]>;
+                        "text/plain": components["schemas"]["ReservationDto"][];
+                        "application/json": components["schemas"]["ReservationDto"][];
+                        "text/json": components["schemas"]["ReservationDto"][];
                     };
                 };
             };
@@ -3031,10 +2996,45 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ReservationDto"]>;
-                        "application/json": Array<components["schemas"]["ReservationDto"]>;
-                        "text/json": Array<components["schemas"]["ReservationDto"]>;
+                        "text/plain": components["schemas"]["ReservationDto"][];
+                        "application/json": components["schemas"]["ReservationDto"][];
+                        "text/json": components["schemas"]["ReservationDto"][];
                     };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -3121,9 +3121,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -3289,9 +3289,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -3311,8 +3311,8 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         BatchOperationResult: {
-            successIds?: Array<string>;
-            failedIds?: Array<string>;
+            successIds?: string[];
+            failedIds?: string[];
             /** Format: int32 */
             totalProcessed?: number;
             allSucceeded?: boolean;
@@ -3454,7 +3454,7 @@ export interface components {
             clientsExisting?: number;
             /** Format: int32 */
             leadsCreated?: number;
-            errors?: Array<string>;
+            errors?: string[];
         };
         Lead: {
             /** Format: uuid */
@@ -3582,7 +3582,7 @@ export interface components {
         };
         LeadTasksResponseDto: {
             lead?: components["schemas"]["LeadDTO"];
-            tasks?: Array<components["schemas"]["LeadTaskDTO"]>;
+            tasks?: components["schemas"]["LeadTaskDTO"][];
         };
         LeadTaskUpdateDto: {
             /** Format: uuid */
@@ -3652,9 +3652,8 @@ export interface components {
         };
         /** @enum {unknown} */
         LotStatus: "Available" | "Quoted" | "Reserved" | "Sold";
-        LotStatus2: number;
         LotStatusUpdateDTO: {
-            status: components["schemas"]["LotStatus2"];
+            status: components["schemas"]["LotStatus"];
         };
         LotUpdateDTO: {
             lotNumber?: string | null;
@@ -3669,11 +3668,14 @@ export interface components {
         NullableOfClientType: "Natural" | "Juridico" | null;
         /** @enum {unknown|null} */
         NullableOfLeadStatus: "Registered" | "Attended" | null;
-        NullableOfLotStatus: number | null;
+        /** @enum {unknown|null} */
+        NullableOfLotStatus: "Available" | "Quoted" | "Reserved" | "Sold" | null;
+        /** @enum {unknown|null} */
+        NullableOfQuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED" | null;
         /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
         PaginatedResponseOfUserGetDTO: {
-            items: Array<components["schemas"]["UserGetDTO"]>;
+            items: components["schemas"]["UserGetDTO"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -3743,30 +3745,21 @@ export interface components {
         QuotationCreateDTO: {
             /** Format: uuid */
             leadId: string;
-            projectName: string;
+            /** Format: uuid */
+            lotId: string;
             /** Format: uuid */
             advisorId: string;
             /** Format: double */
-            totalPrice: number;
+            discount?: number | null;
             /** Format: double */
-            discount: number;
-            /** Format: double */
-            finalPrice: number;
-            /** Format: double */
-            downPayment: number;
-            /** Format: double */
-            amountFinanced: number;
+            downPayment?: number | null;
             /** Format: int32 */
-            monthsFinanced: number;
-            block: string;
-            lotNumber: string;
+            monthsFinanced?: number | null;
             /** Format: double */
-            area: number;
-            /** Format: double */
-            pricePerM2: number;
-            /** Format: double */
-            exchangeRate: number;
-            quotationDate: string;
+            exchangeRate?: number | null;
+            quotationDate?: string | null;
+            /** Format: int32 */
+            validityDays?: number;
         };
         QuotationDTO: {
             /** Format: uuid */
@@ -3774,12 +3767,21 @@ export interface components {
             code?: string;
             /** Format: uuid */
             leadId?: string;
-            leadClientName?: string | null;
+            leadClientName?: string;
+            /** Format: uuid */
+            lotId?: string;
+            /** Format: uuid */
+            projectId?: string;
+            /** Format: uuid */
+            blockId?: string;
             projectName?: string;
+            blockName?: string;
+            lotNumber?: string;
             /** Format: uuid */
             advisorId?: string;
-            advisorName?: string | null;
-            status?: string;
+            advisorName?: string;
+            status?: components["schemas"]["QuotationStatus"];
+            statusText?: string;
             /** Format: double */
             totalPrice?: number;
             /** Format: double */
@@ -3792,12 +3794,16 @@ export interface components {
             amountFinanced?: number;
             /** Format: int32 */
             monthsFinanced?: number;
-            block?: string;
-            lotNumber?: string;
             /** Format: double */
-            area?: number;
+            areaAtQuotation?: number;
             /** Format: double */
-            pricePerM2?: number;
+            pricePerM2AtQuotation?: number;
+            /** Format: double */
+            currentLotArea?: number | null;
+            /** Format: double */
+            currentLotPrice?: number | null;
+            lotStillExists?: boolean;
+            currency?: string;
             /** Format: double */
             exchangeRate?: number;
             quotationDate?: string;
@@ -3808,6 +3814,8 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        /** @enum {unknown} */
+        QuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED";
         QuotationStatusDTO: {
             status?: string;
         };
@@ -3823,11 +3831,12 @@ export interface components {
             totalPrice?: number;
             /** Format: double */
             finalPrice?: number;
-            block?: string;
+            blockName?: string;
             lotNumber?: string;
             /** Format: double */
-            area?: number;
-            status?: string;
+            areaAtQuotation?: number;
+            status?: components["schemas"]["QuotationStatus"];
+            statusText?: string;
             quotationDate?: string;
             /** Format: date-time */
             validUntil?: string;
@@ -3835,28 +3844,15 @@ export interface components {
             createdAt?: string;
         };
         QuotationUpdateDTO: {
-            projectName?: string | null;
             /** Format: uuid */
             advisorId?: string | null;
-            status?: string | null;
-            /** Format: double */
-            totalPrice?: number | null;
+            status?: components["schemas"]["NullableOfQuotationStatus"];
             /** Format: double */
             discount?: number | null;
             /** Format: double */
-            finalPrice?: number | null;
-            /** Format: double */
             downPayment?: number | null;
-            /** Format: double */
-            amountFinanced?: number | null;
             /** Format: int32 */
             monthsFinanced?: number | null;
-            block?: string | null;
-            lotNumber?: string | null;
-            /** Format: double */
-            area?: number | null;
-            /** Format: double */
-            pricePerM2?: number | null;
             /** Format: double */
             exchangeRate?: number | null;
             /** Format: date-time */
@@ -4008,7 +4004,7 @@ export interface components {
         };
         UserGetDTO: {
             user: components["schemas"]["User2"];
-            roles: Array<string>;
+            roles: string[];
         };
         UserSummaryDto: {
             /** Format: uuid */

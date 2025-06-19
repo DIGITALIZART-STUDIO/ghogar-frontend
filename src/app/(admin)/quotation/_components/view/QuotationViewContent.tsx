@@ -119,7 +119,7 @@ export default function QuotationViewContent({
                             Manzana
                         </p>
                         <p className="font-medium">
-                            {data.block}
+                            {data.blockName}
                         </p>
                     </div>
 
@@ -137,7 +137,7 @@ export default function QuotationViewContent({
                             Área
                         </p>
                         <p className="font-medium">
-                            {data.area}
+                            {data.areaAtQuotation}
                             {" "}
                             m²
                         </p>
@@ -149,7 +149,7 @@ export default function QuotationViewContent({
                         </p>
                         <p className="font-medium">
                             $
-                            {data.pricePerM2}
+                            {data.pricePerM2AtQuotation}
                         </p>
                     </div>
                 </div>
@@ -162,7 +162,7 @@ export default function QuotationViewContent({
                         <span className="font-medium">
                             Manzana
                             {" "}
-                            {data.block}
+                            {data.blockName}
                             , Lote
                             {data.lotNumber}
                         </span>

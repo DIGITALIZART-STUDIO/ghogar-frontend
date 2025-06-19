@@ -63,7 +63,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
 
     return (
         <Card
-            className={`group  transition-all duration-300 border-0 ${isLoading ? "opacity-70" : ""} ${!block.isActive ? "bg-gray-50" : "bg-white"}`}
+            className={`group  transition-all duration-300 border-0 ${isLoading ? "opacity-70" : ""} ${!block.isActive ? "bg-gray-50 dark:bg-gray-950" : "bg-white dark:bg-gray-800"}`}
         >
             <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
@@ -73,7 +73,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
                                 <Building className={`h-5 w-5 ${block.isActive ? "text-blue-600" : "text-gray-500"}`} />
                             </div>
                             <div>
-                                <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                <CardTitle className="text-xl font-bold text-gray-900  dark:text-gray-100">
                                     {block.name}
                                 </CardTitle>
                                 <CardDescription className="text-sm text-gray-500 mt-1">
@@ -89,7 +89,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
                         <div className="flex items-center space-x-2">
                             <Switch
                                 checked={block.isActive}
-                                onCheckedChange={(checked) => onToggleActive(block.id, checked)}
+                                onCheckedChange={(checked) => onToggleActive(block.id ?? "", checked)}
                                 disabled={isLoading}
                             />
                         </div>
@@ -107,7 +107,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
                 {/* Progress Overview */}
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Progreso de ventas
                         </span>
                         <span className="text-sm text-gray-500">
@@ -156,7 +156,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
                         size="sm"
                         disabled={isLoading}
                         onClick={() => setOpenSheet(true)}
-                        className="hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                        className="hover:bg-gray-100 hover:text-gray-900 transition-colors dark:hover:bg-gray-700 dark:hover:text-gray-100 flex-1"
                     >
                         <Pencil className="mr-2 h-4 w-4" />
                         Editar

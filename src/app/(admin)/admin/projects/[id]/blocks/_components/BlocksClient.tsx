@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Search } from "lucide-react";
+import { Filter, Home, Search } from "lucide-react";
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toastWrapper } from "@/types/toasts";
 import { ActivateBlock, DeactivateBlock } from "../_actions/BlockActions";
@@ -25,7 +26,7 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
             return blocks;
         }
 
-        return blocks.filter((block) => block.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        return blocks.filter((block) => (block.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()));
     }, [blocks, searchTerm]);
 
     const handleToggleActive = (blockId: string, isActive: boolean) => {
@@ -57,6 +58,10 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
     if (blocks.length === 0) {
         return (
             <div className="text-center py-12">
+                <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    No hay manzanas
+                </h3>
                 <p className="text-gray-500">
                     No hay manzanas disponibles para este proyecto.
                 </p>
@@ -67,17 +72,32 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
     return (
         <div className="space-y-6">
             {/* Buscador */}
-            <div className="flex items-center gap-4">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                        type="text"
-                        placeholder="Buscar manzana por nombre..."
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        className="pl-10"
-                    />
-                </div>
+            <div className="w-full gap-4">
+                <Card className="border pt-0">
+                    <CardHeader className="my-4">
+                        <CardTitle className="text-xl flex items-center mt-2">
+                            <Filter className="mr-2 h-5 w-5 text-purple-600" />
+                            Filtros de Búsqueda
+                        </CardTitle>
+                        <CardDescription>
+                            Encuentra lotes específicos usando los filtros disponibles
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                <Input
+                                    type="text"
+                                    placeholder="Buscar manzana por nombre..."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                    className="pl-10"
+                                />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
                 {searchTerm && (
                     <div className="text-sm text-gray-500">
                         {filteredBlocks.length}

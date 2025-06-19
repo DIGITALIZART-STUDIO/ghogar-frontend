@@ -23,46 +23,82 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
 
+    // Estados para preservar las selecciones
+    const [selectedProjectId, setSelectedProjectId] = useState<string>(data.projectId ?? "");
+    const [selectedBlockId, setSelectedBlockId] = useState<string>(data.blockId ?? "");
+    const [selectedLotId, setSelectedLotId] = useState<string>(data.lotId ?? "");
+
     // Inicializar el formulario con los datos existentes de la cotización
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
+            // Claves primarias/IDs
             leadId: data.leadId,
-            projectName: data.projectName,
-            totalPrice: (data.totalPrice ?? 0).toString(),
+            lotId: data.lotId,
+            advisorId: data.advisorId,
+            projectId: data.projectId,
+            blockId: data.blockId,
+
+            // Campos financieros como string (para formulario)
             discount: (data.discount ?? 0).toString(),
-            finalPrice: (data.finalPrice ?? 0).toString(),
             downPayment: (data.downPayment ?? 0).toString(),
-            amountFinanced: (data.amountFinanced ?? 0).toString(),
             monthsFinanced: (data.monthsFinanced ?? 0).toString(),
-            block: data.block,
-            lotNumber: data.lotNumber,
-            area: (data.area ?? 0).toString(),
-            pricePerM2: (data.pricePerM2 ?? 0).toString(),
             exchangeRate: (data.exchangeRate ?? 0).toString(),
+
+            // Fecha
             quotationDate: data.quotationDate,
+
+            // Información del lote
+            area: (data.areaAtQuotation ?? 0).toString(),
+            pricePerM2: (data.pricePerM2AtQuotation ?? 0).toString(),
+
+            // Valores calculados
+            totalPrice: (data.totalPrice ?? 0).toString(),
+            finalPrice: (data.finalPrice ?? 0).toString(),
+            amountFinanced: (data.amountFinanced ?? 0).toString(),
         },
     });
+    // Efectos para cargar datos necesarios al inicializar
+    useEffect(() => {
+        const loadInitialData = async () => {
+            // Cargar datos de proyectos, bloques y lotes para establecer los estados seleccionados
+            if (data.projectId) {
+                setSelectedProjectId(data.projectId);
 
-    const onSubmit = async(input: CreateQuotationSchema) => {
-        startTransition(async() => {
+                if (data.blockId) {
+                    setSelectedBlockId(data.blockId);
+
+                    if (data.lotId) {
+                        setSelectedLotId(data.lotId);
+                    }
+                }
+            }
+        };
+
+        loadInitialData();
+    }, [data.projectId, data.blockId, data.lotId]);
+
+    const onSubmit = async (input: CreateQuotationSchema) => {
+        startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const quotationData = {
+                // Claves primarias (requeridas por el backend)
                 leadId: input.leadId,
-                projectName: input.projectName,
-                totalPrice: Number.parseFloat(input.totalPrice),
-                discount: Number.parseFloat(input.discount ?? "0"),
-                finalPrice: Number.parseFloat(input.finalPrice),
-                downPayment: Number.parseFloat(input.downPayment),
-                amountFinanced: Number.parseFloat(input.amountFinanced),
-                monthsFinanced: Number.parseInt(input.monthsFinanced, 10),
-                block: input.block,
-                lotNumber: input.lotNumber,
-                area: Number.parseFloat(input.area),
-                pricePerM2: Number.parseFloat(input.pricePerM2),
-                exchangeRate: Number.parseFloat(input.exchangeRate),
+                lotId: selectedLotId || input.lotId,
+                advisorId: advisorId,
+
+                // IDs de proyecto y bloque
+                projectId: selectedProjectId || input.projectId,
+                blockId: selectedBlockId || input.blockId,
+
+                // Campos financieros opcionales
+                discount: parseFloat(input.discount),
+                downPayment: parseFloat(input.downPayment),
+                monthsFinanced: parseInt(input.monthsFinanced, 10),
+                exchangeRate: parseFloat(input.exchangeRate),
+
+                // Fecha
                 quotationDate: input.quotationDate,
-                advisorId,
             };
 
             const [, error] = await toastWrapper(UpdateQuotation(data?.id ?? "", quotationData), {
@@ -85,5 +121,18 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess]);
 
-    return <QuotationForm leadsData={leadsData} form={form} isPending={isPending} onSubmit={onSubmit} />;
+    return (
+        <QuotationForm
+            leadsData={leadsData}
+            form={form}
+            isPending={isPending}
+            onSubmit={onSubmit}
+            // Pasar estados iniciales al componente QuotationForm
+            initialSelection={{
+                projectId: selectedProjectId,
+                blockId: selectedBlockId,
+                lotId: selectedLotId,
+            }}
+        />
+    );
 }

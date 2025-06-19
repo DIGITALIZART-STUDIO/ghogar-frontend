@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Trash2 } from "lucide-react";
+import { Ellipsis, Pencil, Eye, Trash2, Download } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, CurrencyLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
+import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
 
 /**
  * Generar las columnas de la tabla de reservas
@@ -180,9 +181,18 @@ export const reservationsColumns = (
         id: "actions",
         cell: function Cell({ row }) {
             const { id } = row.original;
+            const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
             
             return (
                 <div>
+                    {openDownloadDialog && (
+                        <ReservationDownloadDialog
+                            reservationId={id!}
+                            isOpen={openDownloadDialog}
+                            onOpenChange={setOpenDownloadDialog}
+                        />
+                    )}
+                    
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button 
@@ -193,7 +203,7 @@ export const reservationsColumns = (
                                 <Ellipsis className="size-4" aria-hidden="true" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem>
                                 Ver
                                 <DropdownMenuShortcut>
@@ -205,6 +215,12 @@ export const reservationsColumns = (
                                 Editar
                                 <DropdownMenuShortcut>
                                     <Pencil className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenDownloadDialog(true)}>
+                                Descargar Documento
+                                <DropdownMenuShortcut>
+                                    <Download className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

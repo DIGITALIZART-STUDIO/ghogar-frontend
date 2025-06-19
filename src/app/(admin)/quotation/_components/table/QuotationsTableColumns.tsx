@@ -21,7 +21,6 @@ import { QuotationStatusLabels } from "../../_utils/quotations.utils";
 import { QuotationStatusChangeDialog } from "../managements-status/QuotationStatusChangeDialog";
 import { QuotationViewDialog } from "../view/QuotationViewDialog";
 import { QuotationDownloadDialog } from "../managements-status/QuotationDownloadDialog";
-import { SeparationDownloadDialog } from "../managements-status/SeparationDownloadDialog";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -191,7 +190,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
             const { id, status, code } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
-            const [openSeparationDialog, setOpenSeparationDialog] = useState(false);
+
             const [openChangeStatusDialog, setOpenChangeStatusDialog] = useState(false);
             // Función para cerrar el diálogo de cambio de estado
             const handleCloseStatusChange = () => {
@@ -217,13 +216,6 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                             quotationId={row.original.id!}
                             isOpen={openDownloadDialog}
                             onOpenChange={setOpenDownloadDialog}
-                        />
-                    )}
-                    {openSeparationDialog && (
-                        <SeparationDownloadDialog
-                            quotationId={row.original.id!}
-                            isOpen={openSeparationDialog}
-                            onOpenChange={setOpenSeparationDialog}
                         />
                     )}
 
@@ -257,14 +249,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <Download className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            {/* FIXME: move to its UI */}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setOpenSeparationDialog(true)}>
-                                Descargar Separacion
-                                <DropdownMenuShortcut>
-                                    <Download className="size-4" aria-hidden="true" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
+
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

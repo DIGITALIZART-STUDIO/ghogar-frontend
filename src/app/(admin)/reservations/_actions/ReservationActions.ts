@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 
 // Obtener todas las reservas
@@ -107,4 +107,8 @@ export async function DeleteReservation(id: string): Promise<Result<void, FetchE
         return err(error);
     }
     return ok(response);
-} 
+}
+
+export async function DownloadReservationPDF(reservationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Reservations/${reservationId}/pdf`, "get", null);
+}

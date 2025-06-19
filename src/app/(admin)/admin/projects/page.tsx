@@ -1,4 +1,4 @@
-import { BarChart3, Building2, Home,  TrendingUp } from "lucide-react";
+import { BarChart3, Building2, Home, TrendingUp } from "lucide-react";
 
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";

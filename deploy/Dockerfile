@@ -26,6 +26,8 @@ COPY tailwind.config.js tailwind.config.js
 COPY tsconfig.json tsconfig.json
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_BACKEND_URL
+
 
 RUN npm i -g pnpm
 RUN pnpm run build

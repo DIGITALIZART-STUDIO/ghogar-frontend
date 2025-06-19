@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 
 // Obtener todas las cotizaciones
@@ -169,4 +169,12 @@ export async function GenerateQuotationCode(): Promise<Result<{ code: string }, 
     }
     // @ts-expect-error - Response type doesn't match the expected { code: string } structure
     return ok(response);
+}
+
+export async function DownloadQuotationPDF(quotationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Quotations/${quotationId}/pdf`, "get", null);
+}
+
+export async function DownloadSeparationPDF(quotationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Quotations/${quotationId}/pdf-separation`, "get", null);
 }

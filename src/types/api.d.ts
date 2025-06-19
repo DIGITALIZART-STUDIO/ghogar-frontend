@@ -157,9 +157,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["BlockDTO"][];
+                        "application/json": components["schemas"]["BlockDTO"][];
+                        "text/json": components["schemas"]["BlockDTO"][];
                     };
                 };
             };
@@ -223,9 +223,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["BlockDTO"][];
+                        "application/json": components["schemas"]["BlockDTO"][];
+                        "text/json": components["schemas"]["BlockDTO"][];
                     };
                 };
             };
@@ -262,9 +262,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["BlockDTO"][];
+                        "application/json": components["schemas"]["BlockDTO"][];
+                        "text/json": components["schemas"]["BlockDTO"][];
                     };
                 };
             };
@@ -456,9 +456,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Client"]>;
-                        "application/json": Array<components["schemas"]["Client"]>;
-                        "text/json": Array<components["schemas"]["Client"]>;
+                        "text/plain": components["schemas"]["Client"][];
+                        "application/json": components["schemas"]["Client"][];
+                        "text/json": components["schemas"]["Client"][];
                     };
                 };
             };
@@ -585,9 +585,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -627,9 +627,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -674,9 +674,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Client"]>;
-                        "application/json": Array<components["schemas"]["Client"]>;
-                        "text/json": Array<components["schemas"]["Client"]>;
+                        "text/plain": components["schemas"]["Client"][];
+                        "application/json": components["schemas"]["Client"][];
+                        "text/json": components["schemas"]["Client"][];
                     };
                 };
             };
@@ -711,9 +711,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ClientSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["ClientSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "text/plain": components["schemas"]["ClientSummaryDto"][];
+                        "application/json": components["schemas"]["ClientSummaryDto"][];
+                        "text/json": components["schemas"]["ClientSummaryDto"][];
                     };
                 };
             };
@@ -745,8 +745,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file?: string;
+                        file?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -836,9 +835,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1026,9 +1025,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1065,9 +1064,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1104,9 +1103,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1143,9 +1142,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead"]>;
-                        "application/json": Array<components["schemas"]["Lead"]>;
-                        "text/json": Array<components["schemas"]["Lead"]>;
+                        "text/plain": components["schemas"]["Lead"][];
+                        "application/json": components["schemas"]["Lead"][];
+                        "text/json": components["schemas"]["Lead"][];
                     };
                 };
             };
@@ -1212,9 +1211,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -1254,9 +1253,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -1301,9 +1300,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
+                        "text/plain": components["schemas"]["UserSummaryDto"][];
+                        "application/json": components["schemas"]["UserSummaryDto"][];
+                        "text/json": components["schemas"]["UserSummaryDto"][];
                     };
                 };
             };
@@ -1340,9 +1339,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "text/plain": components["schemas"]["LeadSummaryDto"][];
+                        "application/json": components["schemas"]["LeadSummaryDto"][];
+                        "text/json": components["schemas"]["LeadSummaryDto"][];
                     };
                 };
             };
@@ -1377,9 +1376,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1575,9 +1574,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTaskDTO"]>;
-                        "application/json": Array<components["schemas"]["LeadTaskDTO"]>;
-                        "text/json": Array<components["schemas"]["LeadTaskDTO"]>;
+                        "text/plain": components["schemas"]["LeadTaskDTO"][];
+                        "application/json": components["schemas"]["LeadTaskDTO"][];
+                        "text/json": components["schemas"]["LeadTaskDTO"][];
                     };
                 };
                 /** @description Bad Request */
@@ -1623,9 +1622,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1660,9 +1659,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1697,9 +1696,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1737,9 +1736,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LeadTask"]>;
-                        "application/json": Array<components["schemas"]["LeadTask"]>;
-                        "text/json": Array<components["schemas"]["LeadTask"]>;
+                        "text/plain": components["schemas"]["LeadTask"][];
+                        "application/json": components["schemas"]["LeadTask"][];
+                        "text/json": components["schemas"]["LeadTask"][];
                     };
                 };
             };
@@ -1809,9 +1808,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1875,9 +1874,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1914,9 +1913,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1951,9 +1950,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -1990,9 +1989,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["LotDTO"][];
+                        "application/json": components["schemas"]["LotDTO"][];
+                        "text/json": components["schemas"]["LotDTO"][];
                     };
                 };
             };
@@ -2229,9 +2228,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectDTO"]>;
-                        "application/json": Array<components["schemas"]["ProjectDTO"]>;
-                        "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                        "text/plain": components["schemas"]["ProjectDTO"][];
+                        "application/json": components["schemas"]["ProjectDTO"][];
+                        "text/json": components["schemas"]["ProjectDTO"][];
                     };
                 };
             };
@@ -2293,9 +2292,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectDTO"]>;
-                        "application/json": Array<components["schemas"]["ProjectDTO"]>;
-                        "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                        "text/plain": components["schemas"]["ProjectDTO"][];
+                        "application/json": components["schemas"]["ProjectDTO"][];
+                        "text/json": components["schemas"]["ProjectDTO"][];
                     };
                 };
             };
@@ -2487,9 +2486,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationDTO"]>;
+                        "text/plain": components["schemas"]["QuotationDTO"][];
+                        "application/json": components["schemas"]["QuotationDTO"][];
+                        "text/json": components["schemas"]["QuotationDTO"][];
                     };
                 };
             };
@@ -2640,9 +2639,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationDTO"]>;
+                        "text/plain": components["schemas"]["QuotationDTO"][];
+                        "application/json": components["schemas"]["QuotationDTO"][];
+                        "text/json": components["schemas"]["QuotationDTO"][];
                     };
                 };
             };
@@ -2679,9 +2678,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationSummaryDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                        "text/plain": components["schemas"]["QuotationSummaryDTO"][];
+                        "application/json": components["schemas"]["QuotationSummaryDTO"][];
+                        "text/json": components["schemas"]["QuotationSummaryDTO"][];
                     };
                 };
             };
@@ -2811,6 +2810,241 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Quotations/{id}/pdf-separation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReservationDto"][];
+                        "application/json": components["schemas"]["ReservationDto"][];
+                        "text/json": components["schemas"]["ReservationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReservationCreateDto"];
+                    "text/json": components["schemas"]["ReservationCreateDto"];
+                    "application/*+json": components["schemas"]["ReservationCreateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Reservation"];
+                        "application/json": components["schemas"]["Reservation"];
+                        "text/json": components["schemas"]["Reservation"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReservationDto"];
+                        "application/json": components["schemas"]["ReservationDto"];
+                        "text/json": components["schemas"]["ReservationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/client/{clientId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    clientId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReservationDto"][];
+                        "application/json": components["schemas"]["ReservationDto"][];
+                        "text/json": components["schemas"]["ReservationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/quotation/{quotationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    quotationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReservationDto"][];
+                        "application/json": components["schemas"]["ReservationDto"][];
+                        "text/json": components["schemas"]["ReservationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Users": {
         parameters: {
             query?: never;
@@ -2886,9 +3120,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -3054,9 +3288,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
                 };
             };
             responses: {
@@ -3076,8 +3310,8 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         BatchOperationResult: {
-            successIds?: Array<string>;
-            failedIds?: Array<string>;
+            successIds?: string[];
+            failedIds?: string[];
             /** Format: int32 */
             totalProcessed?: number;
             allSucceeded?: boolean;
@@ -3196,6 +3430,8 @@ export interface components {
             address?: string | null;
             type?: components["schemas"]["NullableOfClientType"];
         };
+        /** @enum {unknown} */
+        Currency: "SOLES" | "DOLARES";
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
@@ -3208,6 +3444,8 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        /** Format: binary */
+        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -3217,7 +3455,7 @@ export interface components {
             clientsExisting?: number;
             /** Format: int32 */
             leadsCreated?: number;
-            errors?: Array<string>;
+            errors?: string[];
         };
         Lead: {
             /** Format: uuid */
@@ -3345,7 +3583,7 @@ export interface components {
         };
         LeadTasksResponseDto: {
             lead?: components["schemas"]["LeadDTO"];
-            tasks?: Array<components["schemas"]["LeadTaskDTO"]>;
+            tasks?: components["schemas"]["LeadTaskDTO"][];
         };
         LeadTaskUpdateDto: {
             /** Format: uuid */
@@ -3436,7 +3674,7 @@ export interface components {
         /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
         PaginatedResponseOfUserGetDTO: {
-            items: Array<components["schemas"]["UserGetDTO"]>;
+            items: components["schemas"]["UserGetDTO"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -3446,6 +3684,8 @@ export interface components {
             /** Format: int32 */
             totalPages: number;
         };
+        /** @enum {unknown} */
+        PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -3500,6 +3740,46 @@ export interface components {
             defaultDownPayment?: number | null;
             /** Format: int32 */
             defaultFinancingMonths?: number | null;
+        };
+        Quotation: {
+            code: string;
+            /** Format: uuid */
+            leadId: string;
+            lead?: components["schemas"]["Lead2"];
+            projectName: string;
+            /** Format: uuid */
+            advisorId: string;
+            advisor?: components["schemas"]["User"];
+            status?: components["schemas"]["QuotationStatus"];
+            /** Format: double */
+            totalPrice: number;
+            /** Format: double */
+            discount: number;
+            /** Format: double */
+            finalPrice: number;
+            /** Format: double */
+            downPayment: number;
+            /** Format: double */
+            amountFinanced: number;
+            /** Format: int32 */
+            monthsFinanced: number;
+            block: string;
+            lotNumber: string;
+            /** Format: double */
+            area: number;
+            /** Format: double */
+            pricePerM2: number;
+            /** Format: double */
+            exchangeRate: number;
+            quotationDate: string;
+            /** Format: date-time */
+            validUntil: string;
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
         };
         QuotationCreateDTO: {
             /** Format: uuid */
@@ -3569,6 +3849,8 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        /** @enum {unknown} */
+        QuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED";
         QuotationStatusDTO: {
             status?: string;
         };
@@ -3627,6 +3909,83 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
+        Reservation: {
+            /** Format: uuid */
+            clientId: string;
+            client: components["schemas"]["Client"];
+            /** Format: uuid */
+            quotationId: string;
+            quotation: components["schemas"]["Quotation"];
+            /** Format: date */
+            reservationDate: string;
+            /** Format: double */
+            amountPaid: number;
+            currency?: components["schemas"]["Currency"];
+            status?: components["schemas"]["ReservationStatus"];
+            paymentMethod?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            /** Format: double */
+            exchangeRate: number;
+            /** Format: date-time */
+            expiresAt: string;
+            notified?: boolean;
+            schedule?: string | null;
+            /** Format: uuid */
+            id?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        ReservationCreateDto: {
+            /** Format: uuid */
+            clientId: string;
+            /** Format: uuid */
+            quotationId: string;
+            /** Format: date */
+            reservationDate?: string;
+            /** Format: double */
+            amountPaid: number;
+            currency?: components["schemas"]["Currency"];
+            paymentMethod: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            /** Format: double */
+            exchangeRate: number;
+            /** Format: date-time */
+            expiresAt: string;
+            schedule?: string | null;
+        };
+        ReservationDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string;
+            clientName?: string;
+            /** Format: uuid */
+            quotationId?: string;
+            quotationCode?: string;
+            /** Format: date */
+            reservationDate?: string;
+            /** Format: double */
+            amountPaid?: number;
+            currency?: components["schemas"]["Currency"];
+            status?: components["schemas"]["ReservationStatus"];
+            paymentMethod?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            /** Format: double */
+            exchangeRate?: number;
+            /** Format: date-time */
+            expiresAt?: string;
+            notified?: boolean;
+            schedule?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        /** @enum {unknown} */
+        ReservationStatus: "ISSUED" | "CANCELED" | "ANULATED";
         StringSegment: {
             buffer?: string | null;
             /** Format: int32 */
@@ -3723,7 +4082,7 @@ export interface components {
         };
         UserGetDTO: {
             user: components["schemas"]["User2"];
-            roles: Array<string>;
+            roles: string[];
         };
         UserSummaryDto: {
             /** Format: uuid */

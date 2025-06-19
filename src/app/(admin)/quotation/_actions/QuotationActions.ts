@@ -174,3 +174,7 @@ export async function GenerateQuotationCode(): Promise<Result<{ code: string }, 
 export async function DownloadQuotationPDF(quotationId: string): Promise<Result<Blob, FetchError>> {
     return DownloadFile(`/api/Quotations/${quotationId}/pdf`, "get", null);
 }
+
+export async function DownloadSeparationPDF(quotationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Quotations/${quotationId}/pdf-separation`, "get", null);
+}

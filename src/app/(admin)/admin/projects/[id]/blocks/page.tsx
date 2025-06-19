@@ -14,10 +14,12 @@ import { GetBlocksByProject } from "./_actions/BlockActions";
 import { BlocksClient } from "./_components/BlocksClient";
 import { CreateBlocksDialog } from "./_components/create/CreateBlocksDialog";
 
-export default async function BlocksPage({ params }: { params: { id: string } }) {
+export default async function BlocksPage({ params }: { params: Promise<{ id: string }> }) {
     // Obtener datos del proyecto y bloques
-    const [projectResult, projectError] = await GetProject(params.id);
-    const [blocksResult, blocksError] = await GetBlocksByProject(params.id);
+    const { id } = await params;
+
+    const [projectResult, projectError] = await GetProject(id);
+    const [blocksResult, blocksError] = await GetBlocksByProject(id);
 
     if (projectError || blocksError) {
         return (

@@ -1,0 +1,114 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+import { components } from "@/types/api";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
+import { err, ok, Result } from "@/utils/result";
+
+// Obtener todas las reservas
+export async function GetAllReservations(): Promise<Result<Array<components["schemas"]["ReservationDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations", {
+        ...auth,
+    }));
+
+    if (error) {
+        console.log("Error getting reservations:", error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Obtener una reserva específica por ID
+export async function GetReservationById(id: string): Promise<Result<components["schemas"]["ReservationDto"], FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting reservation ${id}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Obtener reservas por ID de cliente
+export async function GetReservationsByClientId(clientId: string): Promise<Result<Array<components["schemas"]["ReservationDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/client/{clientId}", {
+        ...auth,
+        params: {
+            path: {
+                clientId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting reservations for client ${clientId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Obtener reservas por ID de cotización
+export async function GetReservationsByQuotationId(quotationId: string): Promise<Result<Array<components["schemas"]["ReservationDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/quotation/{quotationId}", {
+        ...auth,
+        params: {
+            path: {
+                quotationId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting reservations for quotation ${quotationId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Crear una nueva reserva
+export async function CreateReservation(reservation: components["schemas"]["ReservationCreateDto"]): Promise<Result<components["schemas"]["ReservationDto"], FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.POST("/api/Reservations", {
+        ...auth,
+        body: reservation,
+    }));
+
+    revalidatePath("/(admin)/reservations", "page");
+
+    if (error) {
+        console.log("Error creating reservation:", error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Eliminar una reserva
+export async function DeleteReservation(id: string): Promise<Result<void, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.DELETE("/api/Reservations/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/reservations", "page");
+
+    if (error) {
+        console.log(`Error deleting reservation ${id}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+export async function DownloadReservationPDF(reservationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Reservations/${reservationId}/pdf`, "get", null);
+}

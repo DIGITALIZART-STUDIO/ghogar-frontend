@@ -20,46 +20,56 @@ export default function CreateClientQuotationPage({ leadsData, advisorId }: Crea
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
-    // Inicializar el formulario con useForm y el esquema de validación
+
+    // Inicializar el formulario con useForm y el esquema de validación actualizado
     const form = useForm<CreateQuotationSchema>({
         resolver: zodResolver(quotationSchema),
         defaultValues: {
+            // Claves primarias/IDs - todos vacíos excepto advisorId que viene por props
             leadId: "",
-            projectName: "",
-            totalPrice: "",
+            lotId: "",
+            advisorId: advisorId,
+            projectId: "",
+            blockId: "",
+
+            // Campos financieros - valores iniciales
             discount: "0",
-            finalPrice: "",
             downPayment: "20",
-            amountFinanced: "",
             monthsFinanced: "36",
-            block: "",
-            lotNumber: "",
+            exchangeRate: "3.75",
+
+            // Fecha - hoy por defecto
+            quotationDate: new Date().toISOString()
+                .split("T")[0],
+
+            // Información del lote - inicialmente vacíos
             area: "",
             pricePerM2: "",
-            exchangeRate: "3.75",
-            quotationDate: "",
+
+            // Valores calculados - inicialmente vacíos
+            totalPrice: "",
+            finalPrice: "",
+            amountFinanced: "",
         },
     });
 
-    const onSubmit = async(input: CreateQuotationSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateQuotationSchema) => {
+        startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const quotationData = {
+                // Claves primarias (requeridas por el backend)
                 leadId: input.leadId,
-                projectName: input.projectName,
-                totalPrice: Number.parseFloat(input.totalPrice),
-                discount: Number.parseFloat(input.discount ?? "0"),
-                finalPrice: Number.parseFloat(input.finalPrice),
-                downPayment: Number.parseFloat(input.downPayment),
-                amountFinanced: Number.parseFloat(input.amountFinanced),
-                monthsFinanced: Number.parseInt(input.monthsFinanced, 10),
-                block: input.block,
-                lotNumber: input.lotNumber,
-                area: Number.parseFloat(input.area),
-                pricePerM2: Number.parseFloat(input.pricePerM2),
-                exchangeRate: Number.parseFloat(input.exchangeRate),
+                lotId: input.lotId,
+                advisorId: advisorId,
+
+                // Campos financieros opcionales
+                discount: parseFloat(input.discount),
+                downPayment: parseFloat(input.downPayment),
+                monthsFinanced: parseInt(input.monthsFinanced, 10),
+                exchangeRate: parseFloat(input.exchangeRate),
+
+                // Fecha
                 quotationDate: input.quotationDate,
-                advisorId,
             };
 
             const [, error] = await toastWrapper(CreateQuotation(quotationData), {

@@ -3399,6 +3399,8 @@ export interface components {
         /** @enum {unknown|null} */
         NullableOfLotStatus: "Available" | "Quoted" | "Reserved" | "Sold" | null;
         /** @enum {unknown|null} */
+        NullableOfQuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED" | null;
+        /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
         PaginatedResponseOfUserGetDTO: {
             items: Array<components["schemas"]["UserGetDTO"]>;
@@ -3469,30 +3471,21 @@ export interface components {
         QuotationCreateDTO: {
             /** Format: uuid */
             leadId: string;
-            projectName: string;
+            /** Format: uuid */
+            lotId: string;
             /** Format: uuid */
             advisorId: string;
             /** Format: double */
-            totalPrice: number;
+            discount?: number | null;
             /** Format: double */
-            discount: number;
-            /** Format: double */
-            finalPrice: number;
-            /** Format: double */
-            downPayment: number;
-            /** Format: double */
-            amountFinanced: number;
+            downPayment?: number | null;
             /** Format: int32 */
-            monthsFinanced: number;
-            block: string;
-            lotNumber: string;
+            monthsFinanced?: number | null;
             /** Format: double */
-            area: number;
-            /** Format: double */
-            pricePerM2: number;
-            /** Format: double */
-            exchangeRate: number;
-            quotationDate: string;
+            exchangeRate?: number | null;
+            quotationDate?: string | null;
+            /** Format: int32 */
+            validityDays?: number;
         };
         QuotationDTO: {
             /** Format: uuid */
@@ -3500,12 +3493,21 @@ export interface components {
             code?: string;
             /** Format: uuid */
             leadId?: string;
-            leadClientName?: string | null;
+            leadClientName?: string;
+            /** Format: uuid */
+            lotId?: string;
+            /** Format: uuid */
+            projectId?: string;
+            /** Format: uuid */
+            blockId?: string;
             projectName?: string;
+            blockName?: string;
+            lotNumber?: string;
             /** Format: uuid */
             advisorId?: string;
-            advisorName?: string | null;
-            status?: string;
+            advisorName?: string;
+            status?: components["schemas"]["QuotationStatus"];
+            statusText?: string;
             /** Format: double */
             totalPrice?: number;
             /** Format: double */
@@ -3518,12 +3520,16 @@ export interface components {
             amountFinanced?: number;
             /** Format: int32 */
             monthsFinanced?: number;
-            block?: string;
-            lotNumber?: string;
             /** Format: double */
-            area?: number;
+            areaAtQuotation?: number;
             /** Format: double */
-            pricePerM2?: number;
+            pricePerM2AtQuotation?: number;
+            /** Format: double */
+            currentLotArea?: number | null;
+            /** Format: double */
+            currentLotPrice?: number | null;
+            lotStillExists?: boolean;
+            currency?: string;
             /** Format: double */
             exchangeRate?: number;
             quotationDate?: string;
@@ -3534,6 +3540,8 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        /** @enum {unknown} */
+        QuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED";
         QuotationStatusDTO: {
             status?: string;
         };
@@ -3549,11 +3557,12 @@ export interface components {
             totalPrice?: number;
             /** Format: double */
             finalPrice?: number;
-            block?: string;
+            blockName?: string;
             lotNumber?: string;
             /** Format: double */
-            area?: number;
-            status?: string;
+            areaAtQuotation?: number;
+            status?: components["schemas"]["QuotationStatus"];
+            statusText?: string;
             quotationDate?: string;
             /** Format: date-time */
             validUntil?: string;
@@ -3561,28 +3570,15 @@ export interface components {
             createdAt?: string;
         };
         QuotationUpdateDTO: {
-            projectName?: string | null;
             /** Format: uuid */
             advisorId?: string | null;
-            status?: string | null;
-            /** Format: double */
-            totalPrice?: number | null;
+            status?: components["schemas"]["NullableOfQuotationStatus"];
             /** Format: double */
             discount?: number | null;
             /** Format: double */
-            finalPrice?: number | null;
-            /** Format: double */
             downPayment?: number | null;
-            /** Format: double */
-            amountFinanced?: number | null;
             /** Format: int32 */
             monthsFinanced?: number | null;
-            block?: string | null;
-            lotNumber?: string | null;
-            /** Format: double */
-            area?: number | null;
-            /** Format: double */
-            pricePerM2?: number | null;
             /** Format: double */
             exchangeRate?: number | null;
             /** Format: date-time */

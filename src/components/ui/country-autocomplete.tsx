@@ -140,7 +140,7 @@ const CountryAutocomplete = forwardRef<HTMLInputElement, CountryAutocompleteProp
 
     // Custom input rendering to show flag alongside text
     const renderCustomInput = () => {
-        if (!selected ?? !SelectedFlagComponent) {
+        if (!selected || !SelectedFlagComponent) {
             return (
                 <CommandInput
                     ref={ref}
@@ -161,9 +161,9 @@ const CountryAutocomplete = forwardRef<HTMLInputElement, CountryAutocompleteProp
                 <div className="flex items-center w-full h-10 px-3 py-2 text-sm" onClick={() => inputRef.current?.focus()}>
                     <div className="flex items-center gap-2 pl-6">
                         <span className="flex h-4 w-6 overflow-hidden rounded-sm">
-                            <SelectedFlagComponent title={selected.label} />
+                            <SelectedFlagComponent title={selected?.label ?? ""} />
                         </span>
-                        <span>{selected.label}</span>
+                        <span>{selected?.label ?? ""}</span>
                     </div>
                     <input ref={inputRef} onFocus={handleFocus} onBlur={handleBlur} className="absolute opacity-0 w-0 h-0" />
                 </div>

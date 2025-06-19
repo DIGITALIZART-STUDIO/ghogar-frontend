@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Building, FileText, IdCard, Mail, MapPin, Phone, User } from "lucide-react";
+import {  Building, FileText, IdCard, Mail, MapPin, Phone, User } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -108,19 +108,6 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                                 </Badge>
                             )}
 
-                            {/* Display co-owner if available */}
-                            {row.coOwner && (
-                                <Badge
-                                    variant="outline"
-                                    className="flex items-center gap-1 py-1.5 px-3 border-amber-200 text-amber-700 dark:border-amber-800"
-                                >
-                                    <Briefcase className="h-3.5 w-3.5 shrink-0" />
-                                    <span>
-                                        Co-propietario:
-                                        {row.coOwner}
-                                    </span>
-                                </Badge>
-                            )}
                         </div>
                     </div>
                 </div>

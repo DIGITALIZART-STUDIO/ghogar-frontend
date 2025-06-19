@@ -745,7 +745,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -2896,9 +2897,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Reservation"];
-                        "application/json": components["schemas"]["Reservation"];
-                        "text/json": components["schemas"]["Reservation"];
+                        "text/plain": components["schemas"]["ReservationDto"];
+                        "application/json": components["schemas"]["ReservationDto"];
+                        "text/json": components["schemas"]["ReservationDto"];
                     };
                 };
             };
@@ -3444,8 +3445,6 @@ export interface components {
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -3741,46 +3740,6 @@ export interface components {
             /** Format: int32 */
             defaultFinancingMonths?: number | null;
         };
-        Quotation: {
-            code: string;
-            /** Format: uuid */
-            leadId: string;
-            lead?: components["schemas"]["Lead2"];
-            projectName: string;
-            /** Format: uuid */
-            advisorId: string;
-            advisor?: components["schemas"]["User"];
-            status?: components["schemas"]["QuotationStatus"];
-            /** Format: double */
-            totalPrice: number;
-            /** Format: double */
-            discount: number;
-            /** Format: double */
-            finalPrice: number;
-            /** Format: double */
-            downPayment: number;
-            /** Format: double */
-            amountFinanced: number;
-            /** Format: int32 */
-            monthsFinanced: number;
-            block: string;
-            lotNumber: string;
-            /** Format: double */
-            area: number;
-            /** Format: double */
-            pricePerM2: number;
-            /** Format: double */
-            exchangeRate: number;
-            quotationDate: string;
-            /** Format: date-time */
-            validUntil: string;
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
         QuotationCreateDTO: {
             /** Format: uuid */
             leadId: string;
@@ -3849,8 +3808,6 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
-        /** @enum {unknown} */
-        QuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED";
         QuotationStatusDTO: {
             status?: string;
         };
@@ -3909,38 +3866,7 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
-        Reservation: {
-            /** Format: uuid */
-            clientId: string;
-            client: components["schemas"]["Client"];
-            /** Format: uuid */
-            quotationId: string;
-            quotation: components["schemas"]["Quotation"];
-            /** Format: date */
-            reservationDate: string;
-            /** Format: double */
-            amountPaid: number;
-            currency?: components["schemas"]["Currency"];
-            status?: components["schemas"]["ReservationStatus"];
-            paymentMethod?: components["schemas"]["PaymentMethod"];
-            bankName?: string | null;
-            /** Format: double */
-            exchangeRate: number;
-            /** Format: date-time */
-            expiresAt: string;
-            notified?: boolean;
-            schedule?: string | null;
-            /** Format: uuid */
-            id?: string;
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        };
         ReservationCreateDto: {
-            /** Format: uuid */
-            clientId: string;
             /** Format: uuid */
             quotationId: string;
             /** Format: date */

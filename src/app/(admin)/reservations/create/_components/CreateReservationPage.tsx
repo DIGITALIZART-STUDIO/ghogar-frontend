@@ -41,17 +41,8 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
         setIsPending(true);
         
         try {
-            // Find the selected quotation to get the client ID
-            const selectedQuotation = quotationsData.find(q => q.id === data.quotationId);
-            
-            if (!selectedQuotation || !selectedQuotation.leadId) {
-                toast.error("Error: No se pudo obtener el cliente de la cotización seleccionada");
-                return;
-            }
-
-            // Prepare the reservation data with client ID from quotation's lead
-            const reservationData: components["schemas"]["ReservationCreateDto"] = {
-                clientId: selectedQuotation.leadId, // Auto-filled from selected quotation's lead ID
+            // Prepare the reservation data - backend will extract client ID from quotation's lead
+            const reservationData = {
                 quotationId: data.quotationId,
                 reservationDate: data.reservationDate,
                 amountPaid: parseFloat(data.amountPaid),
@@ -63,7 +54,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
                 schedule: data.schedule || undefined,
             };
 
-            const [result, error] = await CreateReservation(reservationData);
+            const [result, error] = await CreateReservation(reservationData as any);
 
             if (error) {
                 toast.error(`Error al crear la separación: ${error.message || "Error desconocido"}`);

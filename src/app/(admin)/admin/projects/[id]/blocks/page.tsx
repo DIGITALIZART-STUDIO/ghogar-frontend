@@ -14,12 +14,8 @@ import { GetBlocksByProject } from "./_actions/BlockActions";
 import { BlocksClient } from "./_components/BlocksClient";
 import { CreateBlocksDialog } from "./_components/create/CreateBlocksDialog";
 
-export default async function BlocksPage({
-    params,
-}: {
-  params: { id: string };
-  searchParams?: { [key: string]: string | Array<string> | undefined };
-}) {
+// Eliminar la anotación de tipo aquí para no entrar en conflicto con las definiciones generadas
+export default async function BlocksPage({ params }: { params: { id: string } }) {
     // Obtener datos del proyecto y bloques
     const [projectResult, projectError] = await GetProject(params.id);
     const [blocksResult, blocksError] = await GetBlocksByProject(params.id);

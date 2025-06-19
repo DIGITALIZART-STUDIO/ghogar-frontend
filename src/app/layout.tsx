@@ -1,58 +1,26 @@
-"use client";
-
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Toaster } from "sonner";
-
+import ClientProviders from "./client-providers";
 import "./globals.css";
+import { Metadata } from "next";
 
-const queryClient = new QueryClient();
+export const metadata: Metadata = {
+    title: "Gestión Hogar",
+    description: "Sistema de gestión para el hogar",
+};
 
 export default function RootLayout({
     children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
     return (
         <html lang="es" suppressHydrationWarning>
-            <head>
-                <title>
-                    Gestión Hogar
-                </title>
-                <meta name="description" content="Sistema de gestión para el hogar" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="icon" href="/favicon.ico" />
-            </head>
             <body
                 suppressHydrationWarning
                 className="font-montserrat text-base leading-normal antialiased bg-background text-foreground"
             >
-                <QueryClientProvider client={queryClient}>
+                <ClientProviders>
                     {children}
-                    <ReactQueryDevtools initialIsOpen={false} />
-                </QueryClientProvider>
-                <Toaster
-                    position="top-right"
-                    richColors
-                    expand
-                    closeButton
-                    offset={16}
-                    duration={4000}
-                    className="toaster-container"
-                    toastOptions={{
-                        className: "toast-item font-montserrat",
-                        descriptionClassName: "toast-description",
-                        style: {
-                            background: "var(--background)",
-                            color: "var(--foreground)",
-                            border: "1px solid var(--border)",
-                            borderRadius: "0.75rem",
-                            fontWeight: 500,
-                            padding: "0.75rem 1rem",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.1)",
-                        },
-                    }}
-                />
+                </ClientProviders>
             </body>
         </html>
     );

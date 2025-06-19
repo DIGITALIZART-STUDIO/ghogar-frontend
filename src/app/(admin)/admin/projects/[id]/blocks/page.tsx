@@ -14,16 +14,13 @@ import { GetBlocksByProject } from "./_actions/BlockActions";
 import { BlocksClient } from "./_components/BlocksClient";
 import { CreateBlocksDialog } from "./_components/create/CreateBlocksDialog";
 
-// Define la interfaz correcta para las props
-interface PageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: Record<string, string | Array<string> | undefined>;
-}
-
-export default async function BlocksPage({ params }: PageProps) {
-    // Usa la interfaz definida
+// No necesitamos definir la interfaz PageProps, dejemos que Next.js infiera los tipos
+export default async function BlocksPage({
+    params
+}: {
+    params: { id: string }
+    searchParams?: Record<string, string | Array<string> | undefined>
+}) {
     const id = params.id;
     // Obtener datos del proyecto y bloques
     const [projectResult, projectError] = await GetProject(id);

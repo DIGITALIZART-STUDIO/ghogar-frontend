@@ -14,9 +14,17 @@ import { GetBlocksByProject } from "./_actions/BlockActions";
 import { BlocksClient } from "./_components/BlocksClient";
 import { CreateBlocksDialog } from "./_components/create/CreateBlocksDialog";
 
-// @ts-expect-error - params is implicitly any from Next.js page props
-export default async function BlocksPage({ params }) {
-    const id = params.id as string;
+// Define la interfaz correcta para las props
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: Record<string, string | Array<string> | undefined>;
+}
+
+export default async function BlocksPage({ params }: PageProps) {
+    // Usa la interfaz definida
+    const id = params.id;
     // Obtener datos del proyecto y bloques
     const [projectResult, projectError] = await GetProject(id);
     const [blocksResult, blocksError] = await GetBlocksByProject(id);

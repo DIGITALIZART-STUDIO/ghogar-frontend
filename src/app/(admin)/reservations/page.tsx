@@ -1,6 +1,5 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
-import { backend, wrapper } from "@/types/backend";
 import { ReservationsTable } from "./_components/ReservationsTable";
 import { GetAllReservations } from "./_actions/ReservationActions";
 

@@ -8,6 +8,7 @@ import { DataTable } from "@/components/datatable/data-table";
 import { ReservationDto } from "../_types/reservation";
 import { reservationsColumns } from "./ReservationsTableColumns";
 import { facetedFilters } from "../_utils/reservations.filter.utils";
+import { ReservationsTableToolbarActions } from "./ReservationsTableToolbarActions";
 
 interface ReservationsTableProps {
     data: Array<ReservationDto>;
@@ -29,7 +30,7 @@ export function ReservationsTable({ data }: ReservationsTableProps) {
         <DataTable
             data={data}
             columns={columns}
-            toolbarActions={() => <div>ToolbarActions</div>}
+            toolbarActions={(table: TableInstance<ReservationDto>) => <ReservationsTableToolbarActions table={table} />}
             filterPlaceholder="Buscar separaciones..."
             facetedFilters={facetedFilters}
         />

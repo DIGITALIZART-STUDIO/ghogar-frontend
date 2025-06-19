@@ -6,15 +6,33 @@ import { Plus, RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { toastWrapper } from "@/types/toasts";
 import { CreateClient } from "../../_actions/ClientActions";
-import { clientSchema, CreateClientsSchema } from "../../_schemas/createClientsSchema";
+import { clientSchema, type CreateClientsSchema } from "../../_schemas/createClientsSchema";
 import { ClientTypes } from "../../_types/client";
 import CreateClientsForm from "./CreateClientsForm";
-import { toastWrapper } from "@/types/toasts";
 
 const dataForm = {
     button: "Crear cliente",
@@ -32,19 +50,21 @@ export function CreateClientsDialog() {
         resolver: zodResolver(clientSchema),
         defaultValues: {
             name: "",
-            coOwner: "", // Cambiado de null a string vacío
-            dni: "", // Cambiado de null a string vacío
-            ruc: "", // Cambiado de null a string vacío
-            companyName: "", // Cambiado de null a string vacío
+            dni: "",
+            ruc: "",
+            companyName: "",
             phoneNumber: "",
             email: "",
             address: "",
             type: undefined,
+            coOwners: [],
+            separateProperty: false,
+            separatePropertyData: undefined,
         },
     });
 
-    const onSubmit = async(input: CreateClientsSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateClientsSchema) => {
+        startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const clientData = {
                 name: input.name,
@@ -52,10 +72,13 @@ export function CreateClientsDialog() {
                 email: input.email,
                 address: input.address,
                 type: input.type,
+                coOwners: JSON.stringify(input.coOwners),
+                country: input.country,
+                separateProperty: input.separateProperty,
+                separatePropertyData: JSON.stringify(input.separatePropertyData),
                 // Campos condicionales según el tipo de cliente
                 ...(input.type === ClientTypes.Natural && {
                     dni: input.dni,
-                    coOwner: input.coOwner,
                 }),
                 ...(input.type === ClientTypes.Juridico && {
                     ruc: input.ruc,
@@ -63,14 +86,14 @@ export function CreateClientsDialog() {
                 }),
             };
 
+            console.log("Datos del cliente a enviar:", JSON.stringify(clientData, null, 2));
+
             const [, error] = await toastWrapper(CreateClient(clientData), {
                 loading: "Creando cliente...",
                 success: "Cliente creado exitosamente",
                 error: (e) => `Error al crear cliente: ${e.message}`,
             });
 
-            // Con toastWrapper ya se muestra la notificación, pero aún necesitamos
-            // manejar la lógica específica para errores en campos y cerrar el modal en caso de éxito
             if (!error) {
                 setIsSuccess(true);
             } else {
@@ -113,14 +136,10 @@ export function CreateClientsDialog() {
                         {dataForm.button}
                     </Button>
                 </DialogTrigger>
-                <DialogContent tabIndex={undefined} className="sm:max-w-[800px] px-0">
+                <DialogContent tabIndex={undefined} className="sm:max-w-[900px] px-0">
                     <DialogHeader className="px-4">
-                        <DialogTitle>
-                            {dataForm.title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {dataForm.description}
-                        </DialogDescription>
+                        <DialogTitle>{dataForm.title}</DialogTitle>
+                        <DialogDescription>{dataForm.description}</DialogDescription>
                     </DialogHeader>
                     <ScrollArea className="h-full max-h-[80vh] px-0">
                         <div className="px-6">
@@ -157,12 +176,8 @@ export function CreateClientsDialog() {
 
             <DrawerContent className="h-[80vh]">
                 <DrawerHeader className="pb-2">
-                    <DrawerTitle>
-                        {dataForm.title}
-                    </DrawerTitle>
-                    <DrawerDescription>
-                        {dataForm.description}
-                    </DrawerDescription>
+                    <DrawerTitle>{dataForm.title}</DrawerTitle>
+                    <DrawerDescription>{dataForm.description}</DrawerDescription>
                 </DrawerHeader>
 
                 <div className="flex-1 overflow-hidden">

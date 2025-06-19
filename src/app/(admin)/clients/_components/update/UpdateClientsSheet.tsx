@@ -38,41 +38,72 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
+    // Parseamos coOwners si existe y es una cadena
+    const parseCoOwners = (coOwnersString?: string) => {
+        if (!coOwnersString) {
+            return [];
+        }
+        try {
+            return JSON.parse(coOwnersString);
+        } catch (error) {
+            console.error("Error parsing coOwners:", error);
+            return [];
+        }
+    };
+
+    const parsedCoOwners = parseCoOwners(client?.coOwners as string);
+
+    console.log("UpdateClientSheet client:", JSON.stringify(client, null, 2));
+    console.log("Parsed coOwners:", parsedCoOwners);
+
     const form = useForm<CreateClientsSchema>({
         resolver: zodResolver(clientSchema),
         defaultValues: {
             name: client?.name ?? "",
-            coOwner: client?.coOwner ?? "",
             dni: client?.dni ?? "",
             ruc: client?.ruc ?? "",
             companyName: client?.companyName ?? "",
             phoneNumber: client?.phoneNumber ?? "",
             email: client?.email ?? "",
             address: client?.address ?? "",
-            type: (client?.type as ClientTypes) ?? ClientTypes.Natural, // Proporciona un valor predeterminado
+            country: client?.country ?? "",
+            type: (client?.type as ClientTypes) ?? ClientTypes.Natural,
+            coOwners: parsedCoOwners,
+            separateProperty: client?.separateProperty ?? false,
+            separatePropertyData: client?.separatePropertyData
+                ? JSON.parse(client.separatePropertyData as string)
+                : undefined,
         },
     });
 
     useEffect(() => {
         if (open && client) {
+            const parsedCoOwners = parseCoOwners(client?.coOwners as string);
+            const parsedSeparatePropertyData = client?.separatePropertyData
+                ? JSON.parse(client.separatePropertyData as string)
+                : undefined;
+
             // Verifica que client exista antes de usarlo
             form.reset({
                 name: client.name ?? "",
-                coOwner: client.coOwner ?? "",
                 dni: client.dni ?? "",
                 ruc: client.ruc ?? "",
                 companyName: client.companyName ?? "",
                 phoneNumber: client.phoneNumber ?? "",
                 email: client.email ?? "",
                 address: client.address ?? "",
+                country: client.country ?? "",
                 type: client.type as ClientTypes,
+                coOwners: parsedCoOwners,
+                separateProperty: client.separateProperty ?? false,
+                separatePropertyData: parsedSeparatePropertyData,
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, client]);
 
-    const onSubmit = async(input: CreateClientsSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateClientsSchema) => {
+        startTransition(async () => {
             // Preparar los datos según el tipo de cliente
             const clientData = {
                 name: input.name,
@@ -80,9 +111,12 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
                 email: input.email,
                 address: input.address,
                 type: input.type,
+                country: input.country,
 
-                // Campos opcionales que pueden ser null
-                coOwner: input.coOwner ?? null,
+                // Convertir arrays a strings JSON
+                coOwners: JSON.stringify(input.coOwners),
+                separateProperty: input.separateProperty,
+                separatePropertyData: input.separatePropertyData ? JSON.stringify(input.separatePropertyData) : null,
 
                 // Campos específicos según el tipo de cliente
                 dni: input.type === ClientTypes.Natural ? input.dni : null,
@@ -141,9 +175,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
                             </Badge>
                         )}
                     </SheetTitle>
-                    <SheetDescription>
-                        {infoSheet.description}
-                    </SheetDescription>
+                    <SheetDescription>{infoSheet.description}</SheetDescription>
                 </SheetHeader>
                 <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
                     <UpdateCustomersForm form={form} onSubmit={onSubmit}>

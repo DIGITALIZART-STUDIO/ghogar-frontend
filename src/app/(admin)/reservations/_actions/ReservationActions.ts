@@ -74,7 +74,7 @@ export async function GetReservationsByQuotationId(quotationId: string): Promise
 }
 
 // Crear una nueva reserva
-export async function CreateReservation(reservation: components["schemas"]["ReservationCreateDto"]): Promise<Result<components["schemas"]["Reservation"], FetchError>> {
+export async function CreateReservation(reservation: components["schemas"]["ReservationCreateDto"]): Promise<Result<components["schemas"]["ReservationDto"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.POST("/api/Reservations", {
         ...auth,
         body: reservation,

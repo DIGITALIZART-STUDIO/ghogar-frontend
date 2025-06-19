@@ -350,7 +350,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         </span>
                                         <span className="font-medium">
                                             Mz.
-                                            {selectedQuotation.block}
+                                            {selectedQuotation.blockName}
                                             {" "}
                                             Lt.
                                             {selectedQuotation.lotNumber}

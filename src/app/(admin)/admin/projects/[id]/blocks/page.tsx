@@ -14,14 +14,12 @@ import { GetBlocksByProject } from "./_actions/BlockActions";
 import { BlocksClient } from "./_components/BlocksClient";
 import { CreateBlocksDialog } from "./_components/create/CreateBlocksDialog";
 
-interface PageProps {
-    params: {
-        id: string;
-    };
-    searchParams?: { [key: string]: string | Array<string> | undefined };
-}
-
-export default async function BlocksPage({ params }: PageProps) {
+export default async function BlocksPage({
+    params,
+}: {
+  params: { id: string };
+  searchParams?: { [key: string]: string | Array<string> | undefined };
+}) {
     // Obtener datos del proyecto y bloques
     const [projectResult, projectError] = await GetProject(params.id);
     const [blocksResult, blocksError] = await GetBlocksByProject(params.id);
@@ -44,20 +42,14 @@ export default async function BlocksPage({ params }: PageProps) {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <Link href="/admin/projects">
-                                Proyectos
-                            </Link>
+                            <Link href="/admin/projects">Proyectos</Link>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem className="capitalize">
-                            <Link href={"/admin/projects"}>
-                                {project?.name}
-                            </Link>
+                            <Link href={"/admin/projects"}>{project?.name}</Link>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
-                        <BreadcrumbPage>
-                            Manzanas
-                        </BreadcrumbPage>
+                        <BreadcrumbPage>Manzanas</BreadcrumbPage>
                     </BreadcrumbList>
                 </Breadcrumb>
             </div>

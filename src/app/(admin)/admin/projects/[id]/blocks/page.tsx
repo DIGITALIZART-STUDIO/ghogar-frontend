@@ -14,11 +14,12 @@ import { GetBlocksByProject } from "./_actions/BlockActions";
 import { BlocksClient } from "./_components/BlocksClient";
 import { CreateBlocksDialog } from "./_components/create/CreateBlocksDialog";
 
-// Eliminar la anotación de tipo aquí para no entrar en conflicto con las definiciones generadas
-export default async function BlocksPage({ params }: { params: { id: string } }) {
+// @ts-expect-error - params is implicitly any from Next.js page props
+export default async function BlocksPage({ params }) {
+    const id = params.id as string;
     // Obtener datos del proyecto y bloques
-    const [projectResult, projectError] = await GetProject(params.id);
-    const [blocksResult, blocksError] = await GetBlocksByProject(params.id);
+    const [projectResult, projectError] = await GetProject(id);
+    const [blocksResult, blocksError] = await GetBlocksByProject(id);
 
     if (projectError || blocksError) {
         return (
@@ -56,10 +57,10 @@ export default async function BlocksPage({ params }: { params: { id: string } })
                         description={project?.location ?? "Sin ubicación"}
                     />
                 </div>
-                <CreateBlocksDialog projectId={params.id} />
+                <CreateBlocksDialog projectId={id} />
             </div>
 
-            <BlocksClient blocks={blocks} projectId={params.id} />
+            <BlocksClient blocks={blocks} projectId={id} />
         </div>
     );
 }

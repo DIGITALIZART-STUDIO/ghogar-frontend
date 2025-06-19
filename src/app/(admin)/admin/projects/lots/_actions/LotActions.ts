@@ -68,24 +68,6 @@ export async function GetAvailableLots(): Promise<Result<Array<components["schem
     return ok(response);
 }
 
-// Obtener lotes por estado
-export async function GetLotsByStatus(status: string): Promise<Result<Array<components["schemas"]["LotDTO"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET("/api/Lots/status/{status}", {
-        ...auth,
-        params: {
-            path: {
-                status,
-            },
-        },
-    }));
-
-    if (error) {
-        console.log(`Error getting lots by status ${status}:`, error);
-        return err(error);
-    }
-    return ok(response);
-}
-
 // Obtener un lote específico
 export async function GetLot(id: string): Promise<Result<components["schemas"]["LotDTO"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Lots/{id}", {

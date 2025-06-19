@@ -5,7 +5,7 @@ import ProjectsCardImage from "@/assets/images/ProjectsCard.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ProjectData } from "../_types/Project";
+import { ProjectData } from "../_types/project";
 
 interface ProjectCardProps {
   project: ProjectData;

@@ -89,7 +89,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
                         <div className="flex items-center space-x-2">
                             <Switch
                                 checked={block.isActive}
-                                onCheckedChange={(checked) => onToggleActive(block.id, checked)}
+                                onCheckedChange={(checked) => onToggleActive(block.id ?? "", checked)}
                                 disabled={isLoading}
                             />
                         </div>

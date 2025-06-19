@@ -6,7 +6,7 @@ import { GetAllProjects } from "./_actions/ProjectActions";
 import { CreateProjectsDialog } from "./_components/create/CreateProjectsDialog";
 import { ProjectCard } from "./_components/ProjectCard";
 import { StatsCard } from "./_components/StatsCard";
-import { ProjectData } from "./_types/Project";
+import { ProjectData } from "./_types/project";
 
 // Función para calcular estadísticas usando los datos del DTO
 function getOverallStats(projects: Array<ProjectData>) {

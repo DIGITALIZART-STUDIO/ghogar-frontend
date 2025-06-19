@@ -26,7 +26,7 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
             return blocks;
         }
 
-        return blocks.filter((block) => block.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        return blocks.filter((block) => (block.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()));
     }, [blocks, searchTerm]);
 
     const handleToggleActive = (blockId: string, isActive: boolean) => {

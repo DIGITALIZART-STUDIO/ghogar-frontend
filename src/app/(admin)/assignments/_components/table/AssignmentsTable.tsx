@@ -19,7 +19,7 @@ export function AssignmentsTable({ data }: { data: Array<Lead> }) {
         (id: string) => {
             router.push(`/assignments/${id}/tasks`);
         },
-        [router],
+        [router]
     );
 
     const columns = useMemo(() => assignmentsColumns(handleTasksInterface), [handleTasksInterface]);

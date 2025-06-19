@@ -3,13 +3,7 @@ import Link from "next/link";
 
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { GetProject } from "../_actions/ProjectActions";
 import { GetBlock } from "../[id]/blocks/_actions/BlockActions";
 import { GetAllLots, GetLotsByBlock, GetLotsByProject } from "./_actions/LotActions";
@@ -17,13 +11,13 @@ import { CreateLotsDialog } from "./_components/create/CreateLotsDialog";
 import { LotsClient } from "./_components/LotsClient";
 import { LotData } from "./_types/lot";
 
-interface LotsPageProps {
-  searchParams: {
+type LotsPageProps ={
+    searchParams: Promise<{
     blockId?: string;
     projectId?: string;
-  };
-}
+  }>;
 
+}
 // Función para validar y limpiar los datos del lote
 const validateLotData = (rawLot: unknown): LotData | null => {
     if (!rawLot || typeof rawLot !== "object") {
@@ -55,7 +49,7 @@ const validateLotData = (rawLot: unknown): LotData | null => {
 };
 
 export default async function LotsPage({ searchParams }: LotsPageProps) {
-    const { blockId, projectId } = searchParams;
+    const { blockId, projectId } = await searchParams;
 
     // Determinar qué datos obtener basado en los parámetros
     let lotsResult;

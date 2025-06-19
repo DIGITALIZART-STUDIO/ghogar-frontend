@@ -35,10 +35,13 @@ pipeline {
 
     stages {
         stage("Build & push image") {
+            environment {
+                NEXT_PUBLIC_BACKEND_URL="https://gestionhogar-backend-develop.araozu.dev"
+            }
             steps {
                 script {
                     withDockerRegistry(credentialsId: "${REGISTRY_CREDENTIALS}") {
-                        def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f deploy/Dockerfile .")
+                        def image = docker.build("${FULL_REGISTRY_URL}:${BUILD_NUMBER}", "-f deploy/Dockerfile --build-arg NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL} .")
                         image.push()
                         image.push("latest")
                     }

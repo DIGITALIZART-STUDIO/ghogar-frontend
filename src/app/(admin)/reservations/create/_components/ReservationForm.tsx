@@ -1,28 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format, parse, parseISO } from "date-fns";
-import { es } from "date-fns/locale";
-import { 
-    Banknote, 
-    CreditCard, 
-    DollarSign, 
-    FileText, 
-    User, 
+import {
+    Banknote,
+    DollarSign,
+    FileText,
+    User,
     Calendar,
     Wallet,
-    Building2
+    Building2,
 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
 import { components } from "@/types/api";
 import { InputWithIcon } from "@/components/input-with-icon";
-import { AutoComplete } from "@/components/ui/autocomplete";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateReservationSchema } from "../_schemas/createReservationSchema";
@@ -31,25 +27,24 @@ import { CurrencyLabels, PaymentMethodLabels } from "../../_utils/reservations.u
 type QuotationDTO = components["schemas"]["QuotationDTO"];
 
 interface ReservationFormProps {
-  quotationsData: Array<QuotationDTO>;
-  form: UseFormReturn<CreateReservationSchema>;
-  onSubmit: (data: CreateReservationSchema) => void;
-  isPending: boolean;
+    quotationsData: Array<QuotationDTO>;
+    form: UseFormReturn<CreateReservationSchema>;
+    onSubmit: (data: CreateReservationSchema) => void;
+    isPending: boolean;
 }
 
 export function ReservationForm({ quotationsData, form, onSubmit, isPending }: ReservationFormProps) {
     const router = useRouter();
 
     // Prepare quotation options for dropdown
-    const quotationOptions = quotationsData.map((quotation) => ({
+    const quotationOptions: Array<Option> = quotationsData.map((quotation) => ({
         value: quotation.id ?? "",
         label: `${quotation.code} - ${quotation.leadClientName} (${quotation.projectName})`,
-        quotation: quotation,
     }));
 
     // Get selected quotation for displaying client info
     const selectedQuotationId = form.watch("quotationId");
-    const selectedQuotation = quotationsData.find(q => q.id === selectedQuotationId);
+    const selectedQuotation = quotationsData.find((q) => q.id === selectedQuotationId);
 
     return (
         <Form {...form}>
@@ -74,7 +69,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                     name="quotationId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Cotización</FormLabel>
+                                            <FormLabel>
+                                                Cotización
+                                            </FormLabel>
                                             <AutoComplete
                                                 options={quotationOptions}
                                                 emptyMessage="No se encontró la cotización."
@@ -94,13 +91,17 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                     <div className="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
                                         <div className="flex items-center mb-2">
                                             <User className="h-4 w-4 text-blue-600 mr-2" />
-                                            <span className="text-sm font-medium text-blue-800">Cliente seleccionado:</span>
+                                            <span className="text-sm font-medium text-blue-800">
+                                                Cliente seleccionado:
+                                            </span>
                                         </div>
                                         <div className="text-sm text-blue-700">
                                             {selectedQuotation.leadClientName}
                                         </div>
                                         <div className="text-xs text-blue-600 mt-1">
-                                            Proyecto: {selectedQuotation.projectName}
+                                            Proyecto:
+                                            {" "}
+                                            {selectedQuotation.projectName}
                                         </div>
                                     </div>
                                 )}
@@ -123,7 +124,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="reservationDate"
                                         render={({ field }) => (
                                             <FormItem className="flex flex-col">
-                                                <FormLabel>Fecha de Separación</FormLabel>
+                                                <FormLabel>
+                                                    Fecha de Separación
+                                                </FormLabel>
                                                 <FormControl>
                                                     <DatePicker
                                                         value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
@@ -147,7 +150,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="expiresAt"
                                         render={({ field }) => (
                                             <FormItem className="flex flex-col">
-                                                <FormLabel>Fecha de Vencimiento</FormLabel>
+                                                <FormLabel>
+                                                    Fecha de Vencimiento
+                                                </FormLabel>
                                                 <FormControl>
                                                     <DatePicker
                                                         value={field.value ? parseISO(field.value) : undefined}
@@ -184,7 +189,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="amountPaid"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Monto Pagado</FormLabel>
+                                                <FormLabel>
+                                                    Monto Pagado
+                                                </FormLabel>
                                                 <FormControl>
                                                     <InputWithIcon Icon={DollarSign} placeholder="1500.00" {...field} />
                                                 </FormControl>
@@ -198,7 +205,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="currency"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Moneda</FormLabel>
+                                                <FormLabel>
+                                                    Moneda
+                                                </FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger>
@@ -223,7 +232,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="paymentMethod"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Método de Pago</FormLabel>
+                                                <FormLabel>
+                                                    Método de Pago
+                                                </FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger>
@@ -248,7 +259,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="bankName"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Banco (Opcional)</FormLabel>
+                                                <FormLabel>
+                                                    Banco (Opcional)
+                                                </FormLabel>
                                                 <FormControl>
                                                     <InputWithIcon Icon={Building2} placeholder="Banco de Crédito del Perú" {...field} />
                                                 </FormControl>
@@ -262,7 +275,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                         name="exchangeRate"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Tipo de Cambio</FormLabel>
+                                                <FormLabel>
+                                                    Tipo de Cambio
+                                                </FormLabel>
                                                 <FormControl>
                                                     <InputWithIcon Icon={Banknote} placeholder="3.75" {...field} />
                                                 </FormControl>
@@ -277,9 +292,11 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                             name="schedule"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Cronograma de Pagos (Opcional)</FormLabel>
+                                                    <FormLabel>
+                                                        Cronograma de Pagos (Opcional)
+                                                    </FormLabel>
                                                     <FormControl>
-                                                        <Textarea 
+                                                        <Textarea
                                                             placeholder="Describe el cronograma de pagos si aplica..."
                                                             {...field}
                                                         />
@@ -297,29 +314,56 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                     {/* Columna derecha - Resumen */}
                     <div>
                         <div className="bg-card rounded-lg border p-6 sticky top-6">
-                            <h3 className="text-lg font-semibold mb-4">Resumen de Separación</h3>
-                            
+                            <h3 className="text-lg font-semibold mb-4">
+                                Resumen de Separación
+                            </h3>
+
                             {selectedQuotation ? (
                                 <div className="space-y-3 text-sm">
                                     <div className="flex justify-between">
-                                        <span>Cotización:</span>
-                                        <span className="font-medium">{selectedQuotation.code}</span>
+                                        <span>
+                                            Cotización:
+                                        </span>
+                                        <span className="font-medium">
+                                            {selectedQuotation.code}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Cliente:</span>
-                                        <span className="font-medium">{selectedQuotation.leadClientName}</span>
+                                        <span>
+                                            Cliente:
+                                        </span>
+                                        <span className="font-medium">
+                                            {selectedQuotation.leadClientName}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Proyecto:</span>
-                                        <span className="font-medium">{selectedQuotation.projectName}</span>
+                                        <span>
+                                            Proyecto:
+                                        </span>
+                                        <span className="font-medium">
+                                            {selectedQuotation.projectName}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Lote:</span>
-                                        <span className="font-medium">Mz. {selectedQuotation.block} Lt. {selectedQuotation.lotNumber}</span>
+                                        <span>
+                                            Lote:
+                                        </span>
+                                        <span className="font-medium">
+                                            Mz.
+                                            {selectedQuotation.block}
+                                            {" "}
+                                            Lt.
+                                            {selectedQuotation.lotNumber}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Precio Final:</span>
-                                        <span className="font-medium">S/ {selectedQuotation.finalPrice?.toLocaleString()}</span>
+                                        <span>
+                                            Precio Final:
+                                        </span>
+                                        <span className="font-medium">
+                                            S/
+                                            {selectedQuotation.finalPrice?.toLocaleString()}
+                                        </span>
                                     </div>
                                 </div>
                             ) : (
@@ -351,4 +395,4 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
             </form>
         </Form>
     );
-} 
+}

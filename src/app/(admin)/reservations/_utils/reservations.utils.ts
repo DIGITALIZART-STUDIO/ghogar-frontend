@@ -1,14 +1,14 @@
-import { CheckCircle, FileText, XCircle, Ban } from "lucide-react";
+import { FileText, XCircle, Ban } from "lucide-react";
 
 import { ReservationStatus, Currency, PaymentMethod } from "../_types/reservation";
 
 export const ReservationStatusLabels: Record<
-  ReservationStatus,
-  {
-    label: string;
-    icon: React.ElementType;
-    className: string;
-  }
+    ReservationStatus,
+    {
+        label: string;
+        icon: React.ElementType;
+        className: string;
+    }
 > = {
     [ReservationStatus.ISSUED]: {
         label: "Emitida",
@@ -36,4 +36,4 @@ export const PaymentMethodLabels: Record<PaymentMethod, string> = {
     [PaymentMethod.CASH]: "Efectivo",
     [PaymentMethod.BANK_DEPOSIT]: "Depósito bancario",
     [PaymentMethod.BANK_TRANSFER]: "Transferencia bancaria",
-}; 
+};

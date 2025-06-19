@@ -24,4 +24,4 @@ export const reservationSchema = z.object({
     schedule: z.string().optional(),
 });
 
-export type CreateReservationSchema = z.infer<typeof reservationSchema>; 
+export type CreateReservationSchema = z.infer<typeof reservationSchema>;

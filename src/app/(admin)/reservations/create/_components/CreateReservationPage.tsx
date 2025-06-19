@@ -15,7 +15,7 @@ import { ReservationForm } from "./ReservationForm";
 type QuotationDTO = components["schemas"]["QuotationDTO"];
 
 interface CreateReservationPageProps {
-  quotationsData: Array<QuotationDTO>;
+    quotationsData: Array<QuotationDTO>;
 }
 
 export default function CreateReservationPage({ quotationsData }: CreateReservationPageProps) {
@@ -37,9 +37,9 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
         },
     });
 
-    const onSubmit = async (data: CreateReservationSchema) => {
+    const onSubmit = async(data: CreateReservationSchema) => {
         setIsPending(true);
-        
+
         try {
             // Prepare the reservation data - backend will extract client ID from quotation's lead
             const reservationData = {
@@ -48,13 +48,14 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
                 amountPaid: parseFloat(data.amountPaid),
                 currency: data.currency as "SOLES" | "DOLARES",
                 paymentMethod: data.paymentMethod as "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER",
-                bankName: data.bankName || undefined,
+                bankName: data.bankName ?? undefined,
                 exchangeRate: parseFloat(data.exchangeRate),
                 expiresAt: data.expiresAt,
-                schedule: data.schedule || undefined,
+                schedule: data.schedule ?? undefined,
             };
 
-            const [result, error] = await CreateReservation(reservationData as any);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const [, error] = await CreateReservation(reservationData as any);
 
             if (error) {
                 toast.error(`Error al crear la separación: ${error.message || "Error desconocido"}`);
@@ -79,4 +80,4 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
             isPending={isPending}
         />
     );
-} 
+}

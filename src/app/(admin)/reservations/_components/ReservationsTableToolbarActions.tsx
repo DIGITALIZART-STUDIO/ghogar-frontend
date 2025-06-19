@@ -18,7 +18,7 @@ export function ReservationsTableToolbarActions({ table }: ReservationsTableTool
     const handleCreateReservationInterface = useCallback(() => {
         router.push("/reservations/create");
     }, [router]);
-    
+
     return (
         <div className="flex flex-wrap items-center justify-end gap-2">
             {table && table.getFilteredSelectedRowModel().rows.length > 0 ? null : null}
@@ -28,4 +28,4 @@ export function ReservationsTableToolbarActions({ table }: ReservationsTableTool
             </Button>
         </div>
     );
-} 
+}

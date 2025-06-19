@@ -19,7 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
-import { ReservationStatusLabels, CurrencyLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
+import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
 import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
 
 /**
@@ -27,9 +27,7 @@ import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
  * @param handleEditInterface Función para editar una reserva
  * @returns Columnas de la tabla de reservas
  */
-export const reservationsColumns = (
-    handleEditInterface: (id: string) => void
-): Array<ColumnDef<ReservationDto>> => [
+export const reservationsColumns = (handleEditInterface: (id: string) => void): Array<ColumnDef<ReservationDto>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -99,10 +97,12 @@ export const reservationsColumns = (
             const amount = row.getValue("monto") as number;
             const currency = row.original?.currency;
             const symbol = currency === "SOLES" ? "S/" : "$";
-            
+
             return (
                 <div className="min-w-24 text-right font-medium">
-                    {symbol} {amount?.toLocaleString("es-PE", { minimumFractionDigits: 2 }) || "0.00"}
+                    {symbol}
+                    {" "}
+                    {amount?.toLocaleString("es-PE", { minimumFractionDigits: 2 }) || "0.00"}
                 </div>
             );
         },
@@ -129,12 +129,14 @@ export const reservationsColumns = (
             const today = new Date();
             const expiryDate = new Date(expiresAt);
             const isExpired = expiryDate < today;
-            
+
             return (
                 <div className={`min-w-28 ${isExpired ? "text-red-600" : ""}`}>
                     {expiresAt ? format(expiryDate, "dd/MM/yyyy", { locale: es }) : "—"}
                     {isExpired && (
-                        <div className="text-xs text-red-500">Vencida</div>
+                        <div className="text-xs text-red-500">
+                            Vencida
+                        </div>
                     )}
                 </div>
             );
@@ -149,7 +151,9 @@ export const reservationsColumns = (
             const reservationStatusConfig = ReservationStatusLabels[reservationStatus];
 
             if (!reservationStatusConfig) {
-                return <div>No registrado</div>;
+                return <div>
+                    No registrado
+                </div>;
             }
 
             const Icon = reservationStatusConfig.icon;
@@ -182,7 +186,7 @@ export const reservationsColumns = (
         cell: function Cell({ row }) {
             const { id } = row.original;
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
-            
+
             return (
                 <div>
                     {openDownloadDialog && (
@@ -192,12 +196,12 @@ export const reservationsColumns = (
                             onOpenChange={setOpenDownloadDialog}
                         />
                     )}
-                    
+
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button 
-                                aria-label="Open menu" 
-                                variant="ghost" 
+                            <Button
+                                aria-label="Open menu"
+                                variant="ghost"
                                 className="flex size-8 p-0 data-[state=open]:bg-muted"
                             >
                                 <Ellipsis className="size-4" aria-hidden="true" />
@@ -237,4 +241,4 @@ export const reservationsColumns = (
         },
         enablePinning: true,
     },
-]; 
+];

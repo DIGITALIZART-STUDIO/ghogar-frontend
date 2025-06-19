@@ -5,17 +5,17 @@ export type ReservationCreateDto = components["schemas"]["ReservationCreateDto"]
 
 export enum ReservationStatus {
   ISSUED = "ISSUED",
-  CANCELED = "CANCELED", 
+  CANCELED = "CANCELED",
   ANULATED = "ANULATED",
 }
 
 export enum Currency {
   SOLES = "SOLES",
-  DOLARES = "DOLARES", 
+  DOLARES = "DOLARES",
 }
 
 export enum PaymentMethod {
   CASH = "CASH",
   BANK_DEPOSIT = "BANK_DEPOSIT",
   BANK_TRANSFER = "BANK_TRANSFER",
-} 
+}

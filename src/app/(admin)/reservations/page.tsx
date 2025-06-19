@@ -2,12 +2,14 @@ import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
 import { backend, wrapper } from "@/types/backend";
 import { ReservationsTable } from "./_components/ReservationsTable";
+import { GetAllReservations } from "./_actions/ReservationActions";
 
 export default async function ReservationsPage() {
-    // Obtener datos del usuario actual desde la API
-    const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
+    // Obtener todas las reservas
+    const [reservationsResult, reservationsError] = await GetAllReservations();
 
-    if (error || !userData) {
+    // Manejar el error si ocurre al obtener las reservas
+    if (reservationsError) {
         return (
             <div>
                 <HeaderPage title="Separaciones" description="Gestión de separaciones" />
@@ -16,23 +18,13 @@ export default async function ReservationsPage() {
         );
     }
 
-    // Usar el ID del usuario obtenido de la API
-    const userId = userData.user.id;
-
-    if (!userId) {
-        return (
-            <div>
-                <HeaderPage title="Separaciones" description="Gestión de separaciones" />
-                <ErrorGeneral />
-            </div>
-        );
-    }
+    const data = reservationsResult || [];
 
     return (
         <div>
             <HeaderPage title="Separaciones" description="Gestión de separaciones" />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <ReservationsTable data={[]} />
+                <ReservationsTable data={data} />
             </div>
         </div>
     );

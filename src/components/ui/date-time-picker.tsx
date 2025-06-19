@@ -31,11 +31,13 @@ export default function DatePicker({
 }: DatePickerProps) {
     const [month, setMonth] = React.useState<number>(value ? value.getMonth() : new Date().getMonth());
     const [year, setYear] = React.useState<number>(value ? value.getFullYear() : new Date().getFullYear());
-    const [timeValue, setTimeValue] = React.useState<string>(value
-        ? `${value.getHours().toString()
-            .padStart(2, "0")}:${value.getMinutes().toString()
-            .padStart(2, "0")}`
-        : "00:00");
+    const [timeValue, setTimeValue] = React.useState<string>(
+        value
+            ? `${value.getHours().toString()
+                .padStart(2, "0")}:${value.getMinutes().toString()
+                .padStart(2, "0")}`
+            : "00:00"
+    );
 
     // Creamos el array de años basado en si es fecha de nacimiento o no
     const years = React.useMemo(() => {
@@ -140,7 +142,7 @@ export default function DatePicker({
                     variant={"outline"}
                     className={cn(
                         "w-full justify-start text-left font-normal bg-card border-input",
-                        !value && "text-muted-foreground",
+                        !value && "text-muted-foreground"
                     )}
                     tabIndex={0}
                 >
@@ -149,9 +151,7 @@ export default function DatePicker({
                     ) : (
                         <CalendarIcon className={`mr-2 h-4 w-4 ${iconColor ? `${iconColor}` : ""}`} />
                     )}
-                    <span className="max-w-[150px] sm:max-w-full truncate text-ellipsis">
-                        {getFormattedDate()}
-                    </span>
+                    <span className="max-w-[150px] sm:max-w-full truncate text-ellipsis">{getFormattedDate()}</span>
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="center" side="bottom" onOpenAutoFocus={(e) => e.preventDefault()}>

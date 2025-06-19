@@ -12,7 +12,14 @@ import { DataTableColumnHeader } from "@/components/datatable/data-table-column-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { CreateLeadTasksDialog } from "../../[id]/tasks/_components/create/CreateLeadTasksDialog";
 import { LeadStatusToggleDialog } from "../state-management/LeadStatusTogleDialog";
 
@@ -59,12 +66,8 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
 
             return (
                 <div className="min-w-32">
-                    <div className="truncate capitalize">
-                        {row.getValue("Cliente")}
-                    </div>
-                    {identifier && <div className="text-xs text-muted-foreground">
-                        {identifier}
-                    </div>}
+                    <div className="truncate capitalize">{row.getValue("Cliente")}</div>
+                    {identifier && <div className="text-xs text-muted-foreground">{identifier}</div>}
                 </div>
             );
         },
@@ -103,9 +106,7 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
         cell: ({ row }) => {
             const phone = row.getValue("teléfono") as string;
             if (!phone) {
-                return <div>
-                    -
-                </div>;
+                return <div>-</div>;
             }
 
             try {
@@ -122,16 +123,12 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                                 {flags[country] && React.createElement(flags[country], { title: country })}
                             </span>
                         )}
-                        <span>
-                            {formattedPhone ?? phone}
-                        </span>
+                        <span>{formattedPhone ?? phone}</span>
                     </div>
                 );
             } catch {
                 // Si hay algún error al parsear el número, mostramos el número original
-                return <div>
-                    {phone}
-                </div>;
+                return <div>{phone}</div>;
             }
         },
     },
@@ -145,9 +142,7 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
             const leadStatusConfig = LeadStatusLabels[leadStatus];
 
             if (!leadStatusConfig) {
-                return <div>
-                    No registrado
-                </div>;
+                return <div>No registrado</div>;
             }
 
             const Icon = leadStatusConfig.icon;
@@ -180,9 +175,7 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
         id: "procedencia",
         accessorKey: "procedency",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Procedencia" />,
-        cell: ({ row }) => <div className="min-w-40 truncate capitalize">
-            {row.getValue("procedencia")}
-        </div>,
+        cell: ({ row }) => <div className="min-w-40 truncate capitalize">{row.getValue("procedencia")}</div>,
     },
 
     {
@@ -210,7 +203,6 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
     {
         id: "actions",
         cell: function Cell({ row }) {
-            const { id, client, status } = row.original;
             const [createTaskDialog, setCreateTaskDialog] = useState(false);
             const [toggleStatusDialog, setToggleStatusDialog] = useState(false);
             const handleCloseStatusChange = () => {
@@ -219,12 +211,12 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
 
             // Determinar el texto y el icono según el estado actual
             const getStatusToggleText = () => {
-                if (status === LeadStatus.Registered) {
+                if (row.original?.status === LeadStatus.Registered) {
                     return {
                         text: "Marcar como atendido",
                         icon: <CheckCircle className="size-4" aria-hidden="true" />,
                     };
-                } else if (status === LeadStatus.Attended) {
+                } else if (row.original?.status === LeadStatus.Attended) {
                     return {
                         text: "Marcar como registrado",
                         icon: <Clock className="size-4" aria-hidden="true" />,
@@ -251,8 +243,8 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                         <LeadStatusToggleDialog
                             isOpen={toggleStatusDialog}
                             onClose={handleCloseStatusChange}
-                            leadId={id ?? ""}
-                            leadName={client?.name ?? ""}
+                            leadId={row.original?.id ?? ""}
+                            leadName={row.original?.client?.name ?? ""}
                             currentStatus={status as LeadStatus}
                         />
                     )}
@@ -277,9 +269,7 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setToggleStatusDialog(true)}>
                                 {text}
-                                <DropdownMenuShortcut>
-                                    {icon}
-                                </DropdownMenuShortcut>
+                                <DropdownMenuShortcut>{icon}</DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

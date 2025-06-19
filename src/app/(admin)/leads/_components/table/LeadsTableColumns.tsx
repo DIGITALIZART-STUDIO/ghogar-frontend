@@ -259,7 +259,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             const [showReactivateDialog, setShowReactivateDialog] = useState(false);
             const [showEditDialog, setShowEditDialog] = useState(false);
 
-            const { isActive } = row.original;
+            const { isActive } = row.original ?? {};
             return (
                 <div>
                     <div>

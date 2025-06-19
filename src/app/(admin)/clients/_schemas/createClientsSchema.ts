@@ -2,71 +2,73 @@ import * as z from "zod";
 
 import { ClientTypes } from "../_types/client";
 
+// Schema para copropietarios
+const coOwnersSchema = z.object({
+    name: z.string().min(2, "El nombre es obligatorio"),
+    dni: z.string().length(8, "El DNI debe tener exactamente 8 caracteres"),
+    phone: z.string().optional(),
+});
+
+// Schema para datos de separación de bienes
+const separatePropertySchema = z.object({
+    spouseName: z.string().min(2, "El nombre del cónyuge es obligatorio"),
+    spouseDni: z.string().length(8, "El DNI debe tener exactamente 8 caracteres"),
+    phone: z.string().optional(),
+    maritalStatus: z.enum(["Casado", "Separado", "Unión de hecho"], {
+        required_error: "Debe seleccionar un estado civil",
+    }),
+});
+
 export const clientSchema = z
     .object({
-        name: z.string().min(2, { message: "El nombre es obligatorio y debe tener al menos 2 caracteres" }),
-        coOwner: z.string().nullable()
-            .optional(),
+        name: z.string().min(2),
         dni: z.string().nullable()
             .optional(),
         ruc: z.string().nullable()
             .optional(),
         companyName: z.string().nullable()
             .optional(),
-        phoneNumber: z.string().min(1, { message: "El número de teléfono es obligatorio" }),
-        email: z.string().email({ message: "Debe ser una dirección de correo válida" }),
-        address: z.string().min(2, { message: "La dirección es obligatoria" }),
-        type: z.nativeEnum(ClientTypes, {
-            errorMap: () => ({ message: "Debes seleccionar un tipo de cliente válido" }),
-        }),
+        country: z.string().min(1, { message: "El país es obligatorio" }),
+        phoneNumber: z.string().min(1),
+        email: z.string().email(),
+        address: z.string().min(2),
+        type: z.nativeEnum(ClientTypes),
+        // Nuevos campos
+        coOwners: z.array(coOwnersSchema).max(6, "Máximo 6 copropietarios permitidos"),
+        separateProperty: z.boolean(),
+        separatePropertyData: separatePropertySchema.optional(),
     })
     .refine(
         (data) => {
-            // Validaciones condicionales basadas en el tipo de cliente
             if (data.type === ClientTypes.Natural) {
-                // Para cliente Natural, se requiere DNI y debe tener 8 caracteres
-                if (!data.dni) {
-                    return false;
-                }
-                if (data.dni.length !== 8) {
-                    return false;
-                }
+                return data.dni?.length === 8;
             } else if (data.type === ClientTypes.Juridico) {
-                // Para cliente Jurídico, se requiere RUC y debe tener 11 caracteres
-                if (!data.ruc) {
-                    return false;
-                }
-                if (data.ruc.length !== 11) {
-                    return false;
-                }
+                return data.ruc?.length === 11;
             }
             return true;
         },
         {
-            message:
-        "Validación de cliente incorrecta. Para clientes Naturales se requiere DNI (8 caracteres) y para Jurídicos RUC (11 caracteres)",
-            path: ["type"], // Esto indica que el error está relacionado con el campo "type"
-        },
+            message: "Validación incorrecta: Natural necesita DNI de 8 dígitos, Jurídico necesita RUC de 11.",
+            path: ["type"],
+        }
     )
     .superRefine((data, ctx) => {
-        if (data.type === ClientTypes.Natural) {
-            if (data.dni && data.dni.length !== 8) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "El DNI debe tener exactamente 8 caracteres",
-                    path: ["dni"],
-                });
-            }
-        } else if (data.type === ClientTypes.Juridico) {
-            if (data.ruc && data.ruc.length !== 11) {
+    // Validaciones existentes
+        if (data.type === ClientTypes.Natural && data.dni?.length !== 8) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "El DNI debe tener exactamente 8 caracteres",
+                path: ["dni"],
+            });
+        }
+        if (data.type === ClientTypes.Juridico) {
+            if (data.ruc?.length !== 11) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "El RUC debe tener exactamente 11 caracteres",
                     path: ["ruc"],
                 });
             }
-
-            // Si no hay companyName, mostrar mensaje
             if (!data.companyName) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
@@ -74,6 +76,47 @@ export const clientSchema = z
                     path: ["companyName"],
                 });
             }
+        }
+
+        // Validación de DNIs únicos entre cliente principal y copropietarios
+        const allDnis: Array<string> = [];
+
+        // Agregar DNI del cliente principal si existe
+        if (data.dni) {
+            allDnis.push(data.dni);
+        }
+
+        // Agregar DNIs de copropietarios
+        data.coOwners.forEach((coprop, index) => {
+            if (allDnis.includes(coprop.dni)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Este DNI ya está registrado",
+                    path: ["copropietarios", index, "dni"],
+                });
+            } else {
+                allDnis.push(coprop.dni);
+            }
+        });
+
+        // Validar DNI del cónyuge si separación de bienes está activa
+        if (data.separateProperty && data.separatePropertyData) {
+            if (allDnis.includes(data.separatePropertyData.spouseDni)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "El DNI del cónyuge no puede ser igual al del cliente o copropietarios",
+                    path: ["separacionBienesDatos", "spouseDni"],
+                });
+            }
+        }
+
+        // Validar que si separacionBienes es true, los datos sean obligatorios
+        if (data.separateProperty && !data.separatePropertyData) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Los datos de separación de bienes son obligatorios",
+                path: ["separacionBienesDatos"],
+            });
         }
     });
 

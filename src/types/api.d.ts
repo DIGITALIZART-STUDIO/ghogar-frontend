@@ -3353,14 +3353,17 @@ export interface components {
             /** Format: uuid */
             id?: string;
             name: string;
-            coOwner?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
             phoneNumber: string;
             email: string;
             address: string;
+            country?: string | null;
             type: components["schemas"]["ClientType"];
+            coOwners?: string | null;
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -3372,14 +3375,17 @@ export interface components {
             /** Format: uuid */
             id?: string;
             name: string;
-            coOwner?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
             phoneNumber: string;
             email: string;
             address: string;
+            country?: string | null;
             type: components["schemas"]["ClientType"];
+            coOwners?: string | null;
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -3389,14 +3395,17 @@ export interface components {
         } | null;
         ClientCreateDto: {
             name: string;
-            coOwner?: string | null;
+            coOwners?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
             phoneNumber: string;
             email: string;
             address: string;
+            country?: string | null;
             type: components["schemas"]["ClientType"];
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
         };
         ClientDTO: {
             /** Format: uuid */
@@ -3422,14 +3431,17 @@ export interface components {
         ClientType: "Natural" | "Juridico";
         ClientUpdateDto: {
             name?: string | null;
-            coOwner?: string | null;
+            coOwners?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
             phoneNumber?: string | null;
             email?: string | null;
             address?: string | null;
+            country?: string | null;
             type?: components["schemas"]["NullableOfClientType"];
+            separateProperty?: boolean | null;
+            separatePropertyData?: string | null;
         };
         /** @enum {unknown} */
         Currency: "SOLES" | "DOLARES";

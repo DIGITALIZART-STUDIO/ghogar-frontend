@@ -4,11 +4,12 @@ import createClient from "openapi-fetch";
 import { err, ok, Result } from "@/utils/result";
 import { ACCESS_TOKEN_KEY } from "@/variables";
 import type { paths } from "./api";
+import { BACKEND_URL } from "./backend2";
 
 /**
  * Client for connecting with the backend
  */
-export const backend = createClient<paths>({ baseUrl: process.env.INTERNAL_BACKEND_URL ?? "http://localhost:5165" });
+export const backend = createClient<paths>({ baseUrl: BACKEND_URL });
 
 type AuthHeader = {
     headers: {
@@ -133,7 +134,7 @@ export async function DownloadFile(
     }
 
     try {
-        const response = await fetch(`${process.env.INTERNAL_BACKEND_URL}${url}`, {
+        const response = await fetch(`${BACKEND_URL}${url}`, {
             method,
             headers: {
                 "Content-Type": "application/json",

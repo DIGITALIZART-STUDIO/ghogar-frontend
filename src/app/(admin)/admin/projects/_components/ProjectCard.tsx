@@ -1,17 +1,21 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight, Building2, Calendar, DollarSign, MapPin } from "lucide-react";
+import { ArrowRight, Building2, Calendar, DollarSign, Edit, MapPin, Power, PowerOff } from "lucide-react";
 
 import ProjectsCardImage from "@/assets/images/ProjectsCard.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ProjectData } from "../_types/project";
+import type { ProjectData } from "../_types/project";
 
 interface ProjectCardProps {
   project: ProjectData;
+  onEdit?: (projectId: string) => void;
+  onToggleStatus?: (projectId: string, currentStatus: boolean) => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onEdit, onToggleStatus }: ProjectCardProps) {
     // Guard clause - Si no hay proyecto, retorna null o un componente de loading
     if (!project) {
         return null;
@@ -37,17 +41,25 @@ export function ProjectCard({ project }: ProjectCardProps) {
     const completionRate =
     safeProject.totalLots > 0 ? Math.round((safeProject.soldLots / safeProject.totalLots) * 100) : 0;
 
+    const handleEdit = () => {
+        onEdit?.(safeProject.id);
+    };
+
+    const handleToggleStatus = () => {
+        onToggleStatus?.(safeProject.id, safeProject.isActive);
+    };
+
     return (
         <Card className="overflow-hidden hover-lift border-0 pt-0 bg-white dark:bg-gray-950">
             {/* Project Image */}
             <div className="relative h-48 overflow-hidden">
                 <img
-                    src={ProjectsCardImage.src}
+                    src={ProjectsCardImage.src || "/placeholder.svg"}
                     alt={safeProject.name}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <div className="absolute top-4 right-4">
+                <div className="absolute top-4 right-4 flex gap-2">
                     <Badge
                         variant={safeProject.isActive ? "default" : "secondary"}
                         className={safeProject.isActive ? "bg-green-500 hover:bg-green-600" : ""}
@@ -56,9 +68,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     </Badge>
                 </div>
                 <div className="absolute bottom-4 left-4 text-white">
-                    <h3 className="text-xl font-bold">
-                        {safeProject.name}
-                    </h3>
+                    <h3 className="text-xl font-bold">{safeProject.name}</h3>
                     <p className="text-sm text-gray-200 flex items-center">
                         <MapPin className="mr-1 h-3 w-3" />
                         {safeProject.location}
@@ -75,9 +85,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     </span>
                     <span className="flex items-center">
                         <Building2 className="mr-1 h-4 w-4" />
-                        {safeProject.totalBlocks}
-                        {" "}
-                        manzanas
+                        {safeProject.totalBlocks} manzanas
                     </span>
                     <span className="flex items-center">
                         <Calendar className="mr-1 h-4 w-4" />
@@ -88,13 +96,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 {/* Progress Bar */}
                 <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">
-                            Progreso de ventas
-                        </span>
-                        <span className="font-semibold text-gray-900 dark:text-gray-100">
-                            {completionRate}
-                            %
-                        </span>
+                        <span className="text-gray-600 dark:text-gray-300">Progreso de ventas</span>
+                        <span className="font-semibold text-gray-900 dark:text-gray-100">{completionRate}%</span>
                     </div>
                     <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                         <div
@@ -107,52 +110,63 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-3">
                     <div className="text-center p-3 bg-green-50 rounded-lg">
-                        <div className="text-lg font-bold text-green-600">
-                            {safeProject.availableLots}
-                        </div>
-                        <div className="text-xs text-green-700">
-                            Disponibles
-                        </div>
+                        <div className="text-lg font-bold text-green-600">{safeProject.availableLots}</div>
+                        <div className="text-xs text-green-700">Disponibles</div>
                     </div>
                     <div className="text-center p-3 bg-yellow-50 rounded-lg">
-                        <div className="text-lg font-bold text-yellow-600">
-                            {safeProject.reservedLots}
-                        </div>
-                        <div className="text-xs text-yellow-700">
-                            Reservados
-                        </div>
+                        <div className="text-lg font-bold text-yellow-600">{safeProject.reservedLots}</div>
+                        <div className="text-xs text-yellow-700">Reservados</div>
                     </div>
                     <div className="text-center p-3 bg-red-50 rounded-lg">
-                        <div className="text-lg font-bold text-red-600">
-                            {safeProject.soldLots}
-                        </div>
-                        <div className="text-xs text-red-700">
-                            Vendidos
-                        </div>
+                        <div className="text-lg font-bold text-red-600">{safeProject.soldLots}</div>
+                        <div className="text-xs text-red-700">Vendidos</div>
                     </div>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-lg font-bold text-blue-600">
-                            {safeProject.quotedLots}
-                        </div>
-                        <div className="text-xs text-blue-700">
-                            Cotizados
-                        </div>
+                        <div className="text-lg font-bold text-blue-600">{safeProject.quotedLots}</div>
+                        <div className="text-xs text-blue-700">Cotizados</div>
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
-                    <Button asChild variant="outline" size="sm" className="flex-1">
-                        <Link href={`/admin/projects/${safeProject.id}/blocks`}>
-                            Ver Bloques
-                        </Link>
-                    </Button>
-                    <Button asChild size="sm" className="flex-1">
-                        <Link href={`/admin/projects/lots?projectId=${safeProject.id}`}>
-                            Ver Lotes
-                            <ArrowRight className="ml-1 h-3 w-3" />
-                        </Link>
-                    </Button>
+                <div className="space-y-2 pt-2">
+                    {/* Navigation Buttons */}
+                    <div className="flex gap-2">
+                        <Button asChild variant="outline" size="sm" className="flex-1">
+                            <Link href={`/admin/projects/${safeProject.id}/blocks`}>Ver Bloques</Link>
+                        </Button>
+                        <Button asChild size="sm" className="flex-1">
+                            <Link href={`/admin/projects/lots?projectId=${safeProject.id}`}>
+                                Ver Lotes
+                                <ArrowRight className="ml-1 h-3 w-3" />
+                            </Link>
+                        </Button>
+                    </div>
+
+                    {/* Management Buttons */}
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1" onClick={handleEdit}>
+                            <Edit className="mr-1 h-3 w-3" />
+                            Editar
+                        </Button>
+                        <Button
+                            variant={safeProject.isActive ? "destructive" : "default"}
+                            size="sm"
+                            className="flex-1"
+                            onClick={handleToggleStatus}
+                        >
+                            {safeProject.isActive ? (
+                                <>
+                                    <PowerOff className="mr-1 h-3 w-3" />
+                                    Desactivar
+                                </>
+                            ) : (
+                                <>
+                                    <Power className="mr-1 h-3 w-3" />
+                                    Activar
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>

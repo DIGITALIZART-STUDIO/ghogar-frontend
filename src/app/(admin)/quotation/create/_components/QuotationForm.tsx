@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { format, parse, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowRight, Banknote, CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
+import { ArrowRight, CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -13,13 +13,16 @@ import { GetActiveProjects } from "@/app/(admin)/admin/projects/_actions/Project
 import { GetActiveBlocksByProject } from "@/app/(admin)/admin/projects/[id]/blocks/_actions/BlockActions";
 import { GetLotsByBlock } from "@/app/(admin)/admin/projects/lots/_actions/LotActions";
 import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
-import { InputWithIcon } from "@/components/input-with-icon";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toastWrapper } from "@/types/toasts";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
+import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
+import { LogoSunat } from "@/assets/icons/LogoSunat";
 
 interface QuotationFormProps {
   leadsData: Array<SummaryLead>;
@@ -262,6 +265,23 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
         </div>
     );
 
+    const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
+
+    // Y luego añade esta función para manejar el clic del botón
+    const handleGetExchangeRate = () => {
+        startTransitionExchangeRate(async () => {
+            const [exchangeRate, error] = await toastWrapper(GetCurrentExchangeRate(), {
+                loading: "Obteniendo tipo de cambio...",
+                success: "Tipo de cambio obtenido correctamente de SUNAT",
+                error: (e) => `Error al obtener tipo de cambio: ${e.message}`,
+            });
+
+            if (!error && exchangeRate) {
+                form.setValue("exchangeRate", exchangeRate.toString());
+            }
+        });
+    };
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -308,9 +328,40 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="flex items-center">Tipo de Cambio</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={Banknote} placeholder="3.75" {...field} />
-                                            </FormControl>
+                                            <div className="flex items-center gap-2">
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="3.75"
+                                                        {...field}
+                                                        type="number"
+                                                        min={0}
+                                                        step={0.01}
+                                                        className="w-full"
+                                                        disabled={isPendingExchangeRate}
+                                                    />
+                                                </FormControl>
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                className="h-10 w-10"
+                                                                onClick={handleGetExchangeRate}
+                                                                disabled={isPendingExchangeRate}
+                                                            >
+                                                                {isPendingExchangeRate ? (
+                                                                    <RefreshCcw className="h-4 w-4 animate-spin" />
+                                                                ) : (
+                                                                    <LogoSunat className="h-4 w-4" />
+                                                                )}
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Obtener Tipo de Cambio de SUNAT</TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </div>
                                             <FormMessage />
                                         </FormItem>
                                     )}

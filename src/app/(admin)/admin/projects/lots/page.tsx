@@ -3,7 +3,13 @@ import Link from "next/link";
 
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { GetProject } from "../_actions/ProjectActions";
 import { GetBlock } from "../[id]/blocks/_actions/BlockActions";
 import { GetAllLots, GetLotsByBlock, GetLotsByProject } from "./_actions/LotActions";
@@ -11,13 +17,12 @@ import { CreateLotsDialog } from "./_components/create/CreateLotsDialog";
 import { LotsClient } from "./_components/LotsClient";
 import { LotData } from "./_types/lot";
 
-type LotsPageProps ={
-    searchParams: Promise<{
+type LotsPageProps = {
+  searchParams: Promise<{
     blockId?: string;
     projectId?: string;
   }>;
-
-}
+};
 // Función para validar y limpiar los datos del lote
 const validateLotData = (rawLot: unknown): LotData | null => {
     if (!rawLot || typeof rawLot !== "object") {
@@ -113,9 +118,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <Link href="/admin/projects">
-                                Proyectos
-                            </Link>
+                            <Link href="/admin/projects">Proyectos</Link>
                         </BreadcrumbItem>
 
                         {/* Si hay datos de proyecto, mostrar en breadcrumb */}
@@ -123,9 +126,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                             <>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem className="capitalize">
-                                    <Link href={`/admin/projects/${projectData.id}/blocks`}>
-                                        {projectData.name}
-                                    </Link>
+                                    <Link href={`/admin/projects/${projectData.id}/blocks`}>{projectData.name}</Link>
                                 </BreadcrumbItem>
                             </>
                         )}
@@ -135,15 +136,11 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                             <>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem className="capitalize">
-                                    <Link href={`/admin/projects/${projectData?.id}/blocks`}>
-                                        Manzanas
-                                    </Link>
+                                    <Link href={`/admin/projects/${projectData?.id}/blocks`}>Manzanas</Link>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem className="capitalize">
-                                    <Link href={`/admin/projects/lots?blockId=${blockData.id}`}>
-                                        {blockData.name}
-                                    </Link>
+                                    <Link href={`/admin/projects/lots?blockId=${blockData.id}`}>{blockData.name}</Link>
                                 </BreadcrumbItem>
                             </>
                         )}
@@ -153,17 +150,13 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                             <>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem className="capitalize">
-                                    <Link href={`/admin/projects/${projectData.id}/blocks`}>
-                                        Manzanas
-                                    </Link>
+                                    <Link href={`/admin/projects/${projectData.id}/blocks`}>Manzanas</Link>
                                 </BreadcrumbItem>
                             </>
                         )}
 
                         <BreadcrumbSeparator />
-                        <BreadcrumbPage>
-                            Lotes
-                        </BreadcrumbPage>
+                        <BreadcrumbPage>Lotes</BreadcrumbPage>
                     </BreadcrumbList>
                 </Breadcrumb>
             </div>
@@ -177,10 +170,7 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
             </div>
 
             {/* Client Component que maneja los filtros y la interactividad */}
-            <Suspense fallback={<div>
-                Cargando lotes...
-            </div>}
-            >
+            <Suspense fallback={<div>Cargando lotes...</div>}>
                 <LotsClient lots={lots} blockId={blockId} projectId={finalProjectId} />
             </Suspense>
         </div>

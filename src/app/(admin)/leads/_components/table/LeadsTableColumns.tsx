@@ -18,8 +18,8 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Lead, LeadStatus } from "../../_types/lead";
-import { LeadStatusLabels } from "../../_utils/leads.utils";
+import { Lead, LeadCaptureSource, LeadStatus } from "../../_types/lead";
+import { LeadCaptureSourceLabels, LeadStatusLabels } from "../../_utils/leads.utils";
 import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
 import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog";
 import { UpdateLeadSheet } from "../update/UpdateLeadsSheet";
@@ -64,18 +64,14 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         cell: ({ row }) => {
             if (!row.original) {
                 return null;
-            };
+            }
             const client = row.original.client!;
             const identifier = client.dni ? `DNI: ${client.dni}` : client.ruc ? `RUC: ${client.ruc}` : "";
 
             return (
                 <div className="min-w-32">
-                    <div className="truncate capitalize">
-                        {row.getValue("Cliente")}
-                    </div>
-                    {identifier && <div className="text-xs text-muted-foreground">
-                        {identifier}
-                    </div>}
+                    <div className="truncate capitalize">{row.getValue("Cliente")}</div>
+                    {identifier && <div className="text-xs text-muted-foreground">{identifier}</div>}
                 </div>
             );
         },
@@ -117,9 +113,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         cell: ({ row }) => {
             const phone = row.getValue("teléfono") as string;
             if (!phone) {
-                return <div>
-                    -
-                </div>;
+                return <div>-</div>;
             }
 
             try {
@@ -136,16 +130,12 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
                                 {flags[country] && React.createElement(flags[country], { title: country })}
                             </span>
                         )}
-                        <span>
-                            {formattedPhone ?? phone}
-                        </span>
+                        <span>{formattedPhone ?? phone}</span>
                     </div>
                 );
             } catch {
                 // Si hay algún error al parsear el número, mostramos el número original
-                return <div>
-                    {phone}
-                </div>;
+                return <div>{phone}</div>;
             }
         },
     },
@@ -159,9 +149,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             const leadStatusConfig = LeadStatusLabels[leadStatus];
 
             if (!leadStatusConfig) {
-                return <div>
-                    No registrado
-                </div>;
+                return <div>No registrado</div>;
             }
 
             const Icon = leadStatusConfig.icon;
@@ -194,60 +182,115 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         id: "asesor",
         accessorKey: "assignedTo.userName",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Asesor" />,
-        cell: ({ row }) => <div className="min-w-40 truncate capitalize">
-            {row.getValue("asesor")}
-        </div>,
+        cell: ({ row }) => <div className="min-w-40 truncate capitalize">{row.getValue("asesor")}</div>,
     },
 
     {
-        id: "procedencia",
-        accessorKey: "procedency",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Procedencia" />,
-        cell: ({ row }) => <div className="min-w-40 truncate capitalize">
-            {row.getValue("procedencia")}
-        </div>,
-    },
+        id: "Medio de captación",
+        accessorKey: "captureSource",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Tipo" />,
+        cell: ({ row }) => {
+            const documentType = row.getValue("Medio de captación") as LeadCaptureSource;
+            const documentTypeConfig = LeadCaptureSourceLabels[documentType];
 
-    {
-        id: "estado",
-        accessorKey: "isActive",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
-        cell: ({ row }) => (
-            <div>
-                {row.getValue("estado") ? (
-                    <Badge variant="secondary" className="bg-emerald-100 text-emerald-500 border-emerald-200">
-                        Activo
+            if (!documentTypeConfig) {
+                return <div>No registrado</div>;
+            }
+
+            const Icon = documentTypeConfig.icon;
+
+            return (
+                <div className="text-xs min-w-32">
+                    <Badge variant="outline" className={documentTypeConfig.className}>
+                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
+                        {documentTypeConfig.label}
                     </Badge>
-                ) : (
-                    <Badge variant="secondary" className="bg-red-100 text-red-500 border-red-200">
-                        Inactivo
-                    </Badge>
-                )}
-            </div>
-        ),
+                </div>
+            );
+        },
         filterFn: (row, id, value) => {
             const rowValue = row.getValue(id);
 
-            // Si value es un array, comprobamos si contiene el valor de la fila
             if (Array.isArray(value)) {
-                // Si el array está vacío, no filtramos
                 if (value.length === 0) {
                     return true;
                 }
-
-                // Convertimos cada elemento del array según sea necesario
-                return value.some((v) => {
-                    // Si es string "true"/"false", convertimos a booleano
-                    if (typeof v === "string") {
-                        return v === String(rowValue);
-                    }
-                    // Si ya es booleano, comparamos directamente
-                    return v === rowValue;
-                });
+                return value.includes(rowValue);
             }
 
-            // Si es un valor único, hacemos la comparación directa
             return rowValue === value;
+        },
+        enableColumnFilter: true,
+    },
+
+    {
+        id: "fechaExpiración",
+        accessorKey: "expirationDate",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
+        cell: ({ row }) => {
+            const expirationDate = row.getValue("fechaExpiración") as string;
+
+            if (!expirationDate) {
+                return <div>No definida</div>;
+            }
+
+            const expDate = new Date(expirationDate);
+            const currentDate = new Date();
+
+            // Calcular la diferencia en días
+            const diffTime = expDate.getTime() - currentDate.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Determinar el estado basado en los días restantes
+            let badgeClass = "";
+            let label = "";
+
+            if (diffDays > 3) {
+                // Verde: Más de 3 días hasta la expiración
+                badgeClass = "bg-emerald-100 text-emerald-500 border-emerald-200";
+                label = `${diffDays} días restantes`;
+            } else if (diffDays >= 0) {
+                // Amarillo: Entre 0 y 3 días hasta la expiración
+                badgeClass = "bg-amber-100 text-amber-500 border-amber-200";
+                label =
+          diffDays === 0
+              ? "Expira hoy"
+              : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
+            } else {
+                // Rojo: Ya expirado
+                badgeClass = "bg-red-100 text-red-500 border-red-200";
+                label = `Expirado hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? "s" : ""}`;
+            }
+
+            return (
+                <div className="flex flex-col gap-1">
+                    <Badge variant="secondary" className={badgeClass}>
+                        {label}
+                    </Badge>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            if (!row.getValue(id)) {
+                return false;
+            }
+
+            const expirationDate = new Date(row.getValue(id) as string);
+            const currentDate = new Date();
+            const diffTime = expirationDate.getTime() - currentDate.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Estado: "próximo" (verde), "cercano" (amarillo), "expirado" (rojo)
+            const status = diffDays > 3 ? "próximo" : diffDays >= 0 ? "cercano" : "expirado";
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(status);
+            }
+
+            return status === value;
         },
         enableColumnFilter: true,
     },

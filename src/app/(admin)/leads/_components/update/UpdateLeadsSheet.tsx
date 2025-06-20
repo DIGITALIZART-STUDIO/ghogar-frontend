@@ -20,7 +20,7 @@ import {
 import { toastWrapper } from "@/types/toasts";
 import { UpdateLead } from "../../_actions/LeadActions";
 import { CreateLeadSchema, leadSchema } from "../../_schemas/createLeadsSchema";
-import { Lead } from "../../_types/lead";
+import { Lead, LeadCaptureSource } from "../../_types/lead";
 import UpdateLeadsForm from "./UpdateLeadsForm";
 
 const infoSheet = {
@@ -43,7 +43,8 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
         defaultValues: {
             clientId: lead?.clientId ?? "",
             assignedToId: lead?.assignedToId ?? "",
-            procedency: lead?.procedency ?? "",
+            projectId: lead?.projectId ?? "",
+            captureSource: lead?.captureSource as LeadCaptureSource,
         },
     });
 
@@ -52,19 +53,21 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
             form.reset({
                 clientId: lead?.clientId ?? "",
                 assignedToId: lead?.assignedToId ?? "",
-                procedency: lead?.procedency ?? "",
+                projectId: lead?.projectId ?? "",
+                captureSource: lead?.captureSource as LeadCaptureSource,
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, lead]);
 
-    const onSubmit = async(input: CreateLeadSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateLeadSchema) => {
+        startTransition(async () => {
             // Preparar los datos según el tipo de cliente
             const clientData = {
                 clientId: input.clientId,
                 assignedToId: input.assignedToId,
-                procedency: input.procedency,
+                captureSource: input.captureSource,
+                projectId: input.projectId,
             };
 
             if (!lead?.id) {
@@ -101,9 +104,7 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
                             {lead?.client?.dni ?? lead?.client?.ruc}
                         </Badge>
                     </SheetTitle>
-                    <SheetDescription>
-                        {infoSheet.description}
-                    </SheetDescription>
+                    <SheetDescription>{infoSheet.description}</SheetDescription>
                 </SheetHeader>
                 <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
                     <UpdateLeadsForm form={form} onSubmit={onSubmit}>

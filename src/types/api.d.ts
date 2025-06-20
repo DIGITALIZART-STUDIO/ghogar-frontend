@@ -898,9 +898,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["LeadTask"];
-                        "application/json": components["schemas"]["LeadTask"];
-                        "text/json": components["schemas"]["LeadTask"];
+                        "text/plain": components["schemas"]["LeadTask2"];
+                        "application/json": components["schemas"]["LeadTask2"];
+                        "text/json": components["schemas"]["LeadTask2"];
                     };
                 };
             };
@@ -935,9 +935,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["LeadTask"];
-                        "application/json": components["schemas"]["LeadTask"];
-                        "text/json": components["schemas"]["LeadTask"];
+                        "text/plain": components["schemas"]["LeadTask2"];
+                        "application/json": components["schemas"]["LeadTask2"];
+                        "text/json": components["schemas"]["LeadTask2"];
                     };
                 };
             };
@@ -965,9 +965,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["LeadTask"];
-                        "application/json": components["schemas"]["LeadTask"];
-                        "text/json": components["schemas"]["LeadTask"];
+                        "text/plain": components["schemas"]["LeadTask2"];
+                        "application/json": components["schemas"]["LeadTask2"];
+                        "text/json": components["schemas"]["LeadTask2"];
                     };
                 };
             };
@@ -1301,9 +1301,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead2"]>;
-                        "application/json": Array<components["schemas"]["Lead2"]>;
-                        "text/json": Array<components["schemas"]["Lead2"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1330,9 +1330,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead2"];
-                        "application/json": components["schemas"]["Lead2"];
-                        "text/json": components["schemas"]["Lead2"];
+                        "text/plain": components["schemas"]["Lead4"];
+                        "application/json": components["schemas"]["Lead4"];
+                        "text/json": components["schemas"]["Lead4"];
                     };
                 };
             };
@@ -1367,9 +1367,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead2"];
-                        "application/json": components["schemas"]["Lead2"];
-                        "text/json": components["schemas"]["Lead2"];
+                        "text/plain": components["schemas"]["Lead4"];
+                        "application/json": components["schemas"]["Lead4"];
+                        "text/json": components["schemas"]["Lead4"];
                     };
                 };
             };
@@ -1397,9 +1397,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead2"];
-                        "application/json": components["schemas"]["Lead2"];
-                        "text/json": components["schemas"]["Lead2"];
+                        "text/plain": components["schemas"]["Lead4"];
+                        "application/json": components["schemas"]["Lead4"];
+                        "text/json": components["schemas"]["Lead4"];
                     };
                 };
             };
@@ -1455,9 +1455,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead2"];
-                        "application/json": components["schemas"]["Lead2"];
-                        "text/json": components["schemas"]["Lead2"];
+                        "text/plain": components["schemas"]["Lead4"];
+                        "application/json": components["schemas"]["Lead4"];
+                        "text/json": components["schemas"]["Lead4"];
                     };
                 };
             };
@@ -1491,9 +1491,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead2"]>;
-                        "application/json": Array<components["schemas"]["Lead2"]>;
-                        "text/json": Array<components["schemas"]["Lead2"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1530,9 +1530,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead2"]>;
-                        "application/json": Array<components["schemas"]["Lead2"]>;
-                        "text/json": Array<components["schemas"]["Lead2"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1569,9 +1569,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead2"]>;
-                        "application/json": Array<components["schemas"]["Lead2"]>;
-                        "text/json": Array<components["schemas"]["Lead2"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1608,9 +1608,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead2"]>;
-                        "application/json": Array<components["schemas"]["Lead2"]>;
-                        "text/json": Array<components["schemas"]["Lead2"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1639,6 +1639,115 @@ export interface paths {
                 path: {
                     id: string;
                 };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/{id}/recycle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Lead4"];
+                        "application/json": components["schemas"]["Lead4"];
+                        "text/json": components["schemas"]["Lead4"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/expired": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/check-expired": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -2011,7 +2120,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    status: number;
+                    status: components["schemas"]["LotStatus"];
                 };
                 cookie?: never;
             };
@@ -3350,6 +3459,62 @@ export interface components {
             totalProcessed?: number;
             allSucceeded?: boolean;
         };
+        Block: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project2"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot"]>;
+        };
+        Block2: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project4"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot2"]>;
+        };
+        Block3: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project6"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot3"]>;
+        };
+        Block4: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project8"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot4"]>;
+        };
         BlockCreateDTO: {
             name: string;
             /** Format: uuid */
@@ -3511,7 +3676,23 @@ export interface components {
             assignedToId?: string | null;
             assignedTo?: components["schemas"]["User"];
             status: components["schemas"]["LeadStatus"];
-            procedency: string;
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -3528,20 +3709,106 @@ export interface components {
             assignedToId?: string | null;
             assignedTo?: components["schemas"]["User"];
             status: components["schemas"]["LeadStatus"];
-            procedency: string;
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project3"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        Lead3: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"]["Client2"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"]["User"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project5"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
         };
+        Lead4: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"]["Client2"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"]["User"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project7"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        /** @enum {unknown} */
+        LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
         LeadCreateDto: {
             /** Format: uuid */
             clientId?: string | null;
             /** Format: uuid */
             assignedToId?: string | null;
+            /** Format: uuid */
+            projectId?: string | null;
             status: components["schemas"]["LeadStatus"];
-            procedency: string;
+            captureSource: components["schemas"]["LeadCaptureSource"];
         };
         LeadDTO: {
             /** Format: uuid */
@@ -3553,7 +3820,6 @@ export interface components {
             assignedToId?: string;
             assignedTo?: components["schemas"]["UserBasicDTO"];
             status?: string;
-            procedency?: string;
             isActive?: boolean;
         };
         LeadDTO2: {
@@ -3566,15 +3832,20 @@ export interface components {
             assignedToId?: string;
             assignedTo?: components["schemas"];
             status?: string;
-            procedency?: string;
             isActive?: boolean;
         } | null;
         /** @enum {unknown} */
-        LeadStatus: "Registered" | "Attended";
+        LeadStatus: "Registered" | "Attended" | "InFollowUp" | "Completed" | "Canceled" | "Expired";
         LeadSummaryDto: {
             /** Format: uuid */
             id?: string;
             client?: components["schemas"]["ClientSummaryDto"];
+            status?: components["schemas"]["LeadStatus"];
+            /** Format: date-time */
+            expirationDate?: string;
+            projectName?: string | null;
+            /** Format: int32 */
+            recycleCount?: number;
         };
         LeadTask: {
             /** Format: uuid */
@@ -3582,6 +3853,28 @@ export interface components {
             /** Format: uuid */
             leadId: string;
             lead?: components["schemas"]["Lead"];
+            /** Format: uuid */
+            assignedToId: string;
+            assignedTo?: components["schemas"]["User"];
+            description: string;
+            /** Format: date-time */
+            scheduledDate: string;
+            /** Format: date-time */
+            completedDate?: string | null;
+            isCompleted?: boolean;
+            type?: components["schemas"]["TaskType"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        LeadTask2: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            leadId: string;
+            lead?: components["schemas"]["Lead2"];
             /** Format: uuid */
             assignedToId: string;
             assignedTo?: components["schemas"]["User"];
@@ -3645,8 +3938,12 @@ export interface components {
             clientId?: string | null;
             /** Format: uuid */
             assignedToId?: string | null;
+            /** Format: uuid */
+            projectId?: string | null;
             status?: components["schemas"]["NullableOfLeadStatus"];
-            procedency?: string | null;
+            captureSource?: components["schemas"]["NullableOfLeadCaptureSource"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
         };
         LoginRequest: {
             /** @default admin@admin.com */
@@ -3661,6 +3958,78 @@ export interface components {
             accessExpiresIn: number;
             /** Format: int32 */
             refreshExpiresIn: number;
+        };
+        Lot: {
+            /** Format: uuid */
+            id?: string;
+            lotNumber: string;
+            /** Format: double */
+            area: number;
+            /** Format: double */
+            price: number;
+            status: components["schemas"]["LotStatus"];
+            /** Format: uuid */
+            blockId: string;
+            block?: components["schemas"]["Block4"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Lot2: {
+            /** Format: uuid */
+            id?: string;
+            lotNumber: string;
+            /** Format: double */
+            area: number;
+            /** Format: double */
+            price: number;
+            status: components["schemas"]["LotStatus"];
+            /** Format: uuid */
+            blockId: string;
+            block?: components["schemas"]["Block4"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Lot3: {
+            /** Format: uuid */
+            id?: string;
+            lotNumber: string;
+            /** Format: double */
+            area: number;
+            /** Format: double */
+            price: number;
+            status: components["schemas"]["LotStatus"];
+            /** Format: uuid */
+            blockId: string;
+            block?: components["schemas"]["Block4"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Lot4: {
+            /** Format: uuid */
+            id?: string;
+            lotNumber: string;
+            /** Format: double */
+            area: number;
+            /** Format: double */
+            price: number;
+            status: components["schemas"]["LotStatus"];
+            /** Format: uuid */
+            blockId: string;
+            block?: components["schemas"]["Block4"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
         };
         LotCreateDTO: {
             lotNumber: string;
@@ -3679,7 +4048,7 @@ export interface components {
             area?: number;
             /** Format: double */
             price?: number;
-            status?: components["schemas"]["LotStatus"];
+            status?: components["schemas"]["LotStatus2"];
             statusText?: string;
             /** Format: uuid */
             blockId?: string;
@@ -3695,10 +4064,11 @@ export interface components {
             /** Format: double */
             pricePerSquareMeter?: number;
         };
+        LotStatus: number;
         /** @enum {unknown} */
-        LotStatus: "Available" | "Quoted" | "Reserved" | "Sold";
+        LotStatus2: "Available" | "Quoted" | "Reserved" | "Sold";
         LotStatusUpdateDTO: {
-            status: components["schemas"]["LotStatus"];
+            status: components["schemas"]["LotStatus2"];
         };
         LotUpdateDTO: {
             lotNumber?: string | null;
@@ -3712,7 +4082,11 @@ export interface components {
         /** @enum {unknown|null} */
         NullableOfClientType: "Natural" | "Juridico" | null;
         /** @enum {unknown|null} */
-        NullableOfLeadStatus: "Registered" | "Attended" | null;
+        NullableOfLeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty" | null;
+        /** @enum {unknown|null} */
+        NullableOfLeadCompletionReason: "NotInterested" | "InFollowUp" | "Sale" | null;
+        /** @enum {unknown|null} */
+        NullableOfLeadStatus: "Registered" | "Attended" | "InFollowUp" | "Completed" | "Canceled" | "Expired" | null;
         /** @enum {unknown|null} */
         NullableOfLotStatus: "Available" | "Quoted" | "Reserved" | "Sold" | null;
         /** @enum {unknown|null} */
@@ -3739,6 +4113,158 @@ export interface components {
             status?: number | null;
             detail?: string | null;
             instance?: string | null;
+        };
+        Project: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block"]>;
+        } | null;
+        Project2: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
+        Project3: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block2"]>;
+        } | null;
+        Project4: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
+        Project5: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block3"]>;
+        } | null;
+        Project6: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
+        Project7: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block4"]>;
+        } | null;
+        Project8: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
         };
         ProjectCreateDTO: {
             name: string;

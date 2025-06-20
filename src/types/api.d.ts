@@ -3748,6 +3748,8 @@ export interface components {
             defaultDownPayment?: number | null;
             /** Format: int32 */
             defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
         };
         ProjectDTO: {
             /** Format: uuid */
@@ -3760,6 +3762,8 @@ export interface components {
             defaultDownPayment?: number | null;
             /** Format: int32 */
             defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -3786,6 +3790,8 @@ export interface components {
             defaultDownPayment?: number | null;
             /** Format: int32 */
             defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
         };
         QuotationCreateDTO: {
             /** Format: uuid */

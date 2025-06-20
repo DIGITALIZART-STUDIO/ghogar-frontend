@@ -10,6 +10,9 @@ export const projectSchema = z.object({
         .optional(),
     defaultFinancingMonths: z.number().min(1)
         .optional(),
+    maxDiscountPercentage: z.number().min(0)
+        .max(100)
+        .optional(),
 });
 
 export type CreateProjectSchema = z.infer<typeof projectSchema>;

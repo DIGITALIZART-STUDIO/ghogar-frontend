@@ -30,9 +30,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">
-                        Información del Lote
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 border-b pb-2">Información del Lote</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -67,22 +65,19 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
                                         disabled={!!selectedBlockId} // Deshabilitar si hay un bloque preseleccionado
                                     >
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Selecciona una manzana" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
                                             {blocks.length === 0 ? (
-                                                <SelectItem value="" disabled>
+                                                <SelectItem value="no-blocks" disabled>
                                                     No hay manzanas activas disponibles
                                                 </SelectItem>
                                             ) : (
-                                                blocks.map((block) => (
-                                                    <SelectItem key={block.id} value={block.id ?? ""}>
-                                                        {block.name}
-                                                        {" "}
-                                                        -
-                                                        {block.projectName ?? "Sin proyecto"}
+                                                blocks.map((block, index) => (
+                                                    <SelectItem key={block.id} value={block.id ?? `block-${block.name ?? "unknown"}-${index}`}>
+                                                        {block.name} -{block.projectName ?? "Sin proyecto"}
                                                     </SelectItem>
                                                 ))
                                             )}
@@ -100,9 +95,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
 
                 {/* Measurements and Pricing */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">
-                        Medidas y Precios
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 border-b pb-2">Medidas y Precios</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -123,9 +116,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
                                             onChange={(e) => field.onChange(Number.parseFloat(e.target.value) ?? 0)}
                                         />
                                     </FormControl>
-                                    <FormDescription>
-                                        Área total del lote
-                                    </FormDescription>
+                                    <FormDescription>Área total del lote</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -148,9 +139,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
                                             onChange={(e) => field.onChange(Number.parseFloat(e.target.value) ?? 0)}
                                         />
                                     </FormControl>
-                                    <FormDescription>
-                                        Precio total de venta del lote
-                                    </FormDescription>
+                                    <FormDescription>Precio total de venta del lote</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -162,22 +151,13 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
                         <div className=" p-4 rounded-lg border ">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="font-medium">
-                                        Precio por m²:
-                                    </span>
-                                    <div className="text-2xl font-bold ">
-                                        $
-                                        {pricePerSquareMeter.toFixed(0)}
-                                    </div>
+                                    <span className="font-medium">Precio por m²:</span>
+                                    <div className="text-2xl font-bold ">${pricePerSquareMeter.toFixed(0)}</div>
                                 </div>
                                 {selectedBlock && (
                                     <div>
-                                        <span className=" font-medium">
-                                            Proyecto:
-                                        </span>
-                                        <div className="text-lg font-semibold ">
-                                            {selectedBlock.projectName ?? "Sin proyecto"}
-                                        </div>
+                                        <span className=" font-medium">Proyecto:</span>
+                                        <div className="text-lg font-semibold ">{selectedBlock.projectName ?? "Sin proyecto"}</div>
                                     </div>
                                 )}
                             </div>
@@ -187,18 +167,14 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
 
                 {/* Status and Settings */}
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                        Estado y Configuración
-                    </h3>
+                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Estado y Configuración</h3>
 
                     <FormField
                         control={form.control}
                         name="status"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>
-                                    Estado del Lote
-                                </FormLabel>
+                                <FormLabel>Estado del Lote</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value ?? LotStatus.Available}>
                                     <FormControl>
                                         <SelectTrigger className=" w-full">
@@ -213,18 +189,14 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
                                                 <SelectItem key={status} value={status}>
                                                     <div className="flex items-center gap-2">
                                                         <Icon className={`w-4 h-4 ${config.textClassName}`} />
-                                                        <span>
-                                                            {config.label}
-                                                        </span>
+                                                        <span>{config.label}</span>
                                                     </div>
                                                 </SelectItem>
                                             );
                                         })}
                                     </SelectContent>
                                 </Select>
-                                <FormDescription>
-                                    Estado inicial del lote en el sistema
-                                </FormDescription>
+                                <FormDescription>Estado inicial del lote en el sistema</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Building2, Calendar, DollarSign, Edit, MapPin, Power, PowerOff } from "lucide-react";
 
@@ -7,15 +8,18 @@ import ProjectsCardImage from "@/assets/images/ProjectsCard.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toastWrapper } from "@/types/toasts";
+import { ActivateProject, DeactivateProject } from "../_actions/ProjectActions";
 import type { ProjectData } from "../_types/project";
+import { UpdateProjectsSheet } from "./update/UpdateProjectsSheet";
 
 interface ProjectCardProps {
   project: ProjectData;
-  onEdit?: (projectId: string) => void;
-  onToggleStatus?: (projectId: string, currentStatus: boolean) => void;
 }
 
-export function ProjectCard({ project, onEdit, onToggleStatus }: ProjectCardProps) {
+export function ProjectCard({ project }: ProjectCardProps) {
+    const [openUpdateProject, setOpenUpdateProject] = useState(false);
+    const [isToggling, setIsToggling] = useState(false);
     // Guard clause - Si no hay proyecto, retorna null o un componente de loading
     if (!project) {
         return null;
@@ -36,17 +40,49 @@ export function ProjectCard({ project, onEdit, onToggleStatus }: ProjectCardProp
         totalLots: project.totalLots ?? 0,
         quotedLots: project.quotedLots ?? 0,
         reservedLots: project.reservedLots ?? 0,
+
+        defaultDownPayment: project.defaultDownPayment ?? 0,
+        defaultFinancingMonths: project.defaultFinancingMonths ?? 0,
+        maxDiscountPercentage: project.maxDiscountPercentage ?? 0,
     };
 
     const completionRate =
     safeProject.totalLots > 0 ? Math.round((safeProject.soldLots / safeProject.totalLots) * 100) : 0;
 
-    const handleEdit = () => {
-        onEdit?.(safeProject.id);
-    };
+    const handleToggleStatus = async () => {
+        setIsToggling(true);
+        try {
+            if (safeProject.isActive) {
+                // Desactivar proyecto usando toastWrapper
+                const [, error] = await toastWrapper(DeactivateProject(safeProject.id), {
+                    loading: "Desactivando proyecto...",
+                    success: `El proyecto ${safeProject.name} ha sido desactivado`,
+                    error: (e) => `Error al desactivar el proyecto: ${e.message}`,
+                });
 
-    const handleToggleStatus = () => {
-        onToggleStatus?.(safeProject.id, safeProject.isActive);
+                if (!error) {
+                    // Actualiza el estado local del proyecto si es necesario
+                    project.isActive = false;
+                }
+            } else {
+                // Activar proyecto usando toastWrapper
+                const [, error] = await toastWrapper(ActivateProject(safeProject.id), {
+                    loading: "Activando proyecto...",
+                    success: `El proyecto ${safeProject.name} ha sido activado`,
+                    error: (e) => `Error al activar el proyecto: ${e.message}`,
+                });
+
+                if (!error) {
+                    // Actualiza el estado local del proyecto si es necesario
+                    project.isActive = true;
+                }
+            }
+        } catch (error) {
+            // Este catch es para errores inesperados que no manejó toastWrapper
+            console.error("Error inesperado:", error);
+        } finally {
+            setIsToggling(false);
+        }
     };
 
     return (
@@ -144,17 +180,23 @@ export function ProjectCard({ project, onEdit, onToggleStatus }: ProjectCardProp
 
                     {/* Management Buttons */}
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1" onClick={handleEdit}>
+                        <Button variant="outline" size="sm" className="flex-1" onClick={() => setOpenUpdateProject(true)}>
                             <Edit className="mr-1 h-3 w-3" />
                             Editar
                         </Button>
+                        {openUpdateProject && (
+                            <UpdateProjectsSheet project={safeProject} onOpenChange={setOpenUpdateProject} open={openUpdateProject} />
+                        )}
                         <Button
-                            variant={safeProject.isActive ? "destructive" : "default"}
+                            variant={safeProject.isActive ? "destructive" : "success"}
                             size="sm"
                             className="flex-1"
                             onClick={handleToggleStatus}
+                            disabled={isToggling} // Deshabilita el botón durante la operación
                         >
-                            {safeProject.isActive ? (
+                            {isToggling ? (
+                                "Procesando..."
+                            ) : safeProject.isActive ? (
                                 <>
                                     <PowerOff className="mr-1 h-3 w-3" />
                                     Desactivar

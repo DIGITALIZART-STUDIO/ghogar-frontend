@@ -166,7 +166,12 @@ export default async function LotsPage({ searchParams }: LotsPageProps) {
                 <div className="flex-1">
                     <HeaderPage title={title} description={description} />
                 </div>
-                {canCreateLot && <CreateLotsDialog projectId={finalProjectId ?? ""} blockId={blockId} />}
+                {canCreateLot && finalProjectId && (
+                    <CreateLotsDialog
+                        projectId={finalProjectId}
+                        blockId={blockId && blockId.trim() !== "" ? blockId : undefined}
+                    />
+                )}
             </div>
 
             {/* Client Component que maneja los filtros y la interactividad */}

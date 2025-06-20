@@ -61,11 +61,11 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
             area: 0,
             price: 0,
             status: "Available",
-            blockId: blockId ?? "",
+            blockId: blockId ?? undefined,
         },
     });
 
-    const loadActiveBlocks = async() => {
+    const loadActiveBlocks = async () => {
         setIsLoadingBlocks(true);
         try {
             const [result, error] = await GetActiveBlocksByProject(projectId);
@@ -98,8 +98,8 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, projectId]);
 
-    const onSubmit = async(input: CreateLotSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateLotSchema) => {
+        startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const lotData = {
                 lotNumber: input.lotNumber,
@@ -145,23 +145,17 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                         {dataForm.button}
                     </Button>
                 </DialogTrigger>
-                <DialogContent tabIndex={undefined} className="px-0">
+                <DialogContent tabIndex={undefined} className="px-0 sm:max-w-[800px]">
                     <DialogHeader className="px-4">
-                        <DialogTitle>
-                            {dataForm.title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {dataForm.description}
-                        </DialogDescription>
+                        <DialogTitle>{dataForm.title}</DialogTitle>
+                        <DialogDescription>{dataForm.description}</DialogDescription>
                     </DialogHeader>
                     <ScrollArea className="h-full max-h-[80vh] px-0">
                         <div className="px-6">
                             {isLoadingBlocks ? (
                                 <div className="flex items-center justify-center py-8">
                                     <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
-                                    <span>
-                                        Cargando manzanas activas...
-                                    </span>
+                                    <span>Cargando manzanas activas...</span>
                                 </div>
                             ) : (
                                 <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId}>
@@ -198,12 +192,8 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
 
             <DrawerContent>
                 <DrawerHeader className="pb-2">
-                    <DrawerTitle>
-                        {dataForm.title}
-                    </DrawerTitle>
-                    <DrawerDescription>
-                        {dataForm.description}
-                    </DrawerDescription>
+                    <DrawerTitle>{dataForm.title}</DrawerTitle>
+                    <DrawerDescription>{dataForm.description}</DrawerDescription>
                 </DrawerHeader>
 
                 <div className="flex-1 overflow-hidden">
@@ -212,9 +202,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                             {isLoadingBlocks ? (
                                 <div className="flex items-center justify-center py-8">
                                     <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
-                                    <span>
-                                        Cargando manzanas activas...
-                                    </span>
+                                    <span>Cargando manzanas activas...</span>
                                 </div>
                             ) : (
                                 <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId}>

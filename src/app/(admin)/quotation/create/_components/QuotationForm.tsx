@@ -105,6 +105,7 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                     // Agregar los campos de financiación por defecto
                     defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
                     defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
+                    maxDiscountPercentage: project.maxDiscountPercentage?.toString() ?? "",
                 }));
                 setProjects(projectOptions);
             } else {
@@ -590,21 +591,53 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                             <FormField
                                                 control={form.control}
                                                 name="discount"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-emerald-700">Descuento</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Ingrese el descuento"
-                                                                type="number"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(e.target.value === "" ? "0" : e.target.value)}
-                                                                className="border-emerald-200 focus:border-emerald-500"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
+                                                render={({ field }) => {
+                                                    // Calcular el descuento máximo permitido
+                                                    const selectedProject = projects.find((p) => p.value === form.watch("projectId"));
+                                                    const maxDiscount = selectedProject?.maxDiscountPercentage
+                                                        ? parseFloat(selectedProject.maxDiscountPercentage)
+                                                        : 15; // Valor predeterminado del 15% si no hay configuración
+
+                                                    return (
+                                                        <FormItem>
+                                                            <FormLabel className="text-emerald-700">Descuento (Máx: {maxDiscount}%)</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Ingrese el descuento"
+                                                                    type="number"
+                                                                    className="border-emerald-200 focus:border-emerald-500"
+                                                                    {...field}
+                                                                    value={field.value || ""}
+                                                                    onChange={(e) => {
+                                                                        // Permitir campo vacío
+                                                                        if (e.target.value === "") {
+                                                                            field.onChange("");
+                                                                            return;
+                                                                        }
+
+                                                                        const numericValue = parseFloat(e.target.value);
+
+                                                                        // Verificar si es un número válido
+                                                                        if (!isNaN(numericValue)) {
+                                                                            // Si excede el máximo, establecer al máximo y mostrar advertencia
+                                                                            if (numericValue > maxDiscount) {
+                                                                                field.onChange(maxDiscount.toString());
+                                                                                toast.warning(
+                                                                                    `El descuento ha sido ajustado al máximo permitido: ${maxDiscount}%`
+                                                                                );
+                                                                            } else {
+                                                                                // Caso normal: aceptar el valor ingresado
+                                                                                field.onChange(e.target.value);
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    min="0"
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    );
+                                                }}
                                             />
                                             <FormField
                                                 control={form.control}

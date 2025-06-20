@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { format, parse, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowRight, Banknote, CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
+import { ArrowRight, CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -13,13 +13,16 @@ import { GetActiveProjects } from "@/app/(admin)/admin/projects/_actions/Project
 import { GetActiveBlocksByProject } from "@/app/(admin)/admin/projects/[id]/blocks/_actions/BlockActions";
 import { GetLotsByBlock } from "@/app/(admin)/admin/projects/lots/_actions/LotActions";
 import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
-import { InputWithIcon } from "@/components/input-with-icon";
+import { LogoSunat } from "@/assets/icons/LogoSunat";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toastWrapper } from "@/types/toasts";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
+import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
 
 interface QuotationFormProps {
   leadsData: Array<SummaryLead>;
@@ -102,6 +105,7 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                     // Agregar los campos de financiación por defecto
                     defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
                     defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
+                    maxDiscountPercentage: project.maxDiscountPercentage?.toString() ?? "",
                 }));
                 setProjects(projectOptions);
             } else {
@@ -262,6 +266,23 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
         </div>
     );
 
+    const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
+
+    // Y luego añade esta función para manejar el clic del botón
+    const handleGetExchangeRate = () => {
+        startTransitionExchangeRate(async () => {
+            const [exchangeRate, error] = await toastWrapper(GetCurrentExchangeRate(), {
+                loading: "Obteniendo tipo de cambio...",
+                success: "Tipo de cambio obtenido correctamente de SUNAT",
+                error: (e) => `Error al obtener tipo de cambio: ${e.message}`,
+            });
+
+            if (!error && exchangeRate) {
+                form.setValue("exchangeRate", exchangeRate.toString());
+            }
+        });
+    };
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -308,9 +329,40 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="flex items-center">Tipo de Cambio</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={Banknote} placeholder="3.75" {...field} />
-                                            </FormControl>
+                                            <div className="flex items-center gap-2">
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="3.75"
+                                                        {...field}
+                                                        type="number"
+                                                        min={0}
+                                                        step={0.01}
+                                                        className="w-full"
+                                                        disabled={isPendingExchangeRate}
+                                                    />
+                                                </FormControl>
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                className="h-10 w-10"
+                                                                onClick={handleGetExchangeRate}
+                                                                disabled={isPendingExchangeRate}
+                                                            >
+                                                                {isPendingExchangeRate ? (
+                                                                    <RefreshCcw className="h-4 w-4 animate-spin" />
+                                                                ) : (
+                                                                    <LogoSunat className="h-4 w-4" />
+                                                                )}
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Obtener Tipo de Cambio de SUNAT</TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </div>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -539,21 +591,53 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                             <FormField
                                                 control={form.control}
                                                 name="discount"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-emerald-700">Descuento</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Ingrese el descuento"
-                                                                type="number"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(e.target.value === "" ? "0" : e.target.value)}
-                                                                className="border-emerald-200 focus:border-emerald-500"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
+                                                render={({ field }) => {
+                                                    // Calcular el descuento máximo permitido
+                                                    const selectedProject = projects.find((p) => p.value === form.watch("projectId"));
+                                                    const maxDiscount = selectedProject?.maxDiscountPercentage
+                                                        ? parseFloat(selectedProject.maxDiscountPercentage)
+                                                        : 15; // Valor predeterminado del 15% si no hay configuración
+
+                                                    return (
+                                                        <FormItem>
+                                                            <FormLabel className="text-emerald-700">Descuento (Máx: {maxDiscount}%)</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Ingrese el descuento"
+                                                                    type="number"
+                                                                    className="border-emerald-200 focus:border-emerald-500"
+                                                                    {...field}
+                                                                    value={field.value || ""}
+                                                                    onChange={(e) => {
+                                                                        // Permitir campo vacío
+                                                                        if (e.target.value === "") {
+                                                                            field.onChange("");
+                                                                            return;
+                                                                        }
+
+                                                                        const numericValue = parseFloat(e.target.value);
+
+                                                                        // Verificar si es un número válido
+                                                                        if (!isNaN(numericValue)) {
+                                                                            // Si excede el máximo, establecer al máximo y mostrar advertencia
+                                                                            if (numericValue > maxDiscount) {
+                                                                                field.onChange(maxDiscount.toString());
+                                                                                toast.warning(
+                                                                                    `El descuento ha sido ajustado al máximo permitido: ${maxDiscount}%`
+                                                                                );
+                                                                            } else {
+                                                                                // Caso normal: aceptar el valor ingresado
+                                                                                field.onChange(e.target.value);
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    min="0"
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    );
+                                                }}
                                             />
                                             <FormField
                                                 control={form.control}

@@ -210,7 +210,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                 </FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Seleccione moneda" />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -237,7 +237,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                 </FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Seleccione método" />
                                                         </SelectTrigger>
                                                     </FormControl>

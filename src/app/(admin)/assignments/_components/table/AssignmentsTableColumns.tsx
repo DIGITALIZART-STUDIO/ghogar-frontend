@@ -6,8 +6,8 @@ import { AlertTriangle, CheckCircle, ChevronDown, ChevronRight, Clock, Ellipsis,
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
-import { Lead, LeadStatus } from "@/app/(admin)/leads/_types/lead";
-import { LeadStatusLabels } from "@/app/(admin)/leads/_utils/leads.utils";
+import { Lead, LeadCaptureSource, LeadStatus } from "@/app/(admin)/leads/_types/lead";
+import { LeadCaptureSourceLabels, LeadStatusLabels } from "@/app/(admin)/leads/_utils/leads.utils";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -172,10 +172,113 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
     },
 
     {
-        id: "procedencia",
-        accessorKey: "procedency",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Procedencia" />,
-        cell: ({ row }) => <div className="min-w-40 truncate capitalize">{row.getValue("procedencia")}</div>,
+        id: "Medio de captación",
+        accessorKey: "captureSource",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Tipo" />,
+        cell: ({ row }) => {
+            const documentType = row.getValue("Medio de captación") as LeadCaptureSource;
+            const documentTypeConfig = LeadCaptureSourceLabels[documentType];
+
+            if (!documentTypeConfig) {
+                return <div>No registrado</div>;
+            }
+
+            const Icon = documentTypeConfig.icon;
+
+            return (
+                <div className="text-xs min-w-32">
+                    <Badge variant="outline" className={documentTypeConfig.className}>
+                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
+                        {documentTypeConfig.label}
+                    </Badge>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(rowValue);
+            }
+
+            return rowValue === value;
+        },
+        enableColumnFilter: true,
+    },
+
+    {
+        id: "fechaExpiración",
+        accessorKey: "expirationDate",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
+        cell: ({ row }) => {
+            const expirationDate = row.getValue("fechaExpiración") as string;
+
+            if (!expirationDate) {
+                return <div>No definida</div>;
+            }
+
+            const expDate = new Date(expirationDate);
+            const currentDate = new Date();
+
+            // Calcular la diferencia en días
+            const diffTime = expDate.getTime() - currentDate.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Determinar el estado basado en los días restantes
+            let badgeClass = "";
+            let label = "";
+
+            if (diffDays > 3) {
+                // Verde: Más de 3 días hasta la expiración
+                badgeClass = "bg-emerald-100 text-emerald-500 border-emerald-200";
+                label = `${diffDays} días restantes`;
+            } else if (diffDays >= 0) {
+                // Amarillo: Entre 0 y 3 días hasta la expiración
+                badgeClass = "bg-amber-100 text-amber-500 border-amber-200";
+                label =
+          diffDays === 0
+              ? "Expira hoy"
+              : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
+            } else {
+                // Rojo: Ya expirado
+                badgeClass = "bg-red-100 text-red-500 border-red-200";
+                label = `Expirado hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? "s" : ""}`;
+            }
+
+            return (
+                <div className="flex flex-col gap-1">
+                    <Badge variant="secondary" className={badgeClass}>
+                        {label}
+                    </Badge>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            if (!row.getValue(id)) {
+                return false;
+            }
+
+            const expirationDate = new Date(row.getValue(id) as string);
+            const currentDate = new Date();
+            const diffTime = expirationDate.getTime() - currentDate.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Estado: "próximo" (verde), "cercano" (amarillo), "expirado" (rojo)
+            const status = diffDays > 3 ? "próximo" : diffDays >= 0 ? "cercano" : "expirado";
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(status);
+            }
+
+            return status === value;
+        },
+        enableColumnFilter: true,
     },
 
     {

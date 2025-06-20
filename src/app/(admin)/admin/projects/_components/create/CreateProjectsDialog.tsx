@@ -50,20 +50,20 @@ export function CreateProjectsDialog() {
         defaultValues: {
             name: "",
             location: "",
-
+            maxDiscountPercentage: 0,
             currency: "",
             defaultDownPayment: 0,
             defaultFinancingMonths: 0,
         },
     });
 
-    const onSubmit = async(input: CreateProjectSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateProjectSchema) => {
+        startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const leadData = {
                 name: input.name,
                 location: input.location,
-
+                maxDiscountPercentage: input.maxDiscountPercentage,
                 currency: input.currency,
                 defaultDownPayment: input.defaultDownPayment,
                 defaultFinancingMonths: input.defaultFinancingMonths,
@@ -104,12 +104,8 @@ export function CreateProjectsDialog() {
                 </DialogTrigger>
                 <DialogContent tabIndex={undefined} className="px-0 sm:max-w-[600px]">
                     <DialogHeader className="px-4">
-                        <DialogTitle>
-                            {dataForm.title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {dataForm.description}
-                        </DialogDescription>
+                        <DialogTitle>{dataForm.title}</DialogTitle>
+                        <DialogDescription>{dataForm.description}</DialogDescription>
                     </DialogHeader>
                     <ScrollArea className="h-full max-h-[80vh] px-0">
                         <div className="px-6">
@@ -146,12 +142,8 @@ export function CreateProjectsDialog() {
 
             <DrawerContent>
                 <DrawerHeader className="pb-2">
-                    <DrawerTitle>
-                        {dataForm.title}
-                    </DrawerTitle>
-                    <DrawerDescription>
-                        {dataForm.description}
-                    </DrawerDescription>
+                    <DrawerTitle>{dataForm.title}</DrawerTitle>
+                    <DrawerDescription>{dataForm.description}</DrawerDescription>
                 </DrawerHeader>
 
                 {/* The key fix is in this ScrollArea configuration */}

@@ -10,4 +10,22 @@ export type UserSummaryDto = components["schemas"]["UserSummaryDto"];
 export enum LeadStatus {
   Registered = "Registered",
   Attended = "Attended",
+  InFollowUp = "InFollowUp",
+  Completed = "Completed",
+  Canceled = "Canceled",
+  Expired = "Expired",
+}
+
+export enum LeadCaptureSource {
+  Company = "Company",
+  PersonalFacebook = "PersonalFacebook",
+  RealEstateFair = "RealEstateFair",
+  Institutional = "Institutional",
+  Loyalty = "Loyalty",
+}
+
+export enum LeadCompletionReason {
+  NotInterested = "NotInterested",
+  InFollowUp = "InFollowUp",
+  Sale = "Sale",
 }

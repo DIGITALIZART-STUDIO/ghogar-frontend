@@ -5,12 +5,12 @@ import { AtSign, Building2, Calendar, FileText, IdCard, Mail, MapPin, MessageSqu
 
 import { ClientTypes } from "@/app/(admin)/clients/_types/client";
 import type { Lead } from "@/app/(admin)/leads/_types/lead";
+import { LeadCaptureSourceLabels } from "@/app/(admin)/leads/_utils/leads.utils";
 import { cn } from "@/lib/utils";
-import { procedencyConfig } from "../../_utils/assignments.filter.utils";
 import { statusConfig } from "../../_utils/assignments.utils";
 
 interface AssignmentDescriptionProps {
-    row: Lead;
+  row: Lead;
 }
 
 export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
@@ -51,12 +51,20 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
 
     const currentStatus = statusConfig[row.status as keyof typeof statusConfig] || statusConfig.default;
 
-    const getProcedencyConfig = (procedency: string) => {
-        const key = procedency?.toLowerCase() || "default";
-        return procedencyConfig[key as keyof typeof procedencyConfig] || procedencyConfig.default;
-    };
+    // Obtener la configuración de la fuente de captación
+    const captureSourceInfo =
+    row.captureSource && LeadCaptureSourceLabels[row.captureSource]
+        ? LeadCaptureSourceLabels[row.captureSource]
+        : {
+            label: "Desconocido",
+            icon: MessageSquare,
+            className: "text-slate-600 border-slate-200",
+        };
 
-    const procedencyInfo = getProcedencyConfig(row.procedency);
+    // Extraer los colores de className para crear las clases de estilo
+    const captureSourceClass = captureSourceInfo.className ?? "";
+    const captureSourceColor = captureSourceClass.split(" ")[0] ?? "text-slate-600";
+    const captureSourceBgColor = `${captureSourceColor.replace("text-", "bg-")}/10`;
 
     // Handle email click
     const handleEmailClick = () => {
@@ -84,7 +92,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                 "flex items-center justify-center w-8 h-8 rounded-full",
                                 row.client?.type === ClientTypes.Natural
                                     ? "bg-primary text-primary-foreground"
-                                    : "bg-secondary text-secondary-foreground",
+                                    : "bg-secondary text-secondary-foreground"
                             )}
                         >
                             {row.client?.type === ClientTypes.Natural ? (
@@ -94,13 +102,9 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                             )}
                         </div>
                         <div>
-                            <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                                {row.client?.name}
-                            </h2>
+                            <h2 className="text-base font-bold text-slate-900 dark:text-white">{row.client?.name}</h2>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-slate-500 dark:text-slate-400">
-                                    {row.client?.type}
-                                </span>
+                                <span className="text-xs text-slate-500 dark:text-slate-400">{row.client?.type}</span>
                                 {row.client?.isActive && (
                                     <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
                                         Activo
@@ -116,27 +120,23 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                             className={cn(
                                 "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium",
                                 currentStatus.bgColor,
-                                currentStatus.color,
+                                currentStatus.color
                             )}
                         >
                             {/* Reemplazar el ícono fijo FileText por el ícono dinámico del status */}
                             {currentStatus.icon && React.createElement(currentStatus.icon, { className: "h-3 w-3" })}
-                            <span>
-                                {currentStatus.label}
-                            </span>
+                            <span>{currentStatus.label}</span>
                         </div>
 
                         <div
                             className={cn(
                                 "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium",
-                                procedencyInfo.bgColor,
-                                procedencyInfo.color,
+                                captureSourceBgColor,
+                                captureSourceColor
                             )}
                         >
-                            <MessageSquare className="h-3 w-3" />
-                            <span>
-                                {row.procedency}
-                            </span>
+                            {React.createElement(captureSourceInfo.icon, { className: "h-3 w-3" })}
+                            <span>{captureSourceInfo.label}</span>
                         </div>
                     </div>
                 </div>
@@ -155,12 +155,8 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                     <div className="flex items-center gap-2">
                                         <Phone className="h-4 w-4 text-violet-500" />
                                         <div>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                Teléfono
-                                            </p>
-                                            <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                {row.client.phoneNumber}
-                                            </p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Teléfono</p>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">{row.client.phoneNumber}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -175,12 +171,8 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                     <div className="flex items-center gap-2">
                                         <AtSign className="h-4 w-4 text-indigo-500" />
                                         <div>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                Email
-                                            </p>
-                                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                                                {row.client.email}
-                                            </p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Email</p>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{row.client.email}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -195,12 +187,8 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                     <div className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4 text-cyan-500" />
                                         <div>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                Dirección
-                                            </p>
-                                            <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                {row.client.address}
-                                            </p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Dirección</p>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">{row.client.address}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -217,24 +205,16 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                             <>
                                                 <IdCard className="h-4 w-4 text-amber-500" />
                                                 <div>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                        DNI
-                                                    </p>
-                                                    <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                        {row.client.dni}
-                                                    </p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">DNI</p>
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white">{row.client.dni}</p>
                                                 </div>
                                             </>
                                         ) : row.client?.ruc ? (
                                             <>
                                                 <FileText className="h-4 w-4 text-amber-500" />
                                                 <div>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                        RUC
-                                                    </p>
-                                                    <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                        {row.client.ruc}
-                                                    </p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">RUC</p>
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white">{row.client.ruc}</p>
                                                 </div>
                                             </>
                                         ) : null}
@@ -253,16 +233,10 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-violet-500" />
                                     <div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Fecha de Registro
-                                        </p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Fecha de Registro</p>
                                         <div className="flex items-center gap-2">
-                                            <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                                {formatDate(row.createdAt!)}
-                                            </p>
-                                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                                                {formatTime(row.createdAt!)}
-                                            </span>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">{formatDate(row.createdAt!)}</p>
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">{formatTime(row.createdAt!)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -276,16 +250,12 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-indigo-500" />
                                     <div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Última Actualización
-                                        </p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Última Actualización</p>
                                         <div className="flex items-center gap-2">
                                             <p className="text-sm font-medium text-slate-900 dark:text-white">
                                                 {formatDate(row.modifiedAt!)}
                                             </p>
-                                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                                                {formatTime(row.modifiedAt!)}
-                                            </span>
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">{formatTime(row.modifiedAt!)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -299,14 +269,10 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="h-4 w-4 text-cyan-500" />
-                                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                                            Antigüedad del Lead
-                                        </p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">Antigüedad del Lead</p>
                                     </div>
                                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                                        {daysSinceCreation()}
-                                        {" "}
-                                        {daysSinceCreation() === 1 ? "día" : "días"}
+                                        {daysSinceCreation()} {daysSinceCreation() === 1 ? "día" : "días"}
                                     </span>
                                 </div>
                             </div>
@@ -324,9 +290,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                             onClick={handleWhatsAppClick}
                         >
                             <MessageSquare className="h-4 w-4" />
-                            <span>
-                                WhatsApp
-                            </span>
+                            <span>WhatsApp</span>
                         </button>
                     )}
 
@@ -336,9 +300,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                             onClick={handleEmailClick}
                         >
                             <Mail className="h-4 w-4" />
-                            <span>
-                                Email
-                            </span>
+                            <span>Email</span>
                         </button>
                     )}
                 </div>

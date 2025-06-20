@@ -4,18 +4,19 @@ import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet } from "@/components/ui/sheet";
 import { CreateProjectSchema } from "../../_schemas/createProjectsSchema";
 
-interface CreateProjectsFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
+interface UpdateProjectsFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
   form: UseFormReturn<CreateProjectSchema>;
   onSubmit: (data: CreateProjectSchema) => void;
 }
 
-export default function CreateProjectsForm({ children, form, onSubmit }: CreateProjectsFormProps) {
+export default function UpdateProjectsForm({ children, form, onSubmit }: UpdateProjectsFormProps) {
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
                     <h3 className=" font-semibold text-gray-900 border-b pb-2">Información Básica</h3>
@@ -84,7 +85,7 @@ export default function CreateProjectsForm({ children, form, onSubmit }: CreateP
                         )}
                     />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <FormField
                             control={form.control}
                             name="defaultDownPayment"
@@ -131,7 +132,6 @@ export default function CreateProjectsForm({ children, form, onSubmit }: CreateP
                             )}
                         />
                     </div>
-
                     <FormField
                         control={form.control}
                         name="maxDiscountPercentage"

@@ -18,65 +18,71 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import { toastWrapper } from "@/types/toasts";
-import { UpdateLead } from "../../_actions/LeadActions";
-import { CreateLeadSchema, leadSchema } from "../../_schemas/createLeadsSchema";
-import { Lead, LeadCaptureSource } from "../../_types/lead";
-import UpdateLeadsForm from "./UpdateLeadsForm";
+import { UpdateProject } from "../../_actions/ProjectActions";
+import { CreateProjectSchema, projectSchema } from "../../_schemas/createProjectsSchema";
+import { ProjectData } from "../../_types/project";
+import UpdateProjectsForm from "./UpdateProjectsForm";
 
 const infoSheet = {
-    title: "Actualizar Lead",
-    description: "Actualiza la información del lead y guarda los cambios",
+    title: "Actualizar Proyecto",
+    description: "Actualiza la información del proyecto y guarda los cambios",
 };
 
-interface UpdateLeadSheetProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
-  lead: Lead;
+interface UpdateProjectsSheetProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
+  project: ProjectData;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetProps) {
+export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProjectsSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const form = useForm<CreateLeadSchema>({
-        resolver: zodResolver(leadSchema),
+    const form = useForm<CreateProjectSchema>({
+        resolver: zodResolver(projectSchema),
         defaultValues: {
-            clientId: lead?.clientId ?? "",
-            assignedToId: lead?.assignedToId ?? "",
-            projectId: lead?.projectId ?? "",
-            captureSource: lead?.captureSource as LeadCaptureSource,
+            name: project.name ?? "",
+            location: project.location ?? "",
+            currency: project.currency ?? "",
+            defaultDownPayment: project.defaultDownPayment ?? 0,
+            defaultFinancingMonths: project.defaultFinancingMonths ?? 0,
+            maxDiscountPercentage: project.maxDiscountPercentage ?? 0,
         },
     });
 
     useEffect(() => {
         if (open) {
             form.reset({
-                clientId: lead?.clientId ?? "",
-                assignedToId: lead?.assignedToId ?? "",
-                projectId: lead?.projectId ?? "",
-                captureSource: lead?.captureSource as LeadCaptureSource,
+                name: project.name ?? "",
+                location: project.location ?? "",
+                currency: project.currency ?? "",
+                defaultDownPayment: project.defaultDownPayment ?? 0,
+                defaultFinancingMonths: project.defaultFinancingMonths ?? 0,
+                maxDiscountPercentage: project.maxDiscountPercentage ?? 0,
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, lead]);
+    }, [open, project]);
 
-    const onSubmit = async (input: CreateLeadSchema) => {
+    const onSubmit = async (input: CreateProjectSchema) => {
         startTransition(async () => {
             // Preparar los datos según el tipo de cliente
-            const clientData = {
-                clientId: input.clientId,
-                assignedToId: input.assignedToId,
-                captureSource: input.captureSource,
-                projectId: input.projectId,
+            const projectData = {
+                name: input.name,
+                location: input.location,
+
+                currency: input.currency,
+                defaultDownPayment: input.defaultDownPayment,
+                defaultFinancingMonths: input.defaultFinancingMonths,
             };
 
-            if (!lead?.id) {
-                throw new Error("Lead ID is required");
+            if (!project?.id) {
+                throw new Error("Block ID is required");
             }
-            const [, error] = await toastWrapper(UpdateLead(lead.id, clientData), {
-                loading: "Actualizando lead...",
-                success: "Lead actualizada exitosamente",
-                error: (e) => `Error al actualizar lead: ${e.message}`,
+            const [, error] = await toastWrapper(UpdateProject(project.id, projectData), {
+                loading: "Actualizando proyecto...",
+                success: "Proyecto actualizado exitosamente",
+                error: (e) => `Error al actualizar proyecto: ${e.message}`,
             });
 
             if (!error) {
@@ -101,13 +107,13 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
                     <SheetTitle className="flex flex-col items-start">
                         {infoSheet.title}
                         <Badge className="bg-emerald-100 capitalize text-emerald-700" variant="secondary">
-                            {lead?.client?.dni ?? lead?.client?.ruc}
+                            {project?.isActive ? "Activo" : "Inactivo"}
                         </Badge>
                     </SheetTitle>
                     <SheetDescription>{infoSheet.description}</SheetDescription>
                 </SheetHeader>
                 <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
-                    <UpdateLeadsForm form={form} onSubmit={onSubmit}>
+                    <UpdateProjectsForm form={form} onSubmit={onSubmit}>
                         <SheetFooter className="gap-2 pt-2 sm:space-x-0">
                             <div className="flex flex-row-reverse gap-2">
                                 <Button type="submit" disabled={isPending}>
@@ -121,7 +127,7 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
                                 </SheetClose>
                             </div>
                         </SheetFooter>
-                    </UpdateLeadsForm>
+                    </UpdateProjectsForm>
                 </ScrollArea>
             </SheetContent>
         </Sheet>

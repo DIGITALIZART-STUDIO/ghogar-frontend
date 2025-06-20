@@ -51,17 +51,19 @@ export function CreateLeadsDialog() {
         defaultValues: {
             clientId: "",
             assignedToId: "",
-            procedency: "",
+            projectId: "",
+            captureSource: undefined,
         },
     });
 
-    const onSubmit = async(input: CreateLeadSchema) => {
-        startTransition(async() => {
+    const onSubmit = async (input: CreateLeadSchema) => {
+        startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const leadData = {
                 clientId: input.clientId,
                 assignedToId: input.assignedToId,
-                procedency: input.procedency,
+                captureSource: input.captureSource,
+                projectId: input.projectId,
                 status: LeadStatus.Registered,
             };
 
@@ -115,12 +117,8 @@ export function CreateLeadsDialog() {
                 </DialogTrigger>
                 <DialogContent tabIndex={undefined} className="px-0">
                     <DialogHeader className="px-4">
-                        <DialogTitle>
-                            {dataForm.title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {dataForm.description}
-                        </DialogDescription>
+                        <DialogTitle>{dataForm.title}</DialogTitle>
+                        <DialogDescription>{dataForm.description}</DialogDescription>
                     </DialogHeader>
                     <ScrollArea className="h-full max-h-[80vh] px-0">
                         <div className="px-6">
@@ -157,12 +155,8 @@ export function CreateLeadsDialog() {
 
             <DrawerContent>
                 <DrawerHeader className="pb-2">
-                    <DrawerTitle>
-                        {dataForm.title}
-                    </DrawerTitle>
-                    <DrawerDescription>
-                        {dataForm.description}
-                    </DrawerDescription>
+                    <DrawerTitle>{dataForm.title}</DrawerTitle>
+                    <DrawerDescription>{dataForm.description}</DrawerDescription>
                 </DrawerHeader>
 
                 {/* The key fix is in this ScrollArea configuration */}

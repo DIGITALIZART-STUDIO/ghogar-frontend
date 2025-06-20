@@ -19,15 +19,11 @@ export default function CreateBlocksForm({ children, form, onSubmit }: CreateBlo
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>
-                                Nombre de la Manzana
-                            </FormLabel>
+                            <FormLabel>Nombre de la Manzana</FormLabel>
                             <FormControl>
                                 <Input placeholder="A, B, 1, 2..." {...field} />
                             </FormControl>
-                            <FormDescription>
-                                Identificador único de la manzana dentro del proyecto
-                            </FormDescription>
+                            <FormDescription>Identificador único de la manzana dentro del proyecto</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}

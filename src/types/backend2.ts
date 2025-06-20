@@ -8,13 +8,13 @@ export type FetchError = {
     error: unknown;
 };
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BACKEND_URL) {
     throw new Error("NEXT_PUBLIC_BACKEND_URL environment variable is not set");
 }
 
 // Create a custom fetch implementation that better handles errors
-const enhancedFetch = async(input: RequestInfo | URL, init?: RequestInit) => {
+const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
 
     if (process.env.NODE_ENV === "development") {
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -61,9 +61,8 @@ const enhancedFetch = async(input: RequestInfo | URL, init?: RequestInit) => {
  * Client for connecting with the backend
  */
 const fetchClient = createFetchClient<paths>({
-    baseUrl: process.env.INTERNAL_BACKEND_URL ?? "http://localhost:5165",
+    baseUrl: BACKEND_URL,
     fetch: enhancedFetch,
 });
 
 export const backend = createClient(fetchClient);
-

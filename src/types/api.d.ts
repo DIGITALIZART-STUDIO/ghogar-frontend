@@ -2836,6 +2836,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Quotations/advisor/accepted/{advisorId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    advisorId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                        "application/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                        "text/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Quotations/{id}/status": {
         parameters: {
             query?: never;
@@ -3250,34 +3289,7 @@ export interface paths {
                 };
             };
         };
-        /**
-         * Batch Deactivate User
-         * @description Deactivates many users by their IDs
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3335,7 +3347,36 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
+        /**
+         * Update User Data
+         * @description Updates user data except password
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserUpdateDTO"];
+                    "text/json": components["schemas"]["UserUpdateDTO"];
+                    "application/*+json": components["schemas"]["UserUpdateDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         post?: never;
         /**
          * Deactivate User
@@ -3361,6 +3402,51 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/{userId}/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update User Password
+         * @description Updates only the user's password
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserUpdatePasswordDTO"];
+                    "text/json": components["schemas"]["UserUpdatePasswordDTO"];
+                    "application/*+json": components["schemas"]["UserUpdatePasswordDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3393,49 +3479,6 @@ export interface paths {
                 cookie?: never;
             };
             requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/Users/batch/reactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Batch Reactivate User
-         * @description Reactivates many users by their IDs
-         */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
-                };
-            };
             responses: {
                 /** @description OK */
                 200: {
@@ -3550,15 +3593,15 @@ export interface components {
         Client: {
             /** Format: uuid */
             id?: string;
-            name: string;
+            name?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
             phoneNumber: string;
-            email: string;
-            address: string;
+            email?: string | null;
+            address?: string | null;
             country?: string | null;
-            type: components["schemas"]["ClientType"];
+            type?: components["schemas"]["NullableOfClientType"];
             coOwners?: string | null;
             separateProperty?: boolean;
             separatePropertyData?: string | null;
@@ -3572,15 +3615,15 @@ export interface components {
         Client2: {
             /** Format: uuid */
             id?: string;
-            name: string;
+            name?: string | null;
             dni?: string | null;
             ruc?: string | null;
             companyName?: string | null;
             phoneNumber: string;
-            email: string;
-            address: string;
+            email?: string | null;
+            address?: string | null;
             country?: string | null;
-            type: components["schemas"]["ClientType"];
+            type?: components["schemas"]["NullableOfClientType"];
             coOwners?: string | null;
             separateProperty?: boolean;
             separatePropertyData?: string | null;
@@ -3624,6 +3667,7 @@ export interface components {
             name?: string;
             dni?: string | null;
             ruc?: string | null;
+            phoneNumber?: string | null;
         };
         /** @enum {unknown} */
         ClientType: "Natural" | "Juridico";
@@ -3970,7 +4014,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -3988,7 +4032,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4006,7 +4050,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4024,7 +4068,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4414,6 +4458,8 @@ export interface components {
             areaAtQuotation?: number;
             status?: components["schemas"]["QuotationStatus"];
             statusText?: string;
+            /** Format: double */
+            exchangeRate?: number;
             quotationDate?: string;
             /** Format: date-time */
             validUntil?: string;
@@ -4578,6 +4624,7 @@ export interface components {
             email: string;
             phone: string;
             role: string;
+            password: string;
         };
         UserGetDTO: {
             user: components["schemas"]["User2"];
@@ -4587,6 +4634,15 @@ export interface components {
             /** Format: uuid */
             id?: string;
             userName?: string;
+        };
+        UserUpdateDTO: {
+            name: string;
+            email: string;
+            phone: string;
+            role: string;
+        };
+        UserUpdatePasswordDTO: {
+            newPassword: string;
         };
     };
     responses: never;

@@ -95,11 +95,12 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                     if (Array.isArray(clientsArray) && clientsArray.length > 0) {
                         const options = clientsArray.map((client) => ({
                             value: client.id ?? "",
-                            label: client.dni
-                                ? `${client.dni} - ${client.name}`
-                                : client.ruc
-                                    ? `${client.ruc} - ${client.name}`
-                                    : client.name!,
+                            label:
+                                client.dni
+                                    ? `${client.dni} - ${client.name ?? "Sin nombre"}`
+                                    : client.ruc
+                                        ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
+                                        : client.name ?? `Cliente Sin Datos - ${client.phoneNumber ?? "Sin nombre"}` ?? "Sin datos",
                         }));
 
                         setClientOptions(options);
@@ -119,6 +120,42 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 gap-4">
+                <FormField
+                    control={form.control}
+                    name="captureSource"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel htmlFor="captureSource">Medio de Captación</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                                <FormControl>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Selecciona un estado civil" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {Object.values(LeadCaptureSource).map((leadCaptureSource) => {
+                                            const leadCaptureSourceConfig = LeadCaptureSourceLabels[leadCaptureSource];
+                                            const Icon = leadCaptureSourceConfig.icon;
+
+                                            return (
+                                                <SelectItem
+                                                    key={leadCaptureSource}
+                                                    value={leadCaptureSource}
+                                                    className="flex items-center gap-2"
+                                                >
+                                                    <Icon className={`size-4 ${leadCaptureSourceConfig.className}`} />
+                                                    <span>{leadCaptureSourceConfig.label}</span>
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="clientId"
@@ -157,7 +194,6 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                                         field.onChange(selectedOption?.value ?? "");
                                     }}
                                     value={userOptions.find((option) => option.value === field.value) ?? undefined}
-                                    disabled={isLoadingUsers}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -182,43 +218,6 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                                     field.onChange(selectedOption?.value ?? "");
                                 }}
                             />
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="captureSource"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel htmlFor="captureSource">Medio de Captación</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                                <FormControl>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Selecciona un estado civil" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        {Object.values(LeadCaptureSource).map((leadCaptureSource) => {
-                                            const leadCaptureSourceConfig = LeadCaptureSourceLabels[leadCaptureSource];
-                                            const Icon = leadCaptureSourceConfig.icon;
-
-                                            return (
-                                                <SelectItem
-                                                    key={leadCaptureSource}
-                                                    value={leadCaptureSource}
-                                                    className="flex items-center gap-2"
-                                                >
-                                                    <Icon className={`size-4 ${leadCaptureSourceConfig.className}`} />
-                                                    <span>{leadCaptureSourceConfig.label}</span>
-                                                </SelectItem>
-                                            );
-                                        })}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
                             <FormMessage />
                         </FormItem>
                     )}

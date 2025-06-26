@@ -2,7 +2,7 @@
 
 import { components } from "@/types/api";
 import { type Table } from "@tanstack/react-table";
-import { UserCreateDialog } from "./UserCreateDialog";
+import { UserCreateDialog } from "./create/UserCreateDialog";
 
 type UserGetDTO = components["schemas"]["UserGetDTO"];
 

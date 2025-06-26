@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ColumnDef, Table as TableInstance } from "@tanstack/react-table";
+import * as RPNInput from "react-phone-number-input";
+import flags from "react-phone-number-input/flags";
 
 import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { UsersTableToolbarActions } from "./UserActions";
@@ -9,13 +11,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
+import { Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { components } from "@/types/api";
 import { backend } from "@/types/backend2";
 import ErrorGeneral from "@/components/errors/general-error";
-
-type UserGetDTO = components["schemas"]["UserGetDTO"];
+import { UserGetDTO } from "../_types/user";
+import { UpdateUsersSheet } from "./update/UpdateUsersSheet";
 
 export function UsersTable() {
     const [pagination, setPagination] = useState({
@@ -101,7 +102,7 @@ export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nombre" />,
         cell: ({ row }) => (
             <div className="min-w-40 truncate capitalize">
-                {row.original.user.userName}
+                {row.original.user.name}
             </div>
         ),
     },
@@ -116,14 +117,43 @@ export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
         ),
     },
     {
-        id: "phone",
-        accessorKey: "phone",
+        id: "teléfono",
+        accessorKey: "user.phone",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Teléfono" />,
-        cell: ({ row }) => (
-            <div>
-                {row.original.user.phoneNumber ?? "-"}
-            </div>
-        ),
+        cell: ({ row }) => {
+            const phone = row.original.user.phoneNumber as string;
+            if (!phone) {
+                return <div>
+                    -
+                </div>;
+            }
+
+            try {
+                // Obtener el país del número de teléfono
+                const country = RPNInput.parsePhoneNumber(phone)?.country;
+
+                // Formatear el número para mejor legibilidad
+                const formattedPhone = RPNInput.formatPhoneNumberIntl(phone);
+
+                return (
+                    <div className="flex items-center gap-2">
+                        {country && (
+                            <span className="flex h-4 w-6 overflow-hidden rounded-sm">
+                                {flags[country] && React.createElement(flags[country], { title: country })}
+                            </span>
+                        )}
+                        <span>
+                            {formattedPhone ?? phone}
+                        </span>
+                    </div>
+                );
+            } catch {
+                // Si hay algún error al parsear el número, mostramos el número original
+                return <div>
+                    {phone}
+                </div>;
+            }
+        },
     },
     {
         id: "roles",
@@ -160,32 +190,18 @@ export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
     },
 
     {
-        id: "expand", // Nueva columna para expansión
-        header: () => null, // No mostrar un título en el header
-        cell: ({ row }) => (
-            <Button
-                onClick={() => row.toggleExpanded()} // Alternar la expansión de la fila
-                aria-label="Expand row"
-                className="flex items-center justify-center p-2"
-                variant={"ghost"}
-            >
-                {row.getIsExpanded() ? (
-                    <ChevronDown className="size-4" /> // Ícono cuando la fila está expandida
-                ) : (
-                    <ChevronRight className="size-4" /> // Ícono cuando la fila está colapsada
-                )}
-            </Button>
-        ),
-        enableSorting: false,
-        enableHiding: false,
-        enablePinning: true,
-    },
-    {
         id: "actions",
         cell: function Cell({ row }) {
             const isActive = row.original.user.isActive;
+            const [showEditDialog, setShowEditDialog] = useState(false);
             return (
                 <div>
+                    <div>
+                        {showEditDialog && (
+                            <UpdateUsersSheet open={showEditDialog} onOpenChange={setShowEditDialog} user={row?.original} />
+                        )}
+
+                    </div>
                     <div />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -194,7 +210,7 @@ export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem >
+                            <DropdownMenuItem onSelect={() => setShowEditDialog(true)} >
                                 Editar
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

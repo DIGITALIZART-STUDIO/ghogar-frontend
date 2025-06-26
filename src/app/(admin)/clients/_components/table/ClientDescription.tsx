@@ -47,7 +47,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
     const TypeIcon = typeConfig.icon;
 
     // Determine which name to display
-    const displayName = row.type === ClientTypes.Juridico && row.companyName ? row.companyName : row.name;
+    const displayName = row.type === ClientTypes.Juridico && row.companyName ? row.companyName : row.name ?? "Sin Nombre";
 
     return (
         <Card className="mx-auto w-full max-w-4xl overflow-hidden shadow-md pt-0 pb-2">
@@ -168,9 +168,15 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                                     <p className="text-xs text-muted-foreground uppercase tracking-wider">
                                         Dirección
                                     </p>
-                                    <p className="text-sm font-medium mt-1 break-words">
-                                        {row.address}
-                                    </p>
+                                    {row.address ? (
+                                        <p className="text-sm font-medium mt-1">
+                                            {row.address}
+                                        </p>
+                                    ) : (
+                                        <p className="text-sm italic text-muted-foreground mt-1">
+                                            No registrado
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 

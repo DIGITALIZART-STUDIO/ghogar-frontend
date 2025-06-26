@@ -60,9 +60,17 @@ export const clientsColumns = (): Array<ColumnDef<Client>> => [
         id: "nombre",
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nombre" />,
-        cell: ({ row }) => <div className="min-w-40 truncate capitalize">
-            {row.getValue("nombre")}
-        </div>,
+        cell: ({ row }) => {
+            if (!row.getValue("nombre")) {
+                return <div className="text-muted-foreground text-sm italic">
+                    No registrado
+                </div>;
+            }
+
+            return <div className="min-w-40 truncate capitalize">
+                {row.getValue("nombre")}
+            </div>;
+        },
     },
     {
         id: "correo",

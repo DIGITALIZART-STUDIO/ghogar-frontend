@@ -19,7 +19,7 @@ export default function UpdateProjectsForm({ children, form, onSubmit }: UpdateP
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                    <h3 className=" font-semibold text-gray-900 border-b pb-2">Información Básica</h3>
+                    <h3 className=" font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Información Básica</h3>
 
                     <FormField
                         control={form.control}
@@ -58,7 +58,7 @@ export default function UpdateProjectsForm({ children, form, onSubmit }: UpdateP
 
                 {/* Financial Configuration */}
                 <div className="space-y-4">
-                    <h3 className=" font-semibold text-gray-900 border-b pb-2">Configuración Financiera</h3>
+                    <h3 className=" font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Configuración Financiera</h3>
 
                     <FormField
                         control={form.control}

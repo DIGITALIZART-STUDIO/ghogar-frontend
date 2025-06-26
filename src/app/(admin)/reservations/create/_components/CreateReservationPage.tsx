@@ -7,15 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-import { components } from "@/types/api";
 import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
 import { CreateReservation } from "../../_actions/ReservationActions";
 import { ReservationForm } from "./ReservationForm";
-
-type QuotationDTO = components["schemas"]["QuotationDTO"];
+import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
 
 interface CreateReservationPageProps {
-    quotationsData: Array<QuotationDTO>;
+    quotationsData: Array<SummaryQuotation>;
 }
 
 export default function CreateReservationPage({ quotationsData }: CreateReservationPageProps) {

@@ -164,7 +164,9 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                     label: lot.lotNumber ?? "",
                     area: lot.area?.toString() ?? "",
                     price: lot.price?.toString() ?? "",
-                    pricePerM2: lot.area && lot.price ? (lot.price / lot.area).toString() : "",
+                    pricePerM2: lot.pricePerSquareMeter !== undefined && lot.pricePerSquareMeter !== null
+                        ? Number(lot.pricePerSquareMeter).toFixed(2)
+                        : "",
                     blockId: lot.blockId ?? "",
                     blockName: lot.blockName ?? "",
                     projectId: lot.projectId ?? "",
@@ -194,7 +196,11 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
 
         // Actualizar los campos con la información del lote
         form.setValue("area", selectedLot.area);
-        form.setValue("pricePerM2", selectedLot.pricePerM2);
+        form.setValue("pricePerM2",
+            selectedLot.pricePerM2
+                ? Number(selectedLot.pricePerM2).toFixed(2)
+                : ""
+        );
 
         // Actualizar los estados visuales
         setLotNumber(selectedLot.label);
@@ -206,18 +212,17 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
     useEffect(() => {
         const area = Number.parseFloat(form.watch("area") ?? "0");
         const pricePerM2 = Number.parseFloat(form.watch("pricePerM2") ?? "0");
-        // Aquí está el cambio principal para manejar el discount correctamente
         const discount = Number.parseFloat(form.watch("discount") ?? "0");
         const downPayment = Number.parseFloat(form.watch("downPayment") ?? "0");
 
         if (area && pricePerM2) {
-            const totalPrice = (area * pricePerM2).toString();
+            const totalPrice = (area * pricePerM2).toFixed(2);
             form.setValue("totalPrice", totalPrice);
 
-            const finalPrice = (area * pricePerM2 - discount).toString();
+            const finalPrice = (area * pricePerM2 - discount).toFixed(2);
             form.setValue("finalPrice", finalPrice);
 
-            const amountFinanced = ((area * pricePerM2 - discount) * (1 - downPayment / 100)).toString();
+            const amountFinanced = ((area * pricePerM2 - discount) * (1 - downPayment / 100)).toFixed(2);
             form.setValue("amountFinanced", amountFinanced);
         }
     }, [form.watch("area"), form.watch("pricePerM2"), form.watch("discount"), form.watch("downPayment"), form]);
@@ -776,14 +781,14 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                         <div className="bg-gray-50 rounded-lg p-3">
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                                 <div className="text-gray-500">Cliente:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {leadsData.find((c) => c.id === form.watch("leadId"))?.client?.name ?? "—"}
                                                 </div>
                                                 <div className="text-gray-500">Proyecto:</div>
                                                 {/* Usar el estado projectName en vez de form.watch("projectName") */}
-                                                <div className="font-medium text-right">{projectName || "—"}</div>
+                                                <div className="font-medium text-right text-gray-900">{projectName || "—"}</div>
                                                 <div className="text-gray-500">Fecha:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("quotationDate")
                                                         ? format(parseISO(form.watch("quotationDate")), "dd/MM/yyyy", { locale: es })
                                                         : "—"}
@@ -801,16 +806,16 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                         <div className="bg-amber-50 rounded-lg p-3">
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                                 <div className="text-amber-700">Ubicación:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {/* Usar los estados blockName y lotNumber */}
                                                     {blockName && lotNumber ? `Manzana ${blockName}, Lote ${lotNumber}` : "—"}
                                                 </div>
                                                 <div className="text-amber-700">Área:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("area") ? `${form.watch("area")} m²` : "—"}
                                                 </div>
                                                 <div className="text-amber-700">Precio/m²:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("pricePerM2") ? `$${form.watch("pricePerM2")}` : "—"}
                                                 </div>
                                             </div>
@@ -826,15 +831,15 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                         <div className="bg-emerald-50 rounded-lg p-3">
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                                 <div className="text-emerald-700">Precio Total:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("totalPrice") ? `$${form.watch("totalPrice")}` : "—"}
                                                 </div>
                                                 <div className="text-emerald-700">Descuento:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("discount") ? `$${form.watch("discount")}` : "—"}
                                                 </div>
                                                 <div className="text-emerald-700 font-medium">Precio Final:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("finalPrice") ? `$${form.watch("finalPrice")}` : "—"}
                                                 </div>
                                             </div>
@@ -850,15 +855,15 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                         <div className="bg-blue-50 rounded-lg p-3">
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                                 <div className="text-blue-700">Inicial:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("downPayment") ? `${form.watch("downPayment")}%` : "—"}
                                                 </div>
                                                 <div className="text-blue-700">A Financiar:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("amountFinanced") ? `$${form.watch("amountFinanced")}` : "—"}
                                                 </div>
                                                 <div className="text-blue-700">Plazo:</div>
-                                                <div className="font-medium text-right">
+                                                <div className="font-medium text-right text-gray-900">
                                                     {form.watch("monthsFinanced") ? `${form.watch("monthsFinanced")} meses` : "—"}
                                                 </div>
                                             </div>

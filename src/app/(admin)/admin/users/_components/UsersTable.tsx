@@ -17,6 +17,8 @@ import { backend } from "@/types/backend2";
 import ErrorGeneral from "@/components/errors/general-error";
 import { UserGetDTO } from "../_types/user";
 import { UpdateUsersSheet } from "./update/UpdateUsersSheet";
+import { DeleteUsersDialog } from "./state-management/DeleteUsersDialog";
+import { ReactivateUsersDialog } from "./state-management/ReactivateUsersDialog";
 
 export function UsersTable() {
     const [pagination, setPagination] = useState({
@@ -24,7 +26,7 @@ export function UsersTable() {
         pageSize: 10,
     });
 
-    const { data, error, isFetching } = backend.useQuery("get", "/api/Users/all", {
+    const { data, error, isFetching, refetch } = backend.useQuery("get", "/api/Users/all", {
         params: {
             query: {
                 page: pagination.pageIndex + 1,
@@ -39,7 +41,7 @@ export function UsersTable() {
     const pageCount = data?.totalPages ?? 0;
     const totalItems = data?.totalCount ?? 0;
 
-    const columns = useMemo(() => clientsColumns(), []);
+    const columns = useMemo(() => clientsColumns(refetch), [refetch]);
 
     const serverPaginationConfig = useMemo(() => ({
         pageIndex: pagination.pageIndex,
@@ -61,7 +63,7 @@ export function UsersTable() {
         <DataTableExpanded
             data={data?.items ?? []}
             columns={columns}
-            toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} />}
+            toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} refetch={refetch} />}
             filterPlaceholder="Buscar usuarios..."
             serverPagination={serverPaginationConfig}
             isLoading={isFetching}
@@ -69,7 +71,7 @@ export function UsersTable() {
     );
 }
 
-export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
+export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -194,11 +196,38 @@ export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
         cell: function Cell({ row }) {
             const isActive = row.original.user.isActive;
             const [showEditDialog, setShowEditDialog] = useState(false);
+            const [showReactivateDialog, setShowReactivateDialog] = useState(false);
+            const [showDeleteDialog, setShowDeleteDialog] = useState(false);
             return (
                 <div>
                     <div>
                         {showEditDialog && (
-                            <UpdateUsersSheet open={showEditDialog} onOpenChange={setShowEditDialog} user={row?.original} />
+                            <UpdateUsersSheet open={showEditDialog} onOpenChange={setShowEditDialog} user={row?.original} refetch={refetch} />
+                        )}
+                        {showDeleteDialog && (
+                            <DeleteUsersDialog
+                                open={showDeleteDialog}
+                                onOpenChange={setShowDeleteDialog}
+                                user={row?.original}
+                                onSuccess={() => {
+                                    refetch();
+                                    setShowDeleteDialog(false);
+                                    row.toggleSelected(false);
+                                }}
+                            />
+                        )}
+
+                        {showReactivateDialog && (
+                            <ReactivateUsersDialog
+                                open={showReactivateDialog}
+                                onOpenChange={setShowReactivateDialog}
+                                user={row?.original}
+                                onSuccess={() => {
+                                    refetch();
+                                    setShowReactivateDialog(false);
+                                    row.toggleSelected(false);
+                                }}
+                            />
                         )}
 
                     </div>
@@ -215,14 +244,14 @@ export const clientsColumns = (): Array<ColumnDef<UserGetDTO>> => [
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {/*             {isSuperAdmin && ( */}
-                            <DropdownMenuItem >
+                            <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive} >
                                 Reactivar
                                 <DropdownMenuShortcut>
                                     <RefreshCcwDot className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            {/*       )} */}
                             <DropdownMenuItem
+                                onSelect={() => setShowDeleteDialog(true)}
                                 disabled={!isActive}
                                 className="text-red-700"
                             >

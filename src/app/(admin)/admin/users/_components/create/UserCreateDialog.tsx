@@ -32,7 +32,11 @@ const dataForm = {
     description: "Complete los detalles a continuación para crear un nuevo usuario del sistema",
 };
 
-export function UserCreateDialog() {
+interface UserCreateDialogProps {
+    refetch: () => void;
+}
+
+export function UserCreateDialog({refetch}: UserCreateDialogProps) {
     const [open, setOpen] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 800px)");
     const [isPending, startTransition] = useTransition();
@@ -102,6 +106,7 @@ export function UserCreateDialog() {
             });
 
             if (!error) {
+                refetch();
                 setIsSuccess(true);
             }
         });

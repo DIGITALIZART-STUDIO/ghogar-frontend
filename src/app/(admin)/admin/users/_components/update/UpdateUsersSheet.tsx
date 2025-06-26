@@ -33,9 +33,10 @@ interface UpdateUserSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
   user: UserGetDTO;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  refetch: () => void;
 }
 
-export function UpdateUsersSheet({ user, open, onOpenChange }: UpdateUserSheetProps) {
+export function UpdateUsersSheet({ user, open, onOpenChange, refetch }: UpdateUserSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -115,6 +116,8 @@ export function UpdateUsersSheet({ user, open, onOpenChange }: UpdateUserSheetPr
     useEffect(() => {
         if (isSuccess) {
             form.reset();
+            formPassword.reset();
+            refetch();
             onOpenChange(false);
             setIsSuccess(false);
         }

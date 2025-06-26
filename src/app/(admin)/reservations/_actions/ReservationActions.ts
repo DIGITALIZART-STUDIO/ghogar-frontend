@@ -89,6 +89,27 @@ export async function CreateReservation(reservation: components["schemas"]["Rese
     return ok(response);
 }
 
+// Actualizar una reserva existente
+export async function UpdateReservation(id: string, reservation: components["schemas"]["ReservationUpdateDto"]): Promise<Result<components["schemas"]["ReservationDto"], FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.PATCH("/api/Reservations/{id}", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
+        body: reservation,
+    }));
+
+    revalidatePath("/(admin)/reservations", "page");
+
+    if (error) {
+        console.log(`Error updating reservation ${id}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
 // Eliminar una reserva
 export async function DeleteReservation(id: string): Promise<Result<void, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.DELETE("/api/Reservations/{id}", {

@@ -12,7 +12,7 @@ export function AppSidebar({ name, email, initials, ...props }: React.ComponentP
     initials: string
 }) {
     return (
-        <Sidebar collapsible="icon" variant="inset" {...props} className="bg-sidebar">
+        <Sidebar collapsible="icon" variant="inset" {...props}>
             <SidebarHeader>
                 <NavLogo />
             </SidebarHeader>

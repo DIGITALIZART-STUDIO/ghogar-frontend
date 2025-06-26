@@ -168,7 +168,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     {/* Navigation Buttons */}
                     <div className="flex gap-2">
                         <Button asChild variant="outline" size="sm" className="flex-1">
-                            <Link href={`/admin/projects/${safeProject.id}/blocks`}>Ver Bloques</Link>
+                            <Link href={`/admin/projects/${safeProject.id}/blocks`}>Ver Manzanas</Link>
                         </Button>
                         <Button asChild size="sm" className="flex-1">
                             <Link href={`/admin/projects/lots?projectId=${safeProject.id}`}>

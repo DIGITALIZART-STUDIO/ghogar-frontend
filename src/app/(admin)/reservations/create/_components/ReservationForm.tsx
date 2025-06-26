@@ -5,7 +5,6 @@ import { format, parse, parseISO } from "date-fns";
 import {
     Banknote,
     DollarSign,
-    FileText,
     User,
     Calendar,
     Wallet,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
-import { components } from "@/types/api";
 import { InputWithIcon } from "@/components/input-with-icon";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
@@ -23,11 +21,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { CreateReservationSchema } from "../_schemas/createReservationSchema";
 import { CurrencyLabels, PaymentMethodLabels } from "../../_utils/reservations.utils";
-
-type QuotationDTO = components["schemas"]["QuotationDTO"];
+import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
 
 interface ReservationFormProps {
-    quotationsData: Array<QuotationDTO>;
+    quotationsData: Array<SummaryQuotation>;
     form: UseFormReturn<CreateReservationSchema>;
     onSubmit: (data: CreateReservationSchema) => void;
     isPending: boolean;
@@ -39,7 +36,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
     // Prepare quotation options for dropdown
     const quotationOptions: Array<Option> = quotationsData.map((quotation) => ({
         value: quotation.id ?? "",
-        label: `${quotation.code} - ${quotation.leadClientName} (${quotation.projectName})`,
+        label: `${quotation.code} - ${quotation.clientName} (${quotation.projectName})`,
     }));
 
     // Get selected quotation for displaying client info
@@ -52,61 +49,6 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Columna izquierda - Información principal */}
                     <div className="lg:col-span-2">
-                        {/* Sección superior - Selección de cotización */}
-                        <div className="rounded-xl overflow-hidden mb-8 border-2 bg-card border-secondary">
-                            <div className="flex items-center justify-between p-6 bg-primary/10 dark:bg-primary/90 border-b">
-                                <div className="flex items-center">
-                                    <FileText className="h-5 w-5 text-gray-600 dark:text-gray-800 mr-3" />
-                                    <h2 className="text-lg font-semibold text-gray-800">
-                                        Selección de Cotización
-                                    </h2>
-                                </div>
-                            </div>
-
-                            <div className="p-6">
-                                <FormField
-                                    control={form.control}
-                                    name="quotationId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                Cotización
-                                            </FormLabel>
-                                            <AutoComplete
-                                                options={quotationOptions}
-                                                emptyMessage="No se encontró la cotización."
-                                                placeholder="Seleccione una cotización"
-                                                onValueChange={(selectedOption) => {
-                                                    field.onChange(selectedOption?.value ?? "");
-                                                }}
-                                                value={quotationOptions.find((option) => option.value === field.value) ?? undefined}
-                                            />
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Display selected quotation info */}
-                                {selectedQuotation && (
-                                    <div className="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                                        <div className="flex items-center mb-2">
-                                            <User className="h-4 w-4 text-blue-600 mr-2" />
-                                            <span className="text-sm font-medium text-blue-800">
-                                                Cliente seleccionado:
-                                            </span>
-                                        </div>
-                                        <div className="text-sm text-blue-700">
-                                            {selectedQuotation.leadClientName}
-                                        </div>
-                                        <div className="text-xs text-blue-600 mt-1">
-                                            Proyecto:
-                                            {" "}
-                                            {selectedQuotation.projectName}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
 
                         {/* Sección principal - Datos de reserva */}
                         <div className="rounded-xl overflow-hidden mb-8 bg-card border border-secondary">
@@ -119,6 +61,54 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
 
                             <div className="p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="quotationId"
+                                        render={({ field }) => (
+                                            <FormItem className="sm:col-span-2">
+                                                <FormLabel>
+                                                    Cotización
+                                                </FormLabel>
+                                                <AutoComplete
+                                                    options={quotationOptions}
+                                                    emptyMessage="No se encontró la cotización."
+                                                    placeholder="Seleccione una cotización"
+                                                    onValueChange={(selectedOption) => {
+                                                        field.onChange(selectedOption?.value ?? "");
+                                                        // Buscar la cotización seleccionada y setear el exchangeRate
+                                                        const selected = quotationsData.find((q) => q.id === selectedOption?.value);
+                                                        if (selected && selected.exchangeRate) {
+                                                            form.setValue("exchangeRate", selected.exchangeRate.toString());
+                                                        } else {
+                                                            form.setValue("exchangeRate", "");
+                                                        }
+                                                    }}
+                                                    value={quotationOptions.find((option) => option.value === field.value) ?? undefined}
+                                                />
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {/* Display selected quotation info */}
+                                    {selectedQuotation && (
+                                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 col-span-2">
+                                            <div className="flex items-center mb-2">
+                                                <User className="h-4 w-4 text-blue-600 mr-2" />
+                                                <span className="text-sm font-medium text-blue-800">
+                                                    Cliente seleccionado:
+                                                </span>
+                                            </div>
+                                            <div className="text-sm text-blue-700">
+                                                {selectedQuotation.clientName}
+                                            </div>
+                                            <div className="text-xs text-blue-600 mt-1">
+                                                Proyecto:
+                                                {" "}
+                                                {selectedQuotation.projectName}
+                                            </div>
+                                        </div>
+                                    )}
                                     <FormField
                                         control={form.control}
                                         name="reservationDate"
@@ -333,7 +323,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                             Cliente:
                                         </span>
                                         <span className="font-medium">
-                                            {selectedQuotation.leadClientName}
+                                            {selectedQuotation.clientName}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">

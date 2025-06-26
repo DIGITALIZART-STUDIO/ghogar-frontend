@@ -152,11 +152,11 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
                     </Button>
 
                     <Button
-                        variant="ghost"
+                        variant="default"
                         size="sm"
                         disabled={isLoading}
                         onClick={() => setOpenSheet(true)}
-                        className="hover:bg-gray-100 hover:text-gray-900 transition-colors dark:hover:bg-gray-700 dark:hover:text-gray-100 flex-1"
+                        className="flex-1"
                     >
                         <Pencil className="mr-2 h-4 w-4" />
                         Editar

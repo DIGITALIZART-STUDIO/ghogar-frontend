@@ -97,11 +97,12 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                     if (Array.isArray(clientsArray) && clientsArray.length > 0) {
                         const options = clientsArray.map((client) => ({
                             value: client.id ?? "",
-                            label: client.dni
-                                ? `${client.dni} - ${client.name ?? "Sin nombre"}`
-                                : client.ruc
-                                    ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
-                                    : (client.name ?? "Sin nombre"),
+                            label:
+                                client.dni
+                                    ? `${client.dni} - ${client.name ?? "Sin nombre"}`
+                                    : client.ruc
+                                        ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
+                                        : client.name ?? `Cliente Sin Datos - ${client.phoneNumber ?? "Sin nombre"}` ?? "Sin datos",
                         }));
 
                         setClientOptions(options);

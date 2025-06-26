@@ -61,16 +61,24 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
         accessorKey: "client.name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
         cell: ({ row }) => {
-            const client = row.original?.client;
-            const identifier = client?.dni ? `DNI: ${client?.dni}` : client?.ruc ? `RUC: ${client?.ruc}` : "";
+            if (!row.original || !row.original.client) {
+                return (
+                    <div className="min-w-32 text-muted-foreground italic">
+                        Cliente sin datos
+                    </div>
+                );
+            }
+            const client = row.original.client!;
+            const identifier = client.dni ? `DNI: ${client.dni}` : client.ruc ? `RUC: ${client.ruc}` : "";
 
             return (
                 <div className="min-w-32">
-                    <div className="truncate capitalize">{row.getValue("Cliente")}</div>
+                    <div className="truncate capitalize">{row.getValue("Cliente") ?? "Sin datos"}</div>
                     {identifier && <div className="text-xs text-muted-foreground">{identifier}</div>}
                 </div>
             );
         },
+        //
         // Mejorar la función de filtrado para DNI o RUC
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

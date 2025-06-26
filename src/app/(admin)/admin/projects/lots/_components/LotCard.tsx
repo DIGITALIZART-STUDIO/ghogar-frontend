@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Calendar, DollarSign, MapPin, Ruler } from "lucide-react";
+import { Building2, Calendar, DollarSign, MapPin, Power, PowerOff, Ruler } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toastWrapper } from "@/types/toasts";
-import { UpdateLotStatus } from "../_actions/LotActions";
+import { ActivateLot, DeactivateLot, UpdateLotStatus } from "../_actions/LotActions";
 import { LotData, LotStatus } from "../_types/lot";
 import { getAllLotStatuses, getLotStatusConfig } from "../_utils/lots.filter.utils";
 import { UpdateLotsSheet } from "./update/UpdateLotsSheet";
@@ -21,6 +21,7 @@ interface LotCardProps {
 export function LotCard({ lot, projectId }: LotCardProps) {
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [openUpdateSheet, setOpenUpdateSheet] = useState(false);
+    const [isToggling, setIsToggling] = useState(false);
     // Validar que los datos necesarios existan
     if (!lot?.id || !lot?.lotNumber) {
         return null;
@@ -52,6 +53,42 @@ export function LotCard({ lot, projectId }: LotCardProps) {
 
         if (error) {
             console.error(`Error updating lot ${lot.id} status:`, error);
+        }
+    };
+
+    const handleToggleStatus = async () => {
+        setIsToggling(true);
+        try {
+            if (lot.isActive) {
+                // Desactivar lote usando toastWrapper
+                const [, error] = await toastWrapper(DeactivateLot(lot.id), {
+                    loading: "Desactivando lote...",
+                    success: `El lote ${lot.lotNumber} ha sido desactivado`,
+                    error: (e) => `Error al desactivar el lote: ${e.message}`,
+                });
+
+                if (!error) {
+                    // Actualiza el estado local del proyecto si es necesario
+                    lot.isActive = false;
+                }
+            } else {
+                // Activar proyecto usando toastWrapper
+                const [, error] = await toastWrapper(ActivateLot(lot.id), {
+                    loading: "Activando lote...",
+                    success: `El lote ${lot.lotNumber} ha sido activado`,
+                    error: (e) => `Error al activar el lote: ${e.message}`,
+                });
+
+                if (!error) {
+                    // Actualiza el estado local del proyecto si es necesario
+                    lot.isActive = true;
+                }
+            }
+        } catch (error) {
+            // Este catch es para errores inesperados que no manejó toastWrapper
+            console.error("Error inesperado:", error);
+        } finally {
+            setIsToggling(false);
         }
     };
 
@@ -169,8 +206,26 @@ export function LotCard({ lot, projectId }: LotCardProps) {
                         Editar
                     </Button>
                     <UpdateLotsSheet lot={lot} projectId={projectId} open={openUpdateSheet} onOpenChange={setOpenUpdateSheet} />
-                    <Button size="sm" className="flex-1">
-                        Ver Detalles
+                    <Button
+                        variant={lot.isActive ? "destructive" : "success"}
+                        size="sm"
+                        className="flex-1"
+                        onClick={handleToggleStatus}
+                        disabled={isToggling}
+                    >
+                        {isToggling ? (
+                            "Procesando..."
+                        ) : lot.isActive ? (
+                            <>
+                                <PowerOff className="mr-1 h-3 w-3" />
+                                Desactivar
+                            </>
+                        ) : (
+                            <>
+                                <Power className="mr-1 h-3 w-3" />
+                                Activar
+                            </>
+                        )}
                     </Button>
                 </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Key, Mail, User } from "lucide-react";
@@ -16,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { backend } from "@/types/backend2";
 import loginImage from "../assets/images/ImageLogin.webp";
+import { PasswordInput } from "./ui/password-input";
 
 const loginSchema = z.object({
     email: z
@@ -41,7 +41,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
         toast.promise(loginPromise, {
             loading: "Iniciando sesión...",
-            error: "Error al iniciar sesión",
+            error: (error) => {
+                // Intenta extraer el mensaje personalizado del backend
+                if (error?.error?.rawText) {
+                    return error.error.rawText;
+                }
+                if (error instanceof Error) {
+                    return error.message;
+                }
+                return "Error al iniciar sesión";
+            },
             success: "Sesión iniciada, redirigiendo...",
         });
 
@@ -123,17 +132,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                                     <FormLabel htmlFor="password" className="flex items-center gap-2">
                                                         Contraseña
                                                     </FormLabel>
-                                                    <Link href="#" className="text-sm text-primary hover:text-primary/80 transition-colors">
-                                                        ¿Olvidaste tu contraseña?
-                                                    </Link>
                                                 </div>
                                                 <FormControl>
                                                     <div className="relative">
-                                                        <Input
+                                                        <PasswordInput
                                                             id="password"
-                                                            type="password"
                                                             required
                                                             className="pl-10 bg-muted/30 border-muted focus:border-primary"
+                                                            placeholder="********"
                                                             {...field}
                                                         />
                                                         <Key className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -151,16 +157,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 >
                                     Iniciar sesión
                                 </Button>
-
-                                <div className="text-center text-sm text-muted-foreground mt-4">
-                                    <p>
-                                        ¿Necesitas ayuda? Contacta a
-                                        {" "}
-                                        <Link href="#" className="text-primary hover:underline">
-                                            soporte técnico
-                                        </Link>
-                                    </p>
-                                </div>
                             </div>
                         </form>
                     </Form>

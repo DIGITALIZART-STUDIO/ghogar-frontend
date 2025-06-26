@@ -21,3 +21,83 @@ export async function CreateUser(body: UserCreateDTO): Promise<Result<null, Fetc
     revalidatePath("/(admin)/admin/users");
     return ok(null);
 }
+
+// Actualizar datos de usuario
+export async function UpdateUser(
+    userId: string,
+    user: components["schemas"]["UserUpdateDTO"],
+): Promise<Result<components["schemas"]["UserGetDTO"], FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/Users/{userId}", {
+        ...auth,
+        params: { path: { userId } },
+        body: user,
+    }),
+    );
+
+    revalidatePath("/(admin)/users", "page");
+
+    if (error) {
+        console.log(`Error updating user ${userId}:`, error);
+        return err(error);
+    }
+    return ok(response!);
+}
+
+// Actualizar solo la contraseña
+export async function UpdateUserPassword(
+    userId: string,
+    passwordDto: components["schemas"]["UserUpdatePasswordDTO"],
+): Promise<Result<void, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/Users/{userId}/password", {
+        ...auth,
+        params: { path: { userId } },
+        body: passwordDto,
+    }),
+    );
+
+    revalidatePath("/(admin)/users", "page");
+
+    if (error) {
+        console.log(`Error updating password for user ${userId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Desactivar usuario
+export async function DeactivateUser(
+    userId: string,
+): Promise<Result<void, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.DELETE("/api/Users/{userId}", {
+        ...auth,
+        params: { path: { userId } },
+    }),
+    );
+
+    revalidatePath("/(admin)/users", "page");
+
+    if (error) {
+        console.log(`Error deactivating user ${userId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
+// Activar usuario
+export async function ReactivateUser(
+    userId: string,
+): Promise<Result<void, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.PATCH("/api/Users/{userId}/reactivate", {
+        ...auth,
+        params: { path: { userId } },
+    }),
+    );
+
+    revalidatePath("/(admin)/users", "page");
+
+    if (error) {
+        console.log(`Error reactivating user ${userId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}

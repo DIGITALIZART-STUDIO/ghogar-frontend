@@ -73,6 +73,23 @@ export async function GetQuotationsByAdvisor(advisorId: string): Promise<Result<
     return ok(response);
 }
 
+export async function GetAcceptedQuotationsByAdvisor(advisorId: string): Promise<Result<Array<components["schemas"]["QuotationSummaryDTO"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Quotations/advisor/accepted/{advisorId}", {
+        ...auth,
+        params: {
+            path: {
+                advisorId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting quotations for advisor ${advisorId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
 // Crear una nueva cotización
 export async function CreateQuotation(quotation: components["schemas"]["QuotationCreateDTO"]): Promise<Result<components["schemas"]["QuotationDTO"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.POST("/api/Quotations", {

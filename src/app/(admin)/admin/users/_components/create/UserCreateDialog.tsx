@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -16,99 +13,101 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Plus,RefreshCcw,Shield } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { UserCreateDTO, userCreateSchema } from "../../_schemas/createUsersSchema";
+import {  generateSecurePassword } from "../../_utils/user.utils";
+import UserCreateForm from "./UserCreateForm";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { toastWrapper } from "@/types/toasts";
-import { CreateClient } from "../../_actions/ClientActions";
-import { clientSchema, type CreateClientsSchema } from "../../_schemas/createClientsSchema";
-import { ClientTypes } from "../../_types/client";
-import CreateClientsForm from "./CreateClientsForm";
+import { CreateUser } from "../../actions";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const dataForm = {
-    button: "Crear cliente",
-    title: "Crear Cliente",
-    description: "Complete los detalles a continuación para crear nuevos clientes.",
+    button: "Crear usuario",
+    title: "Crear usuario",
+    description: "Complete los detalles a continuación para crear un nuevo usuario del sistema",
 };
 
-export function CreateClientsDialog() {
-    const isDesktop = useMediaQuery("(min-width: 800px)");
+interface UserCreateDialogProps {
+    refetch: () => void;
+}
+
+export function UserCreateDialog({refetch}: UserCreateDialogProps) {
     const [open, setOpen] = useState(false);
+    const isDesktop = useMediaQuery("(min-width: 800px)");
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const form = useForm<CreateClientsSchema>({
-        resolver: zodResolver(clientSchema),
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [passwordCopied, setPasswordCopied] = useState(false);
+
+    const form = useForm<UserCreateDTO>({
+        resolver: zodResolver(userCreateSchema),
         defaultValues: {
             name: "",
-            dni: "",
-            ruc: "",
-            companyName: "",
-            phoneNumber: "",
             email: "",
-            address: "",
-            type: undefined,
-            coOwners: [],
-            separateProperty: false,
-            separatePropertyData: undefined,
+            phone: "",
+            role: "",
+            password: "",
         },
     });
 
-    const onSubmit = async (input: CreateClientsSchema) => {
+    const handleGeneratePassword = async () => {
+        setIsGenerating(true);
+
+        // Simulate generation delay for better UX
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        const newPassword = generateSecurePassword(16);
+        form.setValue("password", newPassword);
+
+        setIsGenerating(false);
+
+        toast.success("Contraseña generada exitosamente", {
+            description: "Se ha generado una contraseña segura automáticamente.",
+        });
+    };
+
+    const handleCopyPassword = async (password: string) => {
+        try {
+            await navigator.clipboard.writeText(password);
+            setPasswordCopied(true);
+            toast.success("Contraseña copiada", {
+                description: "La contraseña ha sido copiada al portapapeles.",
+            });
+
+            setTimeout(() => setPasswordCopied(false), 2000);
+        } catch {
+            toast.error("Error al copiar", {
+                description: "No se pudo copiar la contraseña al portapapeles.",
+            });
+        }
+    };
+
+    const onSubmit = async (values: UserCreateDTO) => {
         startTransition(async () => {
             // Preparar los datos para el formato esperado por el backend
             const clientData = {
-                name: input.name,
-                phoneNumber: input.phoneNumber,
-                email: input.email,
-                address: input.address,
-                type: input.type,
-                coOwners: JSON.stringify(input.coOwners),
-                country: input.country,
-                separateProperty: input.separateProperty,
-                separatePropertyData: JSON.stringify(input.separatePropertyData),
-                // Campos condicionales según el tipo de cliente
-                ...(input.type === ClientTypes.Natural && {
-                    dni: input.dni,
-                }),
-                ...(input.type === ClientTypes.Juridico && {
-                    ruc: input.ruc,
-                    companyName: input.companyName,
-                }),
+                name: values.name,
+                phone: values.phone,
+                email: values.email,
+                role: values.role,
+                password: values.password,
             };
 
-            const [, error] = await toastWrapper(CreateClient(clientData), {
-                loading: "Creando cliente...",
-                success: "Cliente creado exitosamente",
-                error: (e) => `Error al crear cliente: ${e.message}`,
+            const [, error] = await toastWrapper(CreateUser(clientData), {
+                loading: "Creando usuario...",
+                success: "Usuario creado exitosamente",
+                error: (e) => `Error al crear usuario: ${e.message}`,
             });
 
             if (!error) {
+                refetch();
                 setIsSuccess(true);
-            } else {
-                // Agregar validación visual para campos con error
-                if (error.message.includes("DNI")) {
-                    form.setError("dni", {
-                        type: "manual",
-                        message: "Este DNI ya está registrado para otro cliente",
-                    });
-                }
-
-                if (error.message.includes("RUC")) {
-                    form.setError("ruc", {
-                        type: "manual",
-                        message: "Este RUC ya está registrado para otro cliente",
-                    });
-                }
             }
         });
     };
@@ -136,12 +135,17 @@ export function CreateClientsDialog() {
                 </DialogTrigger>
                 <DialogContent tabIndex={undefined} className="sm:max-w-[900px] px-0">
                     <DialogHeader className="px-4">
-                        <DialogTitle>{dataForm.title}</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Shield className="size-5 text-primary" />
+                            {dataForm.title}
+                        </DialogTitle>
                         <DialogDescription>{dataForm.description}</DialogDescription>
                     </DialogHeader>
+
+                    <Separator />
                     <ScrollArea className="h-full max-h-[80vh] px-0">
                         <div className="px-6">
-                            <CreateClientsForm form={form} onSubmit={onSubmit}>
+                            <UserCreateForm form={form} onSubmit={onSubmit} handleCopyPassword={handleCopyPassword} handleGeneratePassword={handleGeneratePassword} isGenerating={isGenerating} passwordCopied={passwordCopied}>
                                 <DialogFooter className="w-full">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
                                         <DialogClose asChild>
@@ -155,7 +159,7 @@ export function CreateClientsDialog() {
                                         </Button>
                                     </div>
                                 </DialogFooter>
-                            </CreateClientsForm>
+                            </UserCreateForm>
                         </div>
                     </ScrollArea>
                 </DialogContent>
@@ -174,14 +178,15 @@ export function CreateClientsDialog() {
 
             <DrawerContent className="h-[80vh]">
                 <DrawerHeader className="pb-2">
-                    <DrawerTitle>{dataForm.title}</DrawerTitle>
+                    <DrawerTitle className="flex items-center gap-2">
+                        <Shield className="size-5 text-primary" />{dataForm.title}</DrawerTitle>
                     <DrawerDescription>{dataForm.description}</DrawerDescription>
                 </DrawerHeader>
 
                 <div className="flex-1 overflow-hidden">
                     <ScrollArea className="h-full px-0">
                         <div className="px-4">
-                            <CreateClientsForm form={form} onSubmit={onSubmit}>
+                            <UserCreateForm form={form} onSubmit={onSubmit} handleCopyPassword={handleCopyPassword} handleGeneratePassword={handleGeneratePassword} isGenerating={isGenerating} passwordCopied={passwordCopied}>
                                 <DrawerFooter className="px-0 pt-2">
                                     <Button disabled={isPending} className="w-full">
                                         {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
@@ -193,7 +198,7 @@ export function CreateClientsDialog() {
                                         </Button>
                                     </DrawerClose>
                                 </DrawerFooter>
-                            </CreateClientsForm>
+                            </UserCreateForm>
                         </div>
                     </ScrollArea>
                 </div>

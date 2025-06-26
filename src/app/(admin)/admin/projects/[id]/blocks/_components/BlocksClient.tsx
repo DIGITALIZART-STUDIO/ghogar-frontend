@@ -99,10 +99,10 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
                     </CardContent>
                 </Card>
                 {searchTerm && (
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 mt-4">
                         {filteredBlocks.length}
                         {" "}
-                        de
+                        de{" "}
                         {blocks.length}
                         {" "}
                         manzanas

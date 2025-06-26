@@ -30,7 +30,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">Información del Lote</h3>
+                    <h3 className="font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Información del Lote</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -95,7 +95,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
 
                 {/* Measurements and Pricing */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">Medidas y Precios</h3>
+                    <h3 className="font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Medidas y Precios</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -167,7 +167,7 @@ export default function CreateLotsForm({ children, form, onSubmit, blocks, selec
 
                 {/* Status and Settings */}
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Estado y Configuración</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Estado y Configuración</h3>
 
                     <FormField
                         control={form.control}

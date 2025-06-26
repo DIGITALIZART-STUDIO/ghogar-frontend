@@ -30,7 +30,7 @@ export default function UpdateLotsForm({ children, form, onSubmit, blocks, selec
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 border-b pb-2">
                         Información del Lote
                     </h3>
 
@@ -100,7 +100,7 @@ export default function UpdateLotsForm({ children, form, onSubmit, blocks, selec
 
                 {/* Measurements and Pricing */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">
+                    <h3 className="font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">
                         Medidas y Precios
                     </h3>
 
@@ -187,7 +187,7 @@ export default function UpdateLotsForm({ children, form, onSubmit, blocks, selec
 
                 {/* Status and Settings */}
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">
                         Estado y Configuración
                     </h3>
 

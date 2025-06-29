@@ -80,8 +80,7 @@ export async function CreateBlock(block: components["schemas"]["BlockCreateDTO"]
         body: block,
     }));
 
-    revalidatePath("/(admin)/blocks", "page");
-    revalidatePath("/(admin)/projects", "page");
+    revalidatePath("/admin/projects/[id]/blocks", "page");
 
     if (error) {
         console.log("Error creating block:", error);

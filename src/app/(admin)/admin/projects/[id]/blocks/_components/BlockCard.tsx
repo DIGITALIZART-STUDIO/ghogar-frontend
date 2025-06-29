@@ -18,9 +18,10 @@ interface BlockCardProps {
   projectId: string;
   onToggleActive: (blockId: string, isActive: boolean) => void;
   isLoading?: boolean;
+  refetch: () => void;
 }
 
-export function BlockCard({ block, projectId, onToggleActive, isLoading = false }: BlockCardProps) {
+export function BlockCard({ block, projectId, onToggleActive, isLoading = false, refetch }: BlockCardProps) {
     const [openSheet, setOpenSheet] = useState(false);
 
     // Calcular porcentajes para mejor visualización
@@ -176,7 +177,7 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false 
 
             {/* Simulated UpdateBlocksSheet component */}
             {openSheet && (
-                <UpdateBlocksSheet open={openSheet} onOpenChange={setOpenSheet} block={block} projectId={projectId} />
+                <UpdateBlocksSheet open={openSheet} onOpenChange={setOpenSheet} block={block} projectId={projectId} refetch={refetch} />
             )}
         </Card>
     );

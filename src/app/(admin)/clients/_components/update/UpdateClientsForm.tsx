@@ -18,6 +18,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { CreateClientsSchema } from "../../_schemas/createClientsSchema";
 import { ClientTypes } from "../../_types/client";
 import { ClientTypesLabels } from "../../_utils/clients.utils";
+import DocumentNumberLookup from "../search-document-number/LookupDocumentNumber";
 
 interface UpdateCustomersFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
     const addCopropietario = () => {
         if (copropietarios.length < 6) {
             const currentCopropietarios = form.getValues("coOwners") ?? [];
-            form.setValue("coOwners", [...currentCopropietarios, { name: "", dni: "", phone: "" }]);
+            form.setValue("coOwners", [...currentCopropietarios, { name: "", dni: "", phone: "", address: "", email: "" }]);
         }
     };
 
@@ -54,6 +55,8 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                 spouseDni: "",
                 phone: "",
                 maritalStatus: "Casado",
+                address: "",
+                email: "",
             });
         }
     };
@@ -106,57 +109,21 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                             )}
                         />
 
-                        {/* Name */}
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nombre Completo</FormLabel>
-                                    <FormControl>
-                                        <InputWithIcon Icon={User} placeholder="Ejm: Juan Perez" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
                         {/* Conditional fields based on client type */}
                         {clientType === ClientTypes.Natural ? (
-                            <FormField
-                                control={form.control}
-                                name="dni"
-                                render={({ field }) => (
-                                    <FormItem className="transition-all duration-300 ease-in-out">
-                                        <FormLabel>DNI</FormLabel>
-                                        <FormControl>
-                                            <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678" maxLength={8} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div>
+                                <DocumentNumberLookup form={form} type="dni" initialValue={form.getValues("dni") ?? undefined} isUpdate />
+                            </div>
                         ) : clientType === ClientTypes.Juridico ? (
-                            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300 ease-in-out">
-                                <FormField
-                                    control={form.control}
-                                    name="ruc"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>RUC</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678901" maxLength={11} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
+                            <>
+                                <div>
+                                    <DocumentNumberLookup form={form} type="ruc" initialValue={form.getValues("ruc") ?? undefined} isUpdate />
+                                </div>
                                 <FormField
                                     control={form.control}
                                     name="companyName"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="transition-all duration-300 ease-in-out">
                                             <FormLabel>Nombre de la Empresa</FormLabel>
                                             <FormControl>
                                                 <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
@@ -165,8 +132,25 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                                         </FormItem>
                                     )}
                                 />
-                            </div>
+                            </>
                         ) : null}
+
+                        {/* Name */}
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        {clientType === ClientTypes.Juridico ? "Representante Legal" : "Nombre Completo"}
+                                    </FormLabel>
+                                    <FormControl>
+                                        <InputWithIcon Icon={User} placeholder="Ejm: Juan Perez" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
@@ -324,6 +308,34 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                                             </FormItem>
                                         )}
                                     />
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`coOwners.${index}.address`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Dirección</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`coOwners.${index}.email`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Correo Electrónico</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                             </div>
                         ))}
@@ -431,7 +443,7 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                                                 <FormLabel>Estado Civil</FormLabel>
                                                 <Select onValueChange={field.onChange} value={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Seleccionar estado civil" />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -441,6 +453,34 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                                                         <SelectItem value="Unión de hecho">Unión de hecho</SelectItem>
                                                     </SelectContent>
                                                 </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="separatePropertyData.address"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Dirección</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="separatePropertyData.email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Correo Electrónico</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
+                                                </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

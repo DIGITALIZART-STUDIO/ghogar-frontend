@@ -33,9 +33,10 @@ interface UpdateBlocksSheetProps extends Omit<React.ComponentPropsWithRef<typeof
   projectId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  refetch: () => void;
 }
 
-export function UpdateBlocksSheet({ block, projectId, open, onOpenChange }: UpdateBlocksSheetProps) {
+export function UpdateBlocksSheet({ block, projectId, open, onOpenChange, refetch }: UpdateBlocksSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -81,6 +82,7 @@ export function UpdateBlocksSheet({ block, projectId, open, onOpenChange }: Upda
     useEffect(() => {
         if (isSuccess) {
             form.reset();
+            refetch();
             onOpenChange(false);
             setIsSuccess(false);
         }

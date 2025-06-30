@@ -7,6 +7,9 @@ const coOwnersSchema = z.object({
     name: z.string().min(2, "El nombre es obligatorio"),
     dni: z.string().length(8, "El DNI debe tener exactamente 8 caracteres"),
     phone: z.string().optional(),
+    address: z.string().min(2, "La dirección es obligatoria"),
+    email: z.string().email("El correo electrónico debe ser válido")
+        .optional(),
 });
 
 // Schema para datos de separación de bienes
@@ -14,6 +17,9 @@ const separatePropertySchema = z.object({
     spouseName: z.string().min(2, "El nombre del cónyuge es obligatorio"),
     spouseDni: z.string().length(8, "El DNI debe tener exactamente 8 caracteres"),
     phone: z.string().optional(),
+    address: z.string().min(2, "La dirección es obligatoria"),
+    email: z.string().email("El correo electrónico debe ser válido")
+        .optional(),
     maritalStatus: z.enum(["Casado", "Separado", "Unión de hecho"], {
         required_error: "Debe seleccionar un estado civil",
     }),

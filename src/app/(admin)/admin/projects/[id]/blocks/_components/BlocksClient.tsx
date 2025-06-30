@@ -1,40 +1,56 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useTransition, useState } from "react";
 import { Filter, Home, Search } from "lucide-react";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toastWrapper } from "@/types/toasts";
 import { ActivateBlock, DeactivateBlock } from "../_actions/BlockActions";
-import { BlockData } from "../_types/block";
 import { BlockCard } from "./BlockCard";
+import { useBlocks } from "../_hooks/useBlocks";
+import { HeaderPage } from "@/components/common/HeaderPage";
+import ErrorGeneral from "@/components/errors/general-error";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
+import { CreateBlocksDialog } from "./create/CreateBlocksDialog";
+import { ProjectData } from "../../../_types/project";
 
 interface BlocksClientProps {
-  blocks: Array<BlockData>;
   projectId: string;
+  project: ProjectData
 }
 
-export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientProps) {
-    const [blocks, setBlocks] = useState(initialBlocks);
+export function BlocksClient({ projectId, project }: BlocksClientProps) {
+    const { data: blocks = [], isError, refetch } = useBlocks(projectId);
     const [isPending, startTransition] = useTransition();
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Filtrar bloques basado en el término de búsqueda
+    // Mueve useMemo aquí, antes de cualquier return
     const filteredBlocks = useMemo(() => {
         if (!searchTerm.trim()) {
             return blocks;
         }
-
         return blocks.filter((block) => (block.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()));
     }, [blocks, searchTerm]);
 
-    const handleToggleActive = (blockId: string, isActive: boolean) => {
-    // Actualizar optimistamente la UI
-        setBlocks((prev) => prev.map((block) => (block.id === blockId ? { ...block, isActive } : block)));
+    // Mostrar error si ocurre
+    if (isError) {
+        return (
+            <div className="space-y-6">
+                <HeaderPage title={"Manzanas"} description={"Sin ubicación"} />
+                <ErrorGeneral />
+            </div>
+        );
+    }
 
-        // Llamar a la API con toast
-        startTransition(async() => {
+    const handleToggleActive = (blockId: string, isActive: boolean) => {
+        startTransition(async () => {
             const action = isActive ? ActivateBlock(blockId) : DeactivateBlock(blockId);
             const actionText = isActive ? "activar" : "desactivar";
 
@@ -44,9 +60,8 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
                 error: (e) => `Error al ${actionText} manzana: ${e.message}`,
             });
 
-            if (error) {
-                // Revertir el cambio en caso de error
-                setBlocks((prev) => prev.map((block) => (block.id === blockId ? { ...block, isActive: !isActive } : block)));
+            if (!error) {
+                refetch();
             }
         });
     };
@@ -70,68 +85,95 @@ export function BlocksClient({ blocks: initialBlocks, projectId }: BlocksClientP
     }
 
     return (
-        <div className="space-y-6">
-            {/* Buscador */}
-            <div className="w-full gap-4">
-                <Card className="border pt-0">
-                    <CardHeader className="my-4">
-                        <CardTitle className="text-xl flex items-center mt-2">
-                            <Filter className="mr-2 h-5 w-5 text-purple-600" />
-                            Filtros de Búsqueda
-                        </CardTitle>
-                        <CardDescription>
-                            Encuentra lotes específicos usando los filtros disponibles
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                <Input
-                                    type="text"
-                                    placeholder="Buscar manzana por nombre..."
-                                    value={searchTerm}
-                                    onChange={handleSearchChange}
-                                    className="pl-10"
-                                />
+        <>
+            <div className="mb-4">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <Link href="/admin/projects">Proyectos</Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem className="capitalize">
+                            <Link href={"/admin/projects"}>{project?.name}</Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbPage>Manzanas</BreadcrumbPage>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </div>
+            <div className="flex items-center gap-4">
+                <div className="flex-1">
+                    <HeaderPage
+                        title={`Manzanas - ${project?.name ?? "Sin nombre"}`}
+                        description={project?.location ?? "Sin ubicación"}
+                    />
+                </div>
+                <CreateBlocksDialog projectId={projectId} refetch={refetch} />
+            </div>
+            <div className="space-y-6">
+                {/* Buscador */}
+                <div className="w-full gap-4">
+                    <Card className="border pt-0">
+                        <CardHeader className="my-4">
+                            <CardTitle className="text-xl flex items-center mt-2">
+                                <Filter className="mr-2 h-5 w-5 text-purple-600" />
+                                Filtros de Búsqueda
+                            </CardTitle>
+                            <CardDescription>
+                                Encuentra lotes específicos usando los filtros disponibles
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Buscar manzana por nombre..."
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                        className="pl-10"
+                                    />
+                                </div>
                             </div>
+                        </CardContent>
+                    </Card>
+                    {searchTerm && (
+                        <div className="text-sm text-gray-500 mt-4">
+                            {filteredBlocks.length}
+                            {" "}
+                            de{" "}
+                            {blocks.length}
+                            {" "}
+                            manzanas
                         </div>
-                    </CardContent>
-                </Card>
-                {searchTerm && (
-                    <div className="text-sm text-gray-500 mt-4">
-                        {filteredBlocks.length}
-                        {" "}
-                        de{" "}
-                        {blocks.length}
-                        {" "}
-                        manzanas
+                    )}
+                </div>
+
+                {/* Resultados */}
+                {filteredBlocks.length === 0 && searchTerm ? (
+                    <div className="text-center py-12">
+                        <p className="text-gray-500">
+                            No se encontraron manzanas que coincidan con &quot;
+                            {searchTerm}
+                            &quot;
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {filteredBlocks.map((block) => (
+                            <BlockCard
+                                key={block.id}
+                                block={block}
+                                projectId={projectId}
+                                onToggleActive={handleToggleActive}
+                                isLoading={isPending}
+                                refetch={refetch}
+                            />
+                        ))}
                     </div>
                 )}
             </div>
-
-            {/* Resultados */}
-            {filteredBlocks.length === 0 && searchTerm ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500">
-                        No se encontraron manzanas que coincidan con &quot;
-                        {searchTerm}
-                        &quot;
-                    </p>
-                </div>
-            ) : (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredBlocks.map((block) => (
-                        <BlockCard
-                            key={block.id}
-                            block={block}
-                            projectId={projectId}
-                            onToggleActive={handleToggleActive}
-                            isLoading={isPending}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
+        </>
     );
 }

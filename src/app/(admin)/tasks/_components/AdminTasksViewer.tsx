@@ -107,7 +107,6 @@ export function AdminTasksViewer({
 
     // Obtener nombre del lead
     const getLeadName = (leadId: string) => {
-        console.log("LeadId:", leadId);
         const task = data.find((task) => task.lead?.clientId === leadId);
         return task?.lead?.client?.name ?? "Lead sin tarea";
     };

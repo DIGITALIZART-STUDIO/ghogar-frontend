@@ -94,7 +94,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
     {
         id: "monto",
         accessorKey: "amountPaid",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Monto Pagado" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Inicial" />,
         cell: ({ row }) => {
             const amount = row.getValue("monto") as number;
             const currency = row.original?.currency;

@@ -5,9 +5,9 @@ import { GetReservationById } from "../../_actions/ReservationActions";
 import { PaymentScheduleTable } from "./_components/PaymentScheduleTable";
 
 interface PaymentSchedulePageProps {
-    params: {
+    params: Promise <{
         reservationId: string;
-    };
+    }>;
 }
 
 export default async function PaymentSchedulePage({ params }: PaymentSchedulePageProps) {

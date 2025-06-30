@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Download } from "lucide-react";
+import { Ellipsis, Pencil, Eye, Download, RefreshCw } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -22,6 +22,7 @@ import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
 import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
+import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
 
 /**
  * Generar las columnas de la tabla de reservas
@@ -185,9 +186,10 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
     {
         id: "actions",
         cell: function Cell({ row }) {
-            const { id } = row.original;
+            const { id, status } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+            const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
 
             return (
                 <div>
@@ -203,6 +205,14 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             reservationId={id!}
                             isOpen={openDownloadDialog}
                             onOpenChange={setOpenDownloadDialog}
+                        />
+                    )}
+                    {openStatusChangeDialog && (
+                        <ReservationStatusChangeDialog
+                            isOpen={openStatusChangeDialog}
+                            onClose={() => setOpenStatusChangeDialog(false)}
+                            currentStatus={status! as ReservationStatus}
+                            reservationId={id!}
                         />
                     )}
 
@@ -224,6 +234,12 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => setOpenStatusChangeDialog(true)}>
+                                Cambiar Estado
+                                <DropdownMenuShortcut>
+                                    <RefreshCw className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => id && handleEditInterface(id)}>
                                 Editar
                                 <DropdownMenuShortcut>

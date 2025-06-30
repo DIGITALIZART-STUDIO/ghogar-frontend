@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Download, RefreshCw } from "lucide-react";
+import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -23,6 +23,7 @@ import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservat
 import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
+import { useRouter } from "next/navigation";
 
 /**
  * Generar las columnas de la tabla de reservas
@@ -190,6 +191,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
+            const navigate = useRouter();
 
             return (
                 <div>
@@ -250,6 +252,15 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                 Descargar Documento
                                 <DropdownMenuShortcut>
                                     <Download className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => {
+                                navigate.push(`/reservations/${id}/payments`);
+                            }}
+                            >
+                                Ver Cronograma de Pagos
+                                <DropdownMenuShortcut>
+                                    <Calendar className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

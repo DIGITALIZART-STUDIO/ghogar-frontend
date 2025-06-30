@@ -2349,6 +2349,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Payments/reservation/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaymentDto"]>;
+                        "application/json": Array<components["schemas"]["PaymentDto"]>;
+                        "text/json": Array<components["schemas"]["PaymentDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Projects": {
         parameters: {
             query?: never;
@@ -4088,7 +4127,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4106,7 +4145,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4124,7 +4163,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4142,7 +4181,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4221,6 +4260,21 @@ export interface components {
             totalCount: number;
             /** Format: int32 */
             totalPages: number;
+        };
+        PaymentDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            reservationId?: string;
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: double */
+            amountDue?: number;
+            paid?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
         };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";

@@ -5,13 +5,13 @@ import { GetReservationById } from "../../_actions/ReservationActions";
 import { PaymentScheduleTable } from "./_components/PaymentScheduleTable";
 
 interface PaymentSchedulePageProps {
-    params: {
+    params: Promise <{
         reservationId: string;
-    };
+    }>;
 }
 
 export default async function PaymentSchedulePage({ params }: PaymentSchedulePageProps) {
-    const { reservationId } = params;
+    const { reservationId } = await params;
 
     // Obtener información de la reserva y su cronograma de pagos
     const [reservationResult, reservationError] = await GetReservationById(reservationId);

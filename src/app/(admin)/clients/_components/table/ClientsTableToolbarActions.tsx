@@ -23,6 +23,8 @@ export function ClientsTableToolbarActions({ table }: ClientsTableToolbarActions
                     <ReactivateClientsDialog
                         clients={table.getFilteredSelectedRowModel().rows.map((row) => row.original)}
                         onSuccess={() => table.toggleAllRowsSelected(false)}
+                        open={false}
+                        onOpenChange={() => {}}
                     />
                 </>
             ) : null}

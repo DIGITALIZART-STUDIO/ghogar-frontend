@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
+import { Ellipsis, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
@@ -23,6 +23,8 @@ import { LeadCaptureSourceLabels, LeadStatusLabels } from "../../_utils/leads.ut
 import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
 import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog";
 import { UpdateLeadSheet } from "../update/UpdateLeadsSheet";
+import { UpdateClientSheet } from "@/app/(admin)/clients/_components/update/UpdateClientsSheet";
+import { Client } from "@/app/(admin)/clients/_types/client";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -305,8 +307,10 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             const [showDeleteDialog, setShowDeleteDialog] = useState(false);
             const [showReactivateDialog, setShowReactivateDialog] = useState(false);
             const [showEditDialog, setShowEditDialog] = useState(false);
+            const [showEditClientDialog, setShowEditClientDialog] = useState(false);
 
             const { isActive } = row.original ?? {};
+            const client = row.original?.client;
             return (
                 <div>
                     <div>
@@ -337,6 +341,9 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
                                 }}
                             />
                         )}
+                        {showEditClientDialog && (
+                            <UpdateClientSheet open={showEditClientDialog} onOpenChange={setShowEditClientDialog} client={client as Client} />
+                        )}
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -349,6 +356,17 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
                                 Editar
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onSelect={() => setShowEditClientDialog(true)}
+                                disabled={
+                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
+                                }
+                            >
+                                Editar cliente
+                                <DropdownMenuShortcut>
+                                    <UserRoundPen className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
                             {/*             {isSuperAdmin && ( */}
                             <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive}>
                                 Reactivar

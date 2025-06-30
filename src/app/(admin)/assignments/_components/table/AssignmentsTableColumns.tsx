@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { AlertTriangle, CheckCircle, ChevronDown, ChevronRight, Clock, Ellipsis, NotebookPen } from "lucide-react";
+import { ChevronDown, ChevronRight, Ellipsis, NotebookPen, Settings, UserRoundPen } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CreateLeadTasksDialog } from "../../[id]/tasks/_components/create/CreateLeadTasksDialog";
 import { LeadStatusToggleDialog } from "../state-management/LeadStatusTogleDialog";
+import { UpdateClientSheet } from "@/app/(admin)/clients/_components/update/UpdateClientsSheet";
+import { Client } from "@/app/(admin)/clients/_types/client";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -316,30 +318,15 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
         cell: function Cell({ row }) {
             const [createTaskDialog, setCreateTaskDialog] = useState(false);
             const [toggleStatusDialog, setToggleStatusDialog] = useState(false);
+            const [showEditClientDialog, setShowEditClientDialog] = useState(false);
             const handleCloseStatusChange = () => {
                 setToggleStatusDialog(false);
             };
 
-            // Determinar el texto y el icono según el estado actual
-            const getStatusToggleText = () => {
-                if (row.original?.status === LeadStatus.Registered) {
-                    return {
-                        text: "Marcar como atendido",
-                        icon: <CheckCircle className="size-4" aria-hidden="true" />,
-                    };
-                } else if (row.original?.status === LeadStatus.Attended) {
-                    return {
-                        text: "Marcar como registrado",
-                        icon: <Clock className="size-4" aria-hidden="true" />,
-                    };
-                } else {
-                    return {
-                        text: "Cambiar estado",
-                        icon: <AlertTriangle className="size-4" aria-hidden="true" />,
-                    };
-                }
-            };
-            const { text, icon } = getStatusToggleText();
+            const status = row.original?.status;
+
+            const client = row.original?.client;
+
             return (
                 <div>
                     {createTaskDialog && (
@@ -360,6 +347,10 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                         />
                     )}
 
+                    {showEditClientDialog && (
+                        <UpdateClientSheet open={showEditClientDialog} onOpenChange={setShowEditClientDialog} client={client as Client} />
+                    )}
+
                     <div />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -368,19 +359,45 @@ export const assignmentsColumns = (handleTasksInterface: (id: string) => void): 
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onSelect={() => row.original?.id && handleTasksInterface(row.original.id)}>
+                            <DropdownMenuItem
+                                onSelect={() => row.original?.id && handleTasksInterface(row.original.id)}
+                                disabled={
+                                    row.original?.status === LeadStatus.Expired ||
+                row.original?.status === LeadStatus.Canceled
+                                }
+                            >
                                 Mis tareas
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setCreateTaskDialog(true)}>
+                            <DropdownMenuItem
+                                onSelect={() => setCreateTaskDialog(true)}
+                                disabled={
+                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
+                                }
+                            >
                                 Crear tarea
                                 <DropdownMenuShortcut>
                                     <NotebookPen className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setToggleStatusDialog(true)}>
-                                {text}
-                                <DropdownMenuShortcut>{icon}</DropdownMenuShortcut>
+                            <DropdownMenuItem
+                                onSelect={() => setShowEditClientDialog(true)}
+                                disabled={
+                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
+                                }
+                            >
+                                Editar cliente
+                                <DropdownMenuShortcut>
+                                    <UserRoundPen className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => setToggleStatusDialog(true)} disabled={
+                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
+                                }
+                            >
+                                Cambiar estado
+                                <DropdownMenuShortcut><Settings className="size-4" aria-hidden="true" /></DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

@@ -4,31 +4,29 @@ import { useState, useTransition } from "react";
 import { CheckCircle, RefreshCw } from "lucide-react";
 
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { toastWrapper } from "@/types/toasts";
-import { ToggleLeadStatus } from "../../../leads/_actions/LeadActions";
-import { LeadStatus } from "../../../leads/_types/lead";
-import { getStatusDetails } from "../../../leads/_utils/leads.filter.utils";
+import { getStatusDetails, reasonOptions, statusOptions } from "../../../leads/_utils/leads.filter.utils";
+import { LeadCompletionReason, LeadStatus } from "@/app/(admin)/leads/_types/lead";
+import { UpdateLeadStatus } from "@/app/(admin)/leads/_actions/LeadActions";
 
 interface LeadStatusToggleDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentStatus: LeadStatus;
-  leadId: string;
-  leadName: string;
+  isOpen: boolean
+  onClose: () => void
+  currentStatus: LeadStatus
+  leadId: string
+  leadName: string
 }
 
 export function LeadStatusToggleDialog({
@@ -41,171 +39,253 @@ export function LeadStatusToggleDialog({
     const isDesktop = useMediaQuery("(min-width: 640px)");
     const [isPending, startTransition] = useTransition();
     const [showSuccess, setShowSuccess] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<LeadStatus | "">("");
+    const [selectedReason, setSelectedReason] = useState<LeadCompletionReason | "">("");
 
-    // Determinar el nuevo estado basado en el estado actual
-    const newStatus = currentStatus === LeadStatus.Registered ? LeadStatus.Attended : LeadStatus.Registered;
+    const requiresReason = selectedStatus === LeadStatus.Completed || selectedStatus === LeadStatus.Canceled;
+    const canSubmit = selectedStatus && (!requiresReason || selectedReason);
 
     const handleConfirm = () => {
-    // Usar startTransition para manejar el estado de carga
-        startTransition(async() => {
-            // Llamar a la acción del servidor ToggleLeadStatus
-            const [, error] = await toastWrapper(ToggleLeadStatus(leadId), {
-                loading: "Cambiando estado del lead...",
-                success: `Lead marcado como ${newStatus === LeadStatus.Attended ? "atendido" : "registrado"} exitosamente`,
-                error: (e) => `Error al cambiar estado: ${e.message}`,
-            });
+        if (!canSubmit) {
+            return;
+        }
 
-            // Si no hay errores, mostrar mensaje de éxito
+        startTransition(async () => {
+            const [, error] = await toastWrapper(
+                UpdateLeadStatus(
+                    leadId,
+                    {
+                        status: selectedStatus as LeadStatus,
+                        completionReason: requiresReason ? (selectedReason as LeadCompletionReason) : undefined,
+                    }
+                ),
+                {
+                    loading: "Cambiando estado del lead...",
+                    success: "Lead actualizado exitosamente",
+                    error: (e) => `Error al cambiar estado: ${e.message}`,
+                },
+            );
+
             if (!error) {
                 setShowSuccess(true);
-
-                // Cerrar automáticamente después de mostrar éxito
                 setTimeout(() => {
                     setShowSuccess(false);
+                    setSelectedStatus("");
+                    setSelectedReason("");
                     onClose();
-                }, 1500);
+                }, 2000);
             }
         });
     };
 
+    const handleCancel = () => {
+        setSelectedStatus("");
+        setSelectedReason("");
+        onClose();
+    };
+
     const currentStatusDetails = getStatusDetails(currentStatus);
-    const newStatusDetails = getStatusDetails(newStatus);
+    const selectedStatusOption = statusOptions.find((opt) => opt.value === selectedStatus);
+    const selectedReasonOption = reasonOptions.find((opt) => opt.value === selectedReason);
 
     // Contenido común para ambos componentes
     const content = (
         <div className="space-y-6 font-montserrat">
             {showSuccess ? (
-                <div className="flex flex-col items-center justify-center py-6 transition-opacity duration-300 ease-in-out">
-                    <div className="bg-chart-1/20 p-4 rounded-full mb-4">
-                        <CheckCircle className="h-12 w-12 text-chart-1" />
+                <div className="flex flex-col items-center justify-center py-8">
+                    <div className="bg-green-100 p-6 rounded-full mb-6">
+                        <CheckCircle className="h-16 w-16 text-green-600" />
                     </div>
-                    <h3 className="text-xl font-bold mb-2">
-                        ¡Estado actualizado!
-                    </h3>
-                    <p className="text-muted-foreground text-center">
-                        El lead
-                        {" "}
-                        {leadName}
-                        {" "}
-                        ha sido marcado como
-                        <span className="font-medium">
-                            {newStatusDetails.label}
-                        </span>
-                        .
+                    <h3 className="text-2xl font-bold mb-3 text-center">¡Estado Actualizado!</h3>
+                    <p className="text-muted-foreground text-center text-lg">
+                        <span className="font-semibold">{leadName}</span> ha sido actualizado correctamente
                     </p>
+                    {selectedStatusOption && (
+                        <div className="mt-4 flex items-center gap-2">
+                            <Badge className={selectedStatusOption.badgeColor}>
+                                {selectedStatusOption && (
+                                    <selectedStatusOption.icon className="w-4 h-4 mr-1" />
+                                )}
+                                {selectedStatusOption?.label}
+                            </Badge>
+                            {selectedReasonOption && (
+                                <>
+                                    <span className="text-muted-foreground">•</span>
+                                    <span className="text-sm text-muted-foreground">{selectedReasonOption.label}</span>
+                                </>
+                            )}
+                        </div>
+                    )}
                 </div>
             ) : (
                 <>
-                    <div className="flex flex-col items-center mb-6">
-                        <div className="mb-4 flex items-center">
+                    {/* Header con información del lead */}
+                    <div className="text-center pb-4 border-b">
+                        <div className="flex items-center justify-center gap-3 mb-3">
                             <Badge className={currentStatusDetails.color}>
                                 <span className="flex items-center">
                                     {currentStatusDetails.icon}
-                                    <span className="ml-1">
-                                        {currentStatusDetails.label}
-                                    </span>
+                                    <span className="ml-1 text-gray-500">{currentStatusDetails.label}</span>
                                 </span>
                             </Badge>
-                            <span className="mx-3 text-muted-foreground">
-                                →
-                            </span>
-                            <Badge className={newStatusDetails.color}>
-                                <span className="flex items-center">
-                                    {newStatusDetails.icon}
-                                    <span className="ml-1">
-                                        {newStatusDetails.label}
-                                    </span>
-                                </span>
-                            </Badge>
-                        </div>
-                        <h3 className="text-lg font-medium mb-1">
-                            {leadName}
-                        </h3>
-                        <p className="text-sm text-muted-foreground text-center">
-                            ¿Estás seguro de que deseas cambiar el estado de este lead?
-                        </p>
-                    </div>
-
-                    <div className="bg-card rounded-lg p-5 border border-border">
-                        <div className="flex items-center mb-4">
-                            <div
-                                className={cn("w-10 h-10 rounded-full flex items-center justify-center mr-3", newStatusDetails.color)}
-                            >
-                                {newStatusDetails.icon}
-                            </div>
-                            <div>
-                                <h4 className="font-medium">
-                                    Marcar como
-                                    {newStatusDetails.label}
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                    {newStatusDetails.description}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="bg-muted/50 rounded-lg p-3 text-sm">
-                            {currentStatus === LeadStatus.Registered ? (
-                                <p>
-                                    Al marcar este lead como
-                                    {" "}
-                                    <strong>
-                                        Atendido
-                                    </strong>
-                                    , estás confirmando que se ha contactado al cliente
-                                    y ha registrado la interacción.
-                                </p>
-                            ) : (
-                                <p>
-                                    Al marcar este lead como
-                                    {" "}
-                                    <strong>
-                                        Registrado
-                                    </strong>
-                                    , estás indicando que el lead requiere atención
-                                    nuevamente.
-                                </p>
+                            {selectedStatusOption && (
+                                <>
+                                    <div className="w-8 h-px bg-muted-foreground/30" />
+                                    <Badge className={selectedStatusOption.badgeColor}>
+                                        <selectedStatusOption.icon className="w-4 h-4 mr-1" />
+                                        {selectedStatusOption.label}
+                                    </Badge>
+                                </>
                             )}
                         </div>
+                        <h3 className="text-xl font-semibold mb-1">{leadName}</h3>
+                        <p className="text-sm text-muted-foreground">Selecciona el nuevo estado para este lead</p>
                     </div>
+
+                    {/* Selección de estado */}
+                    <div className="space-y-3">
+                        <h4 className="font-semibold text-base">Nuevo Estado</h4>
+                        <div className="grid gap-3">
+                            {statusOptions.map((option) => {
+                                const Icon = option.icon;
+                                const isSelected = selectedStatus === option.value;
+                                return (
+                                    <div
+                                        key={option.value}
+                                        onClick={() => {
+                                            setSelectedStatus(option.value);
+                                            setSelectedReason(""); // Reset reason when status changes
+                                        }}
+                                        className={cn(
+                                            "p-4 border-2 rounded-lg cursor-pointer transition-all",
+                                            option.color,
+                                            isSelected ? "ring-2 ring-primary ring-offset-2" : "",
+                                        )}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <div className={cn("p-2 rounded-lg bg-white", option.iconColor)}>
+                                                <Icon className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <h5 className="font-semibold">{option.label}</h5>
+                                                    {isSelected && <CheckCircle className="w-4 h-4 text-primary" />}
+                                                </div>
+                                                <p className="text-sm text-muted-foreground dark:text-white mt-1">{option.description}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Selección de razón (solo si es necesario) */}
+                    {requiresReason && (
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-base">
+                                    Razón {selectedStatus === LeadStatus.Completed ? "de Completado" : "de Cancelación"}
+                                </h4>
+                                <Badge variant="secondary" className="text-xs">
+                                    Obligatorio
+                                </Badge>
+                            </div>
+                            <div className="grid gap-3">
+                                {reasonOptions.map((option) => {
+                                    const Icon = option.icon;
+                                    const isSelected = selectedReason === option.value;
+                                    return (
+                                        <div
+                                            key={option.value}
+                                            onClick={() => setSelectedReason(option.value)}
+                                            className={cn(
+                                                "p-4 border-2 rounded-lg cursor-pointer transition-all",
+                                                option.color,
+                                                isSelected ? "ring-2 ring-primary ring-offset-2" : "",
+                                            )}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <div className={cn("p-2 rounded-lg bg-white", option.iconColor)}>
+                                                    <Icon className="w-5 h-5" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <h5 className="font-semibold">{option.label}</h5>
+                                                        {isSelected && <CheckCircle className="w-4 h-4 text-primary" />}
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground mt-1 dark:text-white">{option.description}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Resumen de selección */}
+                    {selectedStatus && (
+                        <div className="bg-muted/30 rounded-lg p-4 border">
+                            <h5 className="font-semibold mb-2 flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-primary" />
+                                Resumen del Cambio
+                            </h5>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Estado actual:</span>
+                                    <span className="font-medium">{currentStatusDetails.label}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Nuevo estado:</span>
+                                    <span className="font-medium">{selectedStatusOption?.label}</span>
+                                </div>
+                                {requiresReason && selectedReason && (
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Razón:</span>
+                                        <span className="font-medium">{selectedReasonOption?.label}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </div>
     );
 
-    // Renderizar AlertDialog o Drawer según el tamaño de pantalla
+    // Renderizar Dialog o Drawer según el tamaño de pantalla
     if (isDesktop) {
         return (
-            <AlertDialog open={isOpen} onOpenChange={!isPending ? onClose : undefined}>
-                <AlertDialogContent className="sm:max-w-[500px]">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center font-montserrat">
-                            <RefreshCw className="h-5 w-5 mr-2" />
+            <Dialog open={isOpen} onOpenChange={!isPending ? onClose : undefined}>
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center font-montserrat text-xl">
+                            <RefreshCw className="h-6 w-6 mr-3" />
                             Cambiar Estado del Lead
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Esta acción cambiará el estado del lead en el sistema.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
+                        </DialogTitle>
+                        <DialogDescription className="text-base">
+                            Selecciona el nuevo estado. Los estados Completado y Cancelado requieren una razón.
+                        </DialogDescription>
+                    </DialogHeader>
 
                     {content}
 
                     {!showSuccess && (
-                        <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isPending}>
+                        <DialogFooter className="gap-3 sm:gap-3 pt-6">
+                            <Button variant="outline" onClick={handleCancel} disabled={isPending} className="px-6 bg-transparent">
                                 Cancelar
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleConfirm();
-                                }}
-                                disabled={isPending}
+                            </Button>
+                            <Button
+                                onClick={handleConfirm}
+                                disabled={!canSubmit || isPending}
                                 className={cn(
-                                    "min-w-[120px]",
-                                    currentStatus === LeadStatus.Registered
-                                        ? "bg-chart-1 hover:bg-chart-1/90"
-                                        : "bg-primary hover:bg-primary/90",
+                                    "px-6 min-w-[140px]",
+                                    selectedStatus === LeadStatus.Completed
+                                        ? "bg-green-600 hover:bg-green-700 text-white"
+                                        : selectedStatus === LeadStatus.Canceled
+                                            ? "bg-red-600 hover:bg-red-700 text-white"
+                                            : "bg-primary hover:bg-primary/90",
                                 )}
                             >
                                 {isPending ? (
@@ -215,68 +295,65 @@ export function LeadStatusToggleDialog({
                                     </>
                                 ) : (
                                     <>
-                                        {newStatusDetails.icon && <span className="mr-2">
-                                            {newStatusDetails.icon}
-                                        </span>}
-                                        Marcar como
-                                        {" "}
-                                        {newStatusDetails.label}
+                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                        Actualizar Estado
                                     </>
                                 )}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
+                            </Button>
+                        </DialogFooter>
                     )}
-                </AlertDialogContent>
-            </AlertDialog>
+                </DialogContent>
+            </Dialog>
         );
     }
 
     return (
         <Drawer open={isOpen} onOpenChange={!isPending ? onClose : undefined}>
-            <DrawerContent>
-                <DrawerHeader className="border-b border-border">
-                    <DrawerTitle className="flex items-center font-montserrat">
-                        <RefreshCw className="h-5 w-5 mr-2" />
+            <DrawerContent className="max-h-[95vh]">
+                <DrawerHeader className="border-b border-border pb-4">
+                    <DrawerTitle className="flex items-center font-montserrat text-xl">
+                        <RefreshCw className="h-6 w-6 mr-3" />
                         Cambiar Estado del Lead
                     </DrawerTitle>
                     <p className="text-sm text-muted-foreground">
-                        Esta acción cambiará el estado del lead en el sistema.
+                        Selecciona el nuevo estado. Los estados Completado y Cancelado requieren una razón.
                     </p>
                 </DrawerHeader>
 
-                <div className="p-4">
-                    {content}
-                </div>
+                <div className="p-4 overflow-y-auto flex-1">{content}</div>
 
                 {!showSuccess && (
-                    <DrawerFooter>
+                    <DrawerFooter className="border-t pt-4">
                         <Button
                             onClick={handleConfirm}
-                            disabled={isPending}
+                            disabled={!canSubmit || isPending}
                             className={cn(
-                                "w-full",
-                                currentStatus === LeadStatus.Registered
-                                    ? "bg-chart-1 hover:bg-chart-1/90"
-                                    : "bg-primary hover:bg-primary/90",
+                                "w-full h-12 text-base",
+                                selectedStatus === LeadStatus.Completed
+                                    ? "bg-green-600 hover:bg-green-700"
+                                    : selectedStatus === LeadStatus.Canceled
+                                        ? "bg-red-600 hover:bg-red-700"
+                                        : "bg-primary hover:bg-primary/90",
                             )}
                         >
                             {isPending ? (
                                 <>
-                                    <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                                    <RefreshCw className="h-5 w-5 animate-spin mr-2" />
                                     Actualizando...
                                 </>
                             ) : (
                                 <>
-                                    {newStatusDetails.icon && <span className="mr-2">
-                                        {newStatusDetails.icon}
-                                    </span>}
-                                    Marcar como
-                                    {" "}
-                                    {newStatusDetails.label}
+                                    <CheckCircle className="h-5 w-5 mr-2" />
+                                    Actualizar Estado
                                 </>
                             )}
                         </Button>
-                        <Button variant="outline" onClick={onClose} disabled={isPending} className="w-full">
+                        <Button
+                            variant="outline"
+                            onClick={handleCancel}
+                            disabled={isPending}
+                            className="w-full h-12 text-base bg-transparent"
+                        >
                             Cancelar
                         </Button>
                     </DrawerFooter>

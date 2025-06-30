@@ -40,10 +40,6 @@ export default function DocumentNumberLookup({ form, type, initialValue, isUpdat
     const error = isDni ? dniQuery.error : rucQuery.error;
     const isSuccess = isDni ? dniQuery.isSuccess : rucQuery.isSuccess;
 
-    console.log("DocumentNumberLookup", JSON.stringify({
-        data
-    }, null, 2));
-
     // Validar si el DNI es válido (8 dígitos)
     const isValid =
         type === "dni"

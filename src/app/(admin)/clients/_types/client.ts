@@ -9,3 +9,7 @@ export enum ClientTypes {
   Natural = "Natural",
   Juridico = "Juridico",
 }
+
+export type responseRUC = components["schemas"]["ResponseApiRucFull"];
+
+export type responseDNI = components["schemas"]["ResponseApiDni"];

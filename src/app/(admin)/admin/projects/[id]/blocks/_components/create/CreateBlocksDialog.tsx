@@ -41,9 +41,10 @@ const dataForm = {
 
 interface CreateBlocksDialogProps {
   projectId: string;
+  refetch: () => void;
 }
 
-export function CreateBlocksDialog({ projectId }: CreateBlocksDialogProps) {
+export function CreateBlocksDialog({ projectId, refetch }: CreateBlocksDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 810px)");
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -83,9 +84,11 @@ export function CreateBlocksDialog({ projectId }: CreateBlocksDialogProps) {
     useEffect(() => {
         if (isSuccess) {
             form.reset();
+            refetch();
             setOpen(false);
             setIsSuccess(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, form]);
 
     if (isDesktop) {

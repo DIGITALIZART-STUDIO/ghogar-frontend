@@ -11,7 +11,7 @@ interface PaymentSchedulePageProps {
 }
 
 export default async function PaymentSchedulePage({ params }: PaymentSchedulePageProps) {
-    const { reservationId } = params;
+    const { reservationId } = await params;
 
     // Obtener información de la reserva y su cronograma de pagos
     const [reservationResult, reservationError] = await GetReservationById(reservationId);

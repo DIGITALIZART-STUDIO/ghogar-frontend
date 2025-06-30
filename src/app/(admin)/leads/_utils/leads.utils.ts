@@ -115,4 +115,5 @@ export const LeadCompletionReasonLabels: Record<
         icon: DollarSign,
         className: "text-green-600 border-green-200",
     },
+
 };

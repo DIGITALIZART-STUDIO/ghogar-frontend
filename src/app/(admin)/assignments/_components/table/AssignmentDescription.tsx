@@ -5,7 +5,7 @@ import { AtSign, Building2, Calendar, FileText, IdCard, Mail, MapPin, MessageSqu
 
 import { ClientTypes } from "@/app/(admin)/clients/_types/client";
 import type { Lead } from "@/app/(admin)/leads/_types/lead";
-import { LeadCaptureSourceLabels } from "@/app/(admin)/leads/_utils/leads.utils";
+import { LeadCaptureSourceLabels, LeadCompletionReasonLabels } from "@/app/(admin)/leads/_utils/leads.utils";
 import { cn } from "@/lib/utils";
 import { statusConfig } from "../../_utils/assignments.utils";
 
@@ -50,6 +50,8 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
     };
 
     const currentStatus = statusConfig[row.status as keyof typeof statusConfig] || statusConfig.default;
+
+    const currentReason = LeadCompletionReasonLabels[row.completionReason as keyof typeof LeadCompletionReasonLabels];
 
     // Obtener la configuración de la fuente de captación
     const captureSourceInfo =
@@ -123,10 +125,22 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                 currentStatus.color
                             )}
                         >
-                            {/* Reemplazar el ícono fijo FileText por el ícono dinámico del status */}
                             {currentStatus.icon && React.createElement(currentStatus.icon, { className: "h-3 w-3" })}
                             <span>{currentStatus.label}</span>
                         </div>
+
+                        {/* Mostrar razón solo si existe */}
+                        {row.completionReason && currentReason && (
+                            <div
+                                className={cn(
+                                    "flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium",
+                                    currentReason.className
+                                )}
+                            >
+                                {currentReason.icon && React.createElement(currentReason.icon, { className: "h-3 w-3" })}
+                                <span>{currentReason.label}</span>
+                            </div>
+                        )}
 
                         <div
                             className={cn(

@@ -72,25 +72,28 @@ export async function UpdateLead(
     return ok(response);
 }
 
-// Cambiar estado de un lead (toggle)
-export async function ToggleLeadStatus(id: string): Promise<Result<components["schemas"]["Lead2"], FetchError>> {
-    // Usar la ruta correcta que coincide con tu backend
+// Cambiar estado de un lead (nuevo método)
+export async function UpdateLeadStatus(
+    id: string,
+    dto: components["schemas"]["LeadStatusUpdateDto"],
+): Promise<Result<components["schemas"]["Lead2"], FetchError>> {
     // @ts-expect-error Server response type doesn't match the expected type structure
-    const [response, error] = await wrapper((auth) => backend.PUT(`/api/Leads/${id}/toggle-status`, {
+    const [response, error] = await wrapper((auth) => backend.PUT(`/api/Leads/${id}/status`, {
         ...auth,
-    }));
+        body: dto,
+    })
+    );
 
     // Revalidar la ruta para refrescar los datos
     revalidatePath("/(admin)/assignments", "page");
 
     if (error) {
-        console.log(`Error toggling lead status ${id}:`, error);
+        console.log(`Error updating lead status ${id}:`, error);
         return err(error);
     }
     // @ts-expect-error Server response type doesn't match the expected type structure
     return ok(response);
 }
-
 // Desactivar múltiples leads (eliminar)
 export async function DeleteLeads(ids: Array<string>): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.DELETE("/api/Leads/batch", {
@@ -264,4 +267,21 @@ export async function GetAssignedLeadsSummary(assignedToId: string): Promise<Res
         return err(error);
     }
     return ok(response);
+}
+
+export async function CheckAndUpdateExpiredLeads(): Promise<Result<{ expiredLeadsCount: number }, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.POST("/api/Leads/check-expired", {
+        ...auth,
+    })
+    );
+
+    // Solo llama a revalidatePath si esta función se usa como Server Action (por ejemplo, desde un botón)
+    revalidatePath("/(admin)/leads", "page");
+
+    if (error) {
+        console.log("Error al forzar expiración de leads:", error);
+        return err(error);
+    }
+    // Asegúrate de que response tenga la forma { expiredLeadsCount: number }
+    return ok(response as unknown as { expiredLeadsCount: number });
 }

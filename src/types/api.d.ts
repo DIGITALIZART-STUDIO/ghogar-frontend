@@ -1508,7 +1508,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/{id}/toggle-status": {
+    "/api/Leads/{id}/status": {
         parameters: {
             query?: never;
             header?: never;
@@ -1525,7 +1525,13 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LeadStatusUpdateDto"];
+                    "text/json": components["schemas"]["LeadStatusUpdateDto"];
+                    "application/*+json": components["schemas"]["LeadStatusUpdateDto"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -3987,6 +3993,10 @@ export interface components {
         } | null;
         /** @enum {unknown} */
         LeadStatus: "Registered" | "Attended" | "InFollowUp" | "Completed" | "Canceled" | "Expired";
+        LeadStatusUpdateDto: {
+            status?: components["schemas"]["LeadStatus"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+        };
         LeadSummaryDto: {
             /** Format: uuid */
             id?: string;
@@ -4121,7 +4131,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4139,7 +4149,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4157,7 +4167,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4175,7 +4185,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;

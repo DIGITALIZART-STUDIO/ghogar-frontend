@@ -1,6 +1,6 @@
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
-import { GetAllLeads } from "./_actions/LeadActions";
+import {  GetAllLeads } from "./_actions/LeadActions";
 import { LeadsTable } from "./_components/table/LeadsTable";
 
 export default async function LeadsPage() {

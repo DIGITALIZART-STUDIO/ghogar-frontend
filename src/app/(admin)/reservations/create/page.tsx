@@ -68,6 +68,7 @@ export default async function CreateReservationPageWrapper() {
             </div>
         );
     }
+
     // Get all quotations for the dropdown
     const [quotationsResult, quotationsError] = await GetAcceptedQuotationsByAdvisor(userId);
 

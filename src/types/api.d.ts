@@ -4043,7 +4043,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4061,7 +4061,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4079,7 +4079,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4097,7 +4097,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;

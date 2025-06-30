@@ -21,6 +21,7 @@ import {
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
 import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
+import { ReservationViewDialog } from "./ReservationViewDialog";
 
 /**
  * Generar las columnas de la tabla de reservas
@@ -185,10 +186,18 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
         id: "actions",
         cell: function Cell({ row }) {
             const { id } = row.original;
+            const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
 
             return (
                 <div>
+                    {openViewDialog && (
+                        <ReservationViewDialog
+                            open={openViewDialog}
+                            onOpenChange={setOpenViewDialog}
+                            reservation={row.original}
+                        />
+                    )}
                     {openDownloadDialog && (
                         <ReservationDownloadDialog
                             reservationId={id!}
@@ -208,7 +217,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenViewDialog(true)}>
                                 Ver
                                 <DropdownMenuShortcut>
                                     <Eye className="size-4" aria-hidden="true" />

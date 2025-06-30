@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
@@ -26,12 +25,11 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
             quotationId: "",
             reservationDate: "",
             amountPaid: "",
-            // @ts-ignore
+            // @ts-expect-error those damn uncontrolled inputs
             currency: "",
-            // @ts-ignore
+            // @ts-expect-error those damn uncontrolled inputs
             paymentMethod: "",
             bankName: "",
-            // @ts-ignore
             exchangeRate: "",
             expiresAt: "",
             schedule: "",
@@ -76,7 +74,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
     return (
         <ReservationForm
             quotationsData={quotationsData}
-            // @ts-ignore
+            // @ts-expect-error those damn uncontrolled inputs
             form={form}
             onSubmit={onSubmit}
             isPending={isPending}

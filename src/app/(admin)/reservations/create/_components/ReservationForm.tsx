@@ -48,7 +48,9 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
     useEffect(() => {
         if (!selectedQuotation) {
             // Clear fields if no quotation is selected
-            form.setValue("currency", "" as any);
+            // @ts-expect-error those damn uncontrolled inputs
+            form.setValue("currency", "");
+            form.setValue("amountPaid", "");
             form.setValue("exchangeRate", "");
             return;
         }
@@ -236,7 +238,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                 <FormLabel>
                                                     Moneda
                                                 </FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <Select value={field.value} onValueChange={field.onChange}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Seleccione moneda" />
@@ -263,7 +265,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                 <FormLabel>
                                                     Método de Pago
                                                 </FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <Select value={field.value} onValueChange={field.onChange} >
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Seleccione método" />
@@ -409,7 +411,7 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                             {selectedQuotation.exchangeRate}
                                         </span>
                                     </div>
-                                    
+
                                     <div className="pt-3 border-t border-border">
                                         <div className="text-xs text-muted-foreground mb-2">
                                             💡 Campos completados automáticamente

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
@@ -24,18 +23,20 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
         resolver: zodResolver(reservationSchema),
         defaultValues: {
             quotationId: "",
-            reservationDate: format(new Date(), "yyyy-MM-dd"),
+            reservationDate: "",
             amountPaid: "",
-            currency: "SOLES",
-            paymentMethod: "CASH",
+            // @ts-expect-error those damn uncontrolled inputs
+            currency: "",
+            // @ts-expect-error those damn uncontrolled inputs
+            paymentMethod: "",
             bankName: "",
-            exchangeRate: "3.75", // Default exchange rate
+            exchangeRate: "",
             expiresAt: "",
             schedule: "",
         },
     });
 
-    const onSubmit = async(data: CreateReservationSchema) => {
+    const onSubmit = async (data: CreateReservationSchema) => {
         setIsPending(true);
 
         try {
@@ -73,6 +74,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
     return (
         <ReservationForm
             quotationsData={quotationsData}
+            // @ts-expect-error those damn uncontrolled inputs
             form={form}
             onSubmit={onSubmit}
             isPending={isPending}

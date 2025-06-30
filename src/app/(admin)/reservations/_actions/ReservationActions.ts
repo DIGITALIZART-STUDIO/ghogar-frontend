@@ -130,6 +130,30 @@ export async function DeleteReservation(id: string): Promise<Result<void, FetchE
     return ok(response);
 }
 
+// Cambiar el estado de una reserva
+export async function ChangeReservationStatus(
+    id: string,
+    statusDto: components["schemas"]["ReservationStatusDto"],
+): Promise<Result<components["schemas"]["ReservationDto"], FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/Reservations/{id}/status", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
+        body: statusDto,
+    }));
+
+    revalidatePath("/(admin)/reservations", "page");
+
+    if (error) {
+        console.log(`Error changing status for reservation ${id}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
 export async function DownloadReservationPDF(reservationId: string): Promise<Result<Blob, FetchError>> {
     return DownloadFile(`/api/Reservations/${reservationId}/pdf`, "get", null);
 }

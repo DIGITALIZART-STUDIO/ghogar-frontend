@@ -2427,6 +2427,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Payments/reservation/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaymentDto"]>;
+                        "application/json": Array<components["schemas"]["PaymentDto"]>;
+                        "text/json": Array<components["schemas"]["PaymentDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Projects": {
         parameters: {
             query?: never;
@@ -3292,6 +3331,51 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReservationStatusDto"];
+                    "text/json": components["schemas"]["ReservationStatusDto"];
+                    "application/*+json": components["schemas"]["ReservationStatusDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReservationDto"];
+                        "application/json": components["schemas"]["ReservationDto"];
+                        "text/json": components["schemas"]["ReservationDto"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -4255,6 +4339,21 @@ export interface components {
             /** Format: int32 */
             totalPages: number;
         };
+        PaymentDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            reservationId?: string;
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: double */
+            amountDue?: number;
+            paid?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
         ProblemDetails: {
@@ -4549,20 +4648,21 @@ export interface components {
         };
         QuotationSummaryDTO: {
             /** Format: uuid */
-            id?: string;
-            code?: string;
-            clientName?: string;
+            id: string;
+            code: string;
+            clientName: string;
             clientIdentification?: string | null;
             clientIdentificationType?: string | null;
-            projectName?: string;
+            projectName: string;
             /** Format: double */
-            totalPrice?: number;
+            totalPrice: number;
             /** Format: double */
-            finalPrice?: number;
-            blockName?: string;
-            lotNumber?: string;
+            finalPrice: number;
+            blockName: string;
+            lotNumber: string;
             /** Format: double */
-            areaAtQuotation?: number;
+            areaAtQuotation: number;
+            currency: string;
             status?: components["schemas"]["QuotationStatus"];
             statusText?: string;
             /** Format: double */
@@ -4638,6 +4738,9 @@ export interface components {
         };
         /** @enum {unknown} */
         ReservationStatus: "ISSUED" | "CANCELED" | "ANULATED";
+        ReservationStatusDto: {
+            status?: string;
+        };
         ReservationUpdateDto: {
             /** Format: date */
             reservationDate?: string;

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Download } from "lucide-react";
+import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -21,6 +21,9 @@ import {
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
 import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
+import { ReservationViewDialog } from "./ReservationViewDialog";
+import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
+import { useRouter } from "next/navigation";
 
 /**
  * Generar las columnas de la tabla de reservas
@@ -92,7 +95,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
     {
         id: "monto",
         accessorKey: "amountPaid",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Monto Pagado" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Inicial" />,
         cell: ({ row }) => {
             const amount = row.getValue("monto") as number;
             const currency = row.original?.currency;
@@ -184,16 +187,34 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
     {
         id: "actions",
         cell: function Cell({ row }) {
-            const { id } = row.original;
+            const { id, status } = row.original;
+            const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+            const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
+            const navigate = useRouter();
 
             return (
                 <div>
+                    {openViewDialog && (
+                        <ReservationViewDialog
+                            open={openViewDialog}
+                            onOpenChange={setOpenViewDialog}
+                            reservation={row.original}
+                        />
+                    )}
                     {openDownloadDialog && (
                         <ReservationDownloadDialog
                             reservationId={id!}
                             isOpen={openDownloadDialog}
                             onOpenChange={setOpenDownloadDialog}
+                        />
+                    )}
+                    {openStatusChangeDialog && (
+                        <ReservationStatusChangeDialog
+                            isOpen={openStatusChangeDialog}
+                            onClose={() => setOpenStatusChangeDialog(false)}
+                            currentStatus={status! as ReservationStatus}
+                            reservationId={id!}
                         />
                     )}
 
@@ -208,13 +229,19 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenViewDialog(true)}>
                                 Ver
                                 <DropdownMenuShortcut>
                                     <Eye className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => setOpenStatusChangeDialog(true)}>
+                                Cambiar Estado
+                                <DropdownMenuShortcut>
+                                    <RefreshCw className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => id && handleEditInterface(id)}>
                                 Editar
                                 <DropdownMenuShortcut>
@@ -225,6 +252,15 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                 Descargar Documento
                                 <DropdownMenuShortcut>
                                     <Download className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => {
+                                navigate.push(`/reservations/${id}/payments`);
+                            }}
+                            >
+                                Ver Cronograma de Pagos
+                                <DropdownMenuShortcut>
+                                    <Calendar className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

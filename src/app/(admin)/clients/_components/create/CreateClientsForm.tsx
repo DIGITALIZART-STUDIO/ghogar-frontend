@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import type { CreateClientsSchema } from "../../_schemas/createClientsSchema";
 import { ClientTypes } from "../../_types/client";
 import { ClientTypesLabels } from "../../_utils/clients.utils";
+import DocumentNumberLookup from "../search-document-number/LookupDocumentNumber";
 
 interface CreateClientFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
   children: React.ReactNode;
@@ -108,6 +109,32 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                             )}
                         />
 
+                        {/* Conditional fields based on client type */}
+                        {clientType === ClientTypes.Natural ? (
+                            <div className="md:col-span-2">
+                                <DocumentNumberLookup form={form} type="dni" isUpdate={false} />
+                            </div>
+                        ) : clientType === ClientTypes.Juridico ? (
+                            <>
+                                <div className="md:col-span-2">
+                                    <DocumentNumberLookup form={form} type="ruc" isUpdate={false} />
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="companyName"
+                                    render={({ field }) => (
+                                        <FormItem className="transition-all duration-300 ease-in-out">
+                                            <FormLabel>Nombre de la Empresa</FormLabel>
+                                            <FormControl>
+                                                <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </>
+                        ) : null}
+
                         {/* Name */}
                         <FormField
                             control={form.control}
@@ -124,53 +151,6 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                 </FormItem>
                             )}
                         />
-
-                        {/* Conditional fields based on client type */}
-                        {clientType === ClientTypes.Natural ? (
-                            <FormField
-                                control={form.control}
-                                name="dni"
-                                render={({ field }) => (
-                                    <FormItem className="transition-all duration-300 ease-in-out">
-                                        <FormLabel>DNI</FormLabel>
-                                        <FormControl>
-                                            <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678" maxLength={8} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ) : clientType === ClientTypes.Juridico ? (
-                            <>
-                                <FormField
-                                    control={form.control}
-                                    name="ruc"
-                                    render={({ field }) => (
-                                        <FormItem className="transition-all duration-300 ease-in-out">
-                                            <FormLabel>RUC</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678901" maxLength={11} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="companyName"
-                                    render={({ field }) => (
-                                        <FormItem className="transition-all duration-300 ease-in-out">
-                                            <FormLabel>Nombre de la Empresa</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </>
-                        ) : null}
 
                         <FormField
                             control={form.control}

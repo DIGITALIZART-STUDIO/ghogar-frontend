@@ -18,6 +18,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { CreateClientsSchema } from "../../_schemas/createClientsSchema";
 import { ClientTypes } from "../../_types/client";
 import { ClientTypesLabels } from "../../_utils/clients.utils";
+import DocumentNumberLookup from "../search-document-number/LookupDocumentNumber";
 
 interface UpdateCustomersFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
@@ -108,6 +109,32 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                             )}
                         />
 
+                        {/* Conditional fields based on client type */}
+                        {clientType === ClientTypes.Natural ? (
+                            <div>
+                                <DocumentNumberLookup form={form} type="dni" initialValue={form.getValues("dni") ?? undefined} isUpdate />
+                            </div>
+                        ) : clientType === ClientTypes.Juridico ? (
+                            <>
+                                <div>
+                                    <DocumentNumberLookup form={form} type="ruc" initialValue={form.getValues("ruc") ?? undefined} isUpdate />
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="companyName"
+                                    render={({ field }) => (
+                                        <FormItem className="transition-all duration-300 ease-in-out">
+                                            <FormLabel>Nombre de la Empresa</FormLabel>
+                                            <FormControl>
+                                                <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </>
+                        ) : null}
+
                         {/* Name */}
                         <FormField
                             control={form.control}
@@ -124,53 +151,6 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
                                 </FormItem>
                             )}
                         />
-
-                        {/* Conditional fields based on client type */}
-                        {clientType === ClientTypes.Natural ? (
-                            <FormField
-                                control={form.control}
-                                name="dni"
-                                render={({ field }) => (
-                                    <FormItem className="transition-all duration-300 ease-in-out">
-                                        <FormLabel>DNI</FormLabel>
-                                        <FormControl>
-                                            <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678" maxLength={8} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ) : clientType === ClientTypes.Juridico ? (
-                            <div className="md:col-span-2 grid grid-cols-1 gap-4 transition-all duration-300 ease-in-out">
-                                <FormField
-                                    control={form.control}
-                                    name="ruc"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>RUC</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678901" maxLength={11} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="companyName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nombre de la Empresa</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        ) : null}
 
                         <FormField
                             control={form.control}

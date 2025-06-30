@@ -49,6 +49,13 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
     // Determine which name to display
     const displayName = row.type === ClientTypes.Juridico && row.companyName ? row.companyName : row.name ?? "Sin Nombre";
 
+    const getShortName = (name: string, maxLength = 40) => {
+        if (!name) {
+            return "";
+        }
+        return name.length > maxLength ? `${name.slice(0, maxLength)}...` : name;
+    };
+
     return (
         <Card className="mx-auto w-full max-w-4xl overflow-hidden shadow-md pt-0 pb-2">
             <CardHeader className={`bg-gradient-to-r ${typeConfig.bgClass} py-4 px-6 pb-2`}>
@@ -69,8 +76,8 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                     {/* Main information */}
                     <div className="flex-grow space-y-3 text-center md:text-left">
                         <div className="flex flex-col md:flex-row md:items-center gap-2">
-                            <CardTitle className="text-2xl font-semibold">
-                                {displayName}
+                            <CardTitle className="text-2xl font-semibold ">
+                                {getShortName(displayName)}
                             </CardTitle>
                             <Badge
                                 variant="outline"
@@ -102,7 +109,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                                 >
                                     <FileText className="h-3.5 w-3.5 shrink-0" />
                                     <span>
-                                        Razón Social:
+                                        Representante Legal: {" "}
                                         {row.name}
                                     </span>
                                 </Badge>
@@ -169,7 +176,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                                         Dirección
                                     </p>
                                     {row.address ? (
-                                        <p className="text-sm font-medium mt-1">
+                                        <p className="text-sm font-medium mt-1 truncate text-ellipsis max-w-[300px]">
                                             {row.address}
                                         </p>
                                     ) : (
@@ -220,7 +227,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                                             <p className="text-xs text-muted-foreground uppercase tracking-wider">
                                                 Nombre Comercial
                                             </p>
-                                            <p className="text-sm font-medium mt-1">
+                                            <p className="text-sm font-medium mt-1 truncate text-ellipsis max-w-[300px]">
                                                 {row.companyName}
                                             </p>
                                         </div>
@@ -252,7 +259,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                                         </div>
                                         <div className="flex-1">
                                             <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                                                Razón Social
+                                                Representante Legal:
                                             </p>
                                             <p className="text-sm font-medium mt-1">
                                                 {row.name}

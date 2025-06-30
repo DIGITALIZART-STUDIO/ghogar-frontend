@@ -53,9 +53,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
 
     const parsedCoOwners = parseCoOwners(client?.coOwners as string);
 
-    console.log("UpdateClientSheet client:", JSON.stringify(client, null, 2));
-    console.log("Parsed coOwners:", parsedCoOwners);
-
     const form = useForm<CreateClientsSchema>({
         resolver: zodResolver(clientSchema),
         defaultValues: {

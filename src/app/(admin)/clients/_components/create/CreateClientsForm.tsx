@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Heart, Home, BadgeIcon as IdCard, Mail, Plus, Trash2, User, Users } from "lucide-react";
+import { Building2, Heart, Home, IdCard, Mail, Plus, Trash2, User, Users } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { getCountries, type Country } from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
@@ -34,7 +34,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
     const addCopropietario = () => {
         if (copropietarios.length < 6) {
             const currentCopropietarios = form.getValues("coOwners") ?? [];
-            form.setValue("coOwners", [...currentCopropietarios, { name: "", dni: "", phone: "" }]);
+            form.setValue("coOwners", [...currentCopropietarios, { name: "", dni: "", phone: "", address: "", email: "" }]);
         }
     };
 
@@ -54,6 +54,8 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                 spouseDni: "",
                 phone: "",
                 maritalStatus: "Casado",
+                address: "",
+                email: "",
             });
         }
     };
@@ -112,7 +114,9 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Nombre Completo</FormLabel>
+                                    <FormLabel>
+                                        {clientType === ClientTypes.Juridico ? "Representante Legal" : "Nombre Completo"}
+                                    </FormLabel>
                                     <FormControl>
                                         <InputWithIcon Icon={User} placeholder="Ejm: Juan Perez" {...field} />
                                     </FormControl>
@@ -137,12 +141,12 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                 )}
                             />
                         ) : clientType === ClientTypes.Juridico ? (
-                            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300 ease-in-out">
+                            <>
                                 <FormField
                                     control={form.control}
                                     name="ruc"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="transition-all duration-300 ease-in-out">
                                             <FormLabel>RUC</FormLabel>
                                             <FormControl>
                                                 <InputWithIcon Icon={IdCard} placeholder="Ejm: 12345678901" maxLength={11} {...field} />
@@ -156,7 +160,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                     control={form.control}
                                     name="companyName"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="transition-all duration-300 ease-in-out">
                                             <FormLabel>Nombre de la Empresa</FormLabel>
                                             <FormControl>
                                                 <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
@@ -165,7 +169,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                         </FormItem>
                                     )}
                                 />
-                            </div>
+                            </>
                         ) : null}
 
                         <FormField
@@ -324,6 +328,34 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                             </FormItem>
                                         )}
                                     />
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`coOwners.${index}.address`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Dirección</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name={`coOwners.${index}.email`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Correo Electrónico</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                             </div>
                         ))}
@@ -431,7 +463,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                                 <FormLabel>Estado Civil</FormLabel>
                                                 <Select onValueChange={field.onChange} value={field.value}>
                                                     <FormControl>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Seleccionar estado civil" />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -445,6 +477,35 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                             </FormItem>
                                         )}
                                     />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="separatePropertyData.address"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Dirección</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="separatePropertyData.email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Correo Electrónico</FormLabel>
+                                                <FormControl>
+                                                    <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
                                 </div>
                             </div>
                         )}

@@ -24,18 +24,21 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
         resolver: zodResolver(reservationSchema),
         defaultValues: {
             quotationId: "",
-            reservationDate: format(new Date(), "yyyy-MM-dd"),
+            reservationDate: "",
             amountPaid: "",
-            currency: "SOLES",
-            paymentMethod: "CASH",
+            // @ts-ignore
+            currency: "",
+            // @ts-ignore
+            paymentMethod: "",
             bankName: "",
-            exchangeRate: "3.75", // Default exchange rate
+            // @ts-ignore
+            exchangeRate: "",
             expiresAt: "",
             schedule: "",
         },
     });
 
-    const onSubmit = async(data: CreateReservationSchema) => {
+    const onSubmit = async (data: CreateReservationSchema) => {
         setIsPending(true);
 
         try {
@@ -73,6 +76,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
     return (
         <ReservationForm
             quotationsData={quotationsData}
+            // @ts-ignore
             form={form}
             onSubmit={onSubmit}
             isPending={isPending}

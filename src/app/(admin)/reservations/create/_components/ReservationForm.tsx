@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CreateReservationSchema } from "../_schemas/createReservationSchema";
 import { CurrencyLabels, PaymentMethodLabels } from "../../_utils/reservations.utils";
 import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
+import { useEffect } from "react";
 
 interface ReservationFormProps {
     quotationsData: Array<SummaryQuotation>;
@@ -43,6 +44,50 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
     const selectedQuotationId = form.watch("quotationId");
     const selectedQuotation = quotationsData.find((q) => q.id === selectedQuotationId);
 
+    // Auto-populate form fields when a quotation is selected
+    useEffect(() => {
+        if (!selectedQuotation) {
+            // Clear fields if no quotation is selected
+            form.setValue("currency", "" as any);
+            form.setValue("exchangeRate", "");
+            return;
+        }
+
+        // Set currency based on quotation currency
+        if (selectedQuotation.currency === "PEN") {
+            form.setValue("currency", "SOLES");
+        } else if (selectedQuotation.currency === "USD") {
+            form.setValue("currency", "DOLARES");
+        }
+
+        // Set exchange rate from quotation
+        if (selectedQuotation.exchangeRate) {
+            form.setValue("exchangeRate", selectedQuotation.exchangeRate.toString());
+        }
+
+        // Suggest a default amount (10% of final price as common practice for reservations)
+        if (selectedQuotation.finalPrice) {
+            const suggestedAmount = Math.round(selectedQuotation.finalPrice * 0.1); // 10% as initial payment
+            if (!form.getValues("amountPaid")) { // Only set if user hasn't entered an amount
+                form.setValue("amountPaid", suggestedAmount.toString());
+            }
+        }
+
+        // Set default expiration date (30 days from today)
+        if (!form.getValues("expiresAt")) { // Only set if user hasn't set an expiration
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30); // 30 days from now
+            form.setValue("expiresAt", expirationDate.toISOString());
+        }
+
+        // Set default reservation date to today if not set
+        if (!form.getValues("reservationDate")) {
+            const today = new Date();
+            const todayString = format(today, "yyyy-MM-dd");
+            form.setValue("reservationDate", todayString);
+        }
+    }, [selectedQuotation, form]);
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -51,8 +96,8 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                     <div className="lg:col-span-2">
 
                         {/* Sección principal - Datos de reserva */}
-                        <div className="rounded-xl overflow-hidden mb-8 bg-card border border-secondary">
-                            <div className="p-6 bg-primary/10 dark:bg-primary/90 border-b flex items-center">
+                        <div className="rounded-xl mb-8 bg-card border border-secondary">
+                            <div className="p-6 bg-primary/10 dark:bg-primary/90 border-b flex items-center rounded-tl-xl rounded-tr-xl">
                                 <Calendar className="h-5 w-5 text-gray-600 dark:text-gray-800 mr-3" />
                                 <h2 className="text-lg font-semibold text-gray-800">
                                     Datos de la Separación
@@ -75,13 +120,6 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                     placeholder="Seleccione una cotización"
                                                     onValueChange={(selectedOption) => {
                                                         field.onChange(selectedOption?.value ?? "");
-                                                        // Buscar la cotización seleccionada y setear el exchangeRate
-                                                        const selected = quotationsData.find((q) => q.id === selectedOption?.value);
-                                                        if (selected && selected.exchangeRate) {
-                                                            form.setValue("exchangeRate", selected.exchangeRate.toString());
-                                                        } else {
-                                                            form.setValue("exchangeRate", "");
-                                                        }
                                                     }}
                                                     value={quotationOptions.find((option) => option.value === field.value) ?? undefined}
                                                 />
@@ -351,9 +389,46 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                             Precio Final:
                                         </span>
                                         <span className="font-medium">
-                                            S/
+                                            {selectedQuotation.currency === "PEN" ? "S/" : "$"}
                                             {selectedQuotation.finalPrice?.toLocaleString()}
                                         </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>
+                                            Área:
+                                        </span>
+                                        <span className="font-medium">
+                                            {selectedQuotation.areaAtQuotation} m²
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>
+                                            T.C.:
+                                        </span>
+                                        <span className="font-medium">
+                                            {selectedQuotation.exchangeRate}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="pt-3 border-t border-border">
+                                        <div className="text-xs text-muted-foreground mb-2">
+                                            💡 Campos completados automáticamente
+                                        </div>
+                                        <div className="space-y-1 text-xs">
+                                            <div className="flex justify-between">
+                                                <span>Moneda:</span>
+                                                <span className="text-green-600">
+                                                    {selectedQuotation.currency === "PEN" ? "Soles" : "Dólares"}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Separación sugerida (10%):</span>
+                                                <span className="text-green-600">
+                                                    {selectedQuotation.currency === "PEN" ? "S/" : "$"}
+                                                    {Math.round(selectedQuotation.finalPrice * 0.1).toLocaleString()}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (

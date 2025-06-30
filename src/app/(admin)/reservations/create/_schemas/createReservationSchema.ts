@@ -13,6 +13,7 @@ export const reservationSchema = z.object({
     }),
     paymentMethod: z.enum(["CASH", "BANK_DEPOSIT", "BANK_TRANSFER"], {
         required_error: "El método de pago es requerido",
+        message: "Seleccione un método de pago"
     }),
     bankName: z.string().optional(),
     exchangeRate: z.string().min(1, { message: "El tipo de cambio es requerido" }),

@@ -1,4 +1,4 @@
-import { FileText, XCircle, Ban } from "lucide-react";
+import { FileText, Ban, CheckCircle } from "lucide-react";
 
 import { ReservationStatus, Currency, PaymentMethod } from "../_types/reservation";
 
@@ -16,14 +16,14 @@ export const ReservationStatusLabels: Record<
         className: "text-blue-700 border-blue-200",
     },
     [ReservationStatus.CANCELED]: {
-        label: "Cancelada",
-        icon: XCircle,
-        className: "text-red-700 border-red-200",
+        label: "Cancelado",
+        icon: CheckCircle,
+        className: "text-green-700 border-green-200",
     },
     [ReservationStatus.ANULATED]: {
-        label: "Anulada",
+        label: "Anulado",
         icon: Ban,
-        className: "text-gray-700 border-gray-200",
+        className: "text-red-700 border-red-200",
     },
 };
 

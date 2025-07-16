@@ -6,7 +6,7 @@ import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { useSearch } from "@/context/search-context";
-import { sidebarData } from "../layout/data/sidebar-data";
+import { getSidebarDataForRole } from "../layout/data/sidebar-data";
 import {
     CommandDialog,
     CommandEmpty,
@@ -18,7 +18,11 @@ import {
 } from "./command";
 import { ScrollArea } from "./scroll-area";
 
-export function CommandMenu() {
+interface CommandMenuProps {
+    roles: Array<string>;
+}
+
+export function CommandMenu({roles}: CommandMenuProps) {
     const navigate = useRouter();
     const { setTheme } = useTheme();
     const { open, setOpen } = useSearch();
@@ -30,6 +34,9 @@ export function CommandMenu() {
         },
         [setOpen],
     );
+
+    const role = roles[0]; // Solo tomamos el primer rol
+    const sidebarData = getSidebarDataForRole(role);
 
     return (
         <CommandDialog modal open={open} onOpenChange={setOpen}>

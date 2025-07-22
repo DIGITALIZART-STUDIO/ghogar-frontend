@@ -10,6 +10,15 @@ const ReservationStatusIcons = Object.fromEntries(Object.entries(ReservationStat
     return [reservationStatus, IconComponent];
 }));
 
+// Generar componentes de icono a partir de PaymentMethodLabels
+const PaymentMethodIcons = Object.fromEntries(Object.entries(PaymentMethodLabels).map(([paymentMethod, config]) => {
+    const IconComponent: React.FC<{ className?: string }> = ({ className }) => {
+        const Icon = config.icon;
+        return <Icon className={cn(className, config.className)} />;
+    };
+    return [paymentMethod, IconComponent];
+}));
+
 export const facetedFilters = [
     {
         // Filtro para el estado de la reserva
@@ -25,9 +34,10 @@ export const facetedFilters = [
         // Filtro para el método de pago
         column: "método_pago",
         title: "Método de Pago",
-        options: Object.entries(PaymentMethodLabels).map(([paymentMethod, label]) => ({
-            label,
+        options: Object.entries(PaymentMethodLabels).map(([paymentMethod, config]) => ({
+            label: config.label,
             value: paymentMethod,
+            icon: PaymentMethodIcons[paymentMethod],
         })),
     },
 ];

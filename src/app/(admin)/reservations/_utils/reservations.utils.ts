@@ -1,14 +1,14 @@
-import { FileText, Ban, CheckCircle } from "lucide-react";
+import { Ban, Banknote, CheckCircle, CreditCard, DollarSign, FileText } from "lucide-react";
 
-import { ReservationStatus, Currency, PaymentMethod } from "../_types/reservation";
+import { Currency, PaymentMethod, ReservationStatus } from "../_types/reservation";
 
 export const ReservationStatusLabels: Record<
-    ReservationStatus,
-    {
-        label: string;
-        icon: React.ElementType;
-        className: string;
-    }
+  ReservationStatus,
+  {
+    label: string;
+    icon: React.ElementType;
+    className: string;
+  }
 > = {
     [ReservationStatus.ISSUED]: {
         label: "Emitida",
@@ -32,8 +32,27 @@ export const CurrencyLabels: Record<Currency, string> = {
     [Currency.DOLARES]: "Dólares ($)",
 };
 
-export const PaymentMethodLabels: Record<PaymentMethod, string> = {
-    [PaymentMethod.CASH]: "Efectivo",
-    [PaymentMethod.BANK_DEPOSIT]: "Depósito bancario",
-    [PaymentMethod.BANK_TRANSFER]: "Transferencia bancaria",
+export const PaymentMethodLabels: Record<
+  PaymentMethod,
+  {
+    label: string;
+    icon: React.ElementType;
+    className: string;
+  }
+> = {
+    [PaymentMethod.CASH]: {
+        label: "Efectivo",
+        icon: DollarSign,
+        className: "text-green-700 border-green-200",
+    },
+    [PaymentMethod.BANK_DEPOSIT]: {
+        label: "Depósito bancario",
+        icon: Banknote,
+        className: "text-blue-700 border-blue-200",
+    },
+    [PaymentMethod.BANK_TRANSFER]: {
+        label: "Transferencia bancaria",
+        icon: CreditCard,
+        className: "text-purple-700 border-purple-200",
+    },
 };

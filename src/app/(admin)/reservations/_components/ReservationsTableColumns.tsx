@@ -102,7 +102,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
             const symbol = currency === "SOLES" ? "S/" : "$";
 
             return (
-                <div className="min-w-24 text-right font-medium">
+                <div className="min-w-24 font-medium">
                     {symbol}
                     {" "}
                     {amount?.toLocaleString("es-PE", { minimumFractionDigits: 2 }) || "0.00"}
@@ -116,9 +116,18 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
         header: ({ column }) => <DataTableColumnHeader column={column} title="Método Pago" />,
         cell: ({ row }) => {
             const paymentMethod = row.getValue("método_pago") as keyof typeof PaymentMethodLabels;
+            const config = PaymentMethodLabels[paymentMethod];
+
+            if (!config) {
+                return <div className="min-w-32 text-sm">No especificado</div>;
+            }
+
+            const Icon = config.icon;
+
             return (
-                <div className="min-w-32 text-sm">
-                    {PaymentMethodLabels[paymentMethod] || paymentMethod}
+                <div className="min-w-32 text-sm flex items-center gap-2">
+                    <Icon className={`${config.className} w-4 h-4`} />
+                    <span className={config.className}>{config.label}</span>
                 </div>
             );
         },

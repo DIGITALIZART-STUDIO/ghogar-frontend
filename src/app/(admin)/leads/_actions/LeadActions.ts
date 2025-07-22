@@ -269,6 +269,24 @@ export async function GetAssignedLeadsSummary(assignedToId: string): Promise<Res
     return ok(response);
 }
 
+// Obtener resumen de leads disponibles para cotización asignados a un usuario
+export async function GetAvailableLeadsForQuotation(assignedToId: string): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/available-for-quotation", {
+        ...auth,
+        params: {
+            path: {
+                assignedToId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error getting available leads for quotation for user ${assignedToId}:`, error);
+        return err(error);
+    }
+    return ok(response);
+}
+
 export async function CheckAndUpdateExpiredLeads(): Promise<Result<{ expiredLeadsCount: number }, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.POST("/api/Leads/check-expired", {
         ...auth,

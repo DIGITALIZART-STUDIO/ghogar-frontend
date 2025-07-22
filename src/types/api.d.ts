@@ -2013,6 +2013,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/assigned/{assignedToId}/available-for-quotation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    assignedToId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Lots": {
         parameters: {
             query?: never;
@@ -2467,6 +2506,157 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaymentTransaction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaymentTransactionDTO"]>;
+                        "application/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+                        "text/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PaymentTransactionCreateDTO"];
+                    "text/json": components["schemas"]["PaymentTransactionCreateDTO"];
+                    "application/*+json": components["schemas"]["PaymentTransactionCreateDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaymentTransactionDTO"];
+                        "application/json": components["schemas"]["PaymentTransactionDTO"];
+                        "text/json": components["schemas"]["PaymentTransactionDTO"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaymentTransaction/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaymentTransactionDTO"];
+                        "application/json": components["schemas"]["PaymentTransactionDTO"];
+                        "text/json": components["schemas"]["PaymentTransactionDTO"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PaymentTransactionUpdateDTO"];
+                    "text/json": components["schemas"]["PaymentTransactionUpdateDTO"];
+                    "application/*+json": components["schemas"]["PaymentTransactionUpdateDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaymentTransactionDTO"];
+                        "application/json": components["schemas"]["PaymentTransactionDTO"];
+                        "text/json": components["schemas"]["PaymentTransactionDTO"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -4364,8 +4554,56 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        PaymentDTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: double */
+            amountDue?: number;
+            /** Format: date-time */
+            dueDate?: string;
+            paid?: boolean;
+        };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
+        PaymentTransactionCreateDTO: {
+            /** Format: date-time */
+            paymentDate: string;
+            /** Format: double */
+            amountPaid: number;
+            /** Format: uuid */
+            reservationId?: string | null;
+            paymentMethod: components["schemas"]["PaymentMethod"];
+            referenceNumber?: string | null;
+            paymentIds: Array<string>;
+        };
+        PaymentTransactionDTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            paymentDate?: string;
+            /** Format: double */
+            amountPaid?: number;
+            /** Format: uuid */
+            reservationId?: string | null;
+            paymentMethod?: components["schemas"]["PaymentMethod"];
+            referenceNumber?: string | null;
+            payments?: Array<components["schemas"]["PaymentDTO"]>;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        PaymentTransactionUpdateDTO: {
+            /** Format: date-time */
+            paymentDate: string;
+            /** Format: double */
+            amountPaid: number;
+            /** Format: uuid */
+            reservationId?: string | null;
+            paymentMethod: components["schemas"]["PaymentMethod"];
+            referenceNumber?: string | null;
+            paymentIds: Array<string>;
+        };
         ProblemDetails: {
             type?: string | null;
             title?: string | null;

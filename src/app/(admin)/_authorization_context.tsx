@@ -61,9 +61,11 @@ export const useRouteAuthorization = (route: string): boolean => {
     const role = context[0];
     const allowedRoutes = rolePermissions[role] || [];
     const normalizedRoute = normalizeRoute(route);
-    return allowedRoutes.includes(normalizedRoute);
-};
 
+    // Permite acceso si la ruta actual empieza con alguna ruta permitida
+    return allowedRoutes.some((allowed) => normalizedRoute === allowed || normalizedRoute.startsWith(`${allowed}/`)
+    );
+};
 /**
  * Returns whether or not the currently logged in user has a role
  */

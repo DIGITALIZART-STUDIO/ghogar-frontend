@@ -194,7 +194,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
     {
         id: "Medio de captación",
         accessorKey: "captureSource",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Tipo" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Medio de captación" />,
         cell: ({ row }) => {
             const documentType = row.getValue("Medio de captación") as LeadCaptureSource;
             const documentTypeConfig = LeadCaptureSourceLabels[documentType];

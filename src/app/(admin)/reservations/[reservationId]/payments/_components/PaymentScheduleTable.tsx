@@ -1,10 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { components } from "@/types/api";
+import { PaymentDto } from "../_types/payments";
 
 interface PaymentScheduleTableProps {
-    data: Array<components["schemas"]["PaymentDto"]>;
+    data: Array<PaymentDto>;
 }
 
 export function PaymentScheduleTable({ data }: PaymentScheduleTableProps) {

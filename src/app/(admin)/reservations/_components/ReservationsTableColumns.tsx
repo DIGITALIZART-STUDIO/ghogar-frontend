@@ -111,11 +111,11 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
         },
     },
     {
-        id: "método_pago",
+        id: "método pago",
         accessorKey: "paymentMethod",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Método Pago" />,
         cell: ({ row }) => {
-            const paymentMethod = row.getValue("método_pago") as keyof typeof PaymentMethodLabels;
+            const paymentMethod = row.getValue("método pago") as keyof typeof PaymentMethodLabels;
             const config = PaymentMethodLabels[paymentMethod];
 
             if (!config) {

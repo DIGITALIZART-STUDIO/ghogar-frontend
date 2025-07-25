@@ -2662,6 +2662,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/PaymentTransaction/by-reservation/{reservationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    reservationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaymentTransactionDTO"]>;
+                        "application/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+                        "text/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaymentTransaction/quota-status/by-reservation/{reservationId}/{excludeTransactionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    reservationId: string;
+                    excludeTransactionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaymentQuotaSimpleDTO"]>;
+                        "application/json": Array<components["schemas"]["PaymentQuotaSimpleDTO"]>;
+                        "text/json": Array<components["schemas"]["PaymentQuotaSimpleDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Projects": {
         parameters: {
             query?: never;
@@ -3391,9 +3470,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ReservationDto"]>;
-                        "application/json": Array<components["schemas"]["ReservationDto"]>;
-                        "text/json": Array<components["schemas"]["ReservationDto"]>;
+                        "text/plain": Array<components["schemas"]["ReservationWithPaymentsDto"]>;
+                        "application/json": Array<components["schemas"]["ReservationWithPaymentsDto"]>;
+                        "text/json": Array<components["schemas"]["ReservationWithPaymentsDto"]>;
                     };
                 };
             };
@@ -4645,6 +4724,20 @@ export interface components {
         };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
+        PaymentQuotaSimpleDTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            reservationId?: string;
+            clientName?: string;
+            quotationCode?: string;
+            /** Format: double */
+            amountDue?: number;
+            /** Format: date-time */
+            dueDate?: string;
+            paid?: boolean;
+            currency?: components["schemas"]["Currency"];
+        };
         PaymentTransactionCreateDTO: {
             /** Format: date-time */
             paymentDate: string;
@@ -5084,6 +5177,38 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+        };
+        ReservationWithPaymentsDto: {
+            /** Format: int32 */
+            paymentCount?: number;
+            /** Format: date-time */
+            nextPaymentDueDate?: string | null;
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string;
+            clientName?: string;
+            /** Format: uuid */
+            quotationId?: string;
+            quotationCode?: string;
+            /** Format: date */
+            reservationDate?: string;
+            /** Format: double */
+            amountPaid?: number;
+            currency?: components["schemas"]["Currency"];
+            status?: components["schemas"]["ReservationStatus"];
+            paymentMethod?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            /** Format: double */
+            exchangeRate?: number;
+            /** Format: date-time */
+            expiresAt?: string;
+            notified?: boolean;
+            schedule?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
         };
         ResponseApiDni: {
             numero?: string;

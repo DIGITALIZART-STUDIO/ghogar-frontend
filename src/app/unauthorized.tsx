@@ -30,8 +30,10 @@ const roleLevel = {
 // Mapeo de rutas a nombres legibles
 const routeNames: Record<string, string> = {
     "/dashboard": "Dashboard",
+    "/admin": "Administración",
+    "/profile/": "Perfil",
     "/clients": "Clientes",
-    "/leads": "Leads",
+    "/leads/": "Leads",
     "/tasks": "Tareas",
     "/quotation": "Cotizaciones",
     "/reservations": "Reservas",

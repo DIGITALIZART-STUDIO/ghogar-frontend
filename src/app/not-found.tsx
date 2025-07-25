@@ -25,7 +25,7 @@ export default function NotFound() {
                         </div>
                         <h2 className="text-xl font-semibold text-foreground">Registro no encontrado</h2>
                         <p className="text-muted-foreground text-sm">
-                            El recurso que buscas no existe en nuestra base de datos del CRM
+                            El recurso que buscas no existe en el CRM
                         </p>
                     </div>
 

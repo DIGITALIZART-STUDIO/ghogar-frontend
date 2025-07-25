@@ -39,6 +39,7 @@ export type { NavCollapsible, NavGroup, NavItem, NavLink, SidebarData };
 export const rolePermissions: Record<string, Array<string>> = {
     SuperAdmin: [
         "/",
+        "/profile",
         "/dashboard",
         "/clients",
         "/leads",
@@ -48,11 +49,13 @@ export const rolePermissions: Record<string, Array<string>> = {
         "/assignments",
         "/reports",
         "/admin/users",
-        "/admin/projects"
+        "/admin/projects",
+        "/payments-transaction",
     ],
     Admin: [
         "/",
         "/dashboard",
+        "/profile",
         "/clients",
         "/leads",
         "/tasks",
@@ -61,19 +64,23 @@ export const rolePermissions: Record<string, Array<string>> = {
         "/assignments",
         "/reports",
         "/admin/users",
-        "/admin/projects"
+        "/admin/projects",
+        "/payments-transaction",
     ],
     Supervisor: [
         "/",
         "/dashboard",
+        "/profile",
         "/clients",
         "/leads",
         "/tasks",
         "/assignments",
-        "/reports"
+        "/reports",
+        "/payments-transaction",
     ],
     SalesAdvisor: [
         "/",
+        "/profile",
         "/dashboard",
         "/assignments",
         "/quotation",
@@ -81,10 +88,12 @@ export const rolePermissions: Record<string, Array<string>> = {
     ],
     Manager: [
         "/",
+        "/profile",
         "/dashboard",
         "/clients",
         "/leads",
         "/tasks",
-        "/reports"
+        "/reports",
+        "/payments-transaction",
     ]
 };

@@ -3369,6 +3369,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Reservations/canceled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ReservationDto"]>;
+                        "application/json": Array<components["schemas"]["ReservationDto"]>;
+                        "text/json": Array<components["schemas"]["ReservationDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Reservations/{id}": {
         parameters: {
             query?: never;
@@ -3876,6 +3913,49 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/Users/profile/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Profile Password
+         * @description Allows the authenticated user to update their password.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProfilePasswordDTO"];
+                    "text/json": components["schemas"]["UpdateProfilePasswordDTO"];
+                    "application/*+json": components["schemas"]["UpdateProfilePasswordDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -5055,6 +5135,11 @@ export interface components {
         };
         /** @enum {unknown} */
         TaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other";
+        UpdateProfilePasswordDTO: {
+            currentPassword?: string;
+            newPassword?: string;
+            confirmPassword?: string;
+        };
         User: {
             /** Format: date-time */
             lastLogin?: string | null;

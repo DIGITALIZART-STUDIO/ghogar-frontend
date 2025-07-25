@@ -5,16 +5,33 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 import { cn } from "@/lib/utils";
 
-function ScrollArea({ className, children, ...props }: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+interface ScrollAreaProps extends React.ComponentProps<typeof ScrollAreaPrimitive.Root> {
+    disableOverflow?: boolean;
+}
+
+function ScrollArea({
+    className,
+    children,
+    disableOverflow = false,
+    ...props
+}: ScrollAreaProps) {
     return (
-        <ScrollAreaPrimitive.Root data-slot="scroll-area" className={cn("relative", className)} {...props}>
+        <ScrollAreaPrimitive.Root
+            data-slot="scroll-area"
+            className={cn("relative", className)}
+            {...props}
+        >
             <ScrollAreaPrimitive.Viewport
                 data-slot="scroll-area-viewport"
-                className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+                className={cn(
+                    "ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1",
+                    disableOverflow && "[&>[data-radix-scroll-area-viewport]]:!overflow-visible",
+                )}
+                style={disableOverflow ? { overflow: "visible" } : undefined}
             >
                 {children}
             </ScrollAreaPrimitive.Viewport>
-            <ScrollBar />
+            {!disableOverflow && <ScrollBar />}
             <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
     );
@@ -31,8 +48,10 @@ function ScrollBar({
             orientation={orientation}
             className={cn(
                 "flex touch-none p-px transition-colors select-none",
-                orientation === "vertical" && "h-full w-2.5 border-l border-l-transparent",
-                orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent",
+                orientation === "vertical" &&
+          "h-full w-2.5 border-l border-l-transparent",
+                orientation === "horizontal" &&
+          "h-2.5 flex-col border-t border-t-transparent",
                 className,
             )}
             {...props}

@@ -2,23 +2,32 @@
 
 import React, { useMemo, useState } from "react";
 import { ColumnDef, Table as TableInstance } from "@tanstack/react-table";
+import { Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
-import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
-import { UsersTableToolbarActions } from "./UserActions";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
+import ErrorGeneral from "@/components/errors/general-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { backend } from "@/types/backend2";
-import ErrorGeneral from "@/components/errors/general-error";
 import { UserGetDTO } from "../_types/user";
-import { UpdateUsersSheet } from "./update/UpdateUsersSheet";
 import { DeleteUsersDialog } from "./state-management/DeleteUsersDialog";
 import { ReactivateUsersDialog } from "./state-management/ReactivateUsersDialog";
+import { UpdateUsersSheet } from "./update/UpdateUsersSheet";
+import { UsersTableToolbarActions } from "./UserActions";
+import { facetedFilters } from "../_utils/user.filter.utils";
+import { UserRoleLabels } from "../_utils/user.utils";
 
 export function UsersTable() {
     const [pagination, setPagination] = useState({
@@ -26,52 +35,61 @@ export function UsersTable() {
         pageSize: 10,
     });
 
-    const { data, error, isFetching, refetch } = backend.useQuery("get", "/api/Users/all", {
-        params: {
-            query: {
-                page: pagination.pageIndex + 1,
-                pageSize: pagination.pageSize,
+    const { data, error, isFetching, refetch } = backend.useQuery(
+        "get",
+        "/api/Users/all",
+        {
+            params: {
+                query: {
+                    page: pagination.pageIndex + 1,
+                    pageSize: pagination.pageSize,
+                },
             },
         },
-    }, {
-        staleTime: 60000,
-    });
+        {
+            staleTime: 60000,
+        }
+    );
 
     // Get pagination info from API response
     const pageCount = data?.totalPages ?? 0;
     const totalItems = data?.totalCount ?? 0;
 
-    const columns = useMemo(() => clientsColumns(refetch), [refetch]);
+    const columns = useMemo(() => usersColumns(refetch), [refetch]);
 
-    const serverPaginationConfig = useMemo(() => ({
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
-        pageCount: pageCount,
-        onPaginationChange: async(pageIndex: number, pageSize: number) => {
-            setPagination({ pageIndex, pageSize });
-        },
-        total: totalItems,
-    }), [pagination.pageIndex, pagination.pageSize, pageCount, totalItems]);
+    const serverPaginationConfig = useMemo(
+        () => ({
+            pageIndex: pagination.pageIndex,
+            pageSize: pagination.pageSize,
+            pageCount: pageCount,
+            onPaginationChange: async (pageIndex: number, pageSize: number) => {
+                setPagination({ pageIndex, pageSize });
+            },
+            total: totalItems,
+        }),
+        [pagination.pageIndex, pagination.pageSize, pageCount, totalItems]
+    );
 
     if (error) {
-        return (
-            <ErrorGeneral />
-        );
+        return <ErrorGeneral />;
     }
 
     return (
         <DataTableExpanded
             data={data?.items ?? []}
             columns={columns}
-            toolbarActions={(table: TableInstance<UserGetDTO>) => <UsersTableToolbarActions table={table} refetch={refetch} />}
+            toolbarActions={(table: TableInstance<UserGetDTO>) => (
+                <UsersTableToolbarActions table={table} refetch={refetch} />
+            )}
             filterPlaceholder="Buscar usuarios..."
             serverPagination={serverPaginationConfig}
             isLoading={isFetching}
+            facetedFilters={facetedFilters}
         />
     );
 }
 
-export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> => [
+export const usersColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -102,21 +120,13 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
         id: "nombre",
         accessorKey: "name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nombre" />,
-        cell: ({ row }) => (
-            <div className="min-w-40 truncate capitalize">
-                {row.original.user.name}
-            </div>
-        ),
+        cell: ({ row }) => <div className="min-w-40 truncate capitalize">{row.original.user.name}</div>,
     },
     {
         id: "correo",
         accessorKey: "email",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Correo" />,
-        cell: ({ row }) => (
-            <div>
-                {row.original.user.email}
-            </div>
-        ),
+        cell: ({ row }) => <div>{row.original.user.email}</div>,
     },
     {
         id: "teléfono",
@@ -125,9 +135,7 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
         cell: ({ row }) => {
             const phone = row.original.user.phoneNumber as string;
             if (!phone) {
-                return <div>
-                    -
-                </div>;
+                return <div>-</div>;
             }
 
             try {
@@ -144,36 +152,55 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
                                 {flags[country] && React.createElement(flags[country], { title: country })}
                             </span>
                         )}
-                        <span>
-                            {formattedPhone ?? phone}
-                        </span>
+                        <span>{formattedPhone ?? phone}</span>
                     </div>
                 );
             } catch {
                 // Si hay algún error al parsear el número, mostramos el número original
-                return <div>
-                    {phone}
-                </div>;
+                return <div>{phone}</div>;
             }
         },
     },
     {
-        id: "roles",
+        id: "rol",
         accessorKey: "roles",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Roles" />,
-        cell: ({ row }) => (
-            <div>
-                {row.original.roles.map((role, i) => (
-                    <Badge key={i} variant="secondary" className="bg-blue-100 text-blue-500 border-blue-200">
-                        {role}
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Rol" />,
+        cell: ({ row }) => {
+            const roles = row.getValue("rol") as Array<string>;
+            const mainRole = roles?.[0] as keyof typeof UserRoleLabels | undefined;
+            const roleConfig = mainRole && UserRoleLabels[mainRole] ? UserRoleLabels[mainRole] : UserRoleLabels.Other;
+
+            if (!mainRole || !roleConfig) {
+                return <div>No registrado</div>;
+            }
+
+            const Icon = roleConfig.icon;
+
+            return (
+                <div className="text-xs min-w-32">
+                    <Badge variant="outline" className={roleConfig.className}>
+                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
+                        {roleConfig.label}
                     </Badge>
-                ))}
-            </div>
-        ),
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            const roles = row.getValue(id) as Array<string>;
+            const mainRole = roles?.[0];
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(mainRole);
+            }
+            return mainRole === value;
+        },
+        enableColumnFilter: true,
     },
     {
         id: "estado",
-        accessorKey: "isActive",
+        accessorKey: "user.isActive",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
         cell: ({ row }) => (
             <div>
@@ -189,6 +216,30 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
             </div>
         ),
         enableColumnFilter: true,
+        filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+
+            // Si value es un array, comprobamos si contiene el valor de la fila
+            if (Array.isArray(value)) {
+                // Si el array está vacío, no filtramos
+                if (value.length === 0) {
+                    return true;
+                }
+
+                // Convertimos cada elemento del array según sea necesario
+                return value.some((v) => {
+                    // Si es string "true"/"false", convertimos a booleano
+                    if (typeof v === "string") {
+                        return v === String(rowValue);
+                    }
+                    // Si ya es booleano, comparamos directamente
+                    return v === rowValue;
+                });
+            }
+
+            // Si es un valor único, hacemos la comparación directa
+            return rowValue === value;
+        },
     },
 
     {
@@ -202,7 +253,12 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
                 <div>
                     <div>
                         {showEditDialog && (
-                            <UpdateUsersSheet open={showEditDialog} onOpenChange={setShowEditDialog} user={row?.original} refetch={refetch} />
+                            <UpdateUsersSheet
+                                open={showEditDialog}
+                                onOpenChange={setShowEditDialog}
+                                user={row?.original}
+                                refetch={refetch}
+                            />
                         )}
                         {showDeleteDialog && (
                             <DeleteUsersDialog
@@ -229,7 +285,6 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
                                 }}
                             />
                         )}
-
                     </div>
                     <div />
                     <DropdownMenu>
@@ -239,12 +294,10 @@ export const clientsColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onSelect={() => setShowEditDialog(true)} >
-                                Editar
-                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setShowEditDialog(true)}>Editar</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {/*             {isSuperAdmin && ( */}
-                            <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive} >
+                            <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive}>
                                 Reactivar
                                 <DropdownMenuShortcut>
                                     <RefreshCcwDot className="size-4" aria-hidden="true" />

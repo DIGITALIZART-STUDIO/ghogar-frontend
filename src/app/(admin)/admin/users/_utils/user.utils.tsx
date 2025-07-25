@@ -1,3 +1,6 @@
+
+import { Crown, ShieldCheck, UserCog,  Handshake, BriefcaseBusiness, HelpCircle } from "lucide-react";
+
 export const calculatePasswordStrength = (password: string): { score: number; label: string; color: string } => {
     let score = 0;
 
@@ -62,3 +65,54 @@ export const generateSecurePassword = (length = 16): string => {
         .sort(() => Math.random() - 0.5)
         .join("");
 };
+
+export type UserRole =
+    | "SuperAdmin"
+    | "Admin"
+    | "Supervisor"
+    | "SalesAdvisor"
+    | "Manager";
+
+export const UserRoleLabels: Record<
+  UserRole | "Other",
+  {
+    label: string;
+    icon: React.ElementType;
+    className: string;
+  }
+> = {
+    SuperAdmin: {
+        label: "Super Administrador",
+        icon: Crown,
+        className: "text-purple-700 border-purple-200",
+    },
+    Admin: {
+        label: "Administrador",
+        icon: ShieldCheck,
+        className: "text-blue-700 border-blue-200",
+    },
+    Supervisor: {
+        label: "Supervisor",
+        icon: UserCog,
+        className: "text-orange-700 border-orange-200",
+    },
+    SalesAdvisor: {
+        label: "Asesor de Ventas",
+        icon: Handshake,
+        className: "text-green-700 border-green-200",
+    },
+    Manager: {
+        label: "Gerente",
+        icon: BriefcaseBusiness,
+        className: "text-gray-700 border-gray-200",
+    },
+    Other: {
+        label: "Otro",
+        icon: HelpCircle,
+        className: "text-slate-700 border-slate-200",
+    },
+};
+
+export function getUserRoleLabel(role: string) {
+    return UserRoleLabels[role as UserRole] ?? UserRoleLabels.Other;
+}

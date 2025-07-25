@@ -1,29 +1,36 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import { rolePermissions } from "@/components/layout/types";
+import { usePathname } from "next/navigation";
+import UnauthorizedPage from "../unauthorized";
 
 export type Role = "SuperAdmin" | "Admin" | "Supervisor" | "SalesAdvisor" | "Manager"
 export type Module = "Users"
 export type Claim = "CREATE" | "READ" | "UPDATE" | "DELETE"
 
-type RolesTypes = Omit<{
+type RolesTypes = Omit<
+  {
     [key in Role]: string
-}, "SuperAdmin">
+  },
+  "SuperAdmin"
+>
 
 export const roles: RolesTypes = {
-    "Admin": "Administrador",
-    "Supervisor": "Supervisor",
-    "SalesAdvisor": "Asesor",
-    "Manager": "Gerente",
+    Admin: "Administrador",
+    Supervisor: "Supervisor",
+    SalesAdvisor: "Asesor",
+    Manager: "Gerente",
 };
 
 const AuthContext = createContext<Array<Role> | null>(null);
+
 const Permissions: Readonly<Record<Module, Record<Claim, Array<Role>>>> = Object.freeze({
-    "Users": {
-        "CREATE": ["SuperAdmin"],
-        "READ": ["SuperAdmin"],
-        "UPDATE": ["SuperAdmin"],
-        "DELETE": ["SuperAdmin"],
+    Users: {
+        CREATE: ["SuperAdmin"],
+        READ: ["SuperAdmin"],
+        UPDATE: ["SuperAdmin"],
+        DELETE: ["SuperAdmin"],
     },
 });
 
@@ -38,19 +45,29 @@ export const useClaims = () => {
     return context;
 };
 
+function normalizeRoute(route: string): string {
+    return route.endsWith("/") && route.length > 1 ? route.slice(0, -1) : route;
+}
+
+/**
+ * Verifica si el usuario tiene permiso para acceder a una ruta
+ */
+export const useRouteAuthorization = (route: string): boolean => {
+    const context = useContext(AuthContext);
+    if (!context || context.length === 0) {
+        throw new Error("Attempted to use unmounted AuthorizationContext");
+    }
+
+    const role = context[0];
+    const allowedRoutes = rolePermissions[role] || [];
+    const normalizedRoute = normalizeRoute(route);
+
+    // Permite acceso si la ruta actual empieza con alguna ruta permitida
+    return allowedRoutes.some((allowed) => normalizedRoute === allowed || normalizedRoute.startsWith(`${allowed}/`)
+    );
+};
 /**
  * Returns whether or not the currently logged in user has a role
- *
- * Example:
- *
- * ```tsx
- * function Proyectos() {
- *   const isAuthorized = useAuthorization("Users", "CREATE");
- *   if (!isAuthorized) {
- *      return <p>No autorizado</p>
- *   }
- * }
- * ```
  */
 export const useAuthorization = (module: Module, claim: Claim): boolean => {
     const context = useContext(AuthContext);
@@ -66,12 +83,20 @@ export function AuthorizationContext({
     roles,
     children,
 }: {
-    roles: Array<Role>;
-    children: React.ReactNode;
+  roles: Array<Role>
+  children: React.ReactNode
 }) {
-    return (
-        <AuthContext.Provider value={roles}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={roles}>{children}</AuthContext.Provider>;
+}
+
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+    const pathname = usePathname();
+    const isAuthorized = useRouteAuthorization(pathname);
+
+    if (!isAuthorized) {
+    // Renderizamos directamente la página de unauthorized
+        return <UnauthorizedPage />;
+    }
+
+    return children;
 }

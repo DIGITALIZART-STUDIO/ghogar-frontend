@@ -1,10 +1,6 @@
-import DashboardPage from "./(admin)/dashboard/page";
-import AdminLayoutWrapper from "./(admin)/layout";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-    return (
-        <AdminLayoutWrapper>
-            <DashboardPage />
-        </AdminLayoutWrapper>
-    );
+    redirect("/dashboard");
+    return null;
 }

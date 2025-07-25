@@ -19,6 +19,19 @@ export async function GetAllReservations(): Promise<Result<Array<components["sch
     return ok(response);
 }
 
+// Obtener todas las reservas canceladas
+export async function GetAllCanceledReservations(): Promise<Result<Array<components["schemas"]["ReservationDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/canceled", {
+        ...auth,
+    }));
+
+    if (error) {
+        console.log("Error getting canceled reservations:", error);
+        return err(error);
+    }
+    return ok(response);
+}
+
 // Obtener una reserva específica por ID
 export async function GetReservationById(id: string): Promise<Result<components["schemas"]["ReservationDto"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/{id}", {

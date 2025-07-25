@@ -85,7 +85,7 @@ export default function ProfileForm({ data }: ProfileFormProps) {
     useEffect(() => {
         const updatedRequirements = passwordRequirements.map((req) => ({
             ...req,
-            met: req.regex.test(newPassword || ""),
+            met: req.regex.test(newPassword ?? ""),
         }));
         setPasswordRequirements(updatedRequirements);
     // eslint-disable-next-line react-hooks/exhaustive-deps

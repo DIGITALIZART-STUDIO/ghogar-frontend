@@ -7,6 +7,7 @@ import {
     LineChart,
     ListChecks,
     Users,
+    DollarSign
 } from "lucide-react";
 
 import { rolePermissions, type SidebarData } from "../types";
@@ -60,6 +61,16 @@ export const sidebarData: SidebarData = {
                     title: "Separaciones",
                     url: "/reservations",
                     icon: FileCheck,
+                },
+            ],
+        },
+        {
+            title: "Cobranza",
+            items: [
+                {
+                    title: "Gestión de Pagos",
+                    url: "/payments-transaction",
+                    icon: DollarSign,
                 },
             ],
         },

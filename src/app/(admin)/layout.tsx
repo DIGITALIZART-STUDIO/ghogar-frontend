@@ -46,7 +46,7 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         return <ErrorGeneral />;
     }
 
-    const username = data.user.userName!;
+    const username = data.user.name!;
     const initials = username
         .split(" ")
         .map((n) => n[0].toUpperCase())

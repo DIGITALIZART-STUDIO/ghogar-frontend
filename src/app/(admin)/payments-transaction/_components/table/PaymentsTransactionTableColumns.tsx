@@ -1,14 +1,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight, Calendar, DollarSign, Ellipsis, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight, Calendar, DollarSign, Ellipsis, Plus, ListChecks, List } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {  ReservationWithPaymentsDto } from "@/app/(admin)/reservations/_types/reservation";
+import { ReservationWithPaymentsDto } from "@/app/(admin)/reservations/_types/reservation";
 import { PaymentMethodLabels } from "@/app/(admin)/reservations/_utils/reservations.utils";
 import { useState } from "react";
 import { CreatePaymentTransactionDialog } from "../create/CreatePaymentsTransactionDialog";
@@ -186,6 +186,26 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
                                 Crear Transacción
                                 <DropdownMenuShortcut>
                                     <Plus className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    // FIXME:
+                                }}
+                            >
+                                Cronograma de Pagos
+                                <DropdownMenuShortcut>
+                                    <List className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    // FIXME:
+                                }}
+                            >
+                                Pagos Realizados
+                                <DropdownMenuShortcut>
+                                    <ListChecks className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
 

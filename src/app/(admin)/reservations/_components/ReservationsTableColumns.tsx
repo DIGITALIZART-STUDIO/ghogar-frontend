@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar } from "lucide-react";
+import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar, FileText } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -258,9 +258,19 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setOpenDownloadDialog(true)}>
-                                Descargar Documento
+                                Documento de Separación
                                 <DropdownMenuShortcut>
                                     <Download className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    // FIXME:
+                                }}
+                            >
+                                Contrato
+                                <DropdownMenuShortcut>
+                                    <FileText className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => {

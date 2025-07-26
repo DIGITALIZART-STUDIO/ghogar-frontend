@@ -131,7 +131,7 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                             <Select onValueChange={field.onChange} value={field.value ?? ""}>
                                 <FormControl>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Selecciona un estado civil" />
+                                        <SelectValue placeholder="Selecciona un medio de captación" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>

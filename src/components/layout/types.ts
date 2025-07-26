@@ -35,3 +35,65 @@ interface SidebarData {
 }
 
 export type { NavCollapsible, NavGroup, NavItem, NavLink, SidebarData };
+
+export const rolePermissions: Record<string, Array<string>> = {
+    SuperAdmin: [
+        "/",
+        "/profile",
+        "/dashboard",
+        "/clients",
+        "/leads",
+        "/tasks",
+        "/quotation",
+        "/reservations",
+        "/assignments",
+        "/reports",
+        "/admin/users",
+        "/admin/projects",
+        "/payments-transaction",
+    ],
+    Admin: [
+        "/",
+        "/dashboard",
+        "/profile",
+        "/clients",
+        "/leads",
+        "/tasks",
+        "/quotation",
+        "/reservations",
+        "/assignments",
+        "/reports",
+        "/admin/users",
+        "/admin/projects",
+        "/payments-transaction",
+    ],
+    Supervisor: [
+        "/",
+        "/dashboard",
+        "/profile",
+        "/clients",
+        "/leads",
+        "/tasks",
+        "/assignments",
+        "/reports",
+        "/payments-transaction",
+    ],
+    SalesAdvisor: [
+        "/",
+        "/profile",
+        "/dashboard",
+        "/assignments",
+        "/quotation",
+        "/reservations",
+    ],
+    Manager: [
+        "/",
+        "/profile",
+        "/dashboard",
+        "/clients",
+        "/leads",
+        "/tasks",
+        "/reports",
+        "/payments-transaction",
+    ]
+};

@@ -272,9 +272,12 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
-                                                        {Object.entries(PaymentMethodLabels).map(([value, label]) => (
+                                                        {Object.entries(PaymentMethodLabels).map(([value, { label, icon: Icon, className }]) => (
                                                             <SelectItem key={value} value={value}>
-                                                                {label}
+                                                                <span className="flex items-center gap-2">
+                                                                    <Icon className={`${className} w-4 h-4`} />
+                                                                    <span className={className}>{label}</span>
+                                                                </span>
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>

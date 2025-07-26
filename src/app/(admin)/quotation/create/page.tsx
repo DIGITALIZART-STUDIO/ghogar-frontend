@@ -3,7 +3,7 @@ import React from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
 import { backend, wrapper } from "@/types/backend";
-import { GetAssignedLeadsSummary } from "../../leads/_actions/LeadActions";
+import { GetAvailableLeadsForQuotation } from "../../leads/_actions/LeadActions";
 import CreateClientQuotationPage from "./_components/CreateClientQuotationPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Link from "next/link";
@@ -39,7 +39,7 @@ export default async function CreateQuotationPage() {
         );
     }
 
-    const [leadsAssignedResult, leadsAssignedError] = await GetAssignedLeadsSummary(userId);
+    const [leadsAssignedResult, leadsAssignedError] = await GetAvailableLeadsForQuotation(userId);
 
     // Manejar el error si ocurre al obtener las cotizaciones
     if (leadsAssignedError) {

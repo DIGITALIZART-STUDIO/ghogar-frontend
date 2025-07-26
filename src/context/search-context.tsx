@@ -12,10 +12,11 @@ interface SearchContextType {
 const SearchContext = React.createContext<SearchContextType | null>(null);
 
 interface Props {
+  roles: Array<string>;
   children: React.ReactNode;
 }
 
-export function SearchProvider({ children }: Props) {
+export function SearchProvider({ children, roles }: Props) {
     const [open, setOpen] = React.useState(false);
 
     React.useEffect(() => {
@@ -32,7 +33,7 @@ export function SearchProvider({ children }: Props) {
     return (
         <SearchContext.Provider value={{ open, setOpen }}>
             {children}
-            <CommandMenu />
+            <CommandMenu roles={roles} />
         </SearchContext.Provider>
     );
 }

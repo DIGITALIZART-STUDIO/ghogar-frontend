@@ -127,8 +127,20 @@ export default function ReservationViewContent({
                         <p className="text-sm text-muted-foreground">
                             Método de Pago
                         </p>
-                        <p className="font-medium">
-                            {data.paymentMethod ? PaymentMethodLabels[data.paymentMethod as keyof typeof PaymentMethodLabels] : "No especificado"}
+                        <p className="font-medium flex items-center gap-2">
+                            {data.paymentMethod && PaymentMethodLabels[data.paymentMethod as keyof typeof PaymentMethodLabels] ? (
+                                <>
+                                    {React.createElement(
+                                        PaymentMethodLabels[data.paymentMethod as keyof typeof PaymentMethodLabels].icon,
+                                        { className: `${PaymentMethodLabels[data.paymentMethod as keyof typeof PaymentMethodLabels].className} w-4 h-4` }
+                                    )}
+                                    <span className={PaymentMethodLabels[data.paymentMethod as keyof typeof PaymentMethodLabels].className}>
+                                        {PaymentMethodLabels[data.paymentMethod as keyof typeof PaymentMethodLabels].label}
+                                    </span>
+                                </>
+                            ) : (
+                                "No especificado"
+                            )}
                         </p>
                     </div>
 
@@ -233,17 +245,6 @@ export default function ReservationViewContent({
                         </div>
                     </div>
 
-                    <div className="flex items-center">
-                        <FileText className="h-5 w-5 mr-2 text-muted-foreground" />
-                        <div>
-                            <p className="text-xs text-muted-foreground">
-                                ID de Reserva
-                            </p>
-                            <p className="font-medium font-mono text-sm">
-                                {data.id}
-                            </p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

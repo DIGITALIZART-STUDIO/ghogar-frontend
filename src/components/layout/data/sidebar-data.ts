@@ -7,9 +7,10 @@ import {
     LineChart,
     ListChecks,
     Users,
+    DollarSign
 } from "lucide-react";
 
-import { type SidebarData } from "../types";
+import { rolePermissions, type SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
     user: {
@@ -64,6 +65,16 @@ export const sidebarData: SidebarData = {
             ],
         },
         {
+            title: "Cobranza",
+            items: [
+                {
+                    title: "Gestión de Pagos",
+                    url: "/payments-transaction",
+                    icon: DollarSign,
+                },
+            ],
+        },
+        {
             title: "Gestión de Actividades",
             items: [
                 {
@@ -100,3 +111,68 @@ export const sidebarData: SidebarData = {
         },
     ],
 };
+
+// Personaliza los títulos y grupos para SalesAdvisor
+function getPersonalizedSidebarForSalesAdvisor(): SidebarData {
+    return {
+        ...sidebarData,
+        navGroups: [
+            {
+                title: "Inicio",
+                items: [
+                    {
+                        title: "Dashboard",
+                        url: "/dashboard",
+                        icon: LayoutDashboard,
+                    },
+                ],
+            },
+            {
+                title: "Leads Asignados",
+                items: [
+                    {
+                        title: "Mis Leads",
+                        url: "/assignments",
+                        icon: ClipboardList,
+                    },
+                ],
+            },
+            {
+                title: "Cotizaciones Propias",
+                items: [
+                    {
+                        title: "Mis Cotizaciones",
+                        url: "/quotation",
+                        icon: FileText,
+                    },
+                ],
+            },
+            {
+                title: "Separaciones Realizadas",
+                items: [
+                    {
+                        title: "Mis Separaciones",
+                        url: "/reservations",
+                        icon: FileCheck,
+                    },
+                ],
+            },
+        ],
+    };
+}
+
+export function getSidebarDataForRole(role: string): SidebarData {
+    if (role === "SalesAdvisor") {
+        return getPersonalizedSidebarForSalesAdvisor();
+    }
+    const allowedUrls = rolePermissions[role] || [];
+    return {
+        ...sidebarData,
+        navGroups: sidebarData.navGroups
+            .map((group) => ({
+                ...group,
+                items: group.items.filter((item) => allowedUrls.includes(item.url as string)),
+            }))
+            .filter((group) => group.items.length > 0)
+    };
+}

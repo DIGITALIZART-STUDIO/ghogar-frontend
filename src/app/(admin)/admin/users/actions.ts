@@ -101,3 +101,28 @@ export async function ReactivateUser(
     }
     return ok(response);
 }
+
+export async function UpdateProfilePassword(
+    dto: components["schemas"]["UpdateProfilePasswordDTO"],
+): Promise<Result<{ message: string }, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.PUT("/api/Users/profile/password", {
+        ...auth,
+        body: dto,
+    })
+    );
+
+    if (error) {
+        console.error("Error updating profile password:", error);
+        return err(error);
+    }
+
+    if (!response || typeof response !== "object" || !("message" in response)) {
+        return err({
+            statusCode: 500,
+            message: "Respuesta inesperada del servidor",
+            error: response,
+        });
+    }
+
+    return ok(response as { message: string });
+}

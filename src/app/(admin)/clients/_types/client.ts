@@ -13,3 +13,20 @@ export enum ClientTypes {
 export type responseRUC = components["schemas"]["ResponseApiRucFull"];
 
 export type responseDNI = components["schemas"]["ResponseApiDni"];
+
+export interface CoOwner {
+  dni: string
+  name: string
+  email: string
+  phone: string
+  address: string
+}
+
+export interface SeparatePropertyData {
+  email: string
+  phone: string
+  address: string
+  spouseDni: string
+  spouseName: string
+  maritalStatus: string
+}

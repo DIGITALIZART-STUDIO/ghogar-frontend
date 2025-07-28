@@ -8,9 +8,9 @@ import { IdCard } from "lucide-react";
 import { Lead } from "@/app/(admin)/leads/_types/lead";
 import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { facetedFilters, getUniqueIdentifiers } from "../../_utils/assignments.filter.utils";
-import { AssignmentDescription } from "./AssignmentDescription";
 import { assignmentsColumns } from "./AssignmentsTableColumns";
 import { AssignmentsTableToolbarActions } from "./AssignmentsTableToolbarActions";
+import { AssignmentDescription } from "./AssignmentDescription";
 
 export function AssignmentsTable({ data }: { data: Array<Lead> }) {
     const router = useRouter();

@@ -186,7 +186,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
 
     {
         id: "asesor",
-        accessorKey: "assignedTo.userName",
+        accessorKey: "assignedTo.name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Asesor" />,
         cell: ({ row }) => <div className="min-w-40 truncate capitalize">{row.getValue("asesor")}</div>,
     },

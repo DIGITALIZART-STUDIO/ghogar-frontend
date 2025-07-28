@@ -17,8 +17,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toastWrapper } from "@/types/toasts";
-import { UpdateClient } from "../../_actions/ClientActions";
+import { toast } from "sonner";
+import { useUpdateClient } from "../../_hooks/useClients";
 import { clientSchema, CreateClientsSchema } from "../../_schemas/createClientsSchema";
 import { Client, ClientTypes } from "../../_types/client";
 import UpdateCustomersForm from "./UpdateClientsForm";
@@ -37,6 +37,8 @@ interface UpdateClientSheetProps extends Omit<React.ComponentPropsWithRef<typeof
 export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
+
+    const updateClient = useUpdateClient();
 
     // Parseamos coOwners si existe y es una cadena
     const parseCoOwners = (coOwnersString?: string) => {
@@ -80,7 +82,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
                 ? JSON.parse(client.separatePropertyData as string)
                 : undefined;
 
-            // Verifica que client exista antes de usarlo
             form.reset({
                 name: client.name ?? "",
                 dni: client.dni ?? "",
@@ -101,7 +102,6 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
 
     const onSubmit = async (input: CreateClientsSchema) => {
         startTransition(async () => {
-            // Preparar los datos según el tipo de cliente
             const clientData = {
                 name: input.name,
                 phoneNumber: input.phoneNumber,
@@ -109,43 +109,51 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
                 address: input.address,
                 type: input.type,
                 country: input.country,
-
-                // Convertir arrays a strings JSON
                 coOwners: JSON.stringify(input.coOwners),
                 separateProperty: input.separateProperty,
                 separatePropertyData: input.separatePropertyData ? JSON.stringify(input.separatePropertyData) : null,
-
-                // Campos específicos según el tipo de cliente
                 dni: input.type === ClientTypes.Natural ? input.dni : null,
                 ruc: input.type === ClientTypes.Juridico ? input.ruc : null,
                 companyName: input.type === ClientTypes.Juridico ? (input.companyName ?? input.name) : null,
             };
 
             if (!client.id) {
-                throw new Error("Client ID is required");
+                toast.error("Client ID is required");
+                return;
             }
-            const [, error] = await toastWrapper(UpdateClient(client.id, clientData), {
+
+            const promise = updateClient.mutateAsync({ id: client.id, client: clientData });
+
+            toast.promise(promise, {
                 loading: "Actualizando cliente...",
                 success: "Cliente actualizado exitosamente",
                 error: (e) => `Error al actualizar cliente: ${e.message}`,
             });
 
-            if (!error) {
+            try {
+                await promise;
                 setIsSuccess(true);
-            } else {
+            } catch (error: unknown) {
                 // Manejar errores específicos para campos
-                if (error.message.includes("DNI")) {
-                    form.setError("dni", {
-                        type: "manual",
-                        message: "Este DNI ya está registrado para otro cliente",
-                    });
-                }
-
-                if (error.message.includes("RUC")) {
-                    form.setError("ruc", {
-                        type: "manual",
-                        message: "Este RUC ya está registrado para otro cliente",
-                    });
+                if (
+                    typeof error === "object" &&
+                    error !== null &&
+                    "message" in error &&
+                    typeof (error as { message?: unknown }).message === "string"
+                ) {
+                    const message = (error as { message: string }).message;
+                    if (message.includes("DNI")) {
+                        form.setError("dni", {
+                            type: "manual",
+                            message: "Este DNI ya está registrado para otro cliente",
+                        });
+                    }
+                    if (message.includes("RUC")) {
+                        form.setError("ruc", {
+                            type: "manual",
+                            message: "Este RUC ya está registrado para otro cliente",
+                        });
+                    }
                 }
             }
         });

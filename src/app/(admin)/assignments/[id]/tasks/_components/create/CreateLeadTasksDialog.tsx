@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
-import { CreateTask } from "../../_actions/LeadTaskActions";
+import { toast } from "sonner";
+import { useCreateTask } from "../../_hooks/useLeadTasks";
 import { CreateLeadTasksSchema, leadTaskSchema } from "../../_schemas/createLeadTasksSchema";
 import CreateLeadTasksForm from "./CreateLeadTasksForm";
 
@@ -45,7 +45,6 @@ interface CreateLeadTasksDialogProps {
 
 export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: CreateLeadTasksDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 810px)");
-    const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
     const form = useForm<CreateLeadTasksSchema>({
@@ -57,27 +56,28 @@ export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: C
         },
     });
 
-    const onSubmit = async(input: CreateLeadTasksSchema) => {
-        startTransition(async() => {
-            // Preparar los datos para el formato esperado por el backend
-            const leadData = {
-                type: input.type,
-                description: input.description,
-                scheduledDate: input.scheduledDate,
-                assignedToId: assignedToId,
-                leadId: leadId,
-            };
+    // Hook para crear tarea
+    const createTask = useCreateTask();
 
-            // Solo pasar revalidateId si está definido
-            const [, error] = await toastWrapper(CreateTask(leadData), {
-                loading: "Creando tarea...",
-                success: "Tarea creada exitosamente",
-                error: (e) => `Error al crear lead: ${e.message}`,
-            });
+    const onSubmit = async (input: CreateLeadTasksSchema) => {
+        const payload = {
+            type: input.type,
+            description: input.description,
+            scheduledDate: input.scheduledDate,
+            assignedToId,
+            leadId,
+        };
 
-            if (!error) {
-                setIsSuccess(true);
-            }
+        const promise = createTask.mutateAsync(payload);
+
+        toast.promise(promise, {
+            loading: "Creando tarea...",
+            success: "Tarea creada exitosamente",
+            error: (e) => `Error al crear tarea: ${e.message ?? e}`,
+        });
+
+        promise.then(() => {
+            setIsSuccess(true);
         });
     };
 
@@ -116,8 +116,8 @@ export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: C
                                                 Cancelar
                                             </Button>
                                         </DialogClose>
-                                        <Button disabled={isPending} className="w-full">
-                                            {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
+                                        <Button disabled={createTask.isPending} className="w-full">
+                                            {createTask.isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
                                             Registrar
                                         </Button>
                                     </div>
@@ -141,15 +141,13 @@ export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: C
                         {dataForm.description}
                     </DrawerDescription>
                 </DrawerHeader>
-
-                {/* The key fix is in this ScrollArea configuration */}
                 <div className="flex-1 overflow-hidden">
                     <ScrollArea className="h-[40vh] px-0">
                         <div className="px-4">
                             <CreateLeadTasksForm form={form} onSubmit={onSubmit}>
                                 <DrawerFooter className="px-0 pt-2 flex flex-col-reverse">
-                                    <Button disabled={isPending} className="w-full">
-                                        {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
+                                    <Button disabled={createTask.isPending} className="w-full">
+                                        {createTask.isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
                                         Registrar
                                     </Button>
                                     <DrawerClose asChild>

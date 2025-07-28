@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -17,8 +17,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toastWrapper } from "@/types/toasts";
-import { UpdateTask } from "../../_actions/LeadTaskActions";
+import { toast } from "sonner";
+import { useUpdateTask } from "../../_hooks/useLeadTasks";
 import { CreateLeadTasksSchema, leadTaskSchema } from "../../_schemas/createLeadTasksSchema";
 import { LeadTaskDetail, TaskTypes } from "../../_types/leadTask";
 import UpdateLeadsForm from "./UpdateLeadTasksForm";
@@ -35,7 +35,6 @@ interface UpdateLeadTasksSheetProps extends Omit<React.ComponentPropsWithRef<typ
 }
 
 export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTasksSheetProps) {
-    const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
     const form = useForm<CreateLeadTasksSchema>({
@@ -60,30 +59,32 @@ export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTas
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, task]);
 
-    const onSubmit = async(input: CreateLeadTasksSchema) => {
-        startTransition(async() => {
-            // Preparar los datos según si la tarea está completada o no
-            const clientData = {
-                type: input.type,
-                description: input.description,
-                scheduledDate: input.scheduledDate,
-                // Solo incluir completedDate si isCompleted es true
-                ...(input.completedDate ? { completedDate: input.completedDate } : {}),
-            };
+    // Hook para actualizar tarea
+    const updateTask = useUpdateTask();
 
-            if (!task?.id) {
-                throw new Error("Lead ID is required");
-            }
+    const onSubmit = async (input: CreateLeadTasksSchema) => {
+        if (!task?.id) {
+            toast.error("ID de tarea no encontrado");
+            return;
+        }
 
-            const [, error] = await toastWrapper(UpdateTask(task.id, clientData), {
-                loading: "Actualizando tarea...",
-                success: "Tarea actualizada exitosamente",
-                error: (e) => `Error al actualizar tarea: ${e.message}`,
-            });
+        const payload = {
+            type: input.type,
+            description: input.description,
+            scheduledDate: input.scheduledDate,
+            ...(input.completedDate ? { completedDate: input.completedDate } : {}),
+        };
 
-            if (!error) {
-                setIsSuccess(true);
-            }
+        const promise = updateTask.mutateAsync({ id: task.id, task: payload });
+
+        toast.promise(promise, {
+            loading: "Actualizando tarea...",
+            success: "Tarea actualizada exitosamente",
+            error: (e) => `Error al actualizar tarea: ${e.message ?? e}`,
+        });
+
+        promise.then(() => {
+            setIsSuccess(true);
         });
     };
 
@@ -114,8 +115,8 @@ export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTas
                     <UpdateLeadsForm form={form} onSubmit={onSubmit}>
                         <SheetFooter className="gap-2 pt-2 sm:space-x-0">
                             <div className="flex flex-row-reverse gap-2">
-                                <Button type="submit" disabled={isPending}>
-                                    {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                                <Button type="submit" disabled={updateTask.isPending}>
+                                    {updateTask.isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
                                     Actualizar
                                 </Button>
                                 <SheetClose asChild>

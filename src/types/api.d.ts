@@ -576,6 +576,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Clients/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfClient"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfClient"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfClient"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Clients/{id}": {
         parameters: {
             query?: never;
@@ -3485,6 +3525,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Reservations/canceled/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationWithPaymentsDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationWithPaymentsDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationWithPaymentsDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Reservations/{id}": {
         parameters: {
             query?: never;
@@ -4697,6 +4777,26 @@ export interface components {
             totalCount: number;
             /** Format: int32 */
             totalPages: number;
+        };
+        PaginatedResponseV2OfClient: {
+            data?: Array<components["schemas"]["Client"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
+        PaginatedResponseV2OfReservationWithPaymentsDto: {
+            data?: Array<components["schemas"]["ReservationWithPaymentsDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
+        PaginationMetadata: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+            hasPrevious?: boolean;
         };
         PaymentDto: {
             /** Format: uuid */

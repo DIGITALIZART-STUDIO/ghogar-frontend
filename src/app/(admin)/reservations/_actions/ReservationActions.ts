@@ -172,5 +172,9 @@ export async function DownloadReservationPDF(reservationId: string): Promise<Res
 }
 
 export async function DownloadReservationContractPDF(reservationId: string): Promise<Result<Blob, FetchError>> {
-    return DownloadFile(`/api/Reservations/${reservationId}/contract`, "get", null);
+    return DownloadFile(`/api/Reservations/${reservationId}/contract/pdf`, "get", null);
+}
+
+export async function DownloadReservationContractDOCX(reservationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Reservations/${reservationId}/contract/docx`, "get", null);
 }

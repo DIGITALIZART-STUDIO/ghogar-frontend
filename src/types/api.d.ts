@@ -3730,7 +3730,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Reservations/{id}/contract": {
+    "/api/Reservations/{id}/contract/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/{id}/contract/docx": {
         parameters: {
             query?: never;
             header?: never;
@@ -4599,7 +4634,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4617,7 +4652,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4635,7 +4670,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4653,7 +4688,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;

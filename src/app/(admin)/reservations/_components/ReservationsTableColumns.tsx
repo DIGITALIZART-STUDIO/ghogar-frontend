@@ -23,7 +23,7 @@ import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservat
 import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
-import { DownloadReservationPDF, DownloadReservationContractPDF } from "../_actions/ReservationActions";
+import { DownloadReservationPDF, DownloadReservationContractPDF, DownloadReservationContractDOCX } from "../_actions/ReservationActions";
 import { useRouter } from "next/navigation";
 
 /**
@@ -230,7 +230,9 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             onOpenChange={setOpenContractDocumentDialog}
                             title="Contrato"
                             pdfAction={DownloadReservationContractPDF}
+                            wordAction={DownloadReservationContractDOCX}
                             pdfFileName={`contrato-${id}.pdf`}
+                            wordFileName={`contrato-${id}.docx`}
                         />
                     )}
                     {openStatusChangeDialog && (

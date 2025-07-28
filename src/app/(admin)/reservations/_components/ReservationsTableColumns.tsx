@@ -23,7 +23,7 @@ import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservat
 import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
-import { DownloadReservationPDF, DownloadReservationContractPDF, DownloadReservationContractDOCX } from "../_actions/ReservationActions";
+import { DownloadReservationPDF, DownloadReservationContractPDF, DownloadReservationContractDOCX, DownloadReservationSchedulePDF } from "../_actions/ReservationActions";
 import { useRouter } from "next/navigation";
 
 /**
@@ -201,6 +201,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openReservationDocumentDialog, setOpenReservationDocumentDialog] = useState(false);
             const [openContractDocumentDialog, setOpenContractDocumentDialog] = useState(false);
+            const [openScheduleDocumentDialog, setOpenScheduleDocumentDialog] = useState(false);
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
             const navigate = useRouter();
 
@@ -233,6 +234,16 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             wordAction={DownloadReservationContractDOCX}
                             pdfFileName={`contrato-${id}.pdf`}
                             wordFileName={`contrato-${id}.docx`}
+                        />
+                    )}
+                    {openScheduleDocumentDialog && (
+                        <DocumentDownloadDialog
+                            documentId={id!}
+                            isOpen={openScheduleDocumentDialog}
+                            onOpenChange={setOpenScheduleDocumentDialog}
+                            title="Cronograma de Pagos"
+                            pdfAction={DownloadReservationSchedulePDF}
+                            pdfFileName={`cronograma-${id}.pdf`}
                         />
                     )}
                     {openStatusChangeDialog && (
@@ -282,6 +293,12 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setOpenContractDocumentDialog(true)}>
                                 Contrato
+                                <DropdownMenuShortcut>
+                                    <FileText className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenScheduleDocumentDialog(true)}>
+                                Cronograma de Pagos PDF
                                 <DropdownMenuShortcut>
                                     <FileText className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>

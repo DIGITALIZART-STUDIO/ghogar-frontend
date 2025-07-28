@@ -1461,6 +1461,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Leads/{id}": {
         parameters: {
             query?: never;
@@ -1696,6 +1736,48 @@ export interface paths {
                         "text/plain": Array<components["schemas"]["Lead3"]>;
                         "application/json": Array<components["schemas"]["Lead3"]>;
                         "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/assignedto/{userId}/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLead"];
                     };
                 };
             };
@@ -4184,6 +4266,20 @@ export interface components {
             isActive?: boolean;
             lots?: Array<components["schemas"]["Lot4"]>;
         };
+        Block5: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project10"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot5"]>;
+        };
         BlockCreateDTO: {
             name: string;
             /** Format: uuid */
@@ -4468,6 +4564,39 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        Lead5: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"]["Client2"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"]["User"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project9"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         /** @enum {unknown} */
         LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
         LeadCreateDto: {
@@ -4644,7 +4773,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4662,7 +4791,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4680,7 +4809,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4698,7 +4827,25 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block5"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Lot5: {
+            /** Format: uuid */
+            id?: string;
+            lotNumber: string;
+            /** Format: double */
+            area: number;
+            /** Format: double */
+            price: number;
+            status: components["schemas"]["LotStatus"];
+            /** Format: uuid */
+            blockId: string;
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4780,6 +4927,10 @@ export interface components {
         };
         PaginatedResponseV2OfClient: {
             data?: Array<components["schemas"]["Client"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
+        PaginatedResponseV2OfLead: {
+            data?: Array<components["schemas"]["Lead5"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
         PaginatedResponseV2OfReservationWithPaymentsDto: {
@@ -4904,6 +5055,25 @@ export interface components {
             modifiedAt?: string;
             blocks?: Array<components["schemas"]["Block"]>;
         } | null;
+        Project10: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
         Project2: {
             /** Format: uuid */
             id?: string;
@@ -5037,6 +5207,25 @@ export interface components {
             modifiedAt?: string;
             blocks?: components["schemas"];
         };
+        Project9: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block5"]>;
+        } | null;
         ProjectCreateDTO: {
             name: string;
             location: string;

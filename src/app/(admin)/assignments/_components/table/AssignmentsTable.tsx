@@ -11,8 +11,22 @@ import { facetedFilters, getUniqueIdentifiers } from "../../_utils/assignments.f
 import { assignmentsColumns } from "./AssignmentsTableColumns";
 import { AssignmentsTableToolbarActions } from "./AssignmentsTableToolbarActions";
 import { AssignmentDescription } from "./AssignmentDescription";
+import {
+    CustomPaginationTableParams,
+    ServerPaginationChangeEventCallback,
+} from "@/types/tanstack-table/CustomPagination";
 
-export function AssignmentsTable({ data }: { data: Array<Lead> }) {
+interface AssignmentsTableProps {
+    data: Array<Lead>;
+    pagination: CustomPaginationTableParams;
+    onPaginationChange: ServerPaginationChangeEventCallback;
+}
+
+export function AssignmentsTable({
+    data,
+    pagination,
+    onPaginationChange,
+}: AssignmentsTableProps) {
     const router = useRouter();
 
     const handleTasksInterface = useCallback(
@@ -55,6 +69,15 @@ export function AssignmentsTable({ data }: { data: Array<Lead> }) {
             filterPlaceholder="Buscar mis leads..."
             facetedFilters={allFilters}
             renderExpandedRow={(row) => <AssignmentDescription row={row} />}
+            serverPagination={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
+            }}
         />
     );
 }

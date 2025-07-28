@@ -32,7 +32,7 @@ export const facetedFilters = [
     },
     {
         // Filtro para el método de pago
-        column: "método_pago",
+        column: "método pago",
         title: "Método de Pago",
         options: Object.entries(PaymentMethodLabels).map(([paymentMethod, config]) => ({
             label: config.label,

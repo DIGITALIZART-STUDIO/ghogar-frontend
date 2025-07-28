@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 
 // Obtener todos los leads
 export async function GetAllLeads(): Promise<Result<Array<components["schemas"]["Lead2"]>, FetchError>> {
@@ -17,6 +18,38 @@ export async function GetAllLeads(): Promise<Result<Array<components["schemas"][
         return err(error);
     }
     return ok(response);
+}
+
+// Obtener leads paginados
+export async function GetPaginatedLeads(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["Lead2"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/paginated", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated leads:", error);
+        return err(error);
+    }
+
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }
 
 // Obtener leads inactivos
@@ -218,6 +251,37 @@ export async function GetLeadsByAssignedTo(userId: string): Promise<Result<Array
         return err(error);
     }
     return ok(response);
+}
+
+// Obtener leads asignados a un usuario, paginados
+export async function GetPaginatedLeadsByAssignedTo(
+    userId: string,
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["Lead2"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assignedto/{userId}/paginated", {
+        ...auth,
+        params: {
+            path: { userId },
+            query: { page, pageSize },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated leads by assigned user:", error);
+        return err(error);
+    }
+
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }
 
 // Obtener leads por estado

@@ -16,10 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
-import { toastWrapper } from "@/types/toasts";
 import { getStatusDetails, reasonOptions, statusOptions } from "../../../leads/_utils/leads.filter.utils";
 import { LeadCompletionReason, LeadStatus } from "@/app/(admin)/leads/_types/lead";
-import { UpdateLeadStatus } from "@/app/(admin)/leads/_actions/LeadActions";
+import { useUpdateLeadStatus } from "@/app/(admin)/leads/_hooks/useLeads";
+import { toast } from "sonner";
 
 interface LeadStatusToggleDialogProps {
   isOpen: boolean
@@ -45,28 +45,31 @@ export function LeadStatusToggleDialog({
     const requiresReason = selectedStatus === LeadStatus.Completed || selectedStatus === LeadStatus.Canceled;
     const canSubmit = selectedStatus && (!requiresReason || selectedReason);
 
+    // Usa el hook personalizado
+    const updateLeadStatus = useUpdateLeadStatus();
+
     const handleConfirm = () => {
         if (!canSubmit) {
             return;
         }
 
         startTransition(async () => {
-            const [, error] = await toastWrapper(
-                UpdateLeadStatus(
-                    leadId,
-                    {
-                        status: selectedStatus as LeadStatus,
-                        completionReason: requiresReason ? (selectedReason as LeadCompletionReason) : undefined,
-                    }
-                ),
-                {
-                    loading: "Cambiando estado del lead...",
-                    success: "Lead actualizado exitosamente",
-                    error: (e) => `Error al cambiar estado: ${e.message}`,
+            const promise = updateLeadStatus.mutateAsync({
+                id: leadId,
+                dto: {
+                    status: selectedStatus as LeadStatus,
+                    completionReason: requiresReason ? (selectedReason as LeadCompletionReason) : undefined,
                 },
-            );
+            });
 
-            if (!error) {
+            toast.promise(promise, {
+                loading: "Cambiando estado del lead...",
+                success: "Lead actualizado exitosamente",
+                error: (e) => `Error al cambiar estado: ${e.message ?? e}`,
+            });
+
+            const result = await promise;
+            if (result) {
                 setShowSuccess(true);
                 setTimeout(() => {
                     setShowSuccess(false);

@@ -367,3 +367,4 @@ export async function CheckAndUpdateExpiredLeads(): Promise<Result<{ expiredLead
     // Asegúrate de que response tenga la forma { expiredLeadsCount: number }
     return ok(response as unknown as { expiredLeadsCount: number });
 }
+

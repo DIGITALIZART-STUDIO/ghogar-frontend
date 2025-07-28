@@ -5,6 +5,7 @@ import {
     ActivateClients,
     CreateClient,
     UpdateClient,
+    GetClientsSummary,
 } from "../_actions/ClientActions";
 import type { components } from "@/types/api";
 
@@ -73,7 +74,6 @@ export function useCreateClient() {
     });
 }
 
-// Hook para actualizar un cliente
 export function useUpdateClient() {
     const queryClient = useQueryClient();
     return useMutation({
@@ -86,6 +86,22 @@ export function useUpdateClient() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
+            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+        },
+    });
+}
+
+// Hook para obtener resumen de clientes
+export function useClientsSummary() {
+    return useQuery({
+        queryKey: ["clientsSummary"],
+        queryFn: async () => {
+            const [data, error] = await GetClientsSummary();
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data ?? [];
         },
     });
 }

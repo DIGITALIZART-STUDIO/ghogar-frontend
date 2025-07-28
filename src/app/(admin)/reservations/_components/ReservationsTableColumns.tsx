@@ -21,6 +21,7 @@ import {
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
 import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
+import { ReservationContractDownloadDialog } from "./ReservationContractDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
 import { useRouter } from "next/navigation";
@@ -199,6 +200,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
             const { id, status } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+            const [openContractDownloadDialog, setOpenContractDownloadDialog] = useState(false);
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
             const navigate = useRouter();
 
@@ -216,6 +218,13 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             reservationId={id!}
                             isOpen={openDownloadDialog}
                             onOpenChange={setOpenDownloadDialog}
+                        />
+                    )}
+                    {openContractDownloadDialog && (
+                        <ReservationContractDownloadDialog
+                            reservationId={id!}
+                            isOpen={openContractDownloadDialog}
+                            onOpenChange={setOpenContractDownloadDialog}
                         />
                     )}
                     {openStatusChangeDialog && (
@@ -263,11 +272,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                     <Download className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => {
-                                    // FIXME:
-                                }}
-                            >
+                            <DropdownMenuItem onSelect={() => setOpenContractDownloadDialog(true)}>
                                 Contrato
                                 <DropdownMenuShortcut>
                                     <FileText className="size-4" aria-hidden="true" />

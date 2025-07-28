@@ -20,10 +20,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
-import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
-import { ReservationContractDownloadDialog } from "./ReservationContractDownloadDialog";
+import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
+import { DownloadReservationPDF, DownloadReservationContractPDF } from "../_actions/ReservationActions";
 import { useRouter } from "next/navigation";
 
 /**
@@ -199,8 +199,8 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
         cell: function Cell({ row }) {
             const { id, status } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
-            const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
-            const [openContractDownloadDialog, setOpenContractDownloadDialog] = useState(false);
+            const [openReservationDocumentDialog, setOpenReservationDocumentDialog] = useState(false);
+            const [openContractDocumentDialog, setOpenContractDocumentDialog] = useState(false);
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
             const navigate = useRouter();
 
@@ -213,18 +213,24 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             reservation={row.original}
                         />
                     )}
-                    {openDownloadDialog && (
-                        <ReservationDownloadDialog
-                            reservationId={id!}
-                            isOpen={openDownloadDialog}
-                            onOpenChange={setOpenDownloadDialog}
+                    {openReservationDocumentDialog && (
+                        <DocumentDownloadDialog
+                            documentId={id!}
+                            isOpen={openReservationDocumentDialog}
+                            onOpenChange={setOpenReservationDocumentDialog}
+                            title="Documento de Separación"
+                            pdfAction={DownloadReservationPDF}
+                            pdfFileName={`separacion-${id}.pdf`}
                         />
                     )}
-                    {openContractDownloadDialog && (
-                        <ReservationContractDownloadDialog
-                            reservationId={id!}
-                            isOpen={openContractDownloadDialog}
-                            onOpenChange={setOpenContractDownloadDialog}
+                    {openContractDocumentDialog && (
+                        <DocumentDownloadDialog
+                            documentId={id!}
+                            isOpen={openContractDocumentDialog}
+                            onOpenChange={setOpenContractDocumentDialog}
+                            title="Contrato"
+                            pdfAction={DownloadReservationContractPDF}
+                            pdfFileName={`contrato-${id}.pdf`}
                         />
                     )}
                     {openStatusChangeDialog && (
@@ -266,13 +272,13 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                     <Pencil className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setOpenDownloadDialog(true)}>
+                            <DropdownMenuItem onSelect={() => setOpenReservationDocumentDialog(true)}>
                                 Documento de Separación
                                 <DropdownMenuShortcut>
                                     <Download className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setOpenContractDownloadDialog(true)}>
+                            <DropdownMenuItem onSelect={() => setOpenContractDocumentDialog(true)}>
                                 Contrato
                                 <DropdownMenuShortcut>
                                     <FileText className="size-4" aria-hidden="true" />

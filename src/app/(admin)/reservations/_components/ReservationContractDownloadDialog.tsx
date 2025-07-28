@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DownloadReservationContractPDF } from "../_actions/ReservationActions";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -17,36 +17,49 @@ export function ReservationContractDownloadDialog({
 }) {
     const [, setError] = useState("");
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const isLoadingRef = useRef(false);
 
     // Download the PDF from the backend on open
     useEffect(
         () => {
             if (!isOpen) {
+                setPdfUrl(null);
+                isLoadingRef.current = false;
                 return;
             }
 
+            // Prevent duplicate requests
+            if (isLoadingRef.current) {
+                return;
+            }
+
+            isLoadingRef.current = true;
+
             (async() => {
-                const [pdfBlob, error] = await DownloadReservationContractPDF(reservationId);
-                if (!!error) {
-                    console.error(error);
-                    setError(`Error cargando PDF: ${error.message}`);
-                    return;
-                }
+                try {
+                    const [pdfBlob, error] = await DownloadReservationContractPDF(reservationId);
+                    if (!!error) {
+                        console.error(error);
+                        setError(`Error cargando PDF: ${error.message}`);
+                        return;
+                    }
 
-                const dataUrl = URL.createObjectURL(pdfBlob);
-                setPdfUrl(dataUrl);
+                    const dataUrl = URL.createObjectURL(pdfBlob);
+                    setPdfUrl(dataUrl);
+                } finally {
+                    isLoadingRef.current = false;
+                }
             })();
-
-            return () => {
-                if (pdfUrl) {
-                    URL.revokeObjectURL(pdfUrl);
-                }
-            };
-
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isOpen, reservationId],
     );
+
+    // Cleanup URL when component unmounts or URL changes
+    useEffect(() => () => {
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+        }
+    }, [pdfUrl]);
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>

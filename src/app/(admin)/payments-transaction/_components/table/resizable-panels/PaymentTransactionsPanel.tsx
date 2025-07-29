@@ -1,6 +1,6 @@
 "use client";
 
-import { Receipt, Calendar, Hash, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Receipt, Calendar, Hash, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, MoreHorizontal, Pencil, Trash, FileDown } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +15,8 @@ import { DeletePaymentTransactionDialog } from "../../delete/DeletePaymentTransa
 import { UpdatePaymentTransactionSheet } from "../../update/UpdatePaymentsTransactionSheet";
 
 interface PaymentTransactionsPanelProps {
-  transactions: Array<PaymentTransaction>
-  currency: string
+	transactions: Array<PaymentTransaction>
+	currency: string
 }
 
 export function PaymentTransactionsPanel({ transactions, currency }: PaymentTransactionsPanelProps) {
@@ -212,6 +212,17 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
                                                             Editar
                                                             <DropdownMenuShortcut>
                                                                 <Pencil className="size-4" aria-hidden="true" />
+                                                            </DropdownMenuShortcut>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                // FIXME: implementar
+                                                                alert("no implementado: recibo digital");
+                                                            }}
+                                                        >
+                                                            Descargar Recibo Digital
+                                                            <DropdownMenuShortcut>
+                                                                <FileDown className="size-4" aria-hidden="true" />
                                                             </DropdownMenuShortcut>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem

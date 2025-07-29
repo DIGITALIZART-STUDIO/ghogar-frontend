@@ -3,17 +3,17 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
-import { DownloadReservationPDF } from "../_actions/ReservationActions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DownloadContractPDF } from "./actions";
 
-export function ReservationDownloadDialog({
+export function ContractDownloadDialog({
     isOpen,
     onOpenChange,
-    reservationId,
+    ContractId,
 }: {
-    isOpen: boolean,
-    onOpenChange: (v: boolean) => void,
-    reservationId: string,
+	isOpen: boolean,
+	onOpenChange: (v: boolean) => void,
+	ContractId: string,
 }) {
     const [, setError] = useState("");
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -25,8 +25,8 @@ export function ReservationDownloadDialog({
                 return;
             }
 
-            (async() => {
-                const [pdfBlob, error] = await DownloadReservationPDF(reservationId);
+            (async () => {
+                const [pdfBlob, error] = await DownloadContractPDF(ContractId);
                 if (!!error) {
                     console.error(error);
                     setError(`Error cargando PDF: ${error.message}`);
@@ -45,7 +45,7 @@ export function ReservationDownloadDialog({
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isOpen, reservationId],
+        [isOpen, ContractId],
     );
 
     return (
@@ -54,7 +54,7 @@ export function ReservationDownloadDialog({
                 <DialogHeader className="px-4">
                     <DialogTitle className="flex items-center font-montserrat">
                         <Download className="h-5 w-5 mr-2" />
-                        Descargar Documento de Separación
+                        Descargar Documento
                     </DialogTitle>
                 </DialogHeader>
                 <div className="px-6">
@@ -72,3 +72,4 @@ export function ReservationDownloadDialog({
         </Dialog>
     );
 }
+

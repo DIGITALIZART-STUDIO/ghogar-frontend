@@ -3,6 +3,7 @@ import ErrorGeneral from "@/components/errors/general-error";
 import { GetPaymentScheduleByReservation } from "../../_actions/PaymentActions";
 import { GetReservationById } from "../../_actions/ReservationActions";
 import { PaymentScheduleTable } from "./_components/PaymentScheduleTable";
+import { PaymentScheduleActions } from "./_components/PaymentScheduleActions";
 
 interface PaymentSchedulePageProps {
     params: Promise <{
@@ -87,6 +88,9 @@ export default async function PaymentSchedulePage({ params }: PaymentSchedulePag
                     </div>
                 </div>
             </div>
+
+            {/* Acciones del cronograma */}
+            <PaymentScheduleActions reservationId={reservationId} />
 
             {/* Tabla de cronograma */}
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1">

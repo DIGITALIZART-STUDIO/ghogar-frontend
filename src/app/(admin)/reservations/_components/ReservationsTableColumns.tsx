@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar } from "lucide-react";
+import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar, FileText } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -20,9 +20,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
-import { ReservationDownloadDialog } from "./ReservationDownloadDialog";
+import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
+import { DownloadReservationPDF, DownloadReservationContractPDF, DownloadReservationContractDOCX, DownloadReservationSchedulePDF } from "../_actions/ReservationActions";
 import { useRouter } from "next/navigation";
 
 /**
@@ -198,7 +199,9 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
         cell: function Cell({ row }) {
             const { id, status } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
-            const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+            const [openReservationDocumentDialog, setOpenReservationDocumentDialog] = useState(false);
+            const [openContractDocumentDialog, setOpenContractDocumentDialog] = useState(false);
+            const [openScheduleDocumentDialog, setOpenScheduleDocumentDialog] = useState(false);
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
             const navigate = useRouter();
 
@@ -211,11 +214,36 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             reservation={row.original}
                         />
                     )}
-                    {openDownloadDialog && (
-                        <ReservationDownloadDialog
-                            reservationId={id!}
-                            isOpen={openDownloadDialog}
-                            onOpenChange={setOpenDownloadDialog}
+                    {openReservationDocumentDialog && (
+                        <DocumentDownloadDialog
+                            documentId={id!}
+                            isOpen={openReservationDocumentDialog}
+                            onOpenChange={setOpenReservationDocumentDialog}
+                            title="Documento de Separación"
+                            pdfAction={DownloadReservationPDF}
+                            pdfFileName={`separacion-${id}.pdf`}
+                        />
+                    )}
+                    {openContractDocumentDialog && (
+                        <DocumentDownloadDialog
+                            documentId={id!}
+                            isOpen={openContractDocumentDialog}
+                            onOpenChange={setOpenContractDocumentDialog}
+                            title="Contrato"
+                            pdfAction={DownloadReservationContractPDF}
+                            wordAction={DownloadReservationContractDOCX}
+                            pdfFileName={`contrato-${id}.pdf`}
+                            wordFileName={`contrato-${id}.docx`}
+                        />
+                    )}
+                    {openScheduleDocumentDialog && (
+                        <DocumentDownloadDialog
+                            documentId={id!}
+                            isOpen={openScheduleDocumentDialog}
+                            onOpenChange={setOpenScheduleDocumentDialog}
+                            title="Cronograma de Pagos"
+                            pdfAction={DownloadReservationSchedulePDF}
+                            pdfFileName={`cronograma-${id}.pdf`}
                         />
                     )}
                     {openStatusChangeDialog && (
@@ -257,10 +285,22 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                     <Pencil className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setOpenDownloadDialog(true)}>
-                                Descargar Documento
+                            <DropdownMenuItem onSelect={() => setOpenReservationDocumentDialog(true)}>
+                                Documento de Separación
                                 <DropdownMenuShortcut>
                                     <Download className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenContractDocumentDialog(true)}>
+                                Contrato
+                                <DropdownMenuShortcut>
+                                    <FileText className="size-4" aria-hidden="true" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setOpenScheduleDocumentDialog(true)}>
+                                Cronograma de Pagos PDF
+                                <DropdownMenuShortcut>
+                                    <FileText className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => {

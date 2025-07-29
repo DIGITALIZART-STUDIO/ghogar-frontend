@@ -1,7 +1,7 @@
 "use server";
 
-import { backend, FetchError, wrapper } from "@/types/backend";
-import {Result } from "@/utils/result";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
+import { Result } from "@/utils/result";
 import { PaymentQuotaSimple, PaymentTransaction, PaymentTransactionCreate, PaymentTransactionUpdate } from "../_types/paymentTransaction";
 
 // Obtener todas las transacciones de pago
@@ -78,4 +78,16 @@ export async function deletePaymentTransaction(id: string): Promise<Result<void,
         params: { path: { id } },
     })
     );
+}
+
+export async function DownloadSchedulePDF(reservationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Reservations/${reservationId}/schedule/pdf`, "get", null);
+}
+
+export async function DownloadProcessedPaymentsPDF(reservationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Reservations/${reservationId}/processed-payments/pdf`, "get", null);
+}
+
+export async function DownloadReceiptPDF(reservationId: string): Promise<Result<Blob, FetchError>> {
+    return DownloadFile(`/api/Reservations/${reservationId}/receipt/pdf`, "get", null);
 }

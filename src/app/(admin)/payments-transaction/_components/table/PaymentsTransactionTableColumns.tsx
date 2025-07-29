@@ -13,6 +13,8 @@ import { PaymentMethodLabels } from "@/app/(admin)/reservations/_utils/reservati
 import { useState } from "react";
 import { CreatePaymentTransactionDialog } from "../create/CreatePaymentsTransactionDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
+import { DownloadSchedulePDF, DownloadProcessedPaymentsPDF } from "../../_actions/PaymentTransactionActions";
 
 const getCurrencyIcon = (currency: string) => (currency === "DOLARES" ? "$" : "S/");
 
@@ -165,12 +167,34 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
         id: "actions",
         cell: function Cell({ row }) {
             const [createDialogOpen, setCreateDialogOpen] = useState(false);
+            const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+            const [processedPaymentsDialogOpen, setProcessedPaymentsDialogOpen] = useState(false);
 
             return (
                 <div>
                     <div>
                         {createDialogOpen && (
                             <CreatePaymentTransactionDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} reservation={row.original} />
+                        )}
+                        {scheduleDialogOpen && (
+                            <DocumentDownloadDialog
+                                documentId={row.original.id!}
+                                isOpen={scheduleDialogOpen}
+                                onOpenChange={setScheduleDialogOpen}
+                                title="Cronograma de Pagos"
+                                pdfAction={DownloadSchedulePDF}
+                                pdfFileName={`cronograma-${row.original.id}.pdf`}
+                            />
+                        )}
+                        {processedPaymentsDialogOpen && (
+                            <DocumentDownloadDialog
+                                documentId={row.original.id!}
+                                isOpen={processedPaymentsDialogOpen}
+                                onOpenChange={setProcessedPaymentsDialogOpen}
+                                title="Pagos Realizados"
+                                pdfAction={DownloadProcessedPaymentsPDF}
+                                pdfFileName={`pagos-realizados-${row.original.id}.pdf`}
+                            />
                         )}
                     </div>
 
@@ -188,21 +212,13 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
                                     <Plus className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => {
-                                    // FIXME:
-                                }}
-                            >
+                            <DropdownMenuItem onSelect={() => setScheduleDialogOpen(true)}>
                                 Cronograma de Pagos
                                 <DropdownMenuShortcut>
                                     <List className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => {
-                                    // FIXME:
-                                }}
-                            >
+                            <DropdownMenuItem onSelect={() => setProcessedPaymentsDialogOpen(true)}>
                                 Pagos Realizados
                                 <DropdownMenuShortcut>
                                     <ListChecks className="size-4" aria-hidden="true" />

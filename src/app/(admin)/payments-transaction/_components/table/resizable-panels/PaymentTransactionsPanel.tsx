@@ -13,6 +13,8 @@ import type { PaymentMethod } from "@/app/(admin)/reservations/_types/reservatio
 import { useState } from "react";
 import { DeletePaymentTransactionDialog } from "../../delete/DeletePaymentTransactionDialog";
 import { UpdatePaymentTransactionSheet } from "../../update/UpdatePaymentsTransactionSheet";
+import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
+import { DownloadReceiptPDF } from "../../../_actions/PaymentTransactionActions";
 
 interface PaymentTransactionsPanelProps {
 	transactions: Array<PaymentTransaction>
@@ -26,6 +28,7 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
     const [selectedReservationId, setSelectedReservationId] = useState<string | null>(null);
     const [updateSheetOpen, setUpdateSheetOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<PaymentTransaction | null>(null);
+    const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
 
     const totalTransacted = transactions.reduce((sum, transaction) => sum + (transaction.amountPaid ?? 0), 0);
     const totalPaymentsCovered = transactions.reduce((sum, transaction) => sum + (transaction.payments?.length ?? 0), 0);
@@ -216,8 +219,8 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onClick={() => {
-                                                                // FIXME: implementar
-                                                                alert("no implementado: recibo digital");
+                                                                setSelectedReservationId(transaction.reservationId ?? "");
+                                                                setReceiptDialogOpen(true);
                                                             }}
                                                         >
                                                             Descargar Recibo Digital
@@ -402,6 +405,17 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
                         setSelectedTransactionId(null);
                         setSelectedReservationId(null);
                     }}
+                />
+            )}
+            {/* Diálogo de recibo */}
+            {receiptDialogOpen && selectedReservationId && (
+                <DocumentDownloadDialog
+                    documentId={selectedReservationId}
+                    isOpen={receiptDialogOpen}
+                    onOpenChange={setReceiptDialogOpen}
+                    title="Recibo Digital"
+                    pdfAction={DownloadReceiptPDF}
+                    pdfFileName={`recibo-${selectedReservationId}.pdf`}
                 />
             )}
         </div>

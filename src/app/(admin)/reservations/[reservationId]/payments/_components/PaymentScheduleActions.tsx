@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { DocumentDownloadDialog } from "../../../_components/DocumentDownloadDialog";
+import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
 import { DownloadReservationSchedulePDF } from "../../../_actions/ReservationActions";
 
 interface PaymentScheduleActionsProps {

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ReservationDto, ReservationStatus } from "../_types/reservation";
 import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
-import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
+import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
 import { DownloadReservationPDF, DownloadReservationContractPDF, DownloadReservationContractDOCX, DownloadReservationSchedulePDF } from "../_actions/ReservationActions";

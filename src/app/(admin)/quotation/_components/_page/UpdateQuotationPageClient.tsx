@@ -33,8 +33,6 @@ export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotati
     const advisorId = userData?.user?.id ?? "";
     const { data: leadsData, error: errorLeads, isLoading: loadingLeads } = useAvailableLeadsForQuotation(advisorId, quotationId, !!advisorId);
 
-    console.log("Quotation Data:", JSON.stringify(leadsData, null, 2));
-
     // Loading
     if (loadingUser || loadingQuotation || loadingLeads) {
         return (

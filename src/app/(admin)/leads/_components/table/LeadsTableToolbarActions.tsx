@@ -1,7 +1,6 @@
 "use client";
 
 import { type Table } from "@tanstack/react-table";
-
 import { Lead } from "../../_types/lead";
 import { CreateLeadsDialog } from "../create/CreateLeadsDialog";
 import { ImportLeadsDialog } from "../imports/ImportLeadsDialog";
@@ -9,30 +8,30 @@ import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
 import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
-import { useState } from "react";
-import { CheckAndUpdateExpiredLeads } from "../../_actions/LeadActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useCheckAndUpdateExpiredLeads } from "../../_hooks/useLeads";
 
 export interface LeadsTableToolbarActionsProps {
   table?: Table<Lead>;
 }
 
 export function LeadsTableToolbarActions({ table }: LeadsTableToolbarActionsProps) {
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const checkAndUpdateExpiredLeads = useCheckAndUpdateExpiredLeads();
 
     const handleExpireLeads = async () => {
-        setLoading(true);
-        const [result, error] = await CheckAndUpdateExpiredLeads(); // <-- Cambia aquí
-        setLoading(false);
+        const promise = checkAndUpdateExpiredLeads.mutateAsync();
 
-        if (!error && result) {
-            toast.success(`Leads expirados: ${result.expiredLeadsCount}`);
+        toast.promise(promise, {
+            loading: "Expirando leads...",
+            success: (data) => `Leads expirados: ${data?.expiredLeadsCount ?? "?"}`,
+            error: (e) => `Error al forzar expiración de leads: ${e.message ?? e}`,
+        });
+
+        promise.then(() => {
             router.refresh();
-        } else {
-            toast.error("Error al forzar expiración de leads");
-        }
+        });
     };
 
     return (
@@ -56,11 +55,11 @@ export function LeadsTableToolbarActions({ table }: LeadsTableToolbarActionsProp
                 variant="outline"
                 size="sm"
                 onClick={handleExpireLeads}
-                disabled={loading}
+                disabled={checkAndUpdateExpiredLeads.isPending}
                 title="Forzar expiración de leads"
             >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                {loading ? "Expirando..." : "Forzar expiración"}
+                {checkAndUpdateExpiredLeads.isPending ? "Expirando..." : "Forzar expiración"}
             </Button>
             <ImportLeadsDialog />
             <CreateLeadsDialog />

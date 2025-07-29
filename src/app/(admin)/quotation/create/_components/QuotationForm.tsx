@@ -9,8 +9,6 @@ import { ArrowRight, CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User 
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
-import { GetActiveProjects } from "@/app/(admin)/admin/projects/_actions/ProjectActions";
-import { GetActiveBlocksByProject } from "@/app/(admin)/admin/projects/[id]/blocks/_actions/BlockActions";
 import { GetLotsByBlock } from "@/app/(admin)/admin/projects/lots/_actions/LotActions";
 import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
 import { LogoSunat } from "@/assets/icons/LogoSunat";
@@ -23,6 +21,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { toastWrapper } from "@/types/toasts";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
 import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
+import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { GetActiveBlocksByProject } from "@/app/(admin)/admin/projects/[id]/blocks/_actions/BlockActions";
 
 interface QuotationFormProps {
   leadsData: Array<SummaryLead>;
@@ -39,13 +39,21 @@ interface QuotationFormProps {
 export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSelection }: QuotationFormProps) {
     const router = useRouter();
 
-    // Estados para las opciones
-    const [projects, setProjects] = useState<Array<Option>>([]);
+    // Hook para proyectos activos
+    const { data: projectsData = [], isLoading: loadingProjects } = useActiveProjects();
+
+    // Opciones para proyectos
+    const projects: Array<Option> = projectsData.map((project) => ({
+        value: project.id ?? "",
+        label: project.name ?? "",
+        location: project.location ?? "",
+        defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
+        defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
+        maxDiscountPercentage: project.maxDiscountPercentage?.toString() ?? "",
+    }));
     const [blocks, setBlocks] = useState<Array<Option>>([]);
     const [lots, setLots] = useState<Array<Option>>([]);
 
-    // Estados para loading
-    const [loadingProjects, setLoadingProjects] = useState(true);
     const [loadingBlocks, setLoadingBlocks] = useState(false);
     const [loadingLots, setLoadingLots] = useState(false);
 
@@ -90,32 +98,6 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                 ? `${lead.client.ruc} - ${lead.client.name}`
                 : (lead.client?.name ?? ""),
     }));
-
-    // Cargar proyectos activos al inicio
-    useEffect(() => {
-        const fetchProjects = async () => {
-            setLoadingProjects(true);
-            const [result] = await GetActiveProjects();
-
-            if (result) {
-                const projectOptions = result.map((project) => ({
-                    value: project.id ?? "",
-                    label: project.name ?? "",
-                    location: project.location ?? "",
-                    // Agregar los campos de financiación por defecto
-                    defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
-                    defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
-                    maxDiscountPercentage: project.maxDiscountPercentage?.toString() ?? "",
-                }));
-                setProjects(projectOptions);
-            } else {
-                toast.error("Error al cargar los proyectos");
-            }
-            setLoadingProjects(false);
-        };
-
-        fetchProjects();
-    }, []);
 
     // Cargar bloques cuando se selecciona un proyecto
     useEffect(() => {

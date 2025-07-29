@@ -1,18 +1,38 @@
-import React from "react";
+"use client";
 
+import React from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
-import { backend, wrapper } from "@/types/backend";
-import { GetAvailableLeadsForQuotation } from "../../leads/_actions/LeadActions";
+import { useAvailableLeadsForQuotation } from "../../leads/_hooks/useLeads";
 import CreateClientQuotationPage from "./_components/CreateClientQuotationPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useUsers } from "../../admin/users/_hooks/useUser";
+import { SummaryLead } from "../../leads/_types/lead";
 
-export default async function CreateQuotationPage() {
-    // Obtener datos del usuario actual desde la API
-    const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
+export default function CreateQuotationPage() {
+    // Hook de usuario SIEMPRE se llama primero
+    const { data: userData, isLoading: loadingUser, isError: errorUser } = useUsers();
+    // Obtener userId aunque sea undefined
+    const userId = userData?.user?.id ?? "";
 
-    if (error || !userData) {
+    // Hook de leads SIEMPRE se llama, aunque userId sea undefined
+    const { data: leadsData, isLoading: loadingLeads, isError: errorLeads } = useAvailableLeadsForQuotation(userId);
+
+    if (loadingUser) {
+        return (
+            <div>
+                <HeaderPage
+                    title="Creación de Cotizaciones"
+                    description="Ingrese la información requerida para generar una nueva cotización"
+                />
+                <LoadingSpinner text="Cargando usuario..." />
+            </div>
+        );
+    }
+
+    if (errorUser || !userId) {
         return (
             <div>
                 <HeaderPage
@@ -24,10 +44,19 @@ export default async function CreateQuotationPage() {
         );
     }
 
-    // Usar el ID del usuario obtenido de la API
-    const userId = userData.user.id;
+    if (loadingLeads) {
+        return (
+            <div>
+                <HeaderPage
+                    title="Creación de Cotizaciones"
+                    description="Ingrese la información requerida para generar una nueva cotización"
+                />
+                <LoadingSpinner text="Cargando leads disponibles..." />
+            </div>
+        );
+    }
 
-    if (!userId) {
+    if (errorLeads) {
         return (
             <div>
                 <HeaderPage
@@ -39,22 +68,6 @@ export default async function CreateQuotationPage() {
         );
     }
 
-    const [leadsAssignedResult, leadsAssignedError] = await GetAvailableLeadsForQuotation(userId);
-
-    // Manejar el error si ocurre al obtener las cotizaciones
-    if (leadsAssignedError) {
-        return (
-            <div>
-                <HeaderPage
-                    title="Creación de Cotizaciones"
-                    description="Ingrese la información requerida para generar una nueva cotización"
-                />
-                <ErrorGeneral />
-            </div>
-        );
-    }
-
-    const leadsData = leadsAssignedResult;
     return (
         <div>
             <div className="mb-4">
@@ -77,7 +90,7 @@ export default async function CreateQuotationPage() {
                 description="Ingrese la información requerida para generar una nueva cotización"
             />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <CreateClientQuotationPage leadsData={leadsData} advisorId={userId} />
+                <CreateClientQuotationPage leadsData={leadsData as Array<SummaryLead>} advisorId={userId} />
             </div>
         </div>
     );

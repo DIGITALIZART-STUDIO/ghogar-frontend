@@ -6,6 +6,7 @@ import ErrorGeneral from "@/components/errors/general-error";
 import { useUsers } from "@/app/(admin)/admin/users/_hooks/useUser";
 import { usePaginatedLeadsByAssignedTo } from "../leads/_hooks/useLeads";
 import { AssignmentsTable } from "./_components/table/AssignmentsTable";
+import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 
 export default function AssignmentsPage() {
     const [page, setPage] = useState(1);
@@ -28,6 +29,7 @@ export default function AssignmentsPage() {
         return (
             <div>
                 <HeaderPage title="Mis Leads Asignados" description="Cargando usuario..." />
+                <DataTableSkeleton columns={7} numFilters={3} />
             </div>
         );
     }
@@ -45,6 +47,7 @@ export default function AssignmentsPage() {
         return (
             <div>
                 <HeaderPage title="Mis Leads Asignados" description="Cargando leads asignados..." />
+                <DataTableSkeleton columns={7} numFilters={3} />
             </div>
         );
     }

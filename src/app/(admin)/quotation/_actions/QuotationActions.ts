@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 
 // Obtener todas las cotizaciones
 export async function GetAllQuotations(): Promise<Result<Array<components["schemas"]["QuotationDTO"]>, FetchError>> {
@@ -35,6 +36,24 @@ export async function GetQuotationById(id: string): Promise<Result<components["s
         return err(error);
     }
     return ok(response);
+}
+
+export async function GetQuotationByReservationId(
+    reservationId: string
+): Promise<[components["schemas"]["QuotationDTO"] | null, FetchError | null]> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Quotations/by-reservation/{reservationId}", {
+        ...auth,
+        params: {
+            path: { reservationId },
+        },
+    })
+    );
+
+    if (error) {
+        console.log(`Error getting quotation for reservation ${reservationId}:`, error);
+        return [null, error];
+    }
+    return [response ?? null, null];
 }
 
 // Obtener cotizaciones por ID de lead
@@ -71,6 +90,38 @@ export async function GetQuotationsByAdvisor(advisorId: string): Promise<Result<
         return err(error);
     }
     return ok(response);
+}
+
+// Obtener cotizaciones paginadas por asesor
+export async function GetQuotationsByAdvisorPaginated(
+    advisorId: string,
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["QuotationSummaryDTO"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Quotations/advisor/{advisorId}/paginated", {
+        ...auth,
+        params: {
+            path: { advisorId },
+            query: { page, pageSize },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated quotations by advisor:", error);
+        return err(error);
+    }
+
+    // Normaliza la respuesta para que nunca sea undefined
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }
 
 export async function GetAcceptedQuotationsByAdvisor(advisorId: string): Promise<Result<Array<components["schemas"]["QuotationSummaryDTO"]>, FetchError>> {

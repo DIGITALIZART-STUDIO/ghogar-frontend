@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
-import { components } from "@/types/api";
 import { InputWithIcon } from "@/components/input-with-icon";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
@@ -23,23 +22,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EditReservationSchema } from "../_schemas/editReservationSchema";
 import { CurrencyLabels, PaymentMethodLabels, ReservationStatusLabels } from "../../../_utils/reservations.utils";
-
-type ReservationDto = components["schemas"]["ReservationDto"];
-type QuotationDTO = components["schemas"]["QuotationDTO"];
+import { Quotation } from "@/app/(admin)/quotation/_types/quotation";
 
 interface EditReservationFormProps {
-    reservationData: ReservationDto;
-    quotationsData: Array<QuotationDTO>;
+    quotationData: Quotation;
     form: UseFormReturn<EditReservationSchema>;
     onSubmit: (data: EditReservationSchema) => void;
     isPending: boolean;
 }
 
-export function EditReservationForm({ reservationData, quotationsData, form, onSubmit, isPending }: EditReservationFormProps) {
+export function EditReservationForm({ quotationData, form, onSubmit, isPending }: EditReservationFormProps) {
     const router = useRouter();
-
-    // Get the quotation for this reservation (read-only)
-    const quotation = quotationsData.find((q) => q.id === reservationData.quotationId);
 
     return (
         <Form {...form}>
@@ -59,19 +52,19 @@ export function EditReservationForm({ reservationData, quotationsData, form, onS
                             </div>
 
                             <div className="p-6">
-                                {quotation ? (
+                                {quotationData ? (
                                     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border">
                                         <div className="flex items-center mb-3">
                                             <User className="h-4 w-4 text-gray-600 mr-2" />
                                             <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                                                Cotización: {quotation.code}
+                                                Cotización: {quotationData.code}
                                             </span>
                                         </div>
                                         <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                                            <div>Cliente: {quotation.leadClientName}</div>
-                                            <div>Proyecto: {quotation.projectName}</div>
-                                            <div>Lote: Mz. {quotation.blockName} Lt. {quotation.lotNumber}</div>
-                                            <div>Precio: $ {quotation.finalPrice?.toLocaleString()}</div>
+                                            <div>Cliente: {quotationData.leadClientName}</div>
+                                            <div>Proyecto: {quotationData.projectName}</div>
+                                            <div>Lote: Mz. {quotationData.blockName} Lt. {quotationData.lotNumber}</div>
+                                            <div>Precio: $ {quotationData.finalPrice?.toLocaleString()}</div>
                                         </div>
                                     </div>
                                 ) : (
@@ -342,14 +335,14 @@ export function EditReservationForm({ reservationData, quotationsData, form, onS
                                 Editar Separación
                             </h3>
 
-                            {quotation ? (
+                            {quotationData ? (
                                 <div className="space-y-3 text-sm">
                                     <div className="flex justify-between">
                                         <span>
                                             Cotización:
                                         </span>
                                         <span className="font-medium">
-                                            {quotation.code}
+                                            {quotationData.code}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -357,7 +350,7 @@ export function EditReservationForm({ reservationData, quotationsData, form, onS
                                             Cliente:
                                         </span>
                                         <span className="font-medium">
-                                            {quotation.leadClientName}
+                                            {quotationData.leadClientName}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -365,7 +358,7 @@ export function EditReservationForm({ reservationData, quotationsData, form, onS
                                             Proyecto:
                                         </span>
                                         <span className="font-medium">
-                                            {quotation.projectName}
+                                            {quotationData.projectName}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -374,10 +367,10 @@ export function EditReservationForm({ reservationData, quotationsData, form, onS
                                         </span>
                                         <span className="font-medium">
                                             Mz.
-                                            {quotation.blockName}
+                                            {quotationData.blockName}
                                             {" "}
                                             Lt.
-                                            {quotation.lotNumber}
+                                            {quotationData.lotNumber}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -386,7 +379,7 @@ export function EditReservationForm({ reservationData, quotationsData, form, onS
                                         </span>
                                         <span className="font-medium">
                                             $
-                                            {quotation.finalPrice?.toLocaleString()}
+                                            {quotationData.finalPrice?.toLocaleString()}
                                         </span>
                                     </div>
                                 </div>

@@ -23,6 +23,8 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
 
+    console.log("UpdateClientQuotationPage Data:", JSON.stringify(data, null, 2));
+
     // Estados para preservar las selecciones
     const [selectedProjectId, setSelectedProjectId] = useState<string>(data.projectId ?? "");
     const [selectedBlockId, setSelectedBlockId] = useState<string>(data.blockId ?? "");

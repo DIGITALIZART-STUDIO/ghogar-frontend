@@ -12,12 +12,10 @@ import { useUsers } from "../../admin/users/_hooks/useUser";
 import { SummaryLead } from "../../leads/_types/lead";
 
 export default function CreateQuotationPage() {
-    // Hook de usuario SIEMPRE se llama primero
     const { data: userData, isLoading: loadingUser, isError: errorUser } = useUsers();
     // Obtener userId aunque sea undefined
     const userId = userData?.user?.id ?? "";
 
-    // Hook de leads SIEMPRE se llama, aunque userId sea undefined
     const { data: leadsData, isLoading: loadingLeads, isError: errorLeads } = useAvailableLeadsForQuotation(userId);
 
     if (loadingUser) {

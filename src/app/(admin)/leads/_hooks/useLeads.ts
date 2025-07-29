@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ActivateLeads, CheckAndUpdateExpiredLeads, CreateLead, DeleteLeads, GetAvailableLeadsForQuotation, GetPaginatedLeads, GetPaginatedLeadsByAssignedTo, GetUsersSummary, UpdateLead, UpdateLeadStatus } from "../_actions/LeadActions";
+import { ActivateLeads, CheckAndUpdateExpiredLeads, CreateLead, DeleteLeads, GetAssignedLeadsSummary, GetAvailableLeadsForQuotation, GetPaginatedLeads, GetPaginatedLeadsByAssignedTo, GetUsersSummary, UpdateLead, UpdateLeadStatus } from "../_actions/LeadActions";
 import { components } from "@/types/api";
 
 // Para todos los leads paginados
@@ -158,17 +158,35 @@ export function useCheckAndUpdateExpiredLeads() {
     });
 }
 
-// Obtener leads disponibles para cotización por usuario
-export function useAvailableLeadsForQuotation(assignedToId: string) {
+// Obtener leads disponibles para cotización por usuario, excluyendo una cotización opcionalmente
+export function useAvailableLeadsForQuotation(
+    assignedToId: string,
+    excludeQuotationId?: string,
+    enabled = true
+) {
     return useQuery({
-        queryKey: ["getAvailableLeadsForQuotation", assignedToId],
+        queryKey: ["getAvailableLeadsForQuotation", assignedToId, excludeQuotationId],
         queryFn: async () => {
-            const [data, error] = await GetAvailableLeadsForQuotation(assignedToId);
+            const [data, error] = await GetAvailableLeadsForQuotation(assignedToId, excludeQuotationId);
             if (error) {
                 throw new Error(error.message);
             }
             return data ?? [];
         },
-        enabled: !!assignedToId, // Solo consulta si hay assignedToId
+        enabled: !!assignedToId && enabled,
+    });
+}
+
+export function useAssignedLeadsSummary(assignedToId: string, enabled = true) {
+    return useQuery({
+        queryKey: ["assignedLeadsSummary", assignedToId],
+        queryFn: async () => {
+            const [data, error] = await GetAssignedLeadsSummary(assignedToId);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data ?? [];
+        },
+        enabled: !!assignedToId && enabled,
     });
 }

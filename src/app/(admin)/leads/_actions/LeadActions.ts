@@ -333,16 +333,21 @@ export async function GetAssignedLeadsSummary(assignedToId: string): Promise<Res
     return ok(response);
 }
 
-// Obtener resumen de leads disponibles para cotización asignados a un usuario
-export async function GetAvailableLeadsForQuotation(assignedToId: string): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/available-for-quotation", {
+// Obtener leads disponibles para cotización asignados a un usuario, excluyendo una cotización opcionalmente
+export async function GetAvailableLeadsForQuotation(
+    assignedToId: string,
+    excludeQuotationId?: string
+): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/available-for-quotation/{excludeQuotationId}", {
         ...auth,
         params: {
             path: {
                 assignedToId,
+                excludeQuotationId: excludeQuotationId ?? "",
             },
         },
-    }));
+    })
+    );
 
     if (error) {
         console.log(`Error getting available leads for quotation for user ${assignedToId}:`, error);

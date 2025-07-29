@@ -1,12 +1,13 @@
 import React from "react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { Calendar, Clock, CreditCard, DollarSign, MapPin, User } from "lucide-react";
+import { Ban, Calendar, Clock, CreditCard, DollarSign, MapPin, User } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Quotation, QuotationStatus } from "../../_types/quotation";
 import { QuotationStatusLabels } from "../../_utils/quotations.utils";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface QuotationViewContentProps {
   data?: Quotation;
@@ -23,20 +24,18 @@ export default function QuotationViewContent({
 }: QuotationViewContentProps) {
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-40">
-                <p className="text-muted-foreground">
-                    Cargando datos...
-                </p>
+            <div className="flex flex-col items-center justify-center h-40 gap-2">
+                <LoadingSpinner text="Cargando datos de cotización..." />
             </div>
         );
     }
 
     if (!data) {
         return (
-            <div className="flex items-center justify-center h-40">
-                <p className="text-muted-foreground">
-                    No hay datos disponibles
-                </p>
+            <div className="flex flex-col items-center justify-center h-40 gap-2 text-muted-foreground">
+                <Ban className="h-8 w-8 mb-2" />
+                <p className="font-semibold">No hay datos disponibles</p>
+                <p className="text-sm">No se encontró información para esta cotización.</p>
             </div>
         );
     }

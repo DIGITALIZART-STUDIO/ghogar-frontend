@@ -2135,7 +2135,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assigned/{assignedToId}/available-for-quotation": {
+    "/api/Leads/assigned/{assignedToId}/available-for-quotation/{excludeQuotationId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2148,6 +2148,7 @@ export interface paths {
                 header?: never;
                 path: {
                     assignedToId: string;
+                    excludeQuotationId: string;
                 };
                 cookie?: never;
             };
@@ -3272,6 +3273,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Quotations/by-reservation/{reservationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    reservationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["QuotationDTO"];
+                        "application/json": components["schemas"]["QuotationDTO"];
+                        "text/json": components["schemas"]["QuotationDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Quotations/lead/{leadId}": {
         parameters: {
             query?: never;
@@ -3338,6 +3378,48 @@ export interface paths {
                         "text/plain": Array<components["schemas"]["QuotationSummaryDTO"]>;
                         "application/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
                         "text/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotations/advisor/{advisorId}/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path: {
+                    advisorId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
                     };
                 };
             };
@@ -4435,6 +4517,7 @@ export interface components {
         Lead: {
             /** Format: uuid */
             id?: string;
+            code: string;
             /** Format: uuid */
             clientId?: string | null;
             client?: components["schemas"]["Client2"];
@@ -4468,6 +4551,7 @@ export interface components {
         Lead2: {
             /** Format: uuid */
             id?: string;
+            code: string;
             /** Format: uuid */
             clientId?: string | null;
             client?: components["schemas"]["Client2"];
@@ -4501,6 +4585,7 @@ export interface components {
         Lead3: {
             /** Format: uuid */
             id?: string;
+            code: string;
             /** Format: uuid */
             clientId?: string | null;
             client?: components["schemas"]["Client2"];
@@ -4534,6 +4619,7 @@ export interface components {
         Lead4: {
             /** Format: uuid */
             id?: string;
+            code: string;
             /** Format: uuid */
             clientId?: string | null;
             client?: components["schemas"]["Client2"];
@@ -4567,6 +4653,7 @@ export interface components {
         Lead5: {
             /** Format: uuid */
             id?: string;
+            code: string;
             /** Format: uuid */
             clientId?: string | null;
             client?: components["schemas"]["Client2"];
@@ -4642,6 +4729,7 @@ export interface components {
         LeadSummaryDto: {
             /** Format: uuid */
             id?: string;
+            code?: string;
             client?: components["schemas"]["ClientSummaryDto"];
             status?: components["schemas"]["LeadStatus"];
             /** Format: date-time */
@@ -4931,6 +5019,10 @@ export interface components {
         };
         PaginatedResponseV2OfLead: {
             data?: Array<components["schemas"]["Lead5"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
+        PaginatedResponseV2OfQuotationSummaryDTO: {
+            data?: Array<components["schemas"]["QuotationSummaryDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
         PaginatedResponseV2OfReservationWithPaymentsDto: {

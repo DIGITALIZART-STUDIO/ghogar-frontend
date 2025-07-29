@@ -82,6 +82,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/dashboard/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["DashboardAdminDto"];
+                        "application/json": components["schemas"]["DashboardAdminDto"];
+                        "text/json": components["schemas"]["DashboardAdminDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -4491,6 +4530,40 @@ export interface components {
         };
         /** @enum {unknown} */
         Currency: "SOLES" | "DOLARES";
+        DashboardAdminDto: {
+            /** Format: int32 */
+            totalProjects?: number;
+            /** Format: int32 */
+            totalBlocks?: number;
+            /** Format: int32 */
+            totalLots?: number;
+            /** Format: int32 */
+            totalClients?: number;
+            /** Format: int32 */
+            activeLeads?: number;
+            /** Format: int32 */
+            expiredLeads?: number;
+            /** Format: int32 */
+            activeQuotations?: number;
+            /** Format: int32 */
+            pendingReservations?: number;
+            /** Format: int32 */
+            completedSales?: number;
+            /** Format: double */
+            monthlyRevenue?: number;
+            /** Format: double */
+            pendingPayments?: number;
+            /** Format: double */
+            averageTicket?: number;
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: double */
+            operationalEfficiency?: number;
+            lotsByStatus?: Array<components["schemas"]["LotStatusDto"]>;
+            teamData?: Array<components["schemas"]["TeamMemberDto"]>;
+            leadsByStatus?: Array<components["schemas"]["LeadStatusDto"]>;
+            leadSources?: Array<components["schemas"]["LeadSourceDto"]>;
+        };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
@@ -4720,8 +4793,20 @@ export interface components {
             status?: string;
             isActive?: boolean;
         } | null;
+        LeadSourceDto: {
+            source?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            percentage?: number;
+        };
         /** @enum {unknown} */
         LeadStatus: "Registered" | "Attended" | "InFollowUp" | "Completed" | "Canceled" | "Expired";
+        LeadStatusDto: {
+            status?: string;
+            /** Format: int32 */
+            count?: number;
+        };
         LeadStatusUpdateDto: {
             status?: components["schemas"]["LeadStatus"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
@@ -4861,7 +4946,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4879,7 +4964,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4897,7 +4982,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4915,7 +5000,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4933,7 +5018,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4976,6 +5061,13 @@ export interface components {
         LotStatus: number;
         /** @enum {unknown} */
         LotStatus2: "Available" | "Quoted" | "Reserved" | "Sold";
+        LotStatusDto: {
+            status?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            percentage?: number;
+        };
         LotStatusUpdateDTO: {
             status: components["schemas"]["LotStatus2"];
         };
@@ -5634,6 +5726,16 @@ export interface components {
         };
         /** @enum {unknown} */
         TaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other";
+        TeamMemberDto: {
+            name?: string;
+            role?: string;
+            /** Format: int32 */
+            quotations?: number;
+            /** Format: int32 */
+            reservations?: number;
+            /** Format: double */
+            efficiency?: number;
+        };
         UpdateProfilePasswordDTO: {
             currentPassword?: string;
             newPassword?: string;

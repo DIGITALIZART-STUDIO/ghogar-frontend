@@ -8,7 +8,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { toastWrapper } from "@/types/toasts";
-import { ChangeQuotationStatus } from "../../_actions/QuotationActions";
+import { useChangeQuotationStatus } from "../../_hooks/useQuotations";
 import { QuotationStatus } from "../../_types/quotation";
 import QuotationStatusChangeContent from "./QuotationStatusChangeContent";
 
@@ -32,6 +32,9 @@ export function QuotationStatusChangeDialog({
     const [isPending, startTransition] = useTransition();
     const [showSuccess, setShowSuccess] = useState(false);
 
+    // Usa el hook para cambiar estado
+    const changeStatusMutation = useChangeQuotationStatus();
+
     const handleStatusChange = (status: QuotationStatus) => {
         setSelectedStatus(status);
     };
@@ -41,13 +44,18 @@ export function QuotationStatusChangeDialog({
             return;
         }
 
-        startTransition(async() => {
-            // Preparar el DTO para la acción de cambio de estado
+        startTransition(async () => {
             const statusDto = {
                 status: selectedStatus,
             };
 
-            const [, error] = await toastWrapper(ChangeQuotationStatus(quotationId, statusDto), {
+            // Usa el hook en vez de la acción directa
+            const promise = changeStatusMutation.mutateAsync({
+                id: quotationId,
+                statusDto,
+            });
+
+            const [, error] = await toastWrapper(promise, {
                 loading: "Actualizando estado de cotización...",
                 success: "Estado actualizado exitosamente",
                 error: (e) => `Error al cambiar el estado: ${e.message || "Error desconocido"}`,
@@ -55,10 +63,8 @@ export function QuotationStatusChangeDialog({
 
             if (!error) {
                 setShowSuccess(true);
-                // Cerrar el diálogo después de 2 segundos
                 setTimeout(() => {
                     onClose();
-                    // Resetear estados después del cierre
                     setTimeout(() => {
                         setSelectedStatus(null);
                         setShowSuccess(false);
@@ -68,7 +74,6 @@ export function QuotationStatusChangeDialog({
         });
     };
 
-    // Renderizar diálogo o drawer según el tamaño de pantalla
     if (isDesktop) {
         return (
             <Dialog open={isOpen} onOpenChange={() => !isPending && !showSuccess && onClose()}>

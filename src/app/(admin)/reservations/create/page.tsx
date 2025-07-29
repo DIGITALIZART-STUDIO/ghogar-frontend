@@ -1,32 +1,59 @@
-import React from "react";
+"use client";
 
+import React from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { GetAcceptedQuotationsByAdvisor } from "../../quotation/_actions/QuotationActions";
 import CreateReservationPage from "./_components/CreateReservationPage";
-import { backend, wrapper } from "@/types/backend";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useAcceptedQuotationsByAdvisor } from "@/app/(admin)/quotation/_hooks/useQuotations";
+import { useUsers } from "../../admin/users/_hooks/useUser";
 
-export default async function CreateReservationPageWrapper() {
-    // Obtener datos del usuario actual desde la API
-    const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
+export default function CreateReservationPageWrapper() {
+    // Los hooks siempre deben ir aquí, nunca dentro de un if
+    const { data: userData, isLoading: loadingUser, error: userError } = useUsers();
+    // Si el usuario existe, obtenemos su id, si no, undefined
+    const userId = userData?.user?.id;
+    // El hook de cotizaciones se llama siempre, pero solo se activa si hay userId
+    const { data: quotationsData = [], isLoading: loadingQuotations, error: quotationsError } = useAcceptedQuotationsByAdvisor(userId ?? "", !!userId);
 
-    if (error || !userData) {
+    // Loading usuario
+    if (loadingUser) {
         return (
             <div>
                 <div className="mb-4">
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <Link href="/reservations">
-                                    Separaciones
-                                </Link>
+                                <Link href="/reservations">Separaciones</Link>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            <BreadcrumbPage>
-                                Crear
-                            </BreadcrumbPage>
+                            <BreadcrumbPage>Crear</BreadcrumbPage>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+                <HeaderPage
+                    title="Crear Separación"
+                    description="Ingrese la información requerida para generar una nueva separación de lote"
+                />
+                <LoadingSpinner text="Cargando usuario..." />
+            </div>
+        );
+    }
+
+    // Error usuario
+    if (userError || !userId) {
+        return (
+            <div>
+                <div className="mb-4">
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <Link href="/reservations">Separaciones</Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbPage>Crear</BreadcrumbPage>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
@@ -39,24 +66,18 @@ export default async function CreateReservationPageWrapper() {
         );
     }
 
-    // Usar el ID del usuario obtenido de la API
-    const userId = userData.user.id;
-
-    if (!userId) {
+    // Loading cotizaciones
+    if (loadingQuotations) {
         return (
             <div>
                 <div className="mb-4">
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <Link href="/reservations">
-                                    Separaciones
-                                </Link>
+                                <Link href="/reservations">Separaciones</Link>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            <BreadcrumbPage>
-                                Crear
-                            </BreadcrumbPage>
+                            <BreadcrumbPage>Crear</BreadcrumbPage>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
@@ -64,14 +85,12 @@ export default async function CreateReservationPageWrapper() {
                     title="Crear Separación"
                     description="Ingrese la información requerida para generar una nueva separación de lote"
                 />
-                <ErrorGeneral />
+                <LoadingSpinner text="Cargando cotizaciones..." />
             </div>
         );
     }
 
-    // Get all quotations for the dropdown
-    const [quotationsResult, quotationsError] = await GetAcceptedQuotationsByAdvisor(userId);
-
+    // Error cotizaciones
     if (quotationsError) {
         return (
             <div>
@@ -79,14 +98,10 @@ export default async function CreateReservationPageWrapper() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <Link href="/reservations">
-                                    Separaciones
-                                </Link>
+                                <Link href="/reservations">Separaciones</Link>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            <BreadcrumbPage>
-                                Crear
-                            </BreadcrumbPage>
+                            <BreadcrumbPage>Crear</BreadcrumbPage>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
@@ -99,22 +114,16 @@ export default async function CreateReservationPageWrapper() {
         );
     }
 
-    const quotationsData = quotationsResult || [];
-
     return (
         <div>
             <div className="mb-4">
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <Link href="/reservations">
-                                Separaciones
-                            </Link>
+                            <Link href="/reservations">Separaciones</Link>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
-                        <BreadcrumbPage>
-                            Crear
-                        </BreadcrumbPage>
+                        <BreadcrumbPage>Crear</BreadcrumbPage>
                     </BreadcrumbList>
                 </Breadcrumb>
             </div>

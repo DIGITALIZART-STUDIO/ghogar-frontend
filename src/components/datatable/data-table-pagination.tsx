@@ -51,6 +51,7 @@ export function DataTablePagination<TData>({ table, serverPagination }: DataTabl
                     {table.getState().pagination.pageIndex + 1}
                     {" "}
                     de
+                    {" "}
                     {serverPagination?.pageCount ?? table.getPageCount()}
                 </div>
                 <div className="flex items-center space-x-2">

@@ -1,64 +1,79 @@
+"use client";
+
+import { useCallback, useState } from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
-import { backend, wrapper } from "@/types/backend";
-import { GetLeadsByAssignedTo } from "../leads/_actions/LeadActions";
+import { useUsers } from "@/app/(admin)/admin/users/_hooks/useUser";
+import { usePaginatedLeadsByAssignedTo } from "../leads/_hooks/useLeads";
 import { AssignmentsTable } from "./_components/table/AssignmentsTable";
+import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 
-export default async function AssignmentsPage() {
-    // Obtener datos del usuario actual desde la API
-    const [userData, error] = await wrapper((auth) => backend.GET("/api/Users", auth));
+export default function AssignmentsPage() {
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
-    if (error || !userData) {
+    // Obtener usuario actual
+    const { data: userData, isLoading: isLoadingUser, error: errorUser } = useUsers();
+
+    // Esperar a tener el usuario antes de pedir los leads
+    const userId = userData?.user?.id ?? "";
+
+    const { data: paginatedLeads, isLoading, error } = usePaginatedLeadsByAssignedTo(userId, page, pageSize);
+
+    const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
+        setPage(newPage);
+        setPageSize(newPageSize);
+    }, []);
+
+    if (isLoadingUser) {
         return (
             <div>
-                <HeaderPage
-                    title="Mis Leads Asignados"
-                    description="Gestión de prospectos comerciales asignados a tu usuario."
-                />
+                <HeaderPage title="Mis Leads Asignados" description="Cargando usuario..." />
+                <DataTableSkeleton columns={7} numFilters={3} />
+            </div>
+        );
+    }
+
+    if (errorUser || !userId) {
+        return (
+            <div>
+                <HeaderPage title="Mis Leads Asignados" description="Gestión de prospectos comerciales asignados a tu usuario." />
                 <ErrorGeneral />
             </div>
         );
     }
 
-    // Usar el ID del usuario obtenido de la API
-    const userId = userData.user.id;
-    if (!userId) {
+    if (isLoading) {
         return (
             <div>
-                <HeaderPage
-                    title="Mis Leads Asignados"
-                    description="Gestión de prospectos comerciales asignados a tu usuario."
-                />
-                <ErrorGeneral />
-            </div>
-        );
-    }
-    const leadsResult = await GetLeadsByAssignedTo(userId);
-
-    // Manejar el error si ocurre al obtener los leads
-    if (!leadsResult) {
-        return (
-            <div>
-                <HeaderPage
-                    title="Mis Leads Asignados"
-                    description="Gestión de prospectos comerciales asignados a tu usuario."
-                />
-                <ErrorGeneral />
+                <HeaderPage title="Mis Leads Asignados" description="Cargando leads asignados..." />
+                <DataTableSkeleton columns={7} numFilters={3} />
             </div>
         );
     }
 
-    // Verificar la estructura de datos y acceder al array de clientes correctamente
-    const leadsData = Array.isArray(leadsResult) && leadsResult[0] ? leadsResult[0] : [];
+    if (error || !paginatedLeads) {
+        return (
+            <div>
+                <HeaderPage title="Mis Leads Asignados" description="Gestión de prospectos comerciales asignados a tu usuario." />
+                <ErrorGeneral />
+            </div>
+        );
+    }
 
     return (
         <div>
             <HeaderPage title="Mis Leads Asignados" description="Gestión de prospectos comerciales asignados a tu usuario." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <AssignmentsTable
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    data={leadsData}
+                    data={paginatedLeads.data}
+                    pagination={{
+                        page: paginatedLeads.meta.page ?? 1,
+                        pageSize: paginatedLeads.meta.pageSize ?? 10,
+                        total: paginatedLeads.meta.total ?? 0,
+                        totalPages: paginatedLeads.meta.totalPages ?? 1,
+                    }}
+                    onPaginationChange={handlePaginationChange}
                 />
             </div>
         </div>

@@ -1,8 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { toastWrapper } from "@/types/toasts";
-import { DeactivateUser } from "../../actions";
+import { useDeactivateUser } from "../../_hooks/useUser";
 import type { UserGetDTO } from "../../_types/user";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
@@ -14,22 +13,27 @@ interface DeleteUsersDialogProps {
 }
 
 export function DeleteUsersDialog({ user, onSuccess, open, onOpenChange }: DeleteUsersDialogProps) {
+    const deactivateUserMutation = useDeactivateUser();
+
     const handleDeleteUser = async () => {
-    // Si no hay IDs válidos, mostrar error y salir
         if (!user.user.id) {
             toast.error("No hay usuario seleccionado para eliminar.");
             return;
         }
 
-        const [, error] = await toastWrapper(DeactivateUser(user.user.id), {
+        const promise = deactivateUserMutation.mutateAsync(user.user.id);
+
+        toast.promise(promise, {
             loading: "Eliminando usuario...",
             success: "Usuario eliminado correctamente",
-            error: (e) => `Error al eliminar: ${e.message}`,
+            error: (e) => `Error al eliminar: ${e.message ?? e}`,
         });
 
-        if (error) {
-            throw error;
-        }
+        promise.then(() => {
+            if (onSuccess) {
+                onSuccess();
+            }
+        });
     };
 
     return (

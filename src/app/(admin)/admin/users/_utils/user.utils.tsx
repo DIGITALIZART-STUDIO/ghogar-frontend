@@ -19,7 +19,7 @@ export const calculatePasswordStrength = (password: string): { score: number; la
     if (/\d/.test(password)) {
         score += 1;
     }
-    if (/[@$!%*?&]/.test(password)) {
+    if (/[@$!%*?&_]/.test(password)) {
         score += 1;
     }
     if (password.length >= 16) {
@@ -43,7 +43,7 @@ export const generateSecurePassword = (length = 16): string => {
     const lowercase = "abcdefghijklmnopqrstuvwxyz";
     const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const numbers = "0123456789";
-    const symbols = "@$!%*?&";
+    const symbols = "@$!%*?&_";
 
     const allChars = lowercase + uppercase + numbers + symbols;
     let password = "";

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 
 // Obtener todos los clientes
 export async function GetAllClients(): Promise<Result<Array<components["schemas"]["Client"]>, FetchError>> {
@@ -17,6 +18,39 @@ export async function GetAllClients(): Promise<Result<Array<components["schemas"
         return err(error);
     }
     return ok(response);
+}
+
+// Obtener clientes paginados
+export async function GetPaginatedClients(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["Client"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Clients/paginated", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated clients:", error);
+        return err(error);
+    }
+
+    // Normaliza la respuesta para que nunca sea undefined
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }
 
 // Obtener clientes inactivos

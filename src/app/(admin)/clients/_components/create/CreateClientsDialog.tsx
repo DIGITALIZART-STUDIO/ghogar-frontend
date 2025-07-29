@@ -28,8 +28,8 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
-import { CreateClient } from "../../_actions/ClientActions";
+import { toast } from "sonner";
+import { useCreateClient } from "../../_hooks/useClients";
 import { clientSchema, type CreateClientsSchema } from "../../_schemas/createClientsSchema";
 import { ClientTypes } from "../../_types/client";
 import CreateClientsForm from "./CreateClientsForm";
@@ -45,6 +45,8 @@ export function CreateClientsDialog() {
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
+
+    const createClient = useCreateClient();
 
     const form = useForm<CreateClientsSchema>({
         resolver: zodResolver(clientSchema),
@@ -76,7 +78,6 @@ export function CreateClientsDialog() {
                 country: input.country,
                 separateProperty: input.separateProperty,
                 separatePropertyData: JSON.stringify(input.separatePropertyData),
-                // Campos condicionales según el tipo de cliente
                 ...(input.type === ClientTypes.Natural && {
                     dni: input.dni,
                 }),
@@ -86,29 +87,18 @@ export function CreateClientsDialog() {
                 }),
             };
 
-            const [, error] = await toastWrapper(CreateClient(clientData), {
+            const promise = createClient.mutateAsync(clientData);
+
+            toast.promise(promise, {
                 loading: "Creando cliente...",
                 success: "Cliente creado exitosamente",
                 error: (e) => `Error al crear cliente: ${e.message}`,
             });
 
-            if (!error) {
-                setIsSuccess(true);
-            } else {
-                // Agregar validación visual para campos con error
-                if (error.message.includes("DNI")) {
-                    form.setError("dni", {
-                        type: "manual",
-                        message: "Este DNI ya está registrado para otro cliente",
-                    });
-                }
+            const result = await promise;
 
-                if (error.message.includes("RUC")) {
-                    form.setError("ruc", {
-                        type: "manual",
-                        message: "Este RUC ya está registrado para otro cliente",
-                    });
-                }
+            if (result) {
+                setIsSuccess(true);
             }
         });
     };

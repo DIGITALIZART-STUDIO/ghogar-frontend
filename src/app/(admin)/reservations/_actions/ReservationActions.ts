@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 
 // Obtener todas las reservas
 export async function GetAllReservations(): Promise<Result<Array<components["schemas"]["ReservationDto"]>, FetchError>> {
@@ -30,6 +31,38 @@ export async function GetAllCanceledReservations(): Promise<Result<Array<compone
         return err(error);
     }
     return ok(response);
+}
+
+// Traer reservas canceladas paginadas
+export async function GetAllCanceledReservationsPaginated(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["ReservationWithPaymentsDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/canceled/paginated", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log("Error getting paginated canceled reservations:", error);
+        return err(error);
+    }
+
+    // Normaliza la respuesta para que nunca sea undefined
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page: page,
+            pageSize: pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }
 
 // Obtener una reserva específica por ID

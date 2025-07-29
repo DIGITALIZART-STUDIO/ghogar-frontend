@@ -14,17 +14,16 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus,RefreshCcw,Shield } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { UserCreateDTO, userCreateSchema } from "../../_schemas/createUsersSchema";
 import {  generateSecurePassword } from "../../_utils/user.utils";
 import UserCreateForm from "./UserCreateForm";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
-import { CreateUser } from "../../actions";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useCreateUser } from "../../_hooks/useUser";
 
 const dataForm = {
     button: "Crear usuario",
@@ -32,18 +31,17 @@ const dataForm = {
     description: "Complete los detalles a continuación para crear un nuevo usuario del sistema",
 };
 
-interface UserCreateDialogProps {
-    refetch: () => void;
-}
-
-export function UserCreateDialog({refetch}: UserCreateDialogProps) {
+export function UserCreateDialog() {
     const [open, setOpen] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 800px)");
-    const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [passwordCopied, setPasswordCopied] = useState(false);
+
+    const createUserMutation = useCreateUser();
+
+    const isPending = createUserMutation.isPending;
 
     const form = useForm<UserCreateDTO>({
         resolver: zodResolver(userCreateSchema),
@@ -89,26 +87,24 @@ export function UserCreateDialog({refetch}: UserCreateDialogProps) {
     };
 
     const onSubmit = async (values: UserCreateDTO) => {
-        startTransition(async () => {
-            // Preparar los datos para el formato esperado por el backend
-            const clientData = {
-                name: values.name,
-                phone: values.phone,
-                email: values.email,
-                role: values.role,
-                password: values.password,
-            };
+        const promise = createUserMutation.mutateAsync({
+            name: values.name,
+            phone: values.phone,
+            email: values.email,
+            role: values.role,
+            password: values.password,
+        });
 
-            const [, error] = await toastWrapper(CreateUser(clientData), {
-                loading: "Creando usuario...",
-                success: "Usuario creado exitosamente",
-                error: (e) => `Error al crear usuario: ${e.message}`,
-            });
+        toast.promise(promise, {
+            loading: "Creando usuario...",
+            success: "Usuario creado exitosamente",
+            error: (e) => `Error al crear usuario: ${e.message ?? e}`,
+        });
 
-            if (!error) {
-                refetch();
-                setIsSuccess(true);
-            }
+        promise.then(() => {
+            form.reset();
+            setOpen(false);
+            setIsSuccess(false);
         });
     };
 

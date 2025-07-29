@@ -4,7 +4,6 @@ import {
     ColumnDef,
     ColumnFiltersState,
     ColumnPinningState,
-    FilterFn,
     flexRender,
     getCoreRowModel,
     getFacetedRowModel,
@@ -28,27 +27,10 @@ import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilter } from "./facetedFilters";
 
 // Función de filtrado global correcta para TanStack Table v8
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getValue = (row: Row<any>) => {
-        // Si es _all, busca en todos los valores concatenados
-        if (columnId === "_all") {
-            const allValues = Object.values(row.original)
-                .filter((val) => val !== null && val !== undefined)
-                .join(" ")
-                .toLowerCase();
-            return allValues;
-        }
-
-        // Busca en la columna específica
-        const cellValue = row.getValue(columnId);
-        return cellValue !== null && cellValue !== undefined ? String(cellValue).toLowerCase() : "";
-    };
-
-    const searchValue = value.toLowerCase();
-    return getValue(row).includes(searchValue);
-};
+function globalFilterFn<TData>(row: Row<TData>, _columnId: string, value: string): boolean {
+    const rowString = JSON.stringify(row.original).toLowerCase();
+    return rowString.includes(value.toLowerCase());
+}
 
 interface DataTableExpandedProps<TData, TValue> {
     columns: Array<ColumnDef<TData, TValue>>;
@@ -108,7 +90,7 @@ export function DataTableExpanded<TData, TValue>({
         [pagination, serverPagination],
     );
 
-    const table = useReactTable({
+    const table = useReactTable<TData>({
         data,
         columns,
         filterFns: {
@@ -121,11 +103,11 @@ export function DataTableExpanded<TData, TValue>({
             columnFilters,
             globalFilter,
             columnPinning,
-            expanded, // Utilizar el estado de expansión
+            expanded,
             pagination,
         },
-        onExpandedChange: setExpanded, // Manejar los cambios en la expansión
-        getRowCanExpand: () => true, // Permitir que todas las filas puedan expandirse
+        onExpandedChange: setExpanded,
+        getRowCanExpand: () => true,
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
@@ -136,12 +118,11 @@ export function DataTableExpanded<TData, TValue>({
         onPaginationChange: handlePaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(), // Usar la paginación de cliente si no hay serverPagination
+        getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
-        globalFilterFn: globalFilterFn,
-        // Configuración para paginación del servidor solo si serverPagination está definido
+        globalFilterFn,
         ...(serverPagination
             ? {
                 pageCount: serverPagination.pageCount,

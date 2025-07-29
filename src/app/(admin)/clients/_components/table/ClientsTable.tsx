@@ -9,8 +9,22 @@ import { facetedFilters } from "../../_utils/clients.filter.utils";
 import { ClientDescription } from "./ClientDescription";
 import { clientsColumns } from "./ClientsTableColumns";
 import { ClientsTableToolbarActions } from "./ClientsTableToolbarActions";
+import {
+    CustomPaginationTableParams,
+    ServerPaginationChangeEventCallback,
+} from "@/types/tanstack-table/CustomPagination";
 
-export function ClientsTable({ data }: { data: Array<Client> }) {
+interface ClientsTableProps {
+    data: Array<Client>;
+    pagination: CustomPaginationTableParams;
+    onPaginationChange: ServerPaginationChangeEventCallback;
+}
+
+export function ClientsTable({
+    data,
+    pagination,
+    onPaginationChange,
+}: ClientsTableProps) {
     const columns = useMemo(() => clientsColumns(), []);
 
     return (
@@ -22,6 +36,15 @@ export function ClientsTable({ data }: { data: Array<Client> }) {
             filterPlaceholder="Buscar clientes..."
             facetedFilters={facetedFilters}
             renderExpandedRow={(row) => <ClientDescription row={row} />}
+            serverPagination={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
+            }}
         />
     );
 }

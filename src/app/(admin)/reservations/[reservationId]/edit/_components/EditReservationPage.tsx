@@ -11,16 +11,16 @@ import { components } from "@/types/api";
 import { EditReservationSchema, editReservationSchema } from "../_schemas/editReservationSchema";
 import { UpdateReservation } from "../../../_actions/ReservationActions";
 import { EditReservationForm } from "./EditReservationForm";
+import { Quotation } from "@/app/(admin)/quotation/_types/quotation";
 
 type ReservationDto = components["schemas"]["ReservationDto"];
-type QuotationDTO = components["schemas"]["QuotationDTO"];
 
 interface EditReservationPageProps {
     reservationData: ReservationDto;
-    quotationsData: Array<QuotationDTO>;
+    quotationData: Quotation;
 }
 
-export default function EditReservationPage({ reservationData, quotationsData }: EditReservationPageProps) {
+export default function EditReservationPage({ reservationData, quotationData }: EditReservationPageProps) {
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
 
@@ -78,8 +78,7 @@ export default function EditReservationPage({ reservationData, quotationsData }:
 
     return (
         <EditReservationForm
-            reservationData={reservationData}
-            quotationsData={quotationsData}
+            quotationData={quotationData}
             form={form}
             onSubmit={onSubmit}
             isPending={isPending}

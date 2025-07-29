@@ -12,8 +12,8 @@ export const userCreateSchema = z.object({
     password: z
         .string()
         .min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
-        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-            message: "La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial",
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]/, {
+            message: "La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (@$!%*?&_)",
         }),
 });
 
@@ -37,8 +37,8 @@ export const userUpdatePasswordSchema = z
         newPassword: z
             .string()
             .min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
-            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-                message: "La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial",
+            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]/, {
+                message: "La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (@$!%*?&_)",
             }),
         confirmPassword: z.string().min(1, { message: "Confirme la nueva contraseña" }),
     })

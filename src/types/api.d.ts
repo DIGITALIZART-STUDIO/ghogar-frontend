@@ -4071,9 +4071,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PaginatedResponseOfUserGetDTO"];
-                        "application/json": components["schemas"]["PaginatedResponseOfUserGetDTO"];
-                        "text/json": components["schemas"]["PaginatedResponseOfUserGetDTO"];
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfUserGetDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfUserGetDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfUserGetDTO"];
                     };
                 };
             };
@@ -4861,7 +4861,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4879,7 +4879,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4897,7 +4897,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4915,7 +4915,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -4933,7 +4933,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5002,17 +5002,6 @@ export interface components {
         NullableOfQuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED" | null;
         /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
-        PaginatedResponseOfUserGetDTO: {
-            items: Array<components["schemas"]["UserGetDTO"]>;
-            /** Format: int32 */
-            page: number;
-            /** Format: int32 */
-            pageSize: number;
-            /** Format: int32 */
-            totalCount: number;
-            /** Format: int32 */
-            totalPages: number;
-        };
         PaginatedResponseV2OfClient: {
             data?: Array<components["schemas"]["Client"]>;
             meta?: components["schemas"]["PaginationMetadata"];
@@ -5027,6 +5016,10 @@ export interface components {
         };
         PaginatedResponseV2OfReservationWithPaymentsDto: {
             data?: Array<components["schemas"]["ReservationWithPaymentsDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
+        PaginatedResponseV2OfUserGetDTO: {
+            data?: Array<components["schemas"]["UserGetDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
         PaginationMetadata: {

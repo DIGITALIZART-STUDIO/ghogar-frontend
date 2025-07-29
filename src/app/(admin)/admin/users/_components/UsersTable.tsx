@@ -8,7 +8,6 @@ import flags from "react-phone-number-input/flags";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
-import ErrorGeneral from "@/components/errors/general-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,7 +19,6 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { backend } from "@/types/backend2";
 import { UserGetDTO } from "../_types/user";
 import { DeleteUsersDialog } from "./state-management/DeleteUsersDialog";
 import { ReactivateUsersDialog } from "./state-management/ReactivateUsersDialog";
@@ -29,67 +27,48 @@ import { UsersTableToolbarActions } from "./UserActions";
 import { facetedFilters } from "../_utils/user.filter.utils";
 import { UserRoleLabels } from "../_utils/user.utils";
 
-export function UsersTable() {
-    const [pagination, setPagination] = useState({
-        pageIndex: 0,
-        pageSize: 10,
-    });
+export interface UsersTableProps {
+    data: Array<UserGetDTO>;
+    pagination: {
+        page: number;
+        pageSize: number;
+        total: number;
+        totalPages: number;
+    };
+    onPaginationChange: (page: number, pageSize: number) => void;
+}
 
-    const { data, error, isFetching, refetch } = backend.useQuery(
-        "get",
-        "/api/Users/all",
-        {
-            params: {
-                query: {
-                    page: pagination.pageIndex + 1,
-                    pageSize: pagination.pageSize,
-                },
-            },
-        },
-        {
-            staleTime: 60000,
-        }
-    );
-
-    // Get pagination info from API response
-    const pageCount = data?.totalPages ?? 0;
-    const totalItems = data?.totalCount ?? 0;
-
-    const columns = useMemo(() => usersColumns(refetch), [refetch]);
-
-    const serverPaginationConfig = useMemo(
-        () => ({
-            pageIndex: pagination.pageIndex,
-            pageSize: pagination.pageSize,
-            pageCount: pageCount,
-            onPaginationChange: async (pageIndex: number, pageSize: number) => {
-                setPagination({ pageIndex, pageSize });
-            },
-            total: totalItems,
-        }),
-        [pagination.pageIndex, pagination.pageSize, pageCount, totalItems]
-    );
-
-    if (error) {
-        return <ErrorGeneral />;
-    }
+export function UsersTable({
+    data,
+    pagination,
+    onPaginationChange,
+}: UsersTableProps) {
+    const columns = useMemo(() => usersColumns(), []);
 
     return (
         <DataTableExpanded
-            data={data?.items ?? []}
+            isLoading={false}
+            data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => (
-                <UsersTableToolbarActions table={table} refetch={refetch} />
+                <UsersTableToolbarActions table={table} />
             )}
             filterPlaceholder="Buscar usuarios..."
-            serverPagination={serverPaginationConfig}
-            isLoading={isFetching}
             facetedFilters={facetedFilters}
+            serverPagination={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
+            }}
         />
     );
 }
 
-export const usersColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> => [
+export const usersColumns = (): Array<ColumnDef<UserGetDTO>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -257,7 +236,6 @@ export const usersColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> 
                                 open={showEditDialog}
                                 onOpenChange={setShowEditDialog}
                                 user={row?.original}
-                                refetch={refetch}
                             />
                         )}
                         {showDeleteDialog && (
@@ -266,7 +244,6 @@ export const usersColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> 
                                 onOpenChange={setShowDeleteDialog}
                                 user={row?.original}
                                 onSuccess={() => {
-                                    refetch();
                                     setShowDeleteDialog(false);
                                     row.toggleSelected(false);
                                 }}
@@ -279,7 +256,6 @@ export const usersColumns = (refetch: () => void): Array<ColumnDef<UserGetDTO>> 
                                 onOpenChange={setShowReactivateDialog}
                                 user={row?.original}
                                 onSuccess={() => {
-                                    refetch();
                                     setShowReactivateDialog(false);
                                     row.toggleSelected(false);
                                 }}

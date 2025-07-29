@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Key, RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -16,13 +16,13 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toastWrapper } from "@/types/toasts";
 import UpdateUsersForm from "./UpdateUsersForm";
 import { UserUpdateDTO, UserUpdatePasswordDTO, userUpdatePasswordSchema, userUpdateSchema } from "../../_schemas/createUsersSchema";
 import { UserGetDTO } from "../../_types/user";
-import { UpdateUser, UpdateUserPassword } from "../../actions";
 import { Separator } from "@/components/ui/separator";
 import UpdateUsersPasswordForm from "./UpdateUsersPasswordForm";
+import { useUpdateUser, useUpdateUserPassword } from "../../_hooks/useUser";
+import { toast } from "sonner";
 
 const infoSheet = {
     title: "Actualizar Usuario",
@@ -33,12 +33,15 @@ interface UpdateUserSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
   user: UserGetDTO;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  refetch: () => void;
 }
 
-export function UpdateUsersSheet({ user, open, onOpenChange, refetch }: UpdateUserSheetProps) {
-    const [isPending, startTransition] = useTransition();
+export function UpdateUsersSheet({ user, open, onOpenChange }: UpdateUserSheetProps) {
     const [isSuccess, setIsSuccess] = useState(false);
+
+    const updateUserMutation = useUpdateUser();
+    const updateUserPasswordMutation = useUpdateUserPassword();
+
+    const isPending = updateUserMutation.isPending || updateUserPasswordMutation.isPending;
 
     const form = useForm<UserUpdateDTO>({
         resolver: zodResolver(userUpdateSchema),
@@ -60,64 +63,70 @@ export function UpdateUsersSheet({ user, open, onOpenChange, refetch }: UpdateUs
 
     useEffect(() => {
         if (open && user) {
-
-            // Verifica que client exista antes de usarlo
-            form.reset({name: user?.user.name ?? "",
+            form.reset({
+                name: user?.user.name ?? "",
                 email: user?.user.email ?? "",
                 phone: user?.user.phoneNumber ?? "",
-                role: user?.roles?.[0] ?? "",});
+                role: user?.roles?.[0] ?? "",
+            });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, user]);
 
     const onSubmit = async (input: UserUpdateDTO) => {
-        startTransition(async () => {
-            // Preparar los datos según el tipo de cliente
-            const userData = {
+        if (!user.user.id) {
+            toast.error("User ID is required");
+            return;
+        }
+        const promise = updateUserMutation.mutateAsync({
+            userId: user.user.id,
+            user: {
                 name: input.name,
                 phone: input.phone,
                 email: input.email,
-                role: input.role
-            };
+                role: input.role,
+            },
+        });
 
-            if (!user.user.id) {
-                throw new Error("Client ID is required");
-            }
-            const [, error] = await toastWrapper(UpdateUser(user.user.id, userData), {
-                loading: "Actualizando usuario...",
-                success: "Usuario actualizado exitosamente",
-                error: (e) => `Error al actualizar usuario: ${e.message}`,
-            });
+        toast.promise(promise, {
+            loading: "Actualizando usuario...",
+            success: "Usuario actualizado correctamente.",
+            error: (e) => `Error al actualizar usuario: ${e.message ?? e}`,
+        });
 
-            if (!error) {
-                setIsSuccess(true);
-            }
+        promise.then(() => {
+            form.reset();
+            onOpenChange(false);
+            setIsSuccess(false);
         });
     };
 
     const onSubmitPassword = async (input: UserUpdatePasswordDTO) => {
-        startTransition(async () => {
-            if (!user.user.id) {
-                throw new Error("User ID is required");
-            }
+        if (!user.user.id) {
+            toast.error("User ID is required");
+            return;
+        }
+        const promise = updateUserPasswordMutation.mutateAsync({
+            userId: user.user.id,
+            passwordDto: input,
+        });
 
-            const [, error] = await toastWrapper(UpdateUserPassword(user.user.id, input), {
-                loading: "Cambiando contraseña...",
-                success: "Contraseña actualizada exitosamente",
-                error: (e) => `Error al cambiar contraseña: ${e.message}`,
-            });
+        toast.promise(promise, {
+            loading: "Actualizando contraseña...",
+            success: "Contraseña actualizada correctamente.",
+            error: (e) => `Error al actualizar contraseña: ${e.message ?? e}`,
+        });
 
-            if (!error) {
-                setIsSuccess(true);
-            }
+        promise.then(() => {
+            formPassword.reset();
+            onOpenChange(false);
+            setIsSuccess(false);
         });
     };
-
     useEffect(() => {
         if (isSuccess) {
             form.reset();
             formPassword.reset();
-            refetch();
             onOpenChange(false);
             setIsSuccess(false);
         }

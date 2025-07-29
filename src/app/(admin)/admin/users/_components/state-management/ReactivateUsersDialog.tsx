@@ -1,8 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { toastWrapper } from "@/types/toasts";
-import { ReactivateUser } from "../../actions";
+import { useReactivateUser } from "../../_hooks/useUser";
 import type { UserGetDTO } from "../../_types/user";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
@@ -14,22 +13,27 @@ interface ReactivateUsersDialogProps {
 }
 
 export function ReactivateUsersDialog({ user, onSuccess, open, onOpenChange }: ReactivateUsersDialogProps) {
+    const reactivateUserMutation = useReactivateUser();
+
     const handleReactivateUser = async () => {
-    // Si no hay IDs válidos, mostrar error y salir
         if (!user.user.id) {
             toast.error("No hay usuarios válidos para reactivar");
             return;
         }
 
-        const [, error] = await toastWrapper(ReactivateUser(user.user.id), {
+        const promise = reactivateUserMutation.mutateAsync(user.user.id);
+
+        toast.promise(promise, {
             loading: "Reactivando usuario...",
             success: "Usuario reactivado correctamente",
-            error: (e) => `Error al reactivar: ${e.message}`,
+            error: (e) => `Error al reactivar: ${e.message ?? e}`,
         });
 
-        if (error) {
-            throw error;
-        }
+        promise.then(() => {
+            if (onSuccess) {
+                onSuccess();
+            }
+        });
     };
 
     return (
@@ -42,7 +46,7 @@ export function ReactivateUsersDialog({ user, onSuccess, open, onOpenChange }: R
             }
             confirmText="Reactivar"
             cancelText="Cancelar"
-            variant="default" // No es destructivo, es una acción de reactivación
+            variant="default"
             showTrigger={false}
             open={open}
             onOpenChange={onOpenChange}

@@ -6,6 +6,7 @@ import {
     CreateClient,
     UpdateClient,
     GetClientsSummary,
+    ImportClients,
 } from "../_actions/ClientActions";
 import type { components } from "@/types/api";
 
@@ -102,6 +103,25 @@ export function useClientsSummary() {
                 throw new Error(error.message);
             }
             return data ?? [];
+        },
+    });
+}
+
+// Hook para importar clientes desde archivo
+export function useImportClients() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const [data, error] = await ImportClients(file);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data!;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
+            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
         },
     });
 }

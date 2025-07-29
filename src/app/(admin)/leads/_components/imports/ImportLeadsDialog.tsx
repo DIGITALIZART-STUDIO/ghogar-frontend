@@ -30,7 +30,8 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
 // Importamos las acciones del servidor directamente
-import { DownloadImportTemplate, ImportClients } from "../../../clients/_actions/ClientActions";
+import { DownloadImportTemplate } from "../../../clients/_actions/ClientActions";
+import { useImportClients } from "@/app/(admin)/clients/_hooks/useClients";
 
 interface ImportLeadsDialogProps {
   onSuccess?: () => void;
@@ -45,6 +46,8 @@ export function ImportLeadsDialog({ onSuccess }: ImportLeadsDialogProps) {
     // Estados para manejar los loadings
     const [isLoadingImport, setIsLoadingImport] = useState(false);
     const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+
+    const importClientsMutation = useImportClients();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -107,65 +110,56 @@ export function ImportLeadsDialog({ onSuccess }: ImportLeadsDialogProps) {
         setFile(null);
     };
 
-    const handleImport = async() => {
+    const handleImport = async () => {
         if (!file) {
             return;
         }
 
         try {
             setIsLoadingImport(true);
-            const [data, error] = await ImportClients(file);
+            // Usa el hook en vez de la acción directa
+            const data = await importClientsMutation.mutateAsync(file);
 
-            if (error === null) {
-                // Éxito completo: todos se importaron sin errores
-                if (data?.successCount && data.successCount > 0 && data.errors?.length === 0) {
-                    toast.success(`Importación exitosa: ${data.successCount} registros procesados`);
-                    setOpen(false);
-                    setFile(null);
-
-                    // Llamar al callback de éxito si existe
-                    if (onSuccess) {
-                        onSuccess();
-                    }
-                    return;
+            if (data?.successCount && data.successCount > 0 && data.errors?.length === 0) {
+                toast.success(`Importación exitosa: ${data.successCount} registros procesados`);
+                setOpen(false);
+                setFile(null);
+                if (onSuccess) {
+                    onSuccess();
                 }
-
-                // Éxito parcial: algunos se importaron como clientes nuevos, otros como existentes
-                if (data?.clientsCreated && data?.clientsExisting && data.clientsCreated > 0 && data.clientsExisting > 0) {
-                    toast.success(`Importación exitosa: ${data.clientsCreated} clientes nuevos creados, ${data.clientsExisting} clientes actualizados`);
-                    setOpen(false);
-                    setFile(null);
-
-                    if (onSuccess) {
-                        onSuccess();
-                    }
-                    return;
-                }
-
-                // Si hubo leads creados
-                if (data.leadsCreated && data.leadsCreated > 0) {
-                    toast.success(`Importación exitosa: ${data.clientsCreated ?? 0} clientes creados, ${data.leadsCreated} leads creados`);
-                    setOpen(false);
-                    setFile(null);
-
-                    if (onSuccess) {
-                        onSuccess();
-                    }
-                    return;
-                }
-
-                // Si hubo errores
-                if (data.errors && data.errors.length > 0) {
-                    toast.warning(`Importación con errores: ${data.successCount} registros procesados con ${data.errors.length} errores.`);
-                    // Podrías mostrar los errores en un componente modal o lista
-                    console.error("Errores de importación:", data.errors);
-                }
-            } else {
-                toast.error(`Error al importar clientes: ${error.message || "Error desconocido"}`);
+                return;
             }
-        } catch (error) {
-            toast.error("Error al procesar la importación");
-            console.error("Error importing clients:", error);
+
+            if (data?.clientsCreated && data?.clientsExisting && data.clientsCreated > 0 && data.clientsExisting > 0) {
+                toast.success(`Importación exitosa: ${data.clientsCreated} clientes nuevos creados, ${data.clientsExisting} clientes actualizados`);
+                setOpen(false);
+                setFile(null);
+                if (onSuccess) {
+                    onSuccess();
+                }
+                return;
+            }
+
+            if (data.leadsCreated && data.leadsCreated > 0) {
+                toast.success(`Importación exitosa: ${data.clientsCreated ?? 0} clientes creados, ${data.leadsCreated} leads creados`);
+                setOpen(false);
+                setFile(null);
+                if (onSuccess) {
+                    onSuccess();
+                }
+                return;
+            }
+
+            if (data.errors && data.errors.length > 0) {
+                toast.warning(`Importación con errores: ${data.successCount} registros procesados con ${data.errors.length} errores.`);
+                console.error("Errores de importación:", data.errors);
+            }
+        } catch (error: unknown) {
+            let errorMessage = "Error desconocido";
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            toast.error(`Error al importar clientes: ${errorMessage}`);
         } finally {
             setIsLoadingImport(false);
         }

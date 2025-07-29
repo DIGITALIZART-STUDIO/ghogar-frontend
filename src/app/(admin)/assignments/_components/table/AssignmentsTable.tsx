@@ -3,16 +3,29 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
-import { IdCard } from "lucide-react";
 
 import { Lead } from "@/app/(admin)/leads/_types/lead";
 import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
-import { facetedFilters, getUniqueIdentifiers } from "../../_utils/assignments.filter.utils";
-import { AssignmentDescription } from "./AssignmentDescription";
 import { assignmentsColumns } from "./AssignmentsTableColumns";
 import { AssignmentsTableToolbarActions } from "./AssignmentsTableToolbarActions";
+import { AssignmentDescription } from "./AssignmentDescription";
+import {
+    CustomPaginationTableParams,
+    ServerPaginationChangeEventCallback,
+} from "@/types/tanstack-table/CustomPagination";
+import { facetedFilters } from "../../_utils/assignments.filter.utils";
 
-export function AssignmentsTable({ data }: { data: Array<Lead> }) {
+interface AssignmentsTableProps {
+    data: Array<Lead>;
+    pagination: CustomPaginationTableParams;
+    onPaginationChange: ServerPaginationChangeEventCallback;
+}
+
+export function AssignmentsTable({
+    data,
+    pagination,
+    onPaginationChange,
+}: AssignmentsTableProps) {
     const router = useRouter();
 
     const handleTasksInterface = useCallback(
@@ -24,28 +37,6 @@ export function AssignmentsTable({ data }: { data: Array<Lead> }) {
 
     const columns = useMemo(() => assignmentsColumns(handleTasksInterface), [handleTasksInterface]);
 
-    // Crear el filtro dinámico para identificadores (DNI/RUC)
-    const uniqueIdentifiers = useMemo(() => getUniqueIdentifiers(data), [data]);
-
-    // Crear todos los filtros
-    const allFilters = useMemo(() => {
-        const filters = [...facetedFilters];
-
-        if (uniqueIdentifiers.length > 0) {
-            filters.push({
-                column: "Cliente",
-                title: "Identificador",
-                options: uniqueIdentifiers.map((identifier) => ({
-                    label: `${identifier.type}: ${identifier.value}`,
-                    value: identifier.value,
-                    icon: IdCard,
-                })),
-            });
-        }
-
-        return filters;
-    }, [uniqueIdentifiers]);
-
     return (
         <DataTableExpanded
             isLoading={false}
@@ -53,8 +44,17 @@ export function AssignmentsTable({ data }: { data: Array<Lead> }) {
             columns={columns}
             toolbarActions={(table: TableInstance<Lead>) => <AssignmentsTableToolbarActions table={table} />}
             filterPlaceholder="Buscar mis leads..."
-            facetedFilters={allFilters}
+            facetedFilters={facetedFilters}
             renderExpandedRow={(row) => <AssignmentDescription row={row} />}
+            serverPagination={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
+            }}
         />
     );
 }

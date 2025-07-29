@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -17,8 +17,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toastWrapper } from "@/types/toasts";
-import { UpdateLead } from "../../_actions/LeadActions";
+import { toast } from "sonner";
+import { useUpdateLead } from "../../_hooks/useLeads";
 import { CreateLeadSchema, leadSchema } from "../../_schemas/createLeadsSchema";
 import { Lead, LeadCaptureSource } from "../../_types/lead";
 import UpdateLeadsForm from "./UpdateLeadsForm";
@@ -35,7 +35,6 @@ interface UpdateLeadSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
 }
 
 export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetProps) {
-    const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
     const form = useForm<CreateLeadSchema>({
@@ -47,6 +46,9 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
             captureSource: lead?.captureSource as LeadCaptureSource,
         },
     });
+
+    // Hook para actualizar lead
+    const updateLead = useUpdateLead();
 
     useEffect(() => {
         if (open) {
@@ -61,26 +63,40 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
     }, [open, lead]);
 
     const onSubmit = async (input: CreateLeadSchema) => {
-        startTransition(async () => {
-            // Preparar los datos según el tipo de cliente
-            const clientData = {
-                clientId: input.clientId,
-                assignedToId: input.assignedToId,
-                captureSource: input.captureSource,
-                projectId: input.projectId,
-            };
+        if (!lead?.id) {
+            toast.error("No se encontró el ID del lead.");
+            return;
+        }
 
-            if (!lead?.id) {
-                throw new Error("Lead ID is required");
+        const payload = {
+            clientId: input.clientId,
+            assignedToId: input.assignedToId,
+            captureSource: input.captureSource,
+            projectId: input.projectId,
+        };
+
+        const promise = updateLead.mutateAsync({ id: lead.id, lead: payload });
+
+        toast.promise(promise, {
+            loading: "Actualizando lead...",
+            success: "Lead actualizada exitosamente",
+            error: (e) => `Error al actualizar lead: ${e.message ?? e}`,
+        });
+
+        promise.then(() => {
+            setIsSuccess(true);
+        }).catch((error) => {
+            if (error?.message?.includes("cliente")) {
+                form.setError("clientId", {
+                    type: "manual",
+                    message: "Error con el cliente seleccionado",
+                });
             }
-            const [, error] = await toastWrapper(UpdateLead(lead.id, clientData), {
-                loading: "Actualizando lead...",
-                success: "Lead actualizada exitosamente",
-                error: (e) => `Error al actualizar lead: ${e.message}`,
-            });
-
-            if (!error) {
-                setIsSuccess(true);
+            if (error?.message?.includes("asesor")) {
+                form.setError("assignedToId", {
+                    type: "manual",
+                    message: "Error con el asesor seleccionado",
+                });
             }
         });
     };
@@ -110,8 +126,8 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
                     <UpdateLeadsForm form={form} onSubmit={onSubmit}>
                         <SheetFooter className="gap-2 pt-2 sm:space-x-0">
                             <div className="flex flex-row-reverse gap-2">
-                                <Button type="submit" disabled={isPending}>
-                                    {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                                <Button type="submit" disabled={updateLead.isPending}>
+                                    {updateLead.isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
                                     Actualizar
                                 </Button>
                                 <SheetClose asChild>

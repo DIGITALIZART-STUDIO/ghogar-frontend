@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
+import { Ellipsis, Hash, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
@@ -60,6 +60,23 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
     },
 
     {
+        id: "Código",
+        accessorKey: "code",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Código" />,
+        cell: ({ row }) => (
+            <span className="inline-flex items-center gap-2 font-mono text-xs px-2 py-1 rounded
+                bg-zinc-100 text-zinc-800 border border-zinc-300
+                dark:bg-zinc-900 dark:text-zinc-200 dark:border-zinc-700"
+            >
+                <Hash className="size-4 text-primary" aria-hidden="true" />
+                {row.original?.code ?? "Sin datos"}
+            </span>
+        ),
+        enableColumnFilter: false,
+        enableSorting: true,
+    },
+
+    {
         id: "Cliente",
         accessorKey: "client.name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
@@ -72,78 +89,39 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
                 );
             }
             const client = row.original.client!;
-            const identifier = client.dni ? `DNI: ${client.dni}` : client.ruc ? `RUC: ${client.ruc}` : "";
+            const phone = client.phoneNumber;
+
+            let phoneContent = null;
+            if (phone) {
+                try {
+                    const country = RPNInput.parsePhoneNumber(phone)?.country;
+                    const formattedPhone = RPNInput.formatPhoneNumberIntl(phone);
+
+                    phoneContent = (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            {country && (
+                                <span className="flex h-4 w-6 overflow-hidden rounded-sm">
+                                    {flags[country] && React.createElement(flags[country], { title: country })}
+                                </span>
+                            )}
+                            <span>{formattedPhone ?? phone}</span>
+                        </div>
+                    );
+                } catch {
+                    phoneContent = (
+                        <div className="text-xs text-muted-foreground">{phone}</div>
+                    );
+                }
+            }
 
             return (
-                <div className="min-w-32">
+                <div className="min-w-32 flex flex-col gap-1">
                     <div className="truncate capitalize">{row.getValue("Cliente") ?? "Sin datos"}</div>
-                    {identifier && <div className="text-xs text-muted-foreground">{identifier}</div>}
+                    {phoneContent}
                 </div>
             );
         },
-        // Mejorar la función de filtrado para DNI o RUC
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        filterFn: (row, id, value) => {
-            if (!row.original) {
-                return false;
-            }
-            const client = row.original.client;
-
-            if (!client) {
-                return false;
-            }
-
-            // Verificar si el filtro coincide con el DNI o RUC
-            const matchesDNI = client.dni && client.dni === value;
-            const matchesRUC = client.ruc && client.ruc === value;
-
-            if (Array.isArray(value)) {
-                if (value.length === 0) {
-                    return true; // Si no hay filtros seleccionados, mostrar todos
-                }
-
-                // Verificar si el DNI o RUC están en el array de valores de filtro
-                return (client.dni && value.includes(client.dni)) ?? (client.ruc && value.includes(client.ruc));
-            }
-
-            return matchesDNI ?? matchesRUC;
-        },
         enableColumnFilter: true,
-    },
-
-    {
-        id: "teléfono",
-        accessorKey: "client.phoneNumber",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Teléfono" />,
-        cell: ({ row }) => {
-            const phone = row.getValue("teléfono") as string;
-            if (!phone) {
-                return <div>-</div>;
-            }
-
-            try {
-                // Obtener el país del número de teléfono
-                const country = RPNInput.parsePhoneNumber(phone)?.country;
-
-                // Formatear el número para mejor legibilidad
-                const formattedPhone = RPNInput.formatPhoneNumberIntl(phone);
-
-                return (
-                    <div className="flex items-center gap-2">
-                        {country && (
-                            <span className="flex h-4 w-6 overflow-hidden rounded-sm">
-                                {flags[country] && React.createElement(flags[country], { title: country })}
-                            </span>
-                        )}
-                        <span>{formattedPhone ?? phone}</span>
-                    </div>
-                );
-            } catch {
-                // Si hay algún error al parsear el número, mostramos el número original
-                return <div>{phone}</div>;
-            }
-        },
     },
 
     {
@@ -186,7 +164,7 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
 
     {
         id: "asesor",
-        accessorKey: "assignedTo.userName",
+        accessorKey: "assignedTo.name",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Asesor" />,
         cell: ({ row }) => <div className="min-w-40 truncate capitalize">{row.getValue("asesor")}</div>,
     },
@@ -235,6 +213,16 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
         cell: ({ row }) => {
             const expirationDate = row.getValue("fechaExpiración") as string;
+            const status = row.original?.status;
+
+            // Si está completado o cancelado, no mostrar días
+            if (status === "Completed" || status === "Canceled") {
+                return (
+                    <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
+                        No aplica
+                    </Badge>
+                );
+            }
 
             if (!expirationDate) {
                 return <div>No definida</div>;
@@ -252,18 +240,15 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             let label = "";
 
             if (diffDays > 3) {
-                // Verde: Más de 3 días hasta la expiración
                 badgeClass = "bg-emerald-100 text-emerald-500 border-emerald-200";
                 label = `${diffDays} días restantes`;
             } else if (diffDays >= 0) {
-                // Amarillo: Entre 0 y 3 días hasta la expiración
                 badgeClass = "bg-amber-100 text-amber-500 border-amber-200";
                 label =
-          diffDays === 0
-              ? "Expira hoy"
-              : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
+                diffDays === 0
+                    ? "Expira hoy"
+                    : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
             } else {
-                // Rojo: Ya expirado
                 badgeClass = "bg-red-100 text-red-500 border-red-200";
                 label = `Expirado hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? "s" : ""}`;
             }

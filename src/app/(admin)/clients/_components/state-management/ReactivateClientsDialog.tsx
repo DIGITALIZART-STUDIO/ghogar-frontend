@@ -4,8 +4,7 @@ import type { Row } from "@tanstack/react-table";
 import { RefreshCcwDot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { toastWrapper } from "@/types/toasts";
-import { ActivateClients } from "../../_actions/ClientActions";
+import { useActivateClients } from "../../_hooks/useClients";
 import type { Client } from "../../_types/client";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
@@ -24,6 +23,8 @@ export function ReactivateClientsDialog({
     open,
     onOpenChange,
 }: ReactivateClientsDialogProps) {
+    const activateClients = useActivateClients();
+
     const handleReactivateClients = async () => {
         const clientIds = clients.map((client) => client.id).filter((id): id is string => id !== undefined);
 
@@ -32,15 +33,15 @@ export function ReactivateClientsDialog({
             return;
         }
 
-        const [, error] = await toastWrapper(ActivateClients(clientIds), {
+        const promise = activateClients.mutateAsync(clientIds);
+
+        toast.promise(promise, {
             loading: `Reactivando ${clients.length === 1 ? "cliente" : "clientes"}...`,
             success: `${clients.length} ${clients.length === 1 ? "cliente reactivado" : "clientes reactivados"} correctamente`,
-            error: (e) => `Error al reactivar: ${e.message}`,
+            error: (e) => `Error al reactivar: ${e.message ?? e}`,
         });
 
-        if (error) {
-            throw error;
-        }
+        await promise;
     };
 
     return (

@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FileText } from "lucide-react";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { GetQuotationById } from "../../_actions/QuotationActions";
-import { Quotation, SummaryQuotation } from "../../_types/quotation";
+import { useQuotationById } from "../../_hooks/useQuotations";
+import {  SummaryQuotation } from "../../_types/quotation";
 import QuotationViewContent from "./QuotationViewContent";
 
 interface QuotationViewDialogProps {
@@ -19,26 +19,12 @@ interface QuotationViewDialogProps {
 
 export function QuotationViewDialog({ open, onOpenChange, quotation }: QuotationViewDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 900px)");
-    const [data, setData] = useState<Quotation>();
-    const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        async function fetchQuotationData() {
-            if (open && quotation?.id) {
-                setIsLoading(true);
-                try {
-                    const [quotationResult] = await GetQuotationById(quotation.id);
-                    setData(quotationResult);
-                } catch (error) {
-                    console.error("Error fetching quotation:", error);
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        }
-
-        fetchQuotationData();
-    }, [open, quotation?.id]);
+    // Usar el hook para obtener la cotización por ID
+    const {
+        data,
+        isLoading,
+    } = useQuotationById(quotation?.id ?? "", open && !!quotation?.id);
 
     // Calcular cuota mensual
     const calculateMonthlyPayment = () => {

@@ -4,8 +4,7 @@ import type { Row } from "@tanstack/react-table";
 import { RefreshCcwDot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { toastWrapper } from "@/types/toasts";
-import { ActivateLeads } from "../../_actions/LeadActions";
+import { useActivateLeads } from "../../_hooks/useLeads";
 import type { Lead } from "../../_types/lead";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
@@ -24,6 +23,8 @@ export function ReactivateLeadsDialog({
     open,
     onOpenChange,
 }: ReactivateLeadsDialogProps) {
+    const activateLeads = useActivateLeads();
+
     const handleReactivateLeads = async () => {
         const leadIds = leads.map((lead) => lead?.id).filter((id): id is string => id !== undefined);
 
@@ -32,15 +33,19 @@ export function ReactivateLeadsDialog({
             return;
         }
 
-        const [, error] = await toastWrapper(ActivateLeads(leadIds), {
+        const promise = activateLeads.mutateAsync(leadIds);
+
+        toast.promise(promise, {
             loading: `Reactivando ${leads.length === 1 ? "lead" : "leads"}...`,
             success: `${leads.length} ${leads.length === 1 ? "lead reactivada" : "leads reactivadas"} correctamente`,
-            error: (e) => `Error al reactivar: ${e.message}`,
+            error: (e) => `Error al reactivar: ${e.message ?? e}`,
         });
 
-        if (error) {
-            throw error;
-        }
+        promise.then(() => {
+            if (onSuccess) {
+                onSuccess();
+            }
+        });
     };
 
     return (

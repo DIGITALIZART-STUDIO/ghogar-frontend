@@ -2,7 +2,6 @@ import * as React from "react";
 import {
     ColumnDef,
     ColumnFiltersState,
-    FilterFn,
     flexRender,
     getCoreRowModel,
     getFacetedRowModel,
@@ -25,21 +24,12 @@ import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilter } from "./facetedFilters";
 
-// Función de filtrado global correcta para TanStack Table v8
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getValue = (row: Row<any>) => {
-    // Accede a los valores originales de la fila
-        const rowValue = columnId === "_all" ? Object.values(row.original).join(" ") : row.getValue(columnId);
-
-        // Convierte a string para la comparación
-        return typeof rowValue === "string" ? rowValue.toLowerCase() : String(rowValue).toLowerCase();
-    };
-
-    const searchValue = value.toLowerCase();
-    return getValue(row).includes(searchValue);
-};
+// Filtro global genérico y estricto
+function globalFilterFn<TData>(row: Row<TData>, _columnId: string, value: string): boolean {
+    // Convierte todo el objeto original de la fila a string (incluye anidados)
+    const rowString = JSON.stringify(row.original).toLowerCase();
+    return rowString.includes(value.toLowerCase());
+}
 
 interface DataTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>;
@@ -93,7 +83,7 @@ export function DataTable<TData, TValue>({
         [pagination],
     );
 
-    const table = useReactTable({
+    const table = useReactTable<TData>({
         data,
         columns,
         state: {
@@ -113,17 +103,14 @@ export function DataTable<TData, TValue>({
         onPaginationChange: handlePaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        // Usar paginación del cliente si no hay serverPagination, de lo contrario undefined
         getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
-        globalFilterFn: globalFilterFn,
-        // Aplicar el filtro global a todas las columnas
+        globalFilterFn,
         filterFns: {
             global: globalFilterFn,
         },
-        // Configuración para paginación del servidor solo si serverPagination está definido
         ...(serverPagination
             ? {
                 pageCount: serverPagination.pageCount,

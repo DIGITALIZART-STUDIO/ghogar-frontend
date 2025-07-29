@@ -1,4 +1,4 @@
-import { CheckCircle2, Filter, ListFilter, Search, User, Users, X } from "lucide-react";
+import { CheckCircle2, Clock, Filter, ListFilter, Search, User, Users, X } from "lucide-react";
 
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,7 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TaskFilters, TaskTypes } from "../../assignments/[id]/tasks/_types/leadTask";
-import { getTaskLabel } from "../../assignments/[id]/tasks/_utils/tasks.utils";
+import { getTaskLabel, TaskTypesConfig } from "../../assignments/[id]/tasks/_utils/tasks.utils";
 import { ClientSummaryDto } from "../../clients/_types/client";
 import { UserSummaryDto } from "../../leads/_types/lead";
 
@@ -48,14 +48,22 @@ export default function FilterAdminTaskViewer({
 }: FilterAdminTaskViewerProps) {
     const clientOptions = [
         { value: "all", label: "Todos los leads" },
-        ...clientsSummary.map((client) => ({
-            value: client.id ?? "",
-            label: client.dni
-                ? `${client.dni} - ${client.name}`
-                : client.ruc
-                    ? `${client.ruc} - ${client.name}`
-                    : client.name!,
-        })),
+        ...clientsSummary.map((client) => {
+            let label = "";
+            if (client.dni) {
+                label = `${client.dni} - ${client.name ?? "Sin nombre"}`;
+            } else if (client.ruc) {
+                label = `${client.ruc} - ${client.name ?? "Sin nombre"}`;
+            } else if (client.name) {
+                label = client.name;
+            } else {
+                label = client.phoneNumber ?? "Lead sin datos";
+            }
+            return {
+                value: client.id ?? "",
+                label,
+            };
+        }),
     ];
 
     const advisorOptions = [
@@ -173,30 +181,26 @@ export default function FilterAdminTaskViewer({
                                 </div>
                                 <Select
                                     value={filters.type ?? "all"}
-                                    onValueChange={(value) => setFilters({ ...filters, type: value })}
+                                    onValueChange={(value) => setFilters({ ...filters, type: value === "all" ? "" : value })}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Todos los tipos" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
-                                            Todos los tipos
+                                            <span className="flex items-center gap-2 text-gray-700">
+                                                <ListFilter className="h-4 w-4 text-gray-700" />
+                                                Todos los tipos
+                                            </span>
                                         </SelectItem>
-                                        <SelectItem value="Call">
-                                            Llamadas
-                                        </SelectItem>
-                                        <SelectItem value="Meeting">
-                                            Reuniones
-                                        </SelectItem>
-                                        <SelectItem value="Email">
-                                            Emails
-                                        </SelectItem>
-                                        <SelectItem value="Visit">
-                                            Visitas
-                                        </SelectItem>
-                                        <SelectItem value="Other">
-                                            Otros
-                                        </SelectItem>
+                                        {Object.entries(TaskTypesConfig).map(([key, config]) => (
+                                            <SelectItem key={key} value={key}>
+                                                <span className={"flex items-center gap-2"}>
+                                                    <config.icon className={`h-4 w-4 ${config.textColor}`} />
+                                                    {config.label}
+                                                </span>
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -231,13 +235,22 @@ export default function FilterAdminTaskViewer({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
-                                            Todos los estados
+                                            <span className="flex items-center gap-2">
+                                                <ListFilter className="h-4 w-4 text-gray-400" />
+                                                Todos los estados
+                                            </span>
                                         </SelectItem>
                                         <SelectItem value="completed">
-                                            Completadas
+                                            <span className="flex items-center gap-2">
+                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                Completadas
+                                            </span>
                                         </SelectItem>
                                         <SelectItem value="pending">
-                                            Pendientes
+                                            <span className="flex items-center gap-2">
+                                                <Clock className="h-4 w-4 text-yellow-500" />
+                                                Pendientes
+                                            </span>
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -281,7 +294,7 @@ export default function FilterAdminTaskViewer({
                                     </Badge>
                                 )}
 
-                                {filters.type && (
+                                {filters.type && filters.type !== "all" && (
                                     <Badge variant="secondary" className="flex items-center gap-1">
                                         <ListFilter className="h-3 w-3 mr-1" />
                                         {getTaskLabel(filters.type as TaskTypes)}

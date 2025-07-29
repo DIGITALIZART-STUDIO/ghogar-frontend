@@ -132,6 +132,19 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                 </div>
             );
         },
+        filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(rowValue);
+            }
+
+            return rowValue === value;
+        },
+        enableColumnFilter: true,
     },
     {
         id: "vencimiento",

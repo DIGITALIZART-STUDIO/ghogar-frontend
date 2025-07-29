@@ -13,6 +13,7 @@ import { getTaskClasses, getTaskIcon, getTaskLabel } from "../../assignments/[id
 import { ClientSummaryDto } from "../../clients/_types/client";
 import { UserSummaryDto } from "../../leads/_types/lead";
 import FilterAdminTaskViewer from "./FilterAdminTaskViewer";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface AdminTasksViewerProps {
   data: Array<LeadTaskDetail>;
@@ -25,6 +26,9 @@ interface AdminTasksViewerProps {
   clientsSummary: Array<ClientSummaryDto>;
   filters: TaskFilters;
   setFilters: (filters: TaskFilters) => void;
+  showFilters: boolean;
+  setShowFilters: (show: boolean) => void;
+  isLoading: boolean;
 }
 
 export function AdminTasksViewer({
@@ -35,12 +39,12 @@ export function AdminTasksViewer({
     clientsSummary,
     filters,
     setFilters,
+    showFilters,
+    setShowFilters,
+    isLoading,
 }: AdminTasksViewerProps) {
     // Estado para la búsqueda
     const [searchQuery, setSearchQuery] = useState("");
-
-    // Estado para mostrar/ocultar filtros
-    const [showFilters, setShowFilters] = useState(false);
 
     // Fecha actual (real)
     const currentDate = new Date();
@@ -201,7 +205,9 @@ export function AdminTasksViewer({
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {sortedTasks.length === 0 ? (
+                        {isLoading ? (
+                            <LoadingSpinner text="Cargando tareas..." />
+                        ) : sortedTasks.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-8 text-center">
                                 <p className="text-muted-foreground">
                                     No se encontraron tareas con los filtros seleccionados.

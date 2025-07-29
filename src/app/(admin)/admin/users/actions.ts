@@ -1,6 +1,7 @@
 "use server";
 
 import { components } from "@/types/api";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { ok, err, Result } from "@/utils/result";
 import { revalidatePath } from "next/cache";
@@ -125,4 +126,36 @@ export async function UpdateProfilePassword(
     }
 
     return ok(response as { message: string });
+}
+
+// Obtener usuarios paginados
+export async function GetPaginatedUsers(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["UserGetDTO"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Users/all", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log("Error getting paginated users:", error);
+        return err(error);
+    }
+
+    // Normaliza la respuesta para que nunca sea undefined
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }

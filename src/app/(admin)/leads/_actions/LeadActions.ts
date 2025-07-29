@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 
 // Obtener todos los leads
 export async function GetAllLeads(): Promise<Result<Array<components["schemas"]["Lead2"]>, FetchError>> {
@@ -17,6 +18,38 @@ export async function GetAllLeads(): Promise<Result<Array<components["schemas"][
         return err(error);
     }
     return ok(response);
+}
+
+// Obtener leads paginados
+export async function GetPaginatedLeads(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["Lead2"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/paginated", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated leads:", error);
+        return err(error);
+    }
+
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
 }
 
 // Obtener leads inactivos
@@ -220,6 +253,37 @@ export async function GetLeadsByAssignedTo(userId: string): Promise<Result<Array
     return ok(response);
 }
 
+// Obtener leads asignados a un usuario, paginados
+export async function GetPaginatedLeadsByAssignedTo(
+    userId: string,
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["Lead2"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assignedto/{userId}/paginated", {
+        ...auth,
+        params: {
+            path: { userId },
+            query: { page, pageSize },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated leads by assigned user:", error);
+        return err(error);
+    }
+
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page,
+            pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
+}
+
 // Obtener leads por estado
 export async function GetLeadsByStatus(status: components["schemas"]["LeadStatus"]): Promise<Result<Array<components["schemas"]["Lead2"]>, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/status/{status}", {
@@ -269,16 +333,21 @@ export async function GetAssignedLeadsSummary(assignedToId: string): Promise<Res
     return ok(response);
 }
 
-// Obtener resumen de leads disponibles para cotización asignados a un usuario
-export async function GetAvailableLeadsForQuotation(assignedToId: string): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/available-for-quotation", {
+// Obtener leads disponibles para cotización asignados a un usuario, excluyendo una cotización opcionalmente
+export async function GetAvailableLeadsForQuotation(
+    assignedToId: string,
+    excludeQuotationId?: string
+): Promise<Result<Array<components["schemas"]["LeadSummaryDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Leads/assigned/{assignedToId}/available-for-quotation/{excludeQuotationId}", {
         ...auth,
         params: {
             path: {
                 assignedToId,
+                excludeQuotationId: excludeQuotationId ?? "",
             },
         },
-    }));
+    })
+    );
 
     if (error) {
         console.log(`Error getting available leads for quotation for user ${assignedToId}:`, error);
@@ -303,3 +372,4 @@ export async function CheckAndUpdateExpiredLeads(): Promise<Result<{ expiredLead
     // Asegúrate de que response tenga la forma { expiredLeadsCount: number }
     return ok(response as unknown as { expiredLeadsCount: number });
 }
+

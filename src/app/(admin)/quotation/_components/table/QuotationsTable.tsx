@@ -10,8 +10,22 @@ import { SummaryQuotation } from "../../_types/quotation";
 import { facetedFilters, getUniqueIdentifiers } from "../../_utils/quotations.filter.utils";
 import { quotationsColumns } from "./QuotationsTableColumns";
 import { QuotationsTableToolbarActions } from "./QuotationsTableToolbarActions";
+import {
+    CustomPaginationTableParams,
+    ServerPaginationChangeEventCallback,
+} from "@/types/tanstack-table/CustomPagination";
 
-export function QuotationsTable({ data }: { data: Array<SummaryQuotation> }) {
+interface QuotationsTableProps {
+    data: Array<SummaryQuotation>;
+    pagination: CustomPaginationTableParams;
+    onPaginationChange: ServerPaginationChangeEventCallback;
+}
+
+export function QuotationsTable({
+    data,
+    pagination,
+    onPaginationChange,
+}: QuotationsTableProps) {
     const router = useRouter();
 
     const handleEditInterface = useCallback(
@@ -52,6 +66,15 @@ export function QuotationsTable({ data }: { data: Array<SummaryQuotation> }) {
             toolbarActions={(table: TableInstance<SummaryQuotation>) => <QuotationsTableToolbarActions table={table} />}
             filterPlaceholder="Buscar cotizaciones..."
             facetedFilters={allFilters}
+            serverPagination={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
+            }}
         />
     );
 }

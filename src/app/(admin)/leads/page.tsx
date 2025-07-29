@@ -1,14 +1,33 @@
+"use client";
+
+import { useCallback, useState } from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
+import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
-import {  GetAllLeads } from "./_actions/LeadActions";
+import { usePaginatedLeads } from "./_hooks/useLeads";
 import { LeadsTable } from "./_components/table/LeadsTable";
 
-export default async function LeadsPage() {
-    // Llamar directamente a la función de Server Actions
-    const leadsResult = await GetAllLeads();
+export default function LeadsPage() {
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
-    // Manejar el error si ocurre
-    if (!leadsResult) {
+    const { data: paginatedLeads, isLoading, error } = usePaginatedLeads(page, pageSize);
+
+    const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
+        setPage(newPage);
+        setPageSize(newPageSize);
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div>
+                <HeaderPage title="Leads" description="Cargando leads..." />
+                <DataTableSkeleton columns={7} numFilters={3} />
+            </div>
+        );
+    }
+
+    if (error || !paginatedLeads) {
         return (
             <div>
                 <HeaderPage title="Leads" description="Prospectos y contactos comerciales potenciales." />
@@ -17,17 +36,19 @@ export default async function LeadsPage() {
         );
     }
 
-    // Verificar la estructura de datos y acceder al array de clientes correctamente
-    const leadsData = Array.isArray(leadsResult) && leadsResult[0] ? leadsResult[0] : [];
-
     return (
         <div>
             <HeaderPage title="Leads" description="Prospectos y contactos comerciales potenciales." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <LeadsTable
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    data={leadsData}
+                    data={paginatedLeads.data}
+                    pagination={{
+                        page: paginatedLeads.meta.page ?? 1,
+                        pageSize: paginatedLeads.meta.pageSize ?? 10,
+                        total: paginatedLeads.meta.total ?? 0,
+                        totalPages: paginatedLeads.meta.totalPages ?? 1,
+                    }}
+                    onPaginationChange={handlePaginationChange}
                 />
             </div>
         </div>

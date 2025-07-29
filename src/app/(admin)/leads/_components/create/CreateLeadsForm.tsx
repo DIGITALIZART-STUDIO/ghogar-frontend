@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
 
-import { GetActiveProjects } from "@/app/(admin)/admin/projects/_actions/ProjectActions";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GetUsersSummary } from "../../_actions/LeadActions";
+import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { useUsersSummary } from "../../_hooks/useLeads";
 import { CreateLeadSchema } from "../../_schemas/createLeadsSchema";
 import { LeadCaptureSource } from "../../_types/lead";
 import { LeadCaptureSourceLabels } from "../../_utils/leads.utils";
-import { GetClientsSummary } from "../../../clients/_actions/ClientActions";
+import { useClientsSummary } from "@/app/(admin)/clients/_hooks/useClients";
 
 interface CreateLeadsFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
   children: React.ReactNode;
@@ -19,103 +17,34 @@ interface CreateLeadsFormProps extends Omit<React.ComponentPropsWithRef<"form">,
 }
 
 export default function CreateLeadsForm({ children, form, onSubmit }: CreateLeadsFormProps) {
-    // Estado para almacenar las opciones de usuarios
-    const [userOptions, setUserOptions] = useState<Array<Option>>([]);
-    const [clientOptions, setClientOptions] = useState<Array<Option>>([]);
-    const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true);
-    const [isLoadingClients, setIsLoadingClients] = useState<boolean>(true);
-    const [projects, setProjects] = useState<Array<Option>>([]);
-    // Estados para loading
-    const [loadingProjects, setLoadingProjects] = useState(true);
+    // Hooks para cargar datos
+    const { data: projects = [], isLoading: loadingProjects } = useActiveProjects();
+    const { data: users = [], isLoading: isLoadingUsers } = useUsersSummary();
+    const { data: clients = [], isLoading: isLoadingClients } = useClientsSummary();
 
-    // Cargar proyectos activos al inicio
-    useEffect(() => {
-        const fetchProjects = async () => {
-            setLoadingProjects(true);
-            const [result] = await GetActiveProjects();
+    // Opciones para los selects/autocomplete
+    const projectOptions: Array<Option> = projects.map((project) => ({
+        value: project.id ?? "",
+        label: project.name ?? "",
+        location: project.location ?? "",
+        defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
+        defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
+    }));
 
-            if (result) {
-                const projectOptions = result.map((project) => ({
-                    value: project.id ?? "",
-                    label: project.name ?? "",
-                    location: project.location ?? "",
-                    // Agregar los campos de financiación por defecto
-                    defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
-                    defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
-                }));
-                setProjects(projectOptions);
-            } else {
-                toast.error("Error al cargar los proyectos");
-            }
-            setLoadingProjects(false);
-        };
+    const userOptions: Array<Option> = users.map((user) => ({
+        value: user.id ?? "",
+        label: user.userName ?? "Sin nombre",
+    }));
 
-        fetchProjects();
-    }, []);
-
-    // Cargar los usuarios cuando el componente se monta
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                setIsLoadingUsers(true);
-                const result = await GetUsersSummary();
-
-                // Como la respuesta tiene formato [usersData, error]
-                if (result && Array.isArray(result) && result.length > 0) {
-                    // El primer elemento es el array de usuarios
-                    const usersArray = result[0];
-
-                    if (Array.isArray(usersArray) && usersArray.length > 0) {
-                        const options = usersArray.map((user) => ({
-                            value: user.id ?? "",
-                            label: user.userName ?? "Sin nombre",
-                        }));
-
-                        setUserOptions(options);
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            } finally {
-                setIsLoadingUsers(false);
-            }
-        };
-
-        // Cargar los clientes
-        const fetchClients = async () => {
-            try {
-                setIsLoadingClients(true);
-                const result = await GetClientsSummary();
-
-                // Como la respuesta tiene formato [clientsData, error]
-                if (result && Array.isArray(result) && result.length > 0) {
-                    // El primer elemento es el array de clientes
-                    const clientsArray = result[0];
-
-                    if (Array.isArray(clientsArray) && clientsArray.length > 0) {
-                        const options = clientsArray.map((client) => ({
-                            value: client.id ?? "",
-                            label:
-                                client.dni
-                                    ? `${client.dni} - ${client.name ?? "Sin nombre"}`
-                                    : client.ruc
-                                        ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
-                                        : client.name ?? `Cliente Sin Datos - ${client.phoneNumber ?? "Sin nombre"}` ?? "Sin datos",
-                        }));
-
-                        setClientOptions(options);
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching clients:", error);
-            } finally {
-                setIsLoadingClients(false);
-            }
-        };
-
-        fetchUsers();
-        fetchClients();
-    }, []);
+    const clientOptions: Array<Option> = clients.map((client) => ({
+        value: client.id ?? "",
+        label:
+            client.dni
+                ? `${client.dni} - ${client.name ?? "Sin nombre"}`
+                : client.ruc
+                    ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
+                    : client.name ?? `Cliente Sin Datos - ${client.phoneNumber ?? "Sin nombre"}` ?? "Sin datos",
+    }));
 
     return (
         <Form {...form}>
@@ -194,6 +123,7 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                                         field.onChange(selectedOption?.value ?? "");
                                     }}
                                     value={userOptions.find((option) => option.value === field.value) ?? undefined}
+                                    disabled={isLoadingUsers}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -208,15 +138,15 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                         <FormItem>
                             <FormLabel>Proyecto</FormLabel>
                             <AutoComplete
-                                options={projects}
+                                options={projectOptions}
                                 emptyMessage="No hay proyectos disponibles"
                                 placeholder="Seleccione un proyecto"
                                 isLoading={loadingProjects}
-                                value={projects.find((project) => project.value === field.value)}
+                                value={projectOptions.find((project) => project.value === field.value)}
                                 onValueChange={(selectedOption) => {
-                                    // Actualizar el valor del campo directamente
                                     field.onChange(selectedOption?.value ?? "");
                                 }}
+                                disabled={loadingProjects}
                             />
                             <FormMessage />
                         </FormItem>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, RefreshCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -28,8 +28,8 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
-import { CreateLead } from "../../_actions/LeadActions";
+import { toast } from "sonner";
+import { useCreateLead } from "../../_hooks/useLeads";
 import { CreateLeadSchema, leadSchema } from "../../_schemas/createLeadsSchema";
 import { LeadStatus } from "../../_types/lead";
 import CreateLeadsForm from "./CreateLeadsForm";
@@ -43,7 +43,6 @@ const dataForm = {
 export function CreateLeadsDialog() {
     const isDesktop = useMediaQuery("(min-width: 810px)");
     const [open, setOpen] = useState(false);
-    const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
     const form = useForm<CreateLeadSchema>({
@@ -56,40 +55,41 @@ export function CreateLeadsDialog() {
         },
     });
 
+    // Hook para crear lead
+    const createLead = useCreateLead();
+
     const onSubmit = async (input: CreateLeadSchema) => {
-        startTransition(async () => {
-            // Preparar los datos para el formato esperado por el backend
-            const leadData = {
-                clientId: input.clientId,
-                assignedToId: input.assignedToId,
-                captureSource: input.captureSource,
-                projectId: input.projectId,
-                status: LeadStatus.Registered,
-            };
+        const payload = {
+            clientId: input.clientId,
+            assignedToId: input.assignedToId,
+            captureSource: input.captureSource,
+            projectId: input.projectId,
+            status: LeadStatus.Registered,
+        };
 
-            const [, error] = await toastWrapper(CreateLead(leadData), {
-                loading: "Creando lead...",
-                success: "Lead creada exitosamente",
-                error: (e) => `Error al crear lead: ${e.message}`,
-            });
+        const promise = createLead.mutateAsync(payload);
 
-            if (!error) {
-                setIsSuccess(true);
-            } else {
-                // Manejar errores específicos si es necesario
-                if (error.message.includes("cliente")) {
-                    form.setError("clientId", {
-                        type: "manual",
-                        message: "Error con el cliente seleccionado",
-                    });
-                }
+        toast.promise(promise, {
+            loading: "Creando lead...",
+            success: "Lead creada exitosamente",
+            error: (e) => `Error al crear lead: ${e.message ?? e}`,
+        });
 
-                if (error.message.includes("asesor")) {
-                    form.setError("assignedToId", {
-                        type: "manual",
-                        message: "Error con el asesor seleccionado",
-                    });
-                }
+        promise.then(() => {
+            setIsSuccess(true);
+        }).catch((error) => {
+            // Manejar errores específicos si es necesario
+            if (error?.message?.includes("cliente")) {
+                form.setError("clientId", {
+                    type: "manual",
+                    message: "Error con el cliente seleccionado",
+                });
+            }
+            if (error?.message?.includes("asesor")) {
+                form.setError("assignedToId", {
+                    type: "manual",
+                    message: "Error con el asesor seleccionado",
+                });
             }
         });
     };
@@ -130,8 +130,8 @@ export function CreateLeadsDialog() {
                                                 Cancelar
                                             </Button>
                                         </DialogClose>
-                                        <Button disabled={isPending} className="w-full">
-                                            {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
+                                        <Button disabled={createLead.isPending} className="w-full">
+                                            {createLead.isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
                                             Registrar
                                         </Button>
                                     </div>
@@ -158,15 +158,13 @@ export function CreateLeadsDialog() {
                     <DrawerTitle>{dataForm.title}</DrawerTitle>
                     <DrawerDescription>{dataForm.description}</DrawerDescription>
                 </DrawerHeader>
-
-                {/* The key fix is in this ScrollArea configuration */}
                 <div className="flex-1 overflow-hidden">
                     <ScrollArea className="h-[40vh] px-0">
                         <div className="px-4">
                             <CreateLeadsForm form={form} onSubmit={onSubmit}>
                                 <DrawerFooter className="px-0 pt-2 flex flex-col-reverse">
-                                    <Button disabled={isPending} className="w-full">
-                                        {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
+                                    <Button disabled={createLead.isPending} className="w-full">
+                                        {createLead.isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
                                         Registrar
                                     </Button>
                                     <DrawerClose asChild>

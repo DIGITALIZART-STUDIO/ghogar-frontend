@@ -4,8 +4,7 @@ import type { Row } from "@tanstack/react-table";
 import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { toastWrapper } from "@/types/toasts";
-import { DeleteLeads } from "../../_actions/LeadActions";
+import { useDeleteLeads } from "../../_hooks/useLeads";
 import type { Lead } from "../../_types/lead";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
@@ -24,8 +23,10 @@ export function DeleteLeadsDialog({
     open,
     onOpenChange,
 }: DeleteLeadsDialogProps) {
+    const deleteLeads = useDeleteLeads();
+
     const handleDeleteLeads = async () => {
-    // Extraer los IDs de los leads y filtrar los undefined
+        // Extraer los IDs de los leads y filtrar los undefined
         const leadIds = leads.map((lead) => lead?.id).filter((id): id is string => id !== undefined);
 
         // Si no hay IDs válidos, mostrar error y salir
@@ -34,15 +35,19 @@ export function DeleteLeadsDialog({
             return;
         }
 
-        const [, error] = await toastWrapper(DeleteLeads(leadIds), {
+        const promise = deleteLeads.mutateAsync(leadIds);
+
+        toast.promise(promise, {
             loading: `Eliminando ${leads.length === 1 ? "lead" : "leads"}...`,
             success: `${leads.length} ${leads.length === 1 ? "lead eliminada" : "leads eliminadas"} correctamente`,
-            error: (e) => `Error al eliminar: ${e.message}`,
+            error: (e) => `Error al eliminar: ${e.message ?? e}`,
         });
 
-        if (error) {
-            throw error;
-        }
+        promise.then(() => {
+            if (onSuccess) {
+                onSuccess();
+            }
+        });
     };
 
     return (

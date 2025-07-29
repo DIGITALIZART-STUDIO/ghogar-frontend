@@ -182,7 +182,7 @@ export default function UpdateUsersPasswordForm({ children, form, onSubmit }: Up
                                 <li>• Mínimo 8 caracteres</li>
                                 <li>• Al menos 1 mayúscula y 1 minúscula</li>
                                 <li>• Al menos 1 número</li>
-                                <li>• Al menos 1 carácter especial (@$!%*?&)</li>
+                                <li>• Al menos 1 carácter especial (@$!%*?&_)</li>
                             </ul>
                         </div>
                     </div>

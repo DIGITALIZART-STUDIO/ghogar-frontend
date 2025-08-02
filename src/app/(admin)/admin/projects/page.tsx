@@ -98,10 +98,18 @@ export default async function ProjectsPage() {
                     <HeaderPage title="Tus Proyectos" description="Administra y monitorea el progreso de cada desarrollo" />
 
                     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {result?.map((project) => <ProjectCard key={project.id} project={project} />) ?? (
-                            <p>
-                                No hay proyectos disponibles
-                            </p>
+                        {result?.length > 0 ? (
+                            result.map((project) => <ProjectCard key={project.id} project={project} />)
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-12 text-center gap-3 col-span-full">
+                                <Building2 className="w-12 h-12 text-gray-400 mb-2" />
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                    No hay proyectos disponibles
+                                </h3>
+                                <p className="text-gray-500">
+                                    Crea tu primer proyecto inmobiliario para comenzar a gestionar lotes y ventas.
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>

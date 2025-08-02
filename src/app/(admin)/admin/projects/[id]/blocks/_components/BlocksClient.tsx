@@ -1,13 +1,9 @@
 "use client";
 
-import { useMemo, useTransition, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import { Filter, Home, Search } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { toastWrapper } from "@/types/toasts";
-import { ActivateBlock, DeactivateBlock } from "../_actions/BlockActions";
-import { BlockCard } from "./BlockCard";
-import { useBlocks } from "../_hooks/useBlocks";
+
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
 import {
@@ -17,13 +13,18 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import { CreateBlocksDialog } from "./create/CreateBlocksDialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toastWrapper } from "@/types/toasts";
+import { ActivateBlock, DeactivateBlock } from "../_actions/BlockActions";
+import { useBlocks } from "../_hooks/useBlocks";
 import { ProjectData } from "../../../_types/project";
+import { BlockCard } from "./BlockCard";
+import { CreateBlocksDialog } from "./create/CreateBlocksDialog";
 
 interface BlocksClientProps {
   projectId: string;
-  project: ProjectData
+  project: ProjectData;
 }
 
 export function BlocksClient({ projectId, project }: BlocksClientProps) {
@@ -70,20 +71,6 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
         setSearchTerm(e.target.value);
     };
 
-    if (blocks.length === 0) {
-        return (
-            <div className="text-center py-12">
-                <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    No hay manzanas
-                </h3>
-                <p className="text-gray-500">
-                    No hay manzanas disponibles para este proyecto.
-                </p>
-            </div>
-        );
-    }
-
     return (
         <>
             <div className="mb-4">
@@ -116,12 +103,10 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
                     <Card className="border pt-0">
                         <CardHeader className="my-4">
                             <CardTitle className="text-xl flex items-center mt-2">
-                                <Filter className="mr-2 h-5 w-5 text-purple-600" />
+                                <Filter className="mr-2 h-5 w-5 text-primary" />
                                 Filtros de Búsqueda
                             </CardTitle>
-                            <CardDescription>
-                                Encuentra lotes específicos usando los filtros disponibles
-                            </CardDescription>
+                            <CardDescription>Encuentra lotes específicos usando los filtros disponibles</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 gap-4">
@@ -140,38 +125,55 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
                     </Card>
                     {searchTerm && (
                         <div className="text-sm text-gray-500 mt-4">
-                            {filteredBlocks.length}
-                            {" "}
-                            de{" "}
-                            {blocks.length}
-                            {" "}
-                            manzanas
+                            {filteredBlocks.length} de {blocks.length} manzanas
                         </div>
                     )}
                 </div>
 
                 {/* Resultados */}
-                {filteredBlocks.length === 0 && searchTerm ? (
+                {/* Mostrar mensaje si no hay manzanas en el proyecto */}
+                {blocks.length === 0 ? (
                     <div className="text-center py-12">
+                        <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                            No hay manzanas
+                        </h3>
                         <p className="text-gray-500">
-                            No se encontraron manzanas que coincidan con &quot;
-                            {searchTerm}
-                            &quot;
+                            No hay manzanas disponibles para este proyecto.
                         </p>
                     </div>
                 ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredBlocks.map((block) => (
-                            <BlockCard
-                                key={block.id}
-                                block={block}
-                                projectId={projectId}
-                                onToggleActive={handleToggleActive}
-                                isLoading={isPending}
-                                refetch={refetch}
-                            />
-                        ))}
-                    </div>
+                    <>
+                        {/* Resultados */}
+                        {filteredBlocks.length === 0 && searchTerm ? (
+                            <div className="text-center py-12 flex flex-col items-center justify-center gap-2">
+                                <Search className="mx-auto h-10 w-10 text-gray-400 mb-2" />
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                    Sin resultados
+                                </h3>
+                                <p className="text-gray-500">
+                                    No se encontraron manzanas que coincidan con&nbsp;
+                                    <span className="font-semibold text-primary">&quot;{searchTerm}&quot;</span>
+                                </p>
+                                <p className="text-xs text-gray-400 mt-2">
+                                    Prueba con otro nombre o revisa los filtros.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {filteredBlocks.map((block) => (
+                                    <BlockCard
+                                        key={block.id}
+                                        block={block}
+                                        projectId={projectId}
+                                        onToggleActive={handleToggleActive}
+                                        isLoading={isPending}
+                                        refetch={refetch}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </>

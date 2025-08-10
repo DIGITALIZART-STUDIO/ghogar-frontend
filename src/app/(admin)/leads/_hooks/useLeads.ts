@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ActivateLeads, CheckAndUpdateExpiredLeads, CreateLead, DeleteLeads, GetAssignedLeadsSummary, GetAvailableLeadsForQuotation, GetPaginatedLeads, GetPaginatedLeadsByAssignedTo, GetUsersSummary, UpdateLead, UpdateLeadStatus } from "../_actions/LeadActions";
+import { ActivateLeads, CheckAndUpdateExpiredLeads, CreateLead, DeleteLeads, DownloadLeadsExcel, GetAssignedLeadsSummary, GetAvailableLeadsForQuotation, GetPaginatedLeads, GetPaginatedLeadsByAssignedTo, GetUsersSummary, UpdateLead, UpdateLeadStatus } from "../_actions/LeadActions";
 import { components } from "@/types/api";
 
 // Para todos los leads paginados
@@ -188,5 +188,17 @@ export function useAssignedLeadsSummary(assignedToId: string, enabled = true) {
             return data ?? [];
         },
         enabled: !!assignedToId && enabled,
+    });
+}
+
+export function useDownloadLeadsExcel() {
+    return useMutation({
+        mutationFn: async () => {
+            const [blob, error] = await DownloadLeadsExcel();
+            if (error) {
+                throw new Error(error.message);
+            }
+            return blob!;
+        },
     });
 }

@@ -883,6 +883,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Clients/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Clients/import": {
         parameters: {
             query?: never;
@@ -2203,6 +2236,39 @@ export interface paths {
                         "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
                         "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
                     };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -4582,6 +4648,22 @@ export interface components {
             modifiedAt?: string;
             displayName?: string | null;
         } | null;
+        ClientAnalysisDto: {
+            /** Format: int32 */
+            totalClients?: number;
+            /** Format: int32 */
+            naturalPersons?: number;
+            /** Format: int32 */
+            legalEntities?: number;
+            /** Format: int32 */
+            withEmail?: number;
+            /** Format: int32 */
+            withCompleteData?: number;
+            /** Format: int32 */
+            separateProperty?: number;
+            /** Format: int32 */
+            coOwners?: number;
+        };
         ClientCreateDto: {
             name: string;
             coOwners?: string | null;
@@ -4668,6 +4750,10 @@ export interface components {
             teamData?: Array<components["schemas"]["TeamMemberDto"]>;
             leadsByStatus?: Array<components["schemas"]["LeadStatusDto"]>;
             leadSources?: Array<components["schemas"]["LeadSourceDto"]>;
+            clientAnalysis?: components["schemas"]["ClientAnalysisDto"];
+            projectMetrics?: Array<components["schemas"]["ProjectMetricDto"]>;
+            paymentMetrics?: components["schemas"]["PaymentMetricsDto"];
+            monthlyPerformance?: Array<components["schemas"]["MonthlyPerformanceDto"]>;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
@@ -5051,7 +5137,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5069,7 +5155,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5087,7 +5173,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5105,7 +5191,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5123,7 +5209,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5184,6 +5270,19 @@ export interface components {
             price?: number | null;
             status?: components["schemas"]["NullableOfLotStatus"];
             isActive?: boolean | null;
+        };
+        MonthlyPerformanceDto: {
+            month?: string;
+            /** Format: int32 */
+            leads?: number;
+            /** Format: int32 */
+            quotations?: number;
+            /** Format: int32 */
+            reservations?: number;
+            /** Format: int32 */
+            sales?: number;
+            /** Format: double */
+            revenue?: number;
         };
         /** @enum {unknown|null} */
         NullableOfClientType: "Natural" | "Juridico" | null;
@@ -5257,6 +5356,22 @@ export interface components {
         };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
+        PaymentMetricsDto: {
+            /** Format: double */
+            totalScheduled?: number;
+            /** Format: double */
+            totalPaid?: number;
+            /** Format: double */
+            pending?: number;
+            /** Format: double */
+            overdue?: number;
+            /** Format: double */
+            cashPayments?: number;
+            /** Format: double */
+            bankTransfers?: number;
+            /** Format: double */
+            deposits?: number;
+        };
         PaymentQuotaSimpleDTO: {
             /** Format: uuid */
             id?: string;
@@ -5548,6 +5663,28 @@ export interface components {
             reservedLots?: number;
             /** Format: int32 */
             soldLots?: number;
+        };
+        ProjectMetricDto: {
+            name?: string;
+            location?: string;
+            /** Format: int32 */
+            blocks?: number;
+            /** Format: int32 */
+            totalLots?: number;
+            /** Format: int32 */
+            available?: number;
+            /** Format: int32 */
+            quoted?: number;
+            /** Format: int32 */
+            reserved?: number;
+            /** Format: int32 */
+            sold?: number;
+            /** Format: double */
+            revenue?: number;
+            /** Format: double */
+            avgPrice?: number;
+            /** Format: double */
+            efficiency?: number;
         };
         ProjectUpdateDTO: {
             name?: string | null;

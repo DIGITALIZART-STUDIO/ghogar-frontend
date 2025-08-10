@@ -7,6 +7,8 @@ import {
     UpdateClient,
     GetClientsSummary,
     ImportClients,
+    DownloadClientsExcel,
+    DownloadImportTemplate,
 } from "../_actions/ClientActions";
 import type { components } from "@/types/api";
 
@@ -125,3 +127,30 @@ export function useImportClients() {
         },
     });
 }
+
+// Hook para descargar el Excel de clientes
+export function useDownloadClientsExcel() {
+    return useMutation({
+        mutationFn: async () => {
+            const [blob, error] = await DownloadClientsExcel();
+            if (error) {
+                throw new Error(error.message);
+            }
+            return blob!;
+        },
+    });
+}
+
+// Hook para descargar la plantilla de importación de clientes
+export function useDownloadImportTemplate() {
+    return useMutation({
+        mutationFn: async () => {
+            const [blob, error] = await DownloadImportTemplate();
+            if (error) {
+                throw new Error(error.message);
+            }
+            return blob!;
+        },
+    });
+}
+

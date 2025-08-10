@@ -29,9 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-// Importamos las acciones del servidor directamente
-import { DownloadImportTemplate } from "../../../clients/_actions/ClientActions";
-import { useImportClients } from "@/app/(admin)/clients/_hooks/useClients";
+import { useDownloadImportTemplate, useImportClients } from "@/app/(admin)/clients/_hooks/useClients";
 
 interface ImportLeadsDialogProps {
   onSuccess?: () => void;
@@ -48,6 +46,7 @@ export function ImportLeadsDialog({ onSuccess }: ImportLeadsDialogProps) {
     const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
 
     const importClientsMutation = useImportClients();
+    const downloadTemplateMutation = useDownloadImportTemplate();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -80,29 +79,37 @@ export function ImportLeadsDialog({ onSuccess }: ImportLeadsDialogProps) {
         }
     };
 
-    const handleDownloadTemplate = async() => {
+    const handleDownloadTemplate = async () => {
+        let loadingToastId: string | number | undefined;
         try {
             setIsLoadingTemplate(true);
-            const [blob, error] = await DownloadImportTemplate();
+            loadingToastId = toast.loading("Descargando plantilla...");
 
-            if (error === null) {
-                // Crear un enlace de descarga para el blob
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "template_clientes.xlsx";
-                document.body.appendChild(a);
-                a.click();
-                URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+            const blob = await downloadTemplateMutation.mutateAsync();
+
+            // Crear un enlace de descarga para el blob
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Plantilla_Importacion_Clientes.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            toast.success("Plantilla descargada correctamente");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(`Error al descargar la plantilla: ${error.message}`);
             } else {
-                toast.error(`Error al descargar la plantilla: ${error.message || "Error desconocido"}`);
+                toast.error(`Error al descargar la plantilla: ${error}`);
             }
-        } catch (error) {
-            toast.error("Error al descargar la plantilla");
             console.error("Error downloading template:", error);
         } finally {
             setIsLoadingTemplate(false);
+            if (loadingToastId) {
+                toast.dismiss(loadingToastId);
+            }
         }
     };
 

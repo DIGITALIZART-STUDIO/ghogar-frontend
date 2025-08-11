@@ -246,3 +246,22 @@ export async function DownloadReservationContractDOCX(reservationId: string): Pr
 export async function DownloadReservationSchedulePDF(reservationId: string): Promise<Result<Blob, FetchError>> {
     return DownloadFile(`/api/Reservations/${reservationId}/schedule/pdf`, "get", null);
 }
+
+export async function ToggleContractValidationStatus(id: string): Promise<Result<void, FetchError>> {
+    const [, error] = await wrapper((auth) => backend.PUT("/api/Reservations/{id}/toggle-validation-status", {
+        ...auth,
+        params: {
+            path: {
+                id,
+            },
+        },
+    }));
+
+    revalidatePath("/(admin)/reservations", "page");
+
+    if (error) {
+        console.log(`Error toggling contract validation status for reservation ${id}:`, error);
+        return err(error);
+    }
+    return ok(undefined);
+}

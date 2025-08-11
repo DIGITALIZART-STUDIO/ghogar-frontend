@@ -20,10 +20,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
-import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
-import { ContractValidationStatus, ReservationDto, ReservationStatus } from "../../reservations/_types/reservation";
+import { ContractValidationStatus, ReservationDto } from "../../reservations/_types/reservation";
 import { ContractValidationStatusLabels, PaymentMethodLabels } from "../../reservations/_utils/reservations.utils";
 import { DownloadReservationContractDOCX, DownloadReservationContractPDF, DownloadReservationPDF } from "../../reservations/_actions/ReservationActions";
+import { ToggleValidationStatusDialog } from "./ToggleValidationStatusDialog";
 
 /**
  * Generar las columnas de la tabla de reservas
@@ -209,11 +209,12 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
     {
         id: "actions",
         cell: function Cell({ row }) {
-            const { id, status } = row.original;
+            const { id } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openReservationDocumentDialog, setOpenReservationDocumentDialog] = useState(false);
             const [openContractDocumentDialog, setOpenContractDocumentDialog] = useState(false);
-            const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
+            // Nuevo estado para el toggle
+            const [openToggleValidationDialog, setOpenToggleValidationDialog] = useState(false);
 
             return (
                 <div>
@@ -246,12 +247,12 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
                             wordFileName={`contrato-${id}.docx`}
                         />
                     )}
-                    {openStatusChangeDialog && (
-                        <ReservationStatusChangeDialog
-                            isOpen={openStatusChangeDialog}
-                            onClose={() => setOpenStatusChangeDialog(false)}
-                            currentStatus={status! as ReservationStatus}
-                            reservationId={id!}
+                    {/* Nuevo: Diálogo para toggle de validación */}
+                    {openToggleValidationDialog && (
+                        <ToggleValidationStatusDialog
+                            reservation={row.original}
+                            open={openToggleValidationDialog}
+                            onOpenChange={setOpenToggleValidationDialog}
                         />
                     )}
 
@@ -273,8 +274,9 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => setOpenStatusChangeDialog(true)}>
-                                Cambiar Estado
+                            {/* Nuevo: opción para cambiar estado de validación */}
+                            <DropdownMenuItem onSelect={() => setOpenToggleValidationDialog(true)}>
+                                Cambiar estado de validación
                                 <DropdownMenuShortcut>
                                     <RefreshCw className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>

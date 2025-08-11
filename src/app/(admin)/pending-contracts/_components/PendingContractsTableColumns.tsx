@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Pencil, Eye, Download, RefreshCw, Calendar, FileText } from "lucide-react";
+import { Ellipsis, Eye, Download, RefreshCw, FileText } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -18,20 +18,19 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ReservationDto, ReservationStatus } from "../_types/reservation";
-import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservations.utils";
 import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
-import { DownloadReservationPDF, DownloadReservationSchedulePDF } from "../_actions/ReservationActions";
-import { useRouter } from "next/navigation";
+import { ContractValidationStatus, ReservationDto, ReservationStatus } from "../../reservations/_types/reservation";
+import { ContractValidationStatusLabels, PaymentMethodLabels } from "../../reservations/_utils/reservations.utils";
+import { DownloadReservationContractDOCX, DownloadReservationContractPDF, DownloadReservationPDF } from "../../reservations/_actions/ReservationActions";
 
 /**
  * Generar las columnas de la tabla de reservas
  * @param handleEditInterface Función para editar una reserva
  * @returns Columnas de la tabla de reservas
  */
-export const reservationsColumns = (handleEditInterface: (id: string) => void): Array<ColumnDef<ReservationDto>> => [
+export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -170,25 +169,25 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
     },
     {
         id: "estado",
-        accessorKey: "status",
+        accessorKey: "contractValidationStatus",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
         cell: ({ row }) => {
-            const reservationStatus = row.getValue("estado") as ReservationStatus;
-            const reservationStatusConfig = ReservationStatusLabels[reservationStatus];
+            const contractValidationStatus = row.getValue("estado") as ContractValidationStatus;
+            const contractValidationStatusConfig = ContractValidationStatusLabels[contractValidationStatus];
 
-            if (!reservationStatusConfig) {
+            if (!contractValidationStatusConfig) {
                 return <div>
                     No registrado
                 </div>;
             }
 
-            const Icon = reservationStatusConfig.icon;
+            const Icon = contractValidationStatusConfig.icon;
 
             return (
                 <div className="text-xs min-w-24">
-                    <Badge variant="outline" className={reservationStatusConfig.className}>
+                    <Badge variant="outline" className={contractValidationStatusConfig.className}>
                         <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
-                        {reservationStatusConfig.label}
+                        {contractValidationStatusConfig.label}
                     </Badge>
                 </div>
             );
@@ -213,9 +212,8 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
             const { id, status } = row.original;
             const [openViewDialog, setOpenViewDialog] = useState(false);
             const [openReservationDocumentDialog, setOpenReservationDocumentDialog] = useState(false);
-            const [openScheduleDocumentDialog, setOpenScheduleDocumentDialog] = useState(false);
+            const [openContractDocumentDialog, setOpenContractDocumentDialog] = useState(false);
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
-            const navigate = useRouter();
 
             return (
                 <div>
@@ -236,14 +234,16 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             pdfFileName={`separacion-${id}.pdf`}
                         />
                     )}
-                    {openScheduleDocumentDialog && (
+                    {openContractDocumentDialog && (
                         <DocumentDownloadDialog
                             documentId={id!}
-                            isOpen={openScheduleDocumentDialog}
-                            onOpenChange={setOpenScheduleDocumentDialog}
-                            title="Cronograma de Pagos"
-                            pdfAction={DownloadReservationSchedulePDF}
-                            pdfFileName={`cronograma-${id}.pdf`}
+                            isOpen={openContractDocumentDialog}
+                            onOpenChange={setOpenContractDocumentDialog}
+                            title="Contrato"
+                            pdfAction={DownloadReservationContractPDF}
+                            wordAction={DownloadReservationContractDOCX}
+                            pdfFileName={`contrato-${id}.pdf`}
+                            wordFileName={`contrato-${id}.docx`}
                         />
                     )}
                     {openStatusChangeDialog && (
@@ -279,31 +279,16 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                     <RefreshCw className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => id && handleEditInterface(id)}>
-                                Editar
-                                <DropdownMenuShortcut>
-                                    <Pencil className="size-4" aria-hidden="true" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => setOpenReservationDocumentDialog(true)}>
                                 Documento de Separación
                                 <DropdownMenuShortcut>
                                     <Download className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => setOpenScheduleDocumentDialog(true)}>
-                                Cronograma de Pagos PDF
+                            <DropdownMenuItem onSelect={() => setOpenContractDocumentDialog(true)}>
+                                Contrato
                                 <DropdownMenuShortcut>
                                     <FileText className="size-4" aria-hidden="true" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => {
-                                navigate.push(`/reservations/${id}/payments`);
-                            }}
-                            >
-                                Ver Cronograma de Pagos
-                                <DropdownMenuShortcut>
-                                    <Calendar className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

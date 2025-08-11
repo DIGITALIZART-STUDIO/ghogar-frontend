@@ -33,6 +33,37 @@ export async function GetAllCanceledReservations(): Promise<Result<Array<compone
     return ok(response);
 }
 
+export async function GetAllCanceledPendingValidationReservationsPaginated(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["ReservationDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/canceled/pending-validation/paginated", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    })
+    );
+
+    if (error) {
+        console.log("Error getting paginated canceled pending validation reservations:", error);
+        return err(error);
+    }
+
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page: page,
+            pageSize: pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
+}
+
 // Traer reservas canceladas paginadas
 export async function GetAllCanceledReservationsPaginated(
     page: number = 1,

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetReservationById } from "../_actions/ReservationActions";
+import { GetAllCanceledPendingValidationReservationsPaginated, GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetReservationById } from "../_actions/ReservationActions";
 import type { PaginatedResponse } from "@/types/api/paginated-response";
 import type { components } from "@/types/api";
 import type { FetchError } from "@/types/backend";
@@ -14,6 +14,20 @@ export function useCanceledReservations() {
                 throw new Error(error.message);
             }
             return data ?? [];
+        },
+    });
+}
+
+// Hook para reservas canceladas pendientes de validación paginadas
+export function usePaginatedCanceledPendingValidationReservations(page: number = 1, pageSize: number = 10) {
+    return useQuery<PaginatedResponse<components["schemas"]["ReservationDto"]>, FetchError>({
+        queryKey: ["canceledPendingValidationReservationsPaginated", page, pageSize],
+        queryFn: async () => {
+            const [data, error] = await GetAllCanceledPendingValidationReservationsPaginated(page, pageSize);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data!;
         },
     });
 }

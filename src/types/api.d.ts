@@ -3794,6 +3794,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Reservations/canceled/pending-validation/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Reservations/canceled/paginated": {
         parameters: {
             query?: never;
@@ -3919,6 +3959,41 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/Reservations/{id}/toggle-validation-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/Reservations/client/{clientId}": {
@@ -4716,6 +4791,8 @@ export interface components {
             separatePropertyData?: string | null;
         };
         /** @enum {unknown} */
+        ContractValidationStatus: "None" | "PendingValidation" | "Validated";
+        /** @enum {unknown} */
         Currency: "SOLES" | "DOLARES";
         DashboardAdminDto: {
             /** Format: int32 */
@@ -5310,6 +5387,10 @@ export interface components {
             data?: Array<components["schemas"]["QuotationSummaryDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
+        PaginatedResponseV2OfReservationDto: {
+            data?: Array<components["schemas"]["ReservationDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
         PaginatedResponseV2OfReservationWithPaymentsDto: {
             data?: Array<components["schemas"]["ReservationWithPaymentsDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
@@ -5852,6 +5933,7 @@ export interface components {
             amountPaid?: number;
             currency?: components["schemas"]["Currency"];
             status?: components["schemas"]["ReservationStatus"];
+            contractValidationStatus?: components["schemas"]["ContractValidationStatus"];
             paymentMethod?: components["schemas"]["PaymentMethod"];
             bankName?: string | null;
             /** Format: double */
@@ -5905,6 +5987,7 @@ export interface components {
             amountPaid?: number;
             currency?: components["schemas"]["Currency"];
             status?: components["schemas"]["ReservationStatus"];
+            contractValidationStatus?: components["schemas"]["ContractValidationStatus"];
             paymentMethod?: components["schemas"]["PaymentMethod"];
             bankName?: string | null;
             /** Format: double */

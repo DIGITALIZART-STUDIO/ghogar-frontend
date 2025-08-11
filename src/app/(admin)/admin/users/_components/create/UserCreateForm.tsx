@@ -7,11 +7,10 @@ import {  Eye, EyeOff, RefreshCw, Copy, Check, AlertTriangle } from "lucide-reac
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { roles } from "@/app/(admin)/_authorization_context";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { UserCreateDTO } from "../../_schemas/createUsersSchema";
 import { useState } from "react";
-import { calculatePasswordStrength } from "../../_utils/user.utils";
+import { calculatePasswordStrength, UserRoleLabels } from "../../_utils/user.utils";
 
 interface UserCreateFormProps  extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
       children: React.ReactNode;
@@ -113,11 +112,16 @@ export default function UserCreateForm({
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {Object.entries(roles).map(([role, name]) => (
-                                            <SelectItem key={role} value={role}>
-                                                {name}
-                                            </SelectItem>
-                                        ))}
+                                        {Object.entries(UserRoleLabels)
+                                            .filter(([role]) => role !== "Other")
+                                            .map(([role, { label, icon: Icon, className }]) => (
+                                                <SelectItem key={role} value={role}>
+                                                    <span className={"flex items-center gap-2"}>
+                                                        <Icon className={`w-4 h-4 ${className}`} />
+                                                        {label}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>Nivel de acceso y permisos del usuario</FormDescription>

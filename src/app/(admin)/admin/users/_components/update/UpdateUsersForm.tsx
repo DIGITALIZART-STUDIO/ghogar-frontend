@@ -8,7 +8,7 @@ import { Select, SelectContent,  SelectItem, SelectTrigger, SelectValue } from "
 import { Sheet } from "@/components/ui/sheet";
 import { UserUpdateDTO } from "../../_schemas/createUsersSchema";
 import { Input } from "@/components/ui/input";
-import { roles } from "@/app/(admin)/_authorization_context";
+import { UserRoleLabels } from "../../_utils/user.utils";
 
 interface UpdateUsersFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
@@ -102,11 +102,16 @@ export default function UpdateUsersForm({ children, form, onSubmit }: UpdateUser
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {Object.entries(roles).map(([role, name]) => (
-                                            <SelectItem key={role} value={role}>
-                                                {name}
-                                            </SelectItem>
-                                        ))}
+                                        {Object.entries(UserRoleLabels)
+                                            .filter(([role]) => role !== "Other")
+                                            .map(([role, { label, icon: Icon, className }]) => (
+                                                <SelectItem key={role} value={role}>
+                                                    <span className={"flex items-center gap-2"}>
+                                                        <Icon className={`w-4 h-4 ${className}`} />
+                                                        {label}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>Nivel de acceso y permisos del usuario</FormDescription>

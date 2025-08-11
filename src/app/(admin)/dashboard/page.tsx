@@ -2,7 +2,7 @@
 
 import { DashboardGreeting } from "./_components/DashboardGreatings";
 import { useUsers } from "../admin/users/_hooks/useUser";
-import SuperAdminDashboard from "./super-admin/SuperAdminDashboard";
+/* import SuperAdminDashboard from "./super-admin/SuperAdminDashboard"; */
 import AdminDashboard from "./_components/admin/AdminDashboard";
 import SupervisorDashboard from "./_components/supervisor/SupervisorDashboard";
 import SalesAdvisorDashboard from "./_components/sales-advisor/SalesAdvisorDashboard";
@@ -26,7 +26,7 @@ export default function DashboardPage() {
                 <DashboardGreeting userName={user.user.name} />
                 <div id="headerContent" className="mb-4 justify-items-end sm:mb-0" />
             </div>
-            {user.roles[0] === "SuperAdmin" && <SuperAdminDashboard />}
+            {user.roles[0] === "SuperAdmin" && <AdminDashboard />}
             {user.roles[0] === "Admin" && <AdminDashboard />}
             {user.roles[0] === "Supervisor" && <SupervisorDashboard />}
             {user.roles[0] === "SalesAdvisor" && <SalesAdvisorDashboard />}

@@ -88,7 +88,7 @@ export default function TeamTabsContent({ data, isLoading }: TeamTabsContentProp
                                         fontWeight={700}
                                         tickLine={false}
                                         axisLine={false}
-                                        tick={{ fill: "#475569" }}
+                                        tick={{ fill: "#475569"  }}
                                     />
 
                                     {/* Línea de referencia en 100% */}

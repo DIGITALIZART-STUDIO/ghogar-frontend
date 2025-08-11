@@ -208,11 +208,11 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
     },
 
     {
-        id: "fechaExpiración",
+        id: "fecha de Expiración",
         accessorKey: "expirationDate",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
         cell: ({ row }) => {
-            const expirationDate = row.getValue("fechaExpiración") as string;
+            const expirationDate = row.getValue("fecha de Expiración") as string;
             const status = row.original?.status;
 
             // Si está completado o cancelado, no mostrar días

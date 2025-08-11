@@ -20,3 +20,9 @@ export enum PaymentMethod {
   BANK_DEPOSIT = "BANK_DEPOSIT",
   BANK_TRANSFER = "BANK_TRANSFER",
 }
+
+export enum ContractValidationStatus {
+  None = "None",
+  PendingValidation = "PendingValidation",
+  Validated = "Validated"
+}

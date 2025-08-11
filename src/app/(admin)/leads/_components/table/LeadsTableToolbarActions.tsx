@@ -7,10 +7,10 @@ import { ImportLeadsDialog } from "../imports/ImportLeadsDialog";
 import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
 import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useCheckAndUpdateExpiredLeads } from "../../_hooks/useLeads";
+import { useCheckAndUpdateExpiredLeads, useDownloadLeadsExcel } from "../../_hooks/useLeads";
 
 export interface LeadsTableToolbarActionsProps {
   table?: Table<Lead>;
@@ -19,6 +19,7 @@ export interface LeadsTableToolbarActionsProps {
 export function LeadsTableToolbarActions({ table }: LeadsTableToolbarActionsProps) {
     const router = useRouter();
     const checkAndUpdateExpiredLeads = useCheckAndUpdateExpiredLeads();
+    const downloadLeadsExcelMutation = useDownloadLeadsExcel();
 
     const handleExpireLeads = async () => {
         const promise = checkAndUpdateExpiredLeads.mutateAsync();
@@ -34,8 +35,36 @@ export function LeadsTableToolbarActions({ table }: LeadsTableToolbarActionsProp
         });
     };
 
+    const handleDownloadExcel = async () => {
+        try {
+            const id = toast.loading("Descargando Excel de leads...");
+            const blob = await downloadLeadsExcelMutation.mutateAsync();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Leads.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            toast.success("Excel de leads descargado correctamente");
+            toast.dismiss(id);
+        } catch (error: unknown) {
+            toast.dismiss();
+            if (error instanceof Error) {
+                toast.error(`Error al descargar el Excel de leads: ${error.message}`);
+            } else {
+                toast.error(`Error al descargar el Excel de leads: ${error}`);
+            }
+        }
+    };
+
     return (
         <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={handleDownloadExcel}>
+                <Download className="mr-2 size-4" aria-hidden="true" />
+                Descargar Excel
+            </Button>
             {table && table.getFilteredSelectedRowModel().rows.length > 0 ? (
                 <>
                     <DeleteLeadsDialog

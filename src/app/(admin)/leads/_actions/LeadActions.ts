@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { components } from "@/types/api";
-import { backend, FetchError, wrapper } from "@/types/backend";
+import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { PaginatedResponse } from "@/types/api/paginated-response";
 
@@ -373,3 +373,19 @@ export async function CheckAndUpdateExpiredLeads(): Promise<Result<{ expiredLead
     return ok(response as unknown as { expiredLeadsCount: number });
 }
 
+// Descargar Excel de leads
+export async function DownloadLeadsExcel(): Promise<Result<Blob, FetchError>> {
+    const result = await DownloadFile(
+        "/api/Leads/export", // Endpoint del backend
+        "GET",
+        undefined,
+    );
+
+    if (!result[0]) {
+        const error = result[1];
+        console.log("Error downloading leads excel:", error);
+        return err(error);
+    }
+
+    return result;
+}

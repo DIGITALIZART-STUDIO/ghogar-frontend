@@ -3,15 +3,16 @@
 import { revalidatePath } from "next/cache";
 
 import { components } from "@/types/api";
+import { PaginatedResponse } from "@/types/api/paginated-response";
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
-import { PaginatedResponse } from "@/types/api/paginated-response";
 
 // Obtener todos los clientes
 export async function GetAllClients(): Promise<Result<Array<components["schemas"]["Client"]>, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Clients", {
         ...auth,
-    }));
+    })
+    );
 
     if (error) {
         console.log("Error getting clients:", error);
@@ -57,7 +58,8 @@ export async function GetPaginatedClients(
 export async function GetInactiveClients(): Promise<Result<Array<components["schemas"]["Client"]>, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Clients/inactive", {
         ...auth,
-    }));
+    })
+    );
 
     if (error) {
         console.log("Error getting inactive clients:", error);
@@ -67,11 +69,14 @@ export async function GetInactiveClients(): Promise<Result<Array<components["sch
 }
 
 // Crear un cliente
-export async function CreateClient(client: components["schemas"]["ClientCreateDto"]): Promise<Result<components["schemas"]["Client"], FetchError>> {
+export async function CreateClient(
+    client: components["schemas"]["ClientCreateDto"]
+): Promise<Result<components["schemas"]["Client"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.POST("/api/Clients", {
         ...auth,
         body: client,
-    }));
+    })
+    );
 
     if (error) {
         console.log("Error creating client:", error);
@@ -85,13 +90,14 @@ export async function CreateClient(client: components["schemas"]["ClientCreateDt
 // Actualizar un cliente
 export async function UpdateClient(
     id: string,
-    client: components["schemas"]["ClientUpdateDto"],
+    client: components["schemas"]["ClientUpdateDto"]
 ): Promise<Result<components["schemas"]["Client"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.PUT("/api/Clients/{id}", {
         ...auth,
         params: { path: { id } },
         body: client,
-    }));
+    })
+    );
 
     revalidatePath("/(admin)/clients", "page");
 
@@ -103,11 +109,14 @@ export async function UpdateClient(
 }
 
 // Desactivar múltiples clientes (eliminar)
-export async function DeleteClients(ids: Array<string>): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
+export async function DeleteClients(
+    ids: Array<string>
+): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.DELETE("/api/Clients/batch", {
         ...auth,
         body: ids,
-    }));
+    })
+    );
 
     revalidatePath("/(admin)/clients", "page");
 
@@ -119,11 +128,14 @@ export async function DeleteClients(ids: Array<string>): Promise<Result<componen
 }
 
 // Activar múltiples clientes
-export async function ActivateClients(ids: Array<string>): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
+export async function ActivateClients(
+    ids: Array<string>
+): Promise<Result<components["schemas"]["BatchOperationResult"], FetchError>> {
     const [response, error] = await wrapper((auth) => backend.POST("/api/Clients/batch/activate", {
         ...auth,
         body: ids,
-    }));
+    })
+    );
 
     revalidatePath("/(admin)/clients", "page");
 
@@ -139,7 +151,8 @@ export async function GetClient(id: string): Promise<Result<components["schemas"
     const [response, error] = await wrapper((auth) => backend.GET("/api/Clients/{id}", {
         ...auth,
         params: { path: { id } },
-    }));
+    })
+    );
 
     if (error) {
         console.log(`Error getting client ${id}:`, error);
@@ -154,7 +167,8 @@ export async function GetClientsSummary(): Promise<
   > {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Clients/summary", {
         ...auth,
-    }));
+    })
+    );
 
     if (error) {
         console.log("Error getting clients summary:", error);
@@ -173,7 +187,8 @@ export async function ImportClients(file: File): Promise<Result<components["sche
         // Importante: al enviar FormData, no debemos establecer el Content-Type
         // para que el navegador lo establezca automáticamente con el boundary correcto
         formData: true,
-    }));
+    })
+    );
 
     revalidatePath("/(admin)/clients", "page");
 
@@ -190,7 +205,7 @@ export async function DownloadImportTemplate(): Promise<Result<Blob, FetchError>
     const result = await DownloadFile(
         "/api/Clients/template", // URL del endpoint
         "GET", // Método HTTP
-        undefined, // Sin cuerpo para GET
+        undefined // Sin cuerpo para GET
     );
 
     if (!result[0]) {
@@ -201,4 +216,21 @@ export async function DownloadImportTemplate(): Promise<Result<Blob, FetchError>
     }
 
     return result; // Devuelve el resultado tal cual
+}
+
+// Descargar Excel de clientes
+export async function DownloadClientsExcel(): Promise<Result<Blob, FetchError>> {
+    const result = await DownloadFile(
+        "/api/Clients/excel", // Endpoint del backend
+        "GET",
+        undefined
+    );
+
+    if (!result[0]) {
+        const error = result[1];
+        console.log("Error downloading clients excel:", error);
+        return err(error);
+    }
+
+    return result;
 }

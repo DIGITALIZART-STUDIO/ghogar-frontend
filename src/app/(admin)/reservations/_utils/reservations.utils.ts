@@ -1,6 +1,6 @@
-import { Ban, Banknote, CheckCircle, CreditCard, DollarSign, FileText } from "lucide-react";
+import { Ban, Banknote, CheckCircle, Clock, CreditCard, DollarSign, FileText, ShieldCheck, ShieldX } from "lucide-react";
 
-import { Currency, PaymentMethod, ReservationStatus } from "../_types/reservation";
+import { ContractValidationStatus, Currency, PaymentMethod, ReservationStatus } from "../_types/reservation";
 
 export const ReservationStatusLabels: Record<
   ReservationStatus,
@@ -66,5 +66,30 @@ export const PaymentMethodLabels: Record<
         iconClass: "text-purple-700",
         bgClass: "bg-purple-100",
         className: "text-purple-700 border-purple-200",
+    },
+};
+
+export const ContractValidationStatusLabels: Record<
+  ContractValidationStatus,
+  {
+    label: string;
+    icon: React.ElementType;
+    className: string;
+  }
+> = {
+    [ContractValidationStatus.None]: {
+        label: "Sin estado",
+        icon: ShieldX,
+        className: "text-gray-500 border-gray-200",
+    },
+    [ContractValidationStatus.PendingValidation]: {
+        label: "Pendiente de validación",
+        icon: Clock,
+        className: "text-amber-600 border-amber-200",
+    },
+    [ContractValidationStatus.Validated]: {
+        label: "Validado",
+        icon: ShieldCheck,
+        className: "text-green-600 border-green-200",
     },
 };

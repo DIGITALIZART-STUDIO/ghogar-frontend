@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetReservationById } from "../_actions/ReservationActions";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { GetAllCanceledPendingValidationReservationsPaginated, GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetReservationById, ToggleContractValidationStatus } from "../_actions/ReservationActions";
 import type { PaginatedResponse } from "@/types/api/paginated-response";
 import type { components } from "@/types/api";
 import type { FetchError } from "@/types/backend";
@@ -14,6 +14,20 @@ export function useCanceledReservations() {
                 throw new Error(error.message);
             }
             return data ?? [];
+        },
+    });
+}
+
+// Hook para reservas canceladas pendientes de validación paginadas
+export function usePaginatedCanceledPendingValidationReservations(page: number = 1, pageSize: number = 10) {
+    return useQuery<PaginatedResponse<components["schemas"]["ReservationDto"]>, FetchError>({
+        queryKey: ["canceledPendingValidationReservationsPaginated", page, pageSize],
+        queryFn: async () => {
+            const [data, error] = await GetAllCanceledPendingValidationReservationsPaginated(page, pageSize);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data!;
         },
     });
 }
@@ -47,5 +61,25 @@ export function useReservationById(reservationId: string, enabled = true) {
             return data;
         },
         enabled: !!reservationId && enabled,
+    });
+}
+
+// Hook para cambiar el estado de validación del contrato
+export function useToggleContractValidationStatus() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const [, error] = await ToggleContractValidationStatus(id);
+            if (error) {
+                throw new Error(error.message);
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+        },
     });
 }

@@ -156,8 +156,9 @@ export default function TeamTabsContent({ data, isLoading }: TeamTabsContentProp
                                         name="Eficiencia"
                                         stroke="#10b981"
                                         strokeWidth={2}
-                                        dot={({ cx, cy, value }) => (
+                                        dot={({ cx, cy, value, index }) => (
                                             <circle
+                                                key={`dot-${cx}-${cy}-${value}-${index}`}
                                                 cx={cx}
                                                 cy={cy}
                                                 r={value === 100 ? 7 : 3}

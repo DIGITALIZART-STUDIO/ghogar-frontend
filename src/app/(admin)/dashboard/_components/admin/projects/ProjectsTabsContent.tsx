@@ -170,7 +170,7 @@ export default function ProjectsTabsContent({ data, isLoading }: ProjectsTabsCon
                             </Card>
                             {/* Panel de resumen con cards mejorados */}
                             <Card>
-                                <CardHeader className="relative pb-4">
+                                <CardHeader className="relative">
                                     <CardTitle className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-gradient-to-br from-slate-500/8 to-stone-500/8">
                                             <BarChart3 className="w-5 h-5 text-slate-600 dark:text-slate-400" />

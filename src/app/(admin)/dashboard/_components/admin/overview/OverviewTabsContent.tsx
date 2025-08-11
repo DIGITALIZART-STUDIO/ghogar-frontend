@@ -20,7 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { type AdminDashboard } from "../../../_types/dashboard";
-import { getLotStatusConfig } from "@/app/(admin)/admin/projects/lots/_utils/lots.filter.utils";
+import { getLotStatusConfig, LotStatusConfig } from "@/app/(admin)/admin/projects/lots/_utils/lots.filter.utils";
 import { LotStatus } from "@/app/(admin)/admin/projects/lots/_types/lot";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { EmptyState } from "../../EmptyState";
@@ -49,10 +49,8 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                 {/* Estado de lotes - Ocupa 2 columnas */}
                 <Card className={cn(
                     "xl:col-span-2 relative overflow-hidden",
-                    "border border-slate-200/60 dark:border-slate-700/60",
                 )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-slate-500/3" />
                     <CardHeader className="relative pb-4">
                         <CardTitle className="flex items-center gap-3">
                             <div className="p-2 rounded-lg bg-gradient-to-br from-slate-500/8 to-stone-500/8">
@@ -113,9 +111,25 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                                                 content={({ active, payload }) => {
                                                     if (active && payload && payload[0]) {
                                                         const data = payload[0].payload;
+                                                        const config = LotStatusConfig[data.status as keyof typeof LotStatusConfig];
+                                                        const colorMatch = config.dotClassName.match(/bg-([a-z]+)-(\d+)/);
+                                                        const tailwindToHex: Record<string, string> = {
+                                                            "emerald-500": "#10b981",
+                                                            "amber-500": "#f59e42",
+                                                            "blue-500": "#3b82f6",
+                                                            "gray-500": "#6b7280",
+                                                        };
+                                                        const colorKey = colorMatch ? `${colorMatch[1]}-${colorMatch[2]}` : "#64748b";
+                                                        const fillColor = tailwindToHex[colorKey] || "#64748b";
                                                         return (
                                                             <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-                                                                <p className="font-medium">{data.status}</p>
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span
+                                                                        className="w-3 h-3 rounded-full inline-block"
+                                                                        style={{ backgroundColor: fillColor }}
+                                                                    />
+                                                                    <p className="font-medium m-0">{config?.label ?? data.status}</p>
+                                                                </div>
                                                                 <p className="text-sm text-muted-foreground">
                                                                     {data.count} lotes ({data.percentage.toFixed(1)}%)
                                                                 </p>
@@ -161,7 +175,9 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                                                             className="w-4 h-4 rounded-full"
                                                             style={{ backgroundColor: fillColor }}
                                                         />
-                                                        <span className="font-medium text-sm">{item.status}</span>
+                                                        <span className="font-medium text-sm">
+                                                            {LotStatusConfig[item.status as keyof typeof LotStatusConfig]?.label ?? item.status}
+                                                        </span>
                                                     </div>
                                                     <div className="text-right">
                                                         <div className="font-semibold text-sm">{item.count}</div>
@@ -180,12 +196,9 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                 </Card>
 
                 {/* Métricas rápidas */}
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <Card className={cn(
                         "relative overflow-hidden",
-                        "bg-gradient-to-br from-stone-50/50 via-white to-amber-50/20",
-                        "dark:from-stone-900/20 dark:via-slate-800/50 dark:to-amber-900/10",
-                        "border border-stone-200/60 dark:border-stone-700/30"
                     )}
                     >
                         <CardHeader className="relative">
@@ -202,9 +215,6 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
 
                     <Card className={cn(
                         "relative overflow-hidden",
-                        "bg-gradient-to-br from-slate-50/50 via-white to-teal-50/20",
-                        "dark:from-slate-900/20 dark:via-slate-800/50 dark:to-teal-900/10",
-                        "border border-slate-200/60 dark:border-teal-700/30",
                     )}
                     >
                         <CardHeader className="relative">
@@ -223,9 +233,6 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
 
                     <Card className={cn(
                         "relative overflow-hidden",
-                        "bg-gradient-to-br from-gray-50/50 via-white to-orange-50/20",
-                        "dark:from-gray-900/20 dark:via-slate-800/50 dark:to-orange-900/10",
-                        "border border-gray-200/60 dark:border-orange-700/30"
                     )}
                     >
                         <CardHeader className="relative">
@@ -247,9 +254,6 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
             {/* Tendencia mensual */}
             <Card className={cn(
                 "relative overflow-hidden",
-                "bg-gradient-to-br from-slate-50/50 via-white to-stone-50/30",
-                "dark:from-slate-900/50 dark:via-slate-800/50 dark:to-stone-900/20",
-                "border border-slate-200/60 dark:border-slate-700/60",
             )}
             >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-stone-500/3" />

@@ -168,6 +168,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Auth/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate token
+         * @description Validates the current access token and returns user information.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserInfo"];
+                        "application/json": components["schemas"]["UserInfo"];
+                        "text/json": components["schemas"]["UserInfo"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/refresh": {
         parameters: {
             query?: never;
@@ -993,6 +1034,290 @@ export interface paths {
                     content: {
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
                     };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendEmailRequest"];
+                    "text/json": components["schemas"]["SendEmailRequest"];
+                    "application/*+json": components["schemas"]["SendEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TestEmailRequest"];
+                    "text/json": components["schemas"]["TestEmailRequest"];
+                    "application/*+json": components["schemas"]["TestEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/welcome": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["WelcomeEmailRequest"];
+                    "text/json": components["schemas"]["WelcomeEmailRequest"];
+                    "application/*+json": components["schemas"]["WelcomeEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/quotation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["QuotationEmailRequest"];
+                    "text/json": components["schemas"]["QuotationEmailRequest"];
+                    "application/*+json": components["schemas"]["QuotationEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/reservation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReservationEmailRequest"];
+                    "text/json": components["schemas"]["ReservationEmailRequest"];
+                    "application/*+json": components["schemas"]["ReservationEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/payment-reminder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PaymentReminderEmailRequest"];
+                    "text/json": components["schemas"]["PaymentReminderEmailRequest"];
+                    "application/*+json": components["schemas"]["PaymentReminderEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Email/test-otp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -3693,6 +4018,115 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Quotations/{userId}/send-otp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotations/{userId}/validate-otp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyOtpRequestDto"];
+                    "text/json": components["schemas"]["VerifyOtpRequestDto"];
+                    "application/*+json": components["schemas"]["VerifyOtpRequestDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Quotations/admin/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Reservations": {
         parameters: {
             query?: never;
@@ -4749,6 +5183,15 @@ export interface components {
             name?: string | null;
             isActive?: boolean | null;
         };
+        CashFlowDto: {
+            month?: string;
+            /** Format: double */
+            programado?: number;
+            /** Format: double */
+            realizado?: number;
+            /** Format: double */
+            separaciones?: number;
+        };
         Client: {
             /** Format: uuid */
             id?: string;
@@ -4836,6 +5279,13 @@ export interface components {
             type?: string;
             isActive?: boolean;
         };
+        ClientRegistrationDto: {
+            month?: string;
+            /** Format: int32 */
+            natural?: number;
+            /** Format: int32 */
+            juridico?: number;
+        };
         ClientSummaryDto: {
             /** Format: uuid */
             id?: string;
@@ -4884,7 +5334,7 @@ export interface components {
             /** Format: int32 */
             completedSales?: number;
             /** Format: double */
-            monthlyRevenue?: number;
+            annualRevenue?: number;
             /** Format: double */
             pendingPayments?: number;
             /** Format: double */
@@ -4901,6 +5351,14 @@ export interface components {
             projectMetrics?: Array<components["schemas"]["ProjectMetricDto"]>;
             paymentMetrics?: components["schemas"]["PaymentMetricsDto"];
             monthlyPerformance?: Array<components["schemas"]["MonthlyPerformanceDto"]>;
+            clientRegistrations?: Array<components["schemas"]["ClientRegistrationDto"]>;
+            geographicData?: Array<components["schemas"]["GeographicClientDto"]>;
+            recentClients?: Array<components["schemas"]["RecentClientDto"]>;
+            paymentPipeline?: Array<components["schemas"]["PaymentPipelineStageDto"]>;
+            reservationStatusData?: Array<components["schemas"]["ReservationStatusDto"]>;
+            paymentMethodsData?: Array<components["schemas"]["PaymentMethodDto"]>;
+            upcomingPayments?: Array<components["schemas"]["UpcomingPaymentDto"]>;
+            cashFlowData?: Array<components["schemas"]["CashFlowDto"]>;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
@@ -4913,6 +5371,13 @@ export interface components {
             lastModified?: string | null;
             entityTag?: components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
+        };
+        GeographicClientDto: {
+            country?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            percentage?: number;
         };
         ImportResult: {
             /** Format: int32 */
@@ -5284,7 +5749,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5302,7 +5767,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5320,7 +5785,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5338,7 +5803,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5356,7 +5821,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5507,6 +5972,15 @@ export interface components {
         };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
+        PaymentMethodDto: {
+            method?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            amount?: number;
+            /** Format: double */
+            percentage?: number;
+        };
         PaymentMetricsDto: {
             /** Format: double */
             totalScheduled?: number;
@@ -5523,6 +5997,13 @@ export interface components {
             /** Format: double */
             deposits?: number;
         };
+        PaymentPipelineStageDto: {
+            stage?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            amount?: number;
+        };
         PaymentQuotaSimpleDTO: {
             /** Format: uuid */
             id?: string;
@@ -5536,6 +6017,15 @@ export interface components {
             dueDate?: string;
             paid?: boolean;
             currency?: components["schemas"]["Currency"];
+        };
+        PaymentReminderEmailRequest: {
+            clientName?: string;
+            email?: string;
+            paymentNumber?: string;
+            /** Format: double */
+            amount?: number;
+            /** Format: date-time */
+            dueDate?: string;
         };
         PaymentTransactionCreateDTO: {
             /** Format: date-time */
@@ -5921,6 +6411,14 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        QuotationEmailRequest: {
+            clientName?: string;
+            email?: string;
+            quotationNumber?: string;
+            /** Format: double */
+            amount?: number;
+            projectName?: string;
+        };
         /** @enum {unknown} */
         QuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED";
         QuotationStatusDTO: {
@@ -5968,6 +6466,19 @@ export interface components {
             /** Format: date-time */
             validUntil?: string | null;
             quotationDate?: string | null;
+        };
+        RecentClientDto: {
+            name?: string;
+            type?: string;
+            phone?: string;
+            email?: string | null;
+            country?: string;
+            /** Format: int32 */
+            completeness?: number;
+            /** Format: int32 */
+            daysAgo?: number;
+            hasCoOwners?: boolean;
+            separateProperty?: boolean;
         };
         RefreshRequest: {
             refreshToken: string;
@@ -6017,10 +6528,24 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        ReservationEmailRequest: {
+            clientName?: string;
+            email?: string;
+            lotNumber?: string;
+            projectName?: string;
+            /** Format: double */
+            amount?: number;
+        };
         /** @enum {unknown} */
         ReservationStatus: "ISSUED" | "CANCELED" | "ANULATED";
         ReservationStatusDto: {
             status?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            amount?: number;
+            /** Format: double */
+            percentage?: number;
         };
         ReservationUpdateDto: {
             /** Format: date */
@@ -6098,6 +6623,12 @@ export interface components {
             cargo?: string;
             fechaDesde?: string;
         };
+        SendEmailRequest: {
+            to?: string;
+            subject?: string;
+            content?: string;
+            context?: Record<string, never> | null;
+        };
         StringSegment: {
             buffer?: string | null;
             /** Format: int32 */
@@ -6130,6 +6661,22 @@ export interface components {
             reservations?: number;
             /** Format: double */
             efficiency?: number;
+        };
+        TestEmailRequest: {
+            name?: string;
+            email?: string;
+        };
+        UpcomingPaymentDto: {
+            /** Format: uuid */
+            reservationId?: string;
+            clientName?: string;
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: double */
+            amountDue?: number;
+            /** Format: int32 */
+            daysLeft?: number;
+            status?: string;
         };
         UpdateProfilePasswordDTO: {
             currentPassword?: string;
@@ -6212,6 +6759,12 @@ export interface components {
             user: components["schemas"]["User2"];
             roles: Array<string>;
         };
+        UserInfo: {
+            id?: string;
+            name?: string;
+            email?: string;
+            roles?: Array<string>;
+        };
         UserSummaryDto: {
             /** Format: uuid */
             id?: string;
@@ -6225,6 +6778,15 @@ export interface components {
         };
         UserUpdatePasswordDTO: {
             newPassword: string;
+        };
+        VerifyOtpRequestDto: {
+            otpCode: string;
+        };
+        WelcomeEmailRequest: {
+            name?: string;
+            email?: string;
+            password?: string;
+            webAdminUrl?: string;
         };
     };
     responses: never;

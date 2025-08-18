@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import ErrorGeneral from "@/components/errors/general-error";
 import AdminLayout from "@/components/layout/admin-layout";
@@ -13,10 +12,11 @@ import { Search } from "@/components/ui/search";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { AuthorizationContext, ProtectedRoute, Role } from "./_authorization_context";
 import { useUsers } from "./admin/users/_hooks/useUser";
+import { useAuthContext } from "@/context/auth-provider";
+import { AuthGuard } from "@/components/auth-guard";
 
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
-    const router = useRouter();
-
+    const { handleAuthError } = useAuthContext();
     const { data, error, isLoading } = useUsers();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,9 +24,9 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
 
     useEffect(() => {
         if (!isLoading && !!e && (e.statusCode === 401 || e.statusCode === 403)) {
-            router.replace("/login");
+            handleAuthError(e);
         }
-    }, [e, isLoading, router]);
+    }, [e, isLoading, handleAuthError]);
 
     if (isLoading) {
         return <FullPageLoader text="Cargando aplicación..." />;
@@ -54,21 +54,23 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         .join("");
 
     return (
-        <AdminLayout name={username} email={data.user.email!} initials={initials} roles={data.roles as Array<string>}>
-            <AuthorizationContext roles={data.roles as Array<Role>}>
-                <ProtectedRoute>
-                    {/* ===== Top Heading ===== */}
-                    <Header>
-                        <Search />
-                        <div className="ml-auto flex items-center space-x-4">
-                            <ThemeSwitch />
-                            <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
-                        </div>
-                    </Header>
-                    {/* ===== Main Content ===== */}
-                    <Main>{children}</Main>
-                </ProtectedRoute>
-            </AuthorizationContext>
-        </AdminLayout>
+        <AuthGuard>
+            <AdminLayout name={username} email={data.user.email!} initials={initials} roles={data.roles as Array<string>}>
+                <AuthorizationContext roles={data.roles as Array<Role>}>
+                    <ProtectedRoute>
+                        {/* ===== Top Heading ===== */}
+                        <Header>
+                            <Search />
+                            <div className="ml-auto flex items-center space-x-4">
+                                <ThemeSwitch />
+                                <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
+                            </div>
+                        </Header>
+                        {/* ===== Main Content ===== */}
+                        <Main>{children}</Main>
+                    </ProtectedRoute>
+                </AuthorizationContext>
+            </AdminLayout>
+        </AuthGuard>
     );
 }

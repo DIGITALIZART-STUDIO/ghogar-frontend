@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import createClient from "openapi-fetch";
 
 import { err, ok, Result } from "@/utils/result";
-import { ACCESS_TOKEN_KEY } from "@/variables";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/variables";
 import type { paths } from "./api";
 import { BACKEND_URL } from "./backend2";
 
@@ -44,11 +44,35 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
     // get auth
     const c = await cookies();
     const jwt = c.get(ACCESS_TOKEN_KEY);
+    const refreshToken = c.get(REFRESH_TOKEN_KEY);
 
     try {
         const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
         if (data.response.ok) {
             return ok(data.data!);
+        }
+
+        // Si es error 401 y tenemos refresh token, intentar refresh
+        if (data.response.status === 401 && refreshToken?.value) {
+            try {
+                const refreshResponse = await backend.POST("/api/Auth/refresh", {
+                    body: { refreshToken: refreshToken.value },
+                });
+
+                if (refreshResponse.data) {
+                    // Reintentar la petición original con el nuevo token
+                    const newJwt = await cookies();
+                    const newToken = newJwt.get(ACCESS_TOKEN_KEY);
+                    const retryData = await fn({ headers: { Authorization: `Bearer ${newToken?.value ?? "---"}` } });
+
+                    if (retryData.response.ok) {
+                        return ok(retryData.data!);
+                    }
+                }
+            } catch (refreshError) {
+                // Si falla el refresh, continuar con el error original
+                console.error("Error refreshing token:", refreshError);
+            }
         }
 
         let defaultError = "Error del servidor";

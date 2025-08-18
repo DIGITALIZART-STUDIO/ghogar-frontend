@@ -41,6 +41,8 @@ const routeNames: Record<string, string> = {
     "/reports": "Reportes",
     "/admin/users": "Gestión de Usuarios",
     "/admin/projects": "Gestión de Proyectos",
+    "/profile": "Perfil",
+    "/": "Inicio",
 };
 
 export default function UnauthorizedPage() {

@@ -18,6 +18,8 @@ import { AdminDashboard } from "../../_types/dashboard";
 export default function AdminDashboardComponent() {
     const { data, isLoading } = useDashboardAdmin(2025);
 
+    console.log("AdminDashboardComponent data:", JSON.stringify(data, null, 2));
+
     return (
         <div>
             <div className="space-y-4">
@@ -152,7 +154,7 @@ export default function AdminDashboardComponent() {
                                             <p className="text-slate-600 text-sm font-medium dark:text-slate-400">Ingresos</p>
                                         </div>
                                         <p className="text-2xl font-bold text-green-700 dark:text-green-400">
-                                            S/ {((data?.monthlyRevenue ?? 0) / 1000000).toFixed(1)}M
+                                            S/ {((data?.annualRevenue ?? 0)).toFixed(1)}
                                         </p>
                                         <div className="flex items-center gap-1 mt-1">
                                             <Badge

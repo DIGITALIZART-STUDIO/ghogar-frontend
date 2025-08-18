@@ -62,7 +62,7 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                             </div>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="relative">
+                    <CardContent className="relative max-h-[800px] h-full">
                         {!hasLotData ? (
                             <EmptyState
                                 icon={PieChartIcon}
@@ -72,7 +72,7 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                         ) : (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <div className="relative">
-                                    <ResponsiveContainer width="100%" height={280}>
+                                    <ResponsiveContainer height={"100%"}>
                                         <RechartsPieChart>
                                             <Pie
                                                 data={data.lotsByStatus}
@@ -268,7 +268,7 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                         </div>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="relative">
+                <CardContent className="relative max-h-[800px] h-full">
                     {!hasPerformanceData ? (
                         <EmptyState
                             icon={BarChart3}
@@ -276,7 +276,7 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                             description="No hay información disponible sobre el rendimiento mensual"
                         />
                     ) : (
-                        <ResponsiveContainer width="100%" height={350}>
+                        <ResponsiveContainer height={450}>
                             <ComposedChart data={data.monthlyPerformance} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
                                 <XAxis

@@ -15,9 +15,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { toastWrapper } from "@/types/toasts";
-import { ActivateBlock, DeactivateBlock } from "../_actions/BlockActions";
-import { useBlocks } from "../_hooks/useBlocks";
+import { toast } from "sonner";
+import { useActivateBlock, useDeactivateBlock, useBlocks } from "../_hooks/useBlocks";
 import { ProjectData } from "../../../_types/project";
 import { BlockCard } from "./BlockCard";
 import { CreateBlocksDialog } from "./create/CreateBlocksDialog";
@@ -31,6 +30,9 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
     const { data: blocks = [], isError, refetch } = useBlocks(projectId);
     const [isPending, startTransition] = useTransition();
     const [searchTerm, setSearchTerm] = useState("");
+
+    const activateBlock = useActivateBlock();
+    const deactivateBlock = useDeactivateBlock();
 
     // Mueve useMemo aquí, antes de cualquier return
     const filteredBlocks = useMemo(() => {
@@ -52,17 +54,33 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
 
     const handleToggleActive = (blockId: string, isActive: boolean) => {
         startTransition(async () => {
-            const action = isActive ? ActivateBlock(blockId) : DeactivateBlock(blockId);
-            const actionText = isActive ? "activar" : "desactivar";
+            try {
+                if (isActive) {
+                    // Activar bloque
+                    const promise = activateBlock.mutateAsync(blockId);
 
-            const [, error] = await toastWrapper(action, {
-                loading: `${isActive ? "Activando" : "Desactivando"} manzana...`,
-                success: `Manzana ${isActive ? "activada" : "desactivada"} exitosamente`,
-                error: (e) => `Error al ${actionText} manzana: ${e.message}`,
-            });
+                    toast.promise(promise, {
+                        loading: "Activando manzana...",
+                        success: "Manzana activada exitosamente",
+                        error: (e) => `Error al activar manzana: ${e.message}`,
+                    });
 
-            if (!error) {
-                refetch();
+                    await promise;
+                } else {
+                    // Desactivar bloque
+                    const promise = deactivateBlock.mutateAsync(blockId);
+
+                    toast.promise(promise, {
+                        loading: "Desactivando manzana...",
+                        success: "Manzana desactivada exitosamente",
+                        error: (e) => `Error al desactivar manzana: ${e.message}`,
+                    });
+
+                    await promise;
+                }
+            } catch (error) {
+                // Este catch es para errores inesperados
+                console.error("Error inesperado:", error);
             }
         });
     };

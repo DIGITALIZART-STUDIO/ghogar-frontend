@@ -17,8 +17,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toastWrapper } from "@/types/toasts";
-import { UpdateBlock } from "../../_actions/BlockActions";
+import { toast } from "sonner";
+import { useUpdateBlock } from "../../_hooks/useBlocks";
 import { blockSchema, CreateBlockSchema } from "../../_schemas/createBlocksSchema";
 import { BlockData } from "../../_types/block";
 import UpdateBlocksForm from "./UpdateBlocksForm";
@@ -40,6 +40,8 @@ export function UpdateBlocksSheet({ block, projectId, open, onOpenChange, refetc
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
+    const updateBlock = useUpdateBlock();
+
     const form = useForm<CreateBlockSchema>({
         resolver: zodResolver(blockSchema),
         defaultValues: {
@@ -58,23 +60,31 @@ export function UpdateBlocksSheet({ block, projectId, open, onOpenChange, refetc
 
     const onSubmit = async(input: CreateBlockSchema) => {
         startTransition(async() => {
+            if (!block?.id) {
+                toast.error("Block ID is required");
+                return;
+            }
+
             // Preparar los datos según el tipo de cliente
-            const clientData = {
+            const blockData = {
                 name: input.name,
                 projectId: projectId,
             };
 
-            if (!block?.id) {
-                throw new Error("Block ID is required");
-            }
-            const [, error] = await toastWrapper(UpdateBlock(block.id, clientData), {
+            const promise = updateBlock.mutateAsync({ id: block.id, block: blockData });
+
+            toast.promise(promise, {
                 loading: "Actualizando manzana...",
                 success: "Manzana actualizada exitosamente",
                 error: (e) => `Error al actualizar manzana: ${e.message}`,
             });
 
-            if (!error) {
+            try {
+                await promise;
                 setIsSuccess(true);
+            } catch (error) {
+                // Manejar errores específicos si es necesario
+                console.error("Error updating block:", error);
             }
         });
     };

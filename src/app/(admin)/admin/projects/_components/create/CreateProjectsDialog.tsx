@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
-import { CreateProject } from "../../_actions/ProjectActions";
-import { CreateProjectSchema, projectSchema } from "../../_schemas/createProjectsSchema";
+import { toast } from "sonner";
+import { useCreateProject } from "../../_hooks/useProjects";
 import CreateProjectsForm from "./CreateProjectsForm";
+import { CreateProjectSchema, projectSchema } from "../../_schemas/createProjectsSchema";
 
 const dataForm = {
     button: "Crear proyecto",
@@ -45,6 +45,8 @@ export function CreateProjectsDialog() {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
+    const createProject = useCreateProject();
+
     const form = useForm<CreateProjectSchema>({
         resolver: zodResolver(projectSchema),
         defaultValues: {
@@ -54,28 +56,23 @@ export function CreateProjectsDialog() {
             currency: "",
             defaultDownPayment: 0,
             defaultFinancingMonths: 0,
+            projectImage: undefined,
         },
     });
 
     const onSubmit = async (input: CreateProjectSchema) => {
         startTransition(async () => {
-            // Preparar los datos para el formato esperado por el backend
-            const leadData = {
-                name: input.name,
-                location: input.location,
-                maxDiscountPercentage: input.maxDiscountPercentage,
-                currency: input.currency,
-                defaultDownPayment: input.defaultDownPayment,
-                defaultFinancingMonths: input.defaultFinancingMonths,
-            };
+            const promise = createProject.mutateAsync(input);
 
-            const [, error] = await toastWrapper(CreateProject(leadData), {
+            toast.promise(promise, {
                 loading: "Creando proyecto...",
                 success: "Proyecto creado exitosamente",
                 error: (e) => `Error al crear proyecto: ${e.message}`,
             });
 
-            if (!error) {
+            const result = await promise;
+
+            if (result) {
                 setIsSuccess(true);
             }
         });
@@ -113,7 +110,7 @@ export function CreateProjectsDialog() {
                                 <DialogFooter>
                                     <div className="grid grid-cols-2 gap-2 w-full">
                                         <DialogClose asChild>
-                                            <Button onClick={handleClose} type="button" variant="outline" className="w-full">
+                                            <Button onClick={handleClose} type="button" variant="outline" className="w-full bg-transparent">
                                                 Cancelar
                                             </Button>
                                         </DialogClose>
@@ -157,7 +154,7 @@ export function CreateProjectsDialog() {
                                         Registrar
                                     </Button>
                                     <DrawerClose asChild>
-                                        <Button variant="outline" className="w-full" onClick={handleClose}>
+                                        <Button variant="outline" className="w-full bg-transparent" onClick={handleClose}>
                                             Cancelar
                                         </Button>
                                     </DrawerClose>

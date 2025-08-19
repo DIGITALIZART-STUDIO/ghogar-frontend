@@ -1,8 +1,10 @@
+"use client";
+
 import { BarChart3, Building2, Home, TrendingUp } from "lucide-react";
 
 import { HeaderPage } from "@/components/common/HeaderPage";
-import ErrorGeneral from "@/components/errors/general-error";
-import { GetAllProjects } from "./_actions/ProjectActions";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useAllProjects } from "./_hooks/useProjects";
 import { CreateProjectsDialog } from "./_components/create/CreateProjectsDialog";
 import { ProjectCard } from "./_components/ProjectCard";
 import { StatsCard } from "./_components/StatsCard";
@@ -33,21 +35,40 @@ function getOverallStats(projects: Array<ProjectData>) {
     };
 }
 
-export default async function ProjectsPage() {
-    // Llamada a la API para obtener todos los proyectos
-    const [result, error] = await GetAllProjects();
+export default function ProjectsPage() {
+    // Usar el hook para obtener todos los proyectos
+    const { data: projects, isLoading, error } = useAllProjects();
 
+    // Mostrar loading spinner mientras carga
+    if (isLoading) {
+        return (
+            <div>
+                <HeaderPage title="Panel Inmobiliario" description="Gestiona tus proyectos inmobiliarios" />
+                <LoadingSpinner text="Cargando proyectos..." />
+            </div>
+        );
+    }
+
+    // Mostrar error si hay algún problema
     if (error) {
         return (
             <div>
                 <HeaderPage title="Panel Inmobiliario" description="Gestiona tus proyectos inmobiliarios" />
-                <ErrorGeneral />
+                <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
+                    <Building2 className="w-12 h-12 text-red-400 mb-2" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                        Error al cargar proyectos
+                    </h3>
+                    <p className="text-gray-500">
+                        {error.message || "Ha ocurrido un error al cargar los proyectos. Inténtalo de nuevo."}
+                    </p>
+                </div>
             </div>
         );
     }
 
     // Calcular estadísticas usando los datos reales del backend
-    const stats = getOverallStats(result);
+    const stats = getOverallStats(projects ?? []);
 
     return (
         <div>
@@ -98,8 +119,8 @@ export default async function ProjectsPage() {
                     <HeaderPage title="Tus Proyectos" description="Administra y monitorea el progreso de cada desarrollo" />
 
                     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {result?.length > 0 ? (
-                            result.map((project) => <ProjectCard key={project.id} project={project} />)
+                        {projects && projects.length > 0 ? (
+                            projects.map((project: ProjectData) => <ProjectCard key={project.id} project={project} />)
                         ) : (
                             <div className="flex flex-col items-center justify-center py-12 text-center gap-3 col-span-full">
                                 <Building2 className="w-12 h-12 text-gray-400 mb-2" />

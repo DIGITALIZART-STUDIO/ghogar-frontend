@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { components } from "@/types/api";
 import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
+import { CreateProjectSchema } from "../_schemas/createProjectsSchema";
 
 // Obtener todos los proyectos
 export async function GetAllProjects(): Promise<Result<Array<components["schemas"]["ProjectDTO"]>, FetchError>> {
@@ -51,10 +52,37 @@ export async function GetProject(id: string): Promise<Result<components["schemas
 }
 
 // Crear un proyecto
-export async function CreateProject(project: components["schemas"]["ProjectCreateDTO"]): Promise<Result<components["schemas"]["ProjectDTO"], FetchError>> {
+export async function CreateProject(project: CreateProjectSchema): Promise<Result<components["schemas"]["ProjectDTO"], FetchError>> {
+    const { projectImage, ...projectData } = project;
+
+    // Crear FormData para enviar tanto el DTO como la imagen
+    const formData = new FormData();
+
+    // Agregar cada campo del DTO individualmente
+    formData.append("dto.name", projectData.name);
+    formData.append("dto.location", projectData.location);
+    formData.append("dto.currency", projectData.currency);
+
+    if (projectData.defaultDownPayment !== undefined && projectData.defaultDownPayment !== null) {
+        formData.append("dto.defaultDownPayment", projectData.defaultDownPayment.toString());
+    }
+    if (projectData.defaultFinancingMonths !== undefined && projectData.defaultFinancingMonths !== null) {
+        formData.append("dto.defaultFinancingMonths", projectData.defaultFinancingMonths.toString());
+    }
+    if (projectData.maxDiscountPercentage !== undefined && projectData.maxDiscountPercentage !== null) {
+        formData.append("dto.maxDiscountPercentage", projectData.maxDiscountPercentage.toString());
+    }
+
+    // Agregar la imagen si existe
+    if (projectImage) {
+        formData.append("projectImage", projectImage);
+    }
+
     const [response, error] = await wrapper((auth) => backend.POST("/api/Projects", {
         ...auth,
-        body: project,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        body: formData as any,
+        formData: true,
     }));
 
     revalidatePath("/(admin)/projects", "page");
@@ -69,8 +97,38 @@ export async function CreateProject(project: components["schemas"]["ProjectCreat
 // Actualizar un proyecto
 export async function UpdateProject(
     id: string,
-    project: components["schemas"]["ProjectUpdateDTO"],
+    project: CreateProjectSchema,
 ): Promise<Result<components["schemas"]["ProjectDTO"], FetchError>> {
+    const { projectImage, ...projectData } = project;
+
+    // Crear FormData para enviar tanto el DTO como la imagen
+    const formData = new FormData();
+
+    // Agregar cada campo del DTO individualmente
+    if (projectData.name !== undefined && projectData.name !== null) {
+        formData.append("dto.name", projectData.name);
+    }
+    if (projectData.location !== undefined && projectData.location !== null) {
+        formData.append("dto.location", projectData.location);
+    }
+    if (projectData.currency !== undefined && projectData.currency !== null) {
+        formData.append("dto.currency", projectData.currency);
+    }
+    if (projectData.defaultDownPayment !== undefined && projectData.defaultDownPayment !== null) {
+        formData.append("dto.defaultDownPayment", projectData.defaultDownPayment.toString());
+    }
+    if (projectData.defaultFinancingMonths !== undefined && projectData.defaultFinancingMonths !== null) {
+        formData.append("dto.defaultFinancingMonths", projectData.defaultFinancingMonths.toString());
+    }
+    if (projectData.maxDiscountPercentage !== undefined && projectData.maxDiscountPercentage !== null) {
+        formData.append("dto.maxDiscountPercentage", projectData.maxDiscountPercentage.toString());
+    }
+
+    // Agregar la imagen si existe
+    if (projectImage) {
+        formData.append("projectImage", projectImage);
+    }
+
     const [response, error] = await wrapper((auth) => backend.PUT("/api/Projects/{id}", {
         ...auth,
         params: {
@@ -78,7 +136,9 @@ export async function UpdateProject(
                 id,
             },
         },
-        body: project,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        body: formData as any,
+        formData: true,
     }));
 
     revalidatePath("/(admin)/projects", "page");

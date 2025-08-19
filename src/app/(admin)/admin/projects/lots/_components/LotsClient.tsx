@@ -81,7 +81,7 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
             <Card className="border pt-0">
                 <CardHeader className="my-4">
                     <CardTitle className="text-xl flex items-center mt-2">
-                        <Filter className="mr-2 h-5 w-5 text-purple-600" />
+                        <Filter className="mr-2 h-5 w-5 text-primary" />
                         Filtros de Búsqueda
                     </CardTitle>
                     <CardDescription>

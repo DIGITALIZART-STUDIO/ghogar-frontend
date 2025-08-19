@@ -13,7 +13,6 @@ import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { AuthorizationContext, ProtectedRoute, Role } from "./_authorization_context";
 import { useUsers } from "./admin/users/_hooks/useUser";
 import { useAuthContext } from "@/context/auth-provider";
-import { AuthGuard } from "@/components/auth-guard";
 
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
     const { handleAuthError } = useAuthContext();
@@ -54,23 +53,21 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         .join("");
 
     return (
-        <AuthGuard>
-            <AdminLayout name={username} email={data.user.email!} initials={initials} roles={data.roles as Array<string>}>
-                <AuthorizationContext roles={data.roles as Array<Role>}>
-                    <ProtectedRoute>
-                        {/* ===== Top Heading ===== */}
-                        <Header>
-                            <Search />
-                            <div className="ml-auto flex items-center space-x-4">
-                                <ThemeSwitch />
-                                <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
-                            </div>
-                        </Header>
-                        {/* ===== Main Content ===== */}
-                        <Main>{children}</Main>
-                    </ProtectedRoute>
-                </AuthorizationContext>
-            </AdminLayout>
-        </AuthGuard>
+        <AdminLayout name={username} email={data.user.email!} initials={initials} roles={data.roles as Array<string>}>
+            <AuthorizationContext roles={data.roles as Array<Role>}>
+                <ProtectedRoute>
+                    {/* ===== Top Heading ===== */}
+                    <Header>
+                        <Search />
+                        <div className="ml-auto flex items-center space-x-4">
+                            <ThemeSwitch />
+                            <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
+                        </div>
+                    </Header>
+                    {/* ===== Main Content ===== */}
+                    <Main>{children}</Main>
+                </ProtectedRoute>
+            </AuthorizationContext>
+        </AdminLayout>
     );
 }

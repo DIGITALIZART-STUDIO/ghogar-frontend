@@ -115,7 +115,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                                             type="email"
                                                             placeholder="ejemplo@gestionhogar.com"
                                                             required
-                                                            className="pl-10"
+                                                            className="pl-10 bg-muted/30 border-muted focus:border-primary"
                                                             {...field}
                                                         />
                                                         <Mail className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />

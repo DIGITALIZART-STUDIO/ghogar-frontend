@@ -3301,6 +3301,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get all projects
+         * @description Retrieves all projects in the system
+         */
         get: {
             parameters: {
                 query?: never;
@@ -3324,6 +3328,10 @@ export interface paths {
             };
         };
         put?: never;
+        /**
+         * Create project
+         * @description Creates a new project with the provided information. Optionally accepts an image file.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -3333,14 +3341,40 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectCreateDTO"];
-                    "text/json": components["schemas"]["ProjectCreateDTO"];
-                    "application/*+json": components["schemas"]["ProjectCreateDTO"];
+                    "application/x-www-form-urlencoded": {
+                        Name?: string;
+                        Location?: string;
+                        Currency?: string;
+                        /** Format: double */
+                        DefaultDownPayment?: number;
+                        /** Format: int32 */
+                        DefaultFinancingMonths?: number;
+                        /** Format: double */
+                        MaxDiscountPercentage?: number;
+                    } & {
+                        /** @default null */
+                        ContentType?: string;
+                        /** @default null */
+                        ContentDisposition?: string;
+                        /** @default null */
+                        Headers?: {
+                            [key: string]: Array<string>;
+                        };
+                        /**
+                         * Format: int64
+                         * @default null
+                         */
+                        Length?: number;
+                        /** @default null */
+                        Name?: string;
+                        /** @default null */
+                        FileName?: string;
+                    };
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Created */
+                201: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3349,6 +3383,24 @@ export interface paths {
                         "application/json": components["schemas"]["ProjectDTO"];
                         "text/json": components["schemas"]["ProjectDTO"];
                     };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -3365,6 +3417,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get active projects
+         * @description Retrieves only active projects in the system
+         */
         get: {
             parameters: {
                 query?: never;
@@ -3402,6 +3458,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get project by ID
+         * @description Retrieves a specific project by its ID
+         */
         get: {
             parameters: {
                 query?: never;
@@ -3424,8 +3484,30 @@ export interface paths {
                         "text/json": components["schemas"]["ProjectDTO"];
                     };
                 };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
+        /**
+         * Update project
+         * @description Updates an existing project with the provided information. Optionally accepts an image file.
+         */
         put: {
             parameters: {
                 query?: never;
@@ -3437,9 +3519,39 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectUpdateDTO"];
-                    "text/json": components["schemas"]["ProjectUpdateDTO"];
-                    "application/*+json": components["schemas"]["ProjectUpdateDTO"];
+                    "application/x-www-form-urlencoded": {
+                        /** @default null */
+                        Name?: string;
+                        /** @default null */
+                        Location?: string;
+                        /** @default null */
+                        Currency?: string;
+                        IsActive?: boolean;
+                        /** Format: double */
+                        DefaultDownPayment?: number;
+                        /** Format: int32 */
+                        DefaultFinancingMonths?: number;
+                        /** Format: double */
+                        MaxDiscountPercentage?: number;
+                    } & {
+                        /** @default null */
+                        ContentType?: string;
+                        /** @default null */
+                        ContentDisposition?: string;
+                        /** @default null */
+                        Headers?: {
+                            [key: string]: Array<string>;
+                        };
+                        /**
+                         * Format: int64
+                         * @default null
+                         */
+                        Length?: number;
+                        /** @default null */
+                        Name?: string;
+                        /** @default null */
+                        FileName?: string;
+                    };
                 };
             };
             responses: {
@@ -3453,6 +3565,35 @@ export interface paths {
                         "application/json": components["schemas"]["ProjectDTO"];
                         "text/json": components["schemas"]["ProjectDTO"];
                     };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -6087,6 +6228,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6106,6 +6248,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6125,6 +6268,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6144,6 +6288,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6163,6 +6308,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6182,6 +6328,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6201,6 +6348,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6220,6 +6368,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6239,6 +6388,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6258,23 +6408,13 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
             blocks?: Array<components["schemas"]["Block5"]>;
         } | null;
-        ProjectCreateDTO: {
-            name: string;
-            location: string;
-            currency: string;
-            /** Format: double */
-            defaultDownPayment?: number | null;
-            /** Format: int32 */
-            defaultFinancingMonths?: number | null;
-            /** Format: double */
-            maxDiscountPercentage?: number | null;
-        };
         ProjectDTO: {
             /** Format: uuid */
             id?: string;
@@ -6288,6 +6428,7 @@ export interface components {
             defaultFinancingMonths?: number | null;
             /** Format: double */
             maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -6326,18 +6467,6 @@ export interface components {
             avgPrice?: number;
             /** Format: double */
             efficiency?: number;
-        };
-        ProjectUpdateDTO: {
-            name?: string | null;
-            location?: string | null;
-            currency?: string | null;
-            isActive?: boolean | null;
-            /** Format: double */
-            defaultDownPayment?: number | null;
-            /** Format: int32 */
-            defaultFinancingMonths?: number | null;
-            /** Format: double */
-            maxDiscountPercentage?: number | null;
         };
         QuotationCreateDTO: {
             /** Format: uuid */

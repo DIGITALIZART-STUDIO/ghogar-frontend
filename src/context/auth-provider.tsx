@@ -3,10 +3,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { backend } from "@/types/backend2";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/variables";
+import { ACCESS_TOKEN_KEY } from "@/variables";
 import Cookies from "js-cookie";
-import { setupAuthInterceptor } from "@/lib/auth-interceptor";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -24,51 +23,75 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [authState, setAuthState] = useState<AuthState>({
         isAuthenticated: false,
         isLoading: true,
         user: null,
     });
 
-    // Usar hooks de React Query de manera lazy para evitar problemas de inicialización
-    const refreshTokenMutation = backend.useMutation("post", "/api/Auth/refresh");
-    const logoutMutation = backend.useMutation("post", "/api/Auth/logout");
-
-    // Función para obtener el refresh token de las cookies
-    const getRefreshToken = (): string | null => Cookies.get(REFRESH_TOKEN_KEY) ?? null;
+    // Variable para evitar múltiples refreshes simultáneos
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Función para refrescar el token
     const refreshAccessToken = async (): Promise<boolean> => {
-        const refreshTokenValue = getRefreshToken();
-        if (!refreshTokenValue) {
+        // Evitar múltiples refreshes simultáneos
+        if (isRefreshing) {
             return false;
         }
+
+        setIsRefreshing(true);
 
         try {
-            const response = await refreshTokenMutation.mutateAsync({
-                body: { refreshToken: refreshTokenValue },
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Auth/refresh`, {
+                method: "POST",
+                credentials: "include",
             });
 
-            if (response) {
-                setAuthState((prev) => ({
-                    ...prev,
-                    isAuthenticated: true,
-                    isLoading: false,
-                }));
-                return true;
+            // Verificar si la respuesta es exitosa (200-299)
+            if (response.status >= 200 && response.status < 300) {
+                // Esperar un poco para que las cookies se establezcan
+                await new Promise((resolve) => setTimeout(resolve, 100));
+
+                // Verificar si se establecieron nuevas cookies
+                const newAccessToken = Cookies.get(ACCESS_TOKEN_KEY);
+
+                if (newAccessToken) {
+                    setAuthState((prev) => ({
+                        ...prev,
+                        isAuthenticated: true,
+                        isLoading: false,
+                    }));
+
+                    // Invalidar todo el cache de React Query para forzar nuevas peticiones
+                    await queryClient.invalidateQueries();
+
+                    // Esperar un poco más antes de permitir nuevas peticiones
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+
+                    setIsRefreshing(false);
+                    return true;
+                } else {
+                    setIsRefreshing(false);
+                    return false;
+                }
+            } else {
+                setIsRefreshing(false);
+                return false;
             }
-        } catch (error) {
-            console.error("Error refreshing token:", error);
+        } catch {
+            setIsRefreshing(false);
             return false;
         }
-
-        return false;
     };
 
     // Función para hacer logout
     const handleLogout = async () => {
         try {
-            await logoutMutation.mutateAsync({});
+            await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Auth/logout`, {
+                method: "POST",
+                credentials: "include",
+            });
         } catch (error) {
             console.error("Error during logout:", error);
         } finally {
@@ -78,9 +101,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 user: null,
             });
 
-            Cookies.remove(ACCESS_TOKEN_KEY);
-            Cookies.remove(REFRESH_TOKEN_KEY);
+            // Limpiar cache de React Query al hacer logout
+            queryClient.clear();
 
+            Cookies.remove(ACCESS_TOKEN_KEY);
             router.push("/login");
         }
     };
@@ -88,13 +112,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Función para interceptar errores 401 y intentar refresh
     const handleAuthError = async (error: unknown) => {
         if ((error as { statusCode?: number })?.statusCode === 401) {
+            // Si ya se está refrescando, no hacer nada
+            if (isRefreshing) {
+                return false;
+            }
+
             const success = await refreshAccessToken();
+
             if (!success) {
                 toast.error("Sesión expirada. Por favor, inicie sesión nuevamente.");
                 await handleLogout();
             }
             return success;
         }
+
         return false;
     };
 
@@ -102,9 +133,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const checkAuth = () => {
             const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
-            const refreshTokenValue = getRefreshToken();
 
-            if (!accessToken && !refreshTokenValue) {
+            if (!accessToken) {
                 setAuthState({
                     isAuthenticated: false,
                     isLoading: false,
@@ -114,7 +144,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             // Si tenemos access token, asumimos que está autenticado
-            // El refresh automático se encargará de renovarlo cuando sea necesario
             setAuthState({
                 isAuthenticated: true,
                 isLoading: false,
@@ -123,11 +152,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         checkAuth();
-    }, []);
-
-    // Configurar interceptor
-    useEffect(() => {
-        setupAuthInterceptor();
     }, []);
 
     return (

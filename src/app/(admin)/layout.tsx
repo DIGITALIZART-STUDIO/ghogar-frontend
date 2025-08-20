@@ -31,9 +31,9 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         return <FullPageLoader text="Cargando aplicación..." />;
     }
 
-    // Si hay error de autenticación, no mostrar nada (redirige en useEffect)
+    // Si hay error de autenticación, mostrar loading mientras se procesa
     if (!!e && (e.statusCode === 401 || e.statusCode === 403)) {
-        return null;
+        return <FullPageLoader text="Verificando sesión..." />;
     }
 
     // Si hay error y NO es de autenticación, muestra error general

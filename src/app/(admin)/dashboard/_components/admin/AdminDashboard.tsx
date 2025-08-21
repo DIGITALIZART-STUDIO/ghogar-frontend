@@ -18,8 +18,6 @@ import { AdminDashboard } from "../../_types/dashboard";
 export default function AdminDashboardComponent() {
     const { data, isLoading } = useDashboardAdmin(2025);
 
-    console.log("AdminDashboardComponent data:", JSON.stringify(data, null, 2));
-
     return (
         <div>
             <div className="space-y-4">

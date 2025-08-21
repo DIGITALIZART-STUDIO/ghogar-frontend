@@ -19,8 +19,6 @@ export function PendingContractsTable({ data, pagination, onPaginationChange }: 
 
     const columns = useMemo(() => pendingContractsColumns(), []);
 
-    console.log("PendingContractsTable data:", JSON.stringify(data, null, 2));
-
     return (
         <DataTable
             data={data}

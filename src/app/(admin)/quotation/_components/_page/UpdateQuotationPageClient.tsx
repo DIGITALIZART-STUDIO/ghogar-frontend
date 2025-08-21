@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useQuotationById } from "../../_hooks/useQuotations";
 import { useAvailableLeadsForQuotation } from "@/app/(admin)/leads/_hooks/useLeads";
-import { useUsers } from "@/app/(admin)/admin/users/_hooks/useUser";
 import UpdateClientQuotationPage from "../../[id]/update/_components/UpdateClientQuotationPage";
 import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
 
@@ -23,18 +22,14 @@ interface UpdateQuotationPageClientProps {
 }
 
 export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotationPageClientProps) {
-    // Obtener usuario actual
-    const { data: userData, error: errorUser, isLoading: loadingUser } = useUsers();
 
     // Obtener cotización
     const { data: quotationData, error: errorQuotation, isLoading: loadingQuotation } = useQuotationById(quotationId);
 
-    // Obtener leads disponibles para cotización
-    const advisorId = userData?.user?.id ?? "";
-    const { data: leadsData, error: errorLeads, isLoading: loadingLeads } = useAvailableLeadsForQuotation(advisorId, quotationId, !!advisorId);
+    const { data: leadsData, error: errorLeads, isLoading: loadingLeads } = useAvailableLeadsForQuotation(quotationId);
 
     // Loading
-    if (loadingUser || loadingQuotation || loadingLeads) {
+    if (loadingQuotation || loadingLeads) {
         return (
             <div>
                 <HeaderPage
@@ -47,7 +42,7 @@ export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotati
     }
 
     // Error
-    if (errorUser || !userData || !advisorId || errorQuotation || errorLeads) {
+    if (errorQuotation || errorLeads) {
         return (
             <div>
                 <HeaderPage
@@ -104,7 +99,7 @@ export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotati
                 description={`Ingrese la información requerida para actualizar la cotización de ${clientName}.`}
             />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0" />
-            <UpdateClientQuotationPage advisorId={advisorId} data={quotationData} leadsData={leadsData as Array<SummaryLead>} />
+            <UpdateClientQuotationPage data={quotationData} leadsData={leadsData as Array<SummaryLead>} />
         </div>
     );
 }

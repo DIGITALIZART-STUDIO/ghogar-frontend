@@ -1,4 +1,4 @@
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { format, parse } from "date-fns";
 import {  CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
 import { toast } from "sonner";
@@ -15,6 +15,8 @@ import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
 import { toastWrapper } from "@/types/toasts";
 import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
 import { renderBlockOption, renderLeadOption, renderLotOption, renderProjectOption } from "../_utils/create-quotation.utils";
+import { DiscountApprovalDialog } from "./DiscountApprovalDialog";
+import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface InformationQuotationFormProps {
     form: UseFormReturn<CreateQuotationSchema>;
@@ -28,10 +30,12 @@ interface InformationQuotationFormProps {
     setProjectName: (name: string) => void;
     setBlockName: (name: string) => void;
     setLotNumber: (number: string) => void;
+    userData: UserGetDTO;
 }
 
-export default function InformationQuotationForm({ form, leadsOptions, projects, lots, blocks, loadingBlocks, loadingLots, loadingProjects, setProjectName, setBlockName, setLotNumber }: InformationQuotationFormProps) {
+export default function InformationQuotationForm({ form, leadsOptions, projects, lots, blocks, loadingBlocks, loadingLots, loadingProjects, setProjectName, setBlockName, setLotNumber, userData }: InformationQuotationFormProps) {
     const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
+    const [isDiscountApproved, setIsDiscountApproved] = useState(false);
     // Y luego añade esta función para manejar el clic del botón
     const handleGetExchangeRate = () => {
         startTransitionExchangeRate(async () => {
@@ -349,57 +353,95 @@ export default function InformationQuotationForm({ form, leadsOptions, projects,
 
                         <div className="p-5">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <FormField
-                                    control={form.control}
-                                    name="discount"
-                                    render={({ field }) => {
-                                        // Calcular el descuento máximo permitido
-                                        const selectedProject = projects.find((p) => p.value === form.watch("projectId"));
-                                        const maxDiscount = selectedProject?.maxDiscountPercentage
-                                            ? parseFloat(selectedProject.maxDiscountPercentage)
-                                            : 15; // Valor predeterminado del 15% si no hay configuración
+                                <div className="flex items-end gap-2">
+                                    <div className="flex-1">
+                                        <FormField
+                                            control={form.control}
+                                            name="discount"
+                                            render={({ field }) => {
+                                                // Verificar si el usuario es SalesAdvisor
+                                                const isSalesAdvisor = userData?.roles?.[0] === "SalesAdvisor";
 
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="text-emerald-700">Descuento (Máx: {maxDiscount}%)</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Ingrese el descuento"
-                                                        type="number"
-                                                        className="border-emerald-200 focus:border-emerald-500"
-                                                        {...field}
-                                                        value={field.value || ""}
-                                                        onChange={(e) => {
-                                                            // Permitir campo vacío
-                                                            if (e.target.value === "") {
-                                                                field.onChange("");
-                                                                return;
-                                                            }
+                                                // Calcular el descuento máximo permitido solo para SalesAdvisor no aprobado
+                                                const selectedProject = projects.find((p) => p.value === form.watch("projectId"));
+                                                const maxDiscount = selectedProject?.maxDiscountPercentage
+                                                    ? parseFloat(selectedProject.maxDiscountPercentage)
+                                                    : 15; // Valor predeterminado del 15% si no hay configuración
 
-                                                            const numericValue = parseFloat(e.target.value);
+                                                // Solo aplicar límite si es SalesAdvisor y no está aprobado
+                                                const shouldApplyLimit = isSalesAdvisor && !isDiscountApproved;
 
-                                                            // Verificar si es un número válido
-                                                            if (!isNaN(numericValue)) {
-                                                                // Si excede el máximo, establecer al máximo y mostrar advertencia
-                                                                if (numericValue > maxDiscount) {
-                                                                    field.onChange(maxDiscount.toString());
-                                                                    toast.warning(
-                                                                        `El descuento ha sido ajustado al máximo permitido: ${maxDiscount}%`
-                                                                    );
-                                                                } else {
-                                                                    // Caso normal: aceptar el valor ingresado
-                                                                    field.onChange(e.target.value);
-                                                                }
-                                                            }
-                                                        }}
-                                                        min="0"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
+                                                return (
+                                                    <FormItem>
+                                                        <FormLabel className="text-emerald-700">
+                                                            Descuento {shouldApplyLimit ? `(Máx: ${maxDiscount}%)` : "(Máx: 100%)"}
+                                                            {userData?.roles?.[0] === "SalesAdvisor" && !isDiscountApproved && (
+                                                                <span className="ml-2 text-xs text-orange-600 font-normal">
+                                                                    (Requiere aprobación)
+                                                                </span>
+                                                            )}
+                                                            {userData?.roles?.[0] === "SalesAdvisor" && isDiscountApproved && (
+                                                                <span className="ml-2 text-xs text-green-600 font-normal">
+                                                                    ✓ Aprobado
+                                                                </span>
+                                                            )}
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder="Ingrese el descuento"
+                                                                type="number"
+                                                                className="border-emerald-200 focus:border-emerald-500"
+                                                                {...field}
+                                                                value={field.value || ""}
+                                                                disabled={userData?.roles?.[0] === "SalesAdvisor" && !isDiscountApproved}
+                                                                onChange={(e) => {
+                                                                    // Permitir campo vacío
+                                                                    if (e.target.value === "") {
+                                                                        field.onChange("");
+                                                                        return;
+                                                                    }
+
+                                                                    const numericValue = parseFloat(e.target.value);
+
+                                                                    // Verificar si es un número válido
+                                                                    if (!isNaN(numericValue)) {
+                                                                        // Límite máximo del 100% para todos
+                                                                        if (numericValue > 100) {
+                                                                            field.onChange("100");
+                                                                            toast.warning("El descuento máximo permitido es del 100%");
+                                                                            return;
+                                                                        }
+
+                                                                        // Solo aplicar límite si es SalesAdvisor no aprobado
+                                                                        if (shouldApplyLimit && numericValue > maxDiscount) {
+                                                                            field.onChange(maxDiscount.toString());
+                                                                            toast.warning(
+                                                                                `El descuento ha sido ajustado al máximo permitido: ${maxDiscount}%`
+                                                                            );
+                                                                        } else {
+                                                                            // Caso normal: aceptar el valor ingresado
+                                                                            field.onChange(e.target.value);
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                min="0"
+                                                                max="100"
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <DiscountApprovalDialog
+                                            userData={userData}
+                                            isDiscountApproved={isDiscountApproved}
+                                            onDiscountApproved={() => setIsDiscountApproved(true)}
+                                        />
+                                    </div>
+                                </div>
                                 <FormField
                                     control={form.control}
                                     name="downPayment"

@@ -120,7 +120,7 @@ export function CreateLeadsDialog() {
                         <DialogTitle>{dataForm.title}</DialogTitle>
                         <DialogDescription>{dataForm.description}</DialogDescription>
                     </DialogHeader>
-                    <ScrollArea className="h-full max-h-[80vh] px-0" disableOverflow>
+                    <ScrollArea className="h-full max-h-[80vh] px-0">
                         <div className="px-6">
                             <CreateLeadsForm form={form} onSubmit={onSubmit}>
                                 <DialogFooter>

@@ -1,7 +1,7 @@
 import { components } from "@/types/api";
 import { backend as api } from "@/types/backend2";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateUser, DeactivateUser, GetPaginatedUsers, ReactivateUser, UpdateProfilePassword, UpdateUser, UpdateUserPassword } from "../actions";
+import { CreateUser, DeactivateUser, GetPaginatedUsers, GetUsersWithHigherRank, ReactivateUser, UpdateProfilePassword, UpdateUser, UpdateUserPassword } from "../actions";
 import { useAuthContext } from "@/context/auth-provider";
 import { toast } from "sonner";
 
@@ -188,6 +188,21 @@ export function useReactivateUser() {
                 toast.error("Error al reactivar usuario");
             }
         },
+    });
+}
+
+// Hook para obtener usuarios con mayor rango
+export function useUsersWithHigherRank(name?: string, limit: number = 10) {
+    return useQuery({
+        queryKey: ["usersWithHigherRank", name, limit],
+        queryFn: async () => {
+            const [data, error] = await GetUsersWithHigherRank(name, limit);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data!;
+        },
+        retry: false,
     });
 }
 

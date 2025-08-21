@@ -7,14 +7,28 @@ import { cn } from "@/lib/utils";
 
 interface ScrollAreaProps extends React.ComponentProps<typeof ScrollAreaPrimitive.Root> {
     disableOverflow?: boolean;
+    preventPropagation?: boolean;
 }
 
 function ScrollArea({
     className,
     children,
     disableOverflow = false,
+    preventPropagation = false,
     ...props
 }: ScrollAreaProps) {
+    const handleWheel = (e: React.WheelEvent) => {
+        if (preventPropagation) {
+            e.stopPropagation();
+        }
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (preventPropagation) {
+            e.stopPropagation();
+        }
+    };
+
     return (
         <ScrollAreaPrimitive.Root
             data-slot="scroll-area"
@@ -28,6 +42,8 @@ function ScrollArea({
                     disableOverflow && "[&>[data-radix-scroll-area-viewport]]:!overflow-visible",
                 )}
                 style={disableOverflow ? { overflow: "visible" } : undefined}
+                onWheel={handleWheel}
+                onTouchMove={handleTouchMove}
             >
                 {children}
             </ScrollAreaPrimitive.Viewport>

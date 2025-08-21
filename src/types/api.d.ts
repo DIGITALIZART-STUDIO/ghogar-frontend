@@ -229,13 +229,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RefreshRequest"];
-                    "text/json": components["schemas"]["RefreshRequest"];
-                    "application/*+json": components["schemas"]["RefreshRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -976,8 +970,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file?: string;
+                        file?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -2532,7 +2525,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assigned/{assignedToId}/available-for-quotation/{excludeQuotationId}": {
+    "/api/Leads/available-for-quotation/{excludeQuotationId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -2544,7 +2537,6 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    assignedToId: string;
                     excludeQuotationId: string;
                 };
                 cookie?: never;
@@ -3342,8 +3334,11 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/x-www-form-urlencoded": {
+                        /** @default null */
                         Name?: string;
+                        /** @default null */
                         Location?: string;
+                        /** @default null */
                         Currency?: string;
                         /** Format: double */
                         DefaultDownPayment?: number;
@@ -5211,6 +5206,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Users/higher-rank": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get users with higher rank
+         * @description Gets all users with higher rank (all roles except SaleAdvisor) excluding current user with optional name filter for autocomplete and configurable limit
+         */
+        get: {
+            parameters: {
+                query?: {
+                    name?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["UserHigherRankDTO"]>;
+                        "application/json": Array<components["schemas"]["UserHigherRankDTO"]>;
+                        "text/json": Array<components["schemas"]["UserHigherRankDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/higher-rank/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get users with higher rank paginated
+         * @description Gets users with higher rank (all roles except SaleAdvisor) excluding current user with pagination
+         */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfUserHigherRankDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfUserHigherRankDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfUserHigherRankDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5520,6 +5603,8 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
+        /** Format: binary */
+        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -5890,7 +5975,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5908,7 +5993,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5926,7 +6011,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5944,7 +6029,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5962,7 +6047,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block2"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6073,6 +6158,10 @@ export interface components {
         };
         PaginatedResponseV2OfUserGetDTO: {
             data?: Array<components["schemas"]["UserGetDTO"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
+        PaginatedResponseV2OfUserHigherRankDTO: {
+            data?: Array<components["schemas"]["UserHigherRankDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
         PaginationMetadata: {
@@ -6473,8 +6562,6 @@ export interface components {
             leadId: string;
             /** Format: uuid */
             lotId: string;
-            /** Format: uuid */
-            advisorId: string;
             /** Format: double */
             discount?: number | null;
             /** Format: double */
@@ -6608,9 +6695,6 @@ export interface components {
             daysAgo?: number;
             hasCoOwners?: boolean;
             separateProperty?: boolean;
-        };
-        RefreshRequest: {
-            refreshToken: string;
         };
         ReservationCreateDto: {
             /** Format: uuid */
@@ -6887,6 +6971,17 @@ export interface components {
         UserGetDTO: {
             user: components["schemas"]["User2"];
             roles: Array<string>;
+        };
+        UserHigherRankDTO: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            email?: string;
+            phoneNumber?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            roles?: Array<string>;
         };
         UserInfo: {
             id?: string;

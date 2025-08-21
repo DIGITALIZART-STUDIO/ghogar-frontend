@@ -10,6 +10,8 @@ import {
     ChangeQuotationStatus,
     GetQuotationsByAdvisorPaginated,
     GetQuotationByReservationId,
+    SendOtpToUser,
+    ValidateOtp,
 } from "../_actions/QuotationActions";
 import type { PaginatedResponse } from "@/types/api/paginated-response";
 import type { components } from "@/types/api";
@@ -159,5 +161,19 @@ export function useChangeQuotationStatus() {
             queryClient.invalidateQueries({ queryKey: ["quotation", variables.id] });
             queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
         },
+    });
+}
+
+// Enviar OTP a un usuario
+export function useSendOtpToUser() {
+    return useMutation({
+        mutationFn: SendOtpToUser,
+    });
+}
+
+// Validar OTP de un usuario
+export function useValidateOtp() {
+    return useMutation({
+        mutationFn: ({ userId, otpCode }: { userId: string; otpCode: string }) => ValidateOtp(userId, otpCode),
     });
 }

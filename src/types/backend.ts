@@ -56,6 +56,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         if (data.response.status === 401 && refreshToken?.value) {
             try {
                 const refreshResponse = await backend.POST("/api/Auth/refresh", {
+                    // @ts-expect-error - TODO: fix this
                     body: { refreshToken: refreshToken.value },
                 });
 

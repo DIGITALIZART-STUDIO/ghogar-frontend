@@ -46,10 +46,6 @@ export const useClaims = () => {
     return context;
 };
 
-function normalizeRoute(route: string): string {
-    return route.endsWith("/") && route.length > 1 ? route.slice(0, -1) : route;
-}
-
 /**
  * Verifica si el usuario tiene permiso para acceder a una ruta
  */
@@ -61,10 +57,9 @@ export const useRouteAuthorization = (route: string): boolean => {
 
     const role = context[0];
     const allowedRoutes = rolePermissions[role] || [];
-    const normalizedRoute = normalizeRoute(route);
 
     // Permite acceso si la ruta actual empieza con alguna ruta permitida
-    return allowedRoutes.some((allowed) => normalizedRoute === allowed || normalizedRoute.startsWith(`${allowed}/`)
+    return allowedRoutes.some((allowed) => route === allowed || route.startsWith(`${allowed}/`)
     );
 };
 /**
@@ -95,7 +90,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const isAuthorized = useRouteAuthorization(pathname);
 
     if (!isAuthorized) {
-    // Renderizamos directamente la página de unauthorized
+        // Renderizamos directamente la página de unauthorized
         return <UnauthorizedPage />;
     }
 

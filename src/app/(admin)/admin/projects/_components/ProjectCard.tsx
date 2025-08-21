@@ -8,8 +8,8 @@ import ProjectsCardImage from "@/assets/images/ProjectsCard.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { toastWrapper } from "@/types/toasts";
-import { ActivateProject, DeactivateProject } from "../_actions/ProjectActions";
+import { toast } from "sonner";
+import { useActivateProject, useDeactivateProject } from "../_hooks/useProjects";
 import type { ProjectData } from "../_types/project";
 import { UpdateProjectsSheet } from "./update/UpdateProjectsSheet";
 
@@ -20,6 +20,9 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
     const [openUpdateProject, setOpenUpdateProject] = useState(false);
     const [isToggling, setIsToggling] = useState(false);
+
+    const activateProject = useActivateProject();
+    const deactivateProject = useDeactivateProject();
     // Guard clause - Si no hay proyecto, retorna null o un componente de loading
     if (!project) {
         return null;
@@ -44,41 +47,47 @@ export function ProjectCard({ project }: ProjectCardProps) {
         defaultDownPayment: project.defaultDownPayment ?? 0,
         defaultFinancingMonths: project.defaultFinancingMonths ?? 0,
         maxDiscountPercentage: project.maxDiscountPercentage ?? 0,
+        projectUrlImage: project.projectUrlImage ?? null,
     };
 
     const completionRate =
     safeProject.totalLots > 0 ? Math.round((safeProject.soldLots / safeProject.totalLots) * 100) : 0;
 
+    // Determinar qué imagen usar
+    const imageSrc = safeProject.projectUrlImage ?? ProjectsCardImage.src ?? "/placeholder.svg";
+
     const handleToggleStatus = async () => {
         setIsToggling(true);
         try {
             if (safeProject.isActive) {
-                // Desactivar proyecto usando toastWrapper
-                const [, error] = await toastWrapper(DeactivateProject(safeProject.id), {
+                // Desactivar proyecto
+                const promise = deactivateProject.mutateAsync(safeProject.id);
+
+                toast.promise(promise, {
                     loading: "Desactivando proyecto...",
                     success: `El proyecto ${safeProject.name} ha sido desactivado`,
                     error: (e) => `Error al desactivar el proyecto: ${e.message}`,
                 });
 
-                if (!error) {
-                    // Actualiza el estado local del proyecto si es necesario
-                    project.isActive = false;
-                }
+                await promise;
+                // Actualiza el estado local del proyecto
+                project.isActive = false;
             } else {
-                // Activar proyecto usando toastWrapper
-                const [, error] = await toastWrapper(ActivateProject(safeProject.id), {
+                // Activar proyecto
+                const promise = activateProject.mutateAsync(safeProject.id);
+
+                toast.promise(promise, {
                     loading: "Activando proyecto...",
                     success: `El proyecto ${safeProject.name} ha sido activado`,
                     error: (e) => `Error al activar el proyecto: ${e.message}`,
                 });
 
-                if (!error) {
-                    // Actualiza el estado local del proyecto si es necesario
-                    project.isActive = true;
-                }
+                await promise;
+                // Actualiza el estado local del proyecto
+                project.isActive = true;
             }
         } catch (error) {
-            // Este catch es para errores inesperados que no manejó toastWrapper
+            // Este catch es para errores inesperados
             console.error("Error inesperado:", error);
         } finally {
             setIsToggling(false);
@@ -90,7 +99,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {/* Project Image */}
             <div className="relative h-48 overflow-hidden">
                 <img
-                    src={ProjectsCardImage.src || "/placeholder.svg"}
+                    src={imageSrc}
                     alt={safeProject.name}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />

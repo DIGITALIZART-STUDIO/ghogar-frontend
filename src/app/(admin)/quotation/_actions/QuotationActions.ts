@@ -246,3 +246,45 @@ export async function DownloadQuotationPDF(quotationId: string): Promise<Result<
 export async function DownloadSeparationPDF(quotationId: string): Promise<Result<Blob, FetchError>> {
     return DownloadFile(`/api/Quotations/${quotationId}/pdf-separation`, "get", null);
 }
+
+// Enviar OTP a un usuario
+export async function SendOtpToUser(userId: string): Promise<Result<{ message: string; expiresAt: string }, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.POST("/api/Quotations/{userId}/send-otp", {
+        ...auth,
+        params: {
+            path: {
+                userId,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log(`Error sending OTP to user ${userId}:`, error);
+        return err(error);
+    }
+    return ok(response as unknown as { message: string; expiresAt: string });
+}
+
+// Validar OTP de un usuario
+export async function ValidateOtp(
+    userId: string,
+    otpCode: string
+): Promise<Result<{ message: string }, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.POST("/api/Quotations/{userId}/validate-otp", {
+        ...auth,
+        params: {
+            path: {
+                userId,
+            },
+        },
+        body: {
+            otpCode,
+        },
+    }));
+
+    if (error) {
+        console.log(`Error validating OTP for user ${userId}:`, error);
+        return err(error);
+    }
+    return ok(response as unknown as { message: string });
+}

@@ -159,3 +159,26 @@ export async function GetPaginatedUsers(
         },
     });
 }
+
+// Obtener usuarios con mayor rango
+export async function GetUsersWithHigherRank(
+    name?: string,
+    limit: number = 10
+): Promise<Result<Array<components["schemas"]["UserHigherRankDTO"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Users/higher-rank", {
+        ...auth,
+        params: {
+            query: {
+                ...(name && { name }),
+                limit,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log("Error getting users with higher rank:", error);
+        return err(error);
+    }
+
+    return ok(response ?? []);
+}

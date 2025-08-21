@@ -8,13 +8,14 @@ import { toastWrapper } from "@/types/toasts";
 import { CreateQuotationSchema, quotationSchema } from "../_schemas/createQuotationsSchema";
 import { QuotationForm } from "./QuotationForm";
 import { useCreateQuotation } from "../../_hooks/useQuotations";
+import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface CreateClientQuotationPageProps {
   leadsData: Array<SummaryLead>;
-  advisorId: string;
+  userData: UserGetDTO;
 }
 
-export default function CreateClientQuotationPage({ leadsData, advisorId }: CreateClientQuotationPageProps) {
+export default function CreateClientQuotationPage({ leadsData, userData }: CreateClientQuotationPageProps) {
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
 
@@ -26,7 +27,6 @@ export default function CreateClientQuotationPage({ leadsData, advisorId }: Crea
         defaultValues: {
             leadId: "",
             lotId: "",
-            advisorId: advisorId,
             projectId: "",
             blockId: "",
             discount: "0",
@@ -48,7 +48,6 @@ export default function CreateClientQuotationPage({ leadsData, advisorId }: Crea
         const quotationData = {
             leadId: input.leadId,
             lotId: input.lotId,
-            advisorId: advisorId,
             discount: parseFloat(input.discount),
             downPayment: parseFloat(input.downPayment),
             monthsFinanced: parseInt(input.monthsFinanced, 10),
@@ -79,5 +78,5 @@ export default function CreateClientQuotationPage({ leadsData, advisorId }: Crea
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, form]);
 
-    return <QuotationForm leadsData={leadsData} form={form} isPending={createQuotationMutation.isPending} onSubmit={onSubmit} />;
+    return <QuotationForm leadsData={leadsData} form={form} isPending={createQuotationMutation.isPending} onSubmit={onSubmit} userData={userData} />;
 }

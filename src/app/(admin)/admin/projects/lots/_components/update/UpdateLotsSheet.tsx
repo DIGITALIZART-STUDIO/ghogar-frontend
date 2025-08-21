@@ -17,12 +17,11 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toastWrapper } from "@/types/toasts";
-import { UpdateLot } from "../../_actions/LotActions";
+import { toast } from "sonner";
+import { useUpdateLot } from "../../_hooks/useLots";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
 import { LotData, LotStatus } from "../../_types/lot";
-import { GetActiveBlocksByProject } from "../../../[id]/blocks/_actions/BlockActions";
-import { BlockData } from "../../../[id]/blocks/_types/block";
+import { useActiveBlocks } from "../../../[id]/blocks/_hooks/useBlocks";
 import UpdateLotsForm from "./UpdateLotsForm";
 
 const infoSheet = {
@@ -40,8 +39,9 @@ interface UpdateLotsSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
 export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLotsSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
-    const [blocks, setBlocks] = useState<Array<BlockData>>([]);
-    const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
+
+    const updateLot = useUpdateLot();
+    const { data: blocks = [], isLoading: isLoadingBlocks } = useActiveBlocks(projectId);
 
     const form = useForm<CreateLotSchema>({
         resolver: zodResolver(lotSchema),
@@ -53,34 +53,6 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
             blockId: lot?.blockId ?? "",
         },
     });
-
-    const loadActiveBlocks = async() => {
-        setIsLoadingBlocks(true);
-        try {
-            const [result, error] = await GetActiveBlocksByProject(projectId);
-
-            if (error) {
-                console.error("Error loading active blocks:", error);
-                setBlocks([]);
-                return;
-            }
-
-            setBlocks(result || []);
-        } catch (error) {
-            console.error("Error loading active blocks:", error);
-            setBlocks([]);
-        } finally {
-            setIsLoadingBlocks(false);
-        }
-    };
-
-    // Cargar bloques activos cuando se abre el dialog
-    useEffect(() => {
-        if (open && projectId) {
-            loadActiveBlocks();
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, projectId]);
 
     useEffect(() => {
         if (open) {
@@ -97,6 +69,11 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
 
     const onSubmit = async(input: CreateLotSchema) => {
         startTransition(async() => {
+            if (!lot?.id) {
+                toast.error("Lot ID is required");
+                return;
+            }
+
             // Preparar los datos según el tipo de cliente
             const lotData = {
                 lotNumber: input.lotNumber,
@@ -106,17 +83,20 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
                 blockId: input.blockId,
             };
 
-            if (!lot?.id) {
-                throw new Error("Block ID is required");
-            }
-            const [, error] = await toastWrapper(UpdateLot(lot.id, lotData), {
+            const promise = updateLot.mutateAsync({ id: lot.id, lot: lotData });
+
+            toast.promise(promise, {
                 loading: "Actualizando lote...",
-                success: "Lote actualizada exitosamente",
+                success: "Lote actualizado exitosamente",
                 error: (e) => `Error al actualizar lote: ${e.message}`,
             });
 
-            if (!error) {
+            try {
+                await promise;
                 setIsSuccess(true);
+            } catch (error) {
+                // Manejar errores específicos si es necesario
+                console.error("Error updating lot:", error);
             }
         });
     };

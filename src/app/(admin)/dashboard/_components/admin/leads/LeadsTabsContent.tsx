@@ -56,7 +56,7 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
                     <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
                         {/* Estado de leads */}
                         <Card className="xl:col-span-3">
-                            <CardHeader className="pb-4">
+                            <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-gradient-to-br from-slate-500/8 to-stone-500/8">
@@ -77,7 +77,8 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
                                     </Badge>
                                 </div>
                             </CardHeader>
-                            <CardContent className="max-h-[550px]">
+
+                            <CardContent className="max-h-[800px] h-full">
                                 {!hasLeadsByStatus ? (
                                     <EmptyState
                                         icon={Activity}
@@ -85,7 +86,7 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
                                         description="No hay información disponible sobre el estado de los leads"
                                     />
                                 ) : (
-                                    <ResponsiveContainer height={550}>
+                                    <ResponsiveContainer height={"100%"}>
                                         <BarChart
                                             data={data.leadsByStatus}
                                             margin={{ top: 20, right: 30, left: 20}}
@@ -190,7 +191,7 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
 
                         {/* Fuentes de captación */}
                         <Card className="xl:col-span-2">
-                            <CardHeader className="pb-4">
+                            <CardHeader>
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-gradient-to-br from-slate-500/8 to-stone-500/8">
                                         <Target className="w-5 h-5 text-slate-600 dark:text-slate-400" />

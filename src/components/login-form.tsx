@@ -54,7 +54,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             success: "Sesión iniciada, redirigiendo...",
         });
 
-        loginPromise.then(() => router.push("/"));
+        loginPromise.then(() => {
+            // Los tokens se establecen automáticamente en las cookies por el backend
+            router.push("/");
+        });
     }
 
     const form = useForm<LoginSchema>({

@@ -43,8 +43,9 @@ interface AssignmentDescriptionProps {
 export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
     const [showCoOwners, setShowCoOwners] = useState(false);
     const [showSpouseInfo, setShowSpouseInfo] = useState(false);
+
     // Verificación global para row y row.project
-    if (!row || !row.project) {
+    if (!row) {
         return (
             <div className="w-full flex flex-col items-center justify-center bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/60 dark:to-red-800/60 border border-red-200 dark:border-red-700 rounded-xl shadow-md p-10 my-8">
                 <AlertTriangle className="w-10 h-10 text-red-500 mb-4" />
@@ -169,7 +170,9 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
 
                         <div className="min-w-0">
                             <h3 className="font-bold text-base text-foreground truncate">{displayName}</h3>
-                            <p className="text-sm text-muted-foreground">Interesado en {row.project.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                                {row.project ? `Interesado en ${row.project.name}` : "Sin proyecto asignado"}
+                            </p>
                             <div className="flex items-center gap-2 mt-1">
                                 <Badge className={cn("text-xs font-medium", statusInfo.className)} variant={"outline"}>
                                     <StatusIcon className="w-3 h-3 mr-1" />
@@ -338,70 +341,81 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                         <div className="flex items-center gap-2 pb-2 border-b border-border">
                             <Target className="w-4 h-4 text-green-600" />
                             <h4 className="font-semibold text-foreground">Proyecto de Interés</h4>
-                            {row.project.isActive && (
+                            {row.project?.isActive && (
                                 <Badge className="text-xs font-medium text-emerald-800 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-200 dark:border-emerald-700">
                                     Activo
                                 </Badge>
                             )}
                         </div>
 
-                        <div className="space-y-3">
-                            {/* Project Basic Info */}
-                            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
-                                <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                    <Target className="w-4 h-4 text-emerald-600" />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proyecto</div>
-                                    <div className="text-sm font-semibold text-foreground">{row.project.name}</div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
-                                <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                                    <MapPin className="w-4 h-4 text-amber-600" />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Ubicación</div>
-                                    <div className="text-sm font-semibold text-foreground">{row.project.location}</div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
-                                <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                                    <DollarSign className="w-4 h-4 text-violet-600" />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Moneda</div>
-                                    <div className="text-sm font-semibold text-foreground">{row.project.currency}</div>
-                                </div>
-                            </div>
-
-                            {/* Financial Terms Grid */}
-                            <div className="grid grid-cols-3 gap-3">
-                                <div className="text-center p-3 rounded-lg border border-border bg-emerald-50/50 dark:bg-emerald-950/20">
-                                    <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                        <Percent className="w-4 h-4 text-emerald-600" />
+                        {row.project ? (
+                            <div className="space-y-3">
+                                {/* Project Basic Info */}
+                                <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
+                                    <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                        <Target className="w-4 h-4 text-emerald-600" />
                                     </div>
-                                    <div className="text-lg font-bold text-foreground">{row.project.defaultDownPayment}%</div>
-                                    <div className="text-xs text-muted-foreground">Inicial</div>
-                                </div>
-                                <div className="text-center p-3 rounded-lg border border-border bg-amber-50/50 dark:bg-amber-950/20">
-                                    <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                                        <Calendar className="w-4 h-4 text-amber-600" />
+                                    <div className="flex-1">
+                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proyecto</div>
+                                        <div className="text-sm font-semibold text-foreground">{row.project.name}</div>
                                     </div>
-                                    <div className="text-lg font-bold text-foreground">{row.project.defaultFinancingMonths}</div>
-                                    <div className="text-xs text-muted-foreground">Meses</div>
                                 </div>
-                                <div className="text-center p-3 rounded-lg border border-border bg-violet-50/50 dark:bg-violet-950/20">
-                                    <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                                        <Percent className="w-4 h-4 text-violet-600" />
+
+                                <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
+                                    <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                        <MapPin className="w-4 h-4 text-amber-600" />
                                     </div>
-                                    <div className="text-lg font-bold text-foreground">{row.project.maxDiscountPercentage}%</div>
-                                    <div className="text-xs text-muted-foreground">Descuento</div>
+                                    <div className="flex-1">
+                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Ubicación</div>
+                                        <div className="text-sm font-semibold text-foreground">{row.project.location}</div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
+                                    <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+                                        <DollarSign className="w-4 h-4 text-violet-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Moneda</div>
+                                        <div className="text-sm font-semibold text-foreground">{row.project.currency}</div>
+                                    </div>
+                                </div>
+
+                                {/* Financial Terms Grid */}
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div className="text-center p-3 rounded-lg border border-border bg-emerald-50/50 dark:bg-emerald-950/20">
+                                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                            <Percent className="w-4 h-4 text-emerald-600" />
+                                        </div>
+                                        <div className="text-lg font-bold text-foreground">{row.project.defaultDownPayment}%</div>
+                                        <div className="text-xs text-muted-foreground">Inicial</div>
+                                    </div>
+                                    <div className="text-center p-3 rounded-lg border border-border bg-amber-50/50 dark:bg-amber-950/20">
+                                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                            <Calendar className="w-4 h-4 text-amber-600" />
+                                        </div>
+                                        <div className="text-lg font-bold text-foreground">{row.project.defaultFinancingMonths}</div>
+                                        <div className="text-xs text-muted-foreground">Meses</div>
+                                    </div>
+                                    <div className="text-center p-3 rounded-lg border border-border bg-violet-50/50 dark:bg-violet-950/20">
+                                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+                                            <Percent className="w-4 h-4 text-violet-600" />
+                                        </div>
+                                        <div className="text-lg font-bold text-foreground">{row.project.maxDiscountPercentage}%</div>
+                                        <div className="text-xs text-muted-foreground">Descuento</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-border rounded-lg bg-muted/20">
+                                <Target className="w-12 h-12 text-muted-foreground mb-3" />
+                                <h5 className="font-medium text-foreground mb-2">Sin proyecto asignado</h5>
+                                <p className="text-sm text-muted-foreground">
+                                    Este lead no tiene un proyecto específico asignado.<br />
+                                    Puedes asignar un proyecto desde la gestión de leads.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

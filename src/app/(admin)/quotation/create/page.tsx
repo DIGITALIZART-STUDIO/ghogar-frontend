@@ -8,15 +8,13 @@ import CreateClientQuotationPage from "./_components/CreateClientQuotationPage";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useUsers } from "../../admin/users/_hooks/useUser";
 import { SummaryLead } from "../../leads/_types/lead";
+import { useUsers } from "../../admin/users/_hooks/useUser";
+import { UserGetDTO } from "../../admin/users/_types/user";
 
 export default function CreateQuotationPage() {
     const { data: userData, isLoading: loadingUser, isError: errorUser } = useUsers();
-    // Obtener userId aunque sea undefined
-    const userId = userData?.user?.id ?? "";
-
-    const { data: leadsData, isLoading: loadingLeads, isError: errorLeads } = useAvailableLeadsForQuotation(userId);
+    const { data: leadsData, isLoading: loadingLeads, isError: errorLeads } = useAvailableLeadsForQuotation();
 
     if (loadingUser) {
         return (
@@ -30,7 +28,7 @@ export default function CreateQuotationPage() {
         );
     }
 
-    if (errorUser || !userId) {
+    if (errorUser) {
         return (
             <div>
                 <HeaderPage
@@ -88,7 +86,7 @@ export default function CreateQuotationPage() {
                 description="Ingrese la información requerida para generar una nueva cotización"
             />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <CreateClientQuotationPage leadsData={leadsData as Array<SummaryLead>} advisorId={userId} />
+                <CreateClientQuotationPage leadsData={leadsData as Array<SummaryLead>} userData={userData as UserGetDTO} />
             </div>
         </div>
     );

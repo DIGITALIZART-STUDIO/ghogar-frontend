@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toastWrapper } from "@/types/toasts";
-import { ActivateLot, DeactivateLot, UpdateLotStatus } from "../_actions/LotActions";
+import { toast } from "sonner";
+import { useActivateLot, useDeactivateLot, useUpdateLotStatus } from "../_hooks/useLots";
 import { LotData, LotStatus } from "../_types/lot";
 import { getAllLotStatuses, getLotStatusConfig } from "../_utils/lots.filter.utils";
 import { UpdateLotsSheet } from "./update/UpdateLotsSheet";
@@ -22,6 +22,10 @@ export function LotCard({ lot, projectId }: LotCardProps) {
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [openUpdateSheet, setOpenUpdateSheet] = useState(false);
     const [isToggling, setIsToggling] = useState(false);
+
+    const activateLot = useActivateLot();
+    const deactivateLot = useDeactivateLot();
+    const updateLotStatus = useUpdateLotStatus();
     // Validar que los datos necesarios existan
     if (!lot?.id || !lot?.lotNumber) {
         return null;
@@ -43,16 +47,20 @@ export function LotCard({ lot, projectId }: LotCardProps) {
 
         setIsUpdatingStatus(true);
 
-        const [, error] = await toastWrapper(UpdateLotStatus(lot.id!, { status: newStatus }), {
+        const promise = updateLotStatus.mutateAsync({ id: lot.id!, statusUpdate: { status: newStatus } });
+
+        toast.promise(promise, {
             loading: `Actualizando estado del lote ${lot.lotNumber}...`,
             success: `Estado del Lote ${lot.lotNumber} actualizado exitosamente`,
             error: (e) => `Error al actualizar estado del lote: ${e.message}`,
         });
 
-        setIsUpdatingStatus(false);
-
-        if (error) {
+        try {
+            await promise;
+        } catch (error) {
             console.error(`Error updating lot ${lot.id} status:`, error);
+        } finally {
+            setIsUpdatingStatus(false);
         }
     };
 
@@ -60,32 +68,34 @@ export function LotCard({ lot, projectId }: LotCardProps) {
         setIsToggling(true);
         try {
             if (lot.isActive) {
-                // Desactivar lote usando toastWrapper
-                const [, error] = await toastWrapper(DeactivateLot(lot.id), {
+                // Desactivar lote usando hook
+                const promise = deactivateLot.mutateAsync(lot.id);
+
+                toast.promise(promise, {
                     loading: "Desactivando lote...",
                     success: `El lote ${lot.lotNumber} ha sido desactivado`,
                     error: (e) => `Error al desactivar el lote: ${e.message}`,
                 });
 
-                if (!error) {
-                    // Actualiza el estado local del proyecto si es necesario
-                    lot.isActive = false;
-                }
+                await promise;
+                // Actualiza el estado local del lote si es necesario
+                lot.isActive = false;
             } else {
-                // Activar proyecto usando toastWrapper
-                const [, error] = await toastWrapper(ActivateLot(lot.id), {
+                // Activar lote usando hook
+                const promise = activateLot.mutateAsync(lot.id);
+
+                toast.promise(promise, {
                     loading: "Activando lote...",
                     success: `El lote ${lot.lotNumber} ha sido activado`,
                     error: (e) => `Error al activar el lote: ${e.message}`,
                 });
 
-                if (!error) {
-                    // Actualiza el estado local del proyecto si es necesario
-                    lot.isActive = true;
-                }
+                await promise;
+                // Actualiza el estado local del lote si es necesario
+                lot.isActive = true;
             }
         } catch (error) {
-            // Este catch es para errores inesperados que no manejó toastWrapper
+            // Este catch es para errores inesperados
             console.error("Error inesperado:", error);
         } finally {
             setIsToggling(false);

@@ -46,7 +46,7 @@ export default function ProjectsTabsContent({ data, isLoading }: ProjectsTabsCon
                                         </div>
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="max-h-[450px]">
+                                <CardContent className="max-h-[800px] h-full">
                                     {!data || !data.projectMetrics || data.projectMetrics.length === 0 ? (
                                         <EmptyState
                                             icon={BarChart3}

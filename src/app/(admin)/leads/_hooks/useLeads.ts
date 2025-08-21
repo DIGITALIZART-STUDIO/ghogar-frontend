@@ -160,20 +160,19 @@ export function useCheckAndUpdateExpiredLeads() {
 
 // Obtener leads disponibles para cotización por usuario, excluyendo una cotización opcionalmente
 export function useAvailableLeadsForQuotation(
-    assignedToId: string,
     excludeQuotationId?: string,
     enabled = true
 ) {
     return useQuery({
-        queryKey: ["getAvailableLeadsForQuotation", assignedToId, excludeQuotationId],
+        queryKey: ["getAvailableLeadsForQuotation", excludeQuotationId],
         queryFn: async () => {
-            const [data, error] = await GetAvailableLeadsForQuotation(assignedToId, excludeQuotationId);
+            const [data, error] = await GetAvailableLeadsForQuotation(excludeQuotationId);
             if (error) {
                 throw new Error(error.message);
             }
             return data ?? [];
         },
-        enabled: !!assignedToId && enabled,
+        enabled: enabled,
     });
 }
 

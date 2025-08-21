@@ -11,14 +11,15 @@ import { useUpdateQuotation } from "../../../_hooks/useQuotations";
 import { Quotation } from "../../../_types/quotation";
 import { QuotationForm } from "../../../create/_components/QuotationForm";
 import { CreateQuotationSchema, quotationSchema } from "../../../create/_schemas/createQuotationsSchema";
+import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface UpdateClientQuotationPageProps {
   leadsData: Array<SummaryLead>;
-  advisorId: string;
   data: Quotation;
+  userData: UserGetDTO;
 }
 
-export default function UpdateClientQuotationPage({ leadsData, advisorId, data }: UpdateClientQuotationPageProps) {
+export default function UpdateClientQuotationPage({ leadsData, data, userData }: UpdateClientQuotationPageProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
@@ -37,7 +38,6 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
         defaultValues: {
             leadId: data.leadId,
             lotId: data.lotId,
-            advisorId: data.advisorId,
             projectId: data.projectId,
             blockId: data.blockId,
             discount: (data.discount ?? 0).toString(),
@@ -61,7 +61,6 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
         form.reset({
             leadId: data.leadId,
             lotId: data.lotId,
-            advisorId: data.advisorId,
             projectId: data.projectId,
             blockId: data.blockId,
             discount: (data.discount ?? 0).toString(),
@@ -83,7 +82,6 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
             const quotationData = {
                 leadId: input.leadId,
                 lotId: selectedLotId || input.lotId,
-                advisorId: advisorId,
                 projectId: selectedProjectId || input.projectId,
                 blockId: selectedBlockId || input.blockId,
                 discount: parseFloat(input.discount),
@@ -128,6 +126,7 @@ export default function UpdateClientQuotationPage({ leadsData, advisorId, data }
                 blockId: selectedBlockId,
                 lotId: selectedLotId,
             }}
+            userData={userData}
         />
     );
 }

@@ -1,16 +1,25 @@
 import { components } from "@/types/api";
 import { backend as api } from "@/types/backend2";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateUser, DeactivateUser, GetPaginatedUsers, ReactivateUser, UpdateProfilePassword, UpdateUser, UpdateUserPassword } from "../actions";
+import { CreateUser, DeactivateUser, GetPaginatedUsers, GetUsersWithHigherRank, ReactivateUser, UpdateProfilePassword, UpdateUser, UpdateUserPassword } from "../actions";
+import { useAuthContext } from "@/context/auth-provider";
+import { toast } from "sonner";
 
 export function useUsers() {
+    const { handleAuthError } = useAuthContext();
+
     return api.useQuery("get", "/api/Users", undefined, {
-        retry: false,
+        retry: false, // NO hacer retries automáticos
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para actualizar contraseña de perfil
 export function useUpdateProfilePassword() {
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async (dto: components["schemas"]["UpdateProfilePasswordDTO"]) => {
             const [value, error] = await UpdateProfilePassword(dto);
@@ -18,6 +27,9 @@ export function useUpdateProfilePassword() {
                 throw error;
             }
             return value;
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -33,12 +45,15 @@ export function usePaginatedUsers(page: number = 1, pageSize: number = 10) {
             }
             return data!;
         },
+        retry: false,
     });
 }
 
 // Hook para crear usuario
 export function useCreateUser() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async (user: components["schemas"]["UserCreateDTO"]) => {
             const [data, error] = await CreateUser(user);
@@ -49,6 +64,13 @@ export function useCreateUser() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
+            toast.success("Usuario creado exitosamente");
+        },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al crear usuario");
+            }
         },
     });
 }
@@ -56,6 +78,8 @@ export function useCreateUser() {
 // Hook para actualizar usuario
 export function useUpdateUser() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async ({
             userId,
@@ -72,6 +96,13 @@ export function useUpdateUser() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
+            toast.success("Usuario actualizado exitosamente");
+        },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al actualizar usuario");
+            }
         },
     });
 }
@@ -79,6 +110,8 @@ export function useUpdateUser() {
 // Hook para actualizar solo la contraseña
 export function useUpdateUserPassword() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async ({
             userId,
@@ -95,6 +128,13 @@ export function useUpdateUserPassword() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
+            toast.success("Contraseña actualizada exitosamente");
+        },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al actualizar contraseña");
+            }
         },
     });
 }
@@ -102,6 +142,8 @@ export function useUpdateUserPassword() {
 // Hook para desactivar usuario
 export function useDeactivateUser() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async (userId: string) => {
             const [value, error] = await DeactivateUser(userId);
@@ -112,6 +154,13 @@ export function useDeactivateUser() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
+            toast.success("Usuario desactivado exitosamente");
+        },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al desactivar usuario");
+            }
         },
     });
 }
@@ -119,6 +168,8 @@ export function useDeactivateUser() {
 // Hook para reactivar usuario
 export function useReactivateUser() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async (userId: string) => {
             const [value, error] = await ReactivateUser(userId);
@@ -129,7 +180,29 @@ export function useReactivateUser() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
+            toast.success("Usuario reactivado exitosamente");
         },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al reactivar usuario");
+            }
+        },
+    });
+}
+
+// Hook para obtener usuarios con mayor rango
+export function useUsersWithHigherRank(name?: string, limit: number = 10) {
+    return useQuery({
+        queryKey: ["usersWithHigherRank", name, limit],
+        queryFn: async () => {
+            const [data, error] = await GetUsersWithHigherRank(name, limit);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data!;
+        },
+        retry: false,
     });
 }
 

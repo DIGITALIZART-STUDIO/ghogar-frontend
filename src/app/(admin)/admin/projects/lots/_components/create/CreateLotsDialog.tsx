@@ -28,11 +28,10 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
-import { CreateLot } from "../../_actions/LotActions";
+import { toast } from "sonner";
+import { useCreateLot } from "../../_hooks/useLots";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
-import { GetActiveBlocksByProject } from "../../../[id]/blocks/_actions/BlockActions";
-import { BlockData } from "../../../[id]/blocks/_types/block";
+import { useActiveBlocks } from "../../../[id]/blocks/_hooks/useBlocks";
 import CreateLotsForm from "./CreateLotsForm";
 
 const dataForm = {
@@ -51,8 +50,9 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
-    const [blocks, setBlocks] = useState<Array<BlockData>>([]);
-    const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
+
+    const createLot = useCreateLot();
+    const { data: blocks = [], isLoading: isLoadingBlocks } = useActiveBlocks(projectId);
 
     const form = useForm<CreateLotSchema>({
         resolver: zodResolver(lotSchema),
@@ -65,38 +65,12 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
         },
     });
 
-    const loadActiveBlocks = async () => {
-        setIsLoadingBlocks(true);
-        try {
-            const [result, error] = await GetActiveBlocksByProject(projectId);
-
-            if (error) {
-                console.error("Error loading active blocks:", error);
-                setBlocks([]);
-                return;
-            }
-
-            setBlocks(result || []);
-
-            // Si hay un blockId preseleccionado, establecerlo en el form
-            if (blockId && result?.some((block) => block.id === blockId)) {
-                form.setValue("blockId", blockId);
-            }
-        } catch (error) {
-            console.error("Error loading active blocks:", error);
-            setBlocks([]);
-        } finally {
-            setIsLoadingBlocks(false);
-        }
-    };
-
-    // Cargar bloques activos cuando se abre el dialog
+    // Si hay un blockId preseleccionado, establecerlo en el form cuando los bloques se cargan
     useEffect(() => {
-        if (open && projectId) {
-            loadActiveBlocks();
+        if (blockId && blocks.length > 0 && blocks.some((block) => block.id === blockId)) {
+            form.setValue("blockId", blockId);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, projectId]);
+    }, [blockId, blocks, form]);
 
     const onSubmit = async (input: CreateLotSchema) => {
         startTransition(async () => {
@@ -110,13 +84,17 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                 // No incluir projectId aquí si el backend lo obtiene del bloque
             };
 
-            const [, error] = await toastWrapper(CreateLot(lotData), {
+            const promise = createLot.mutateAsync(lotData);
+
+            toast.promise(promise, {
                 loading: "Creando lote...",
                 success: "Lote creado exitosamente",
                 error: (e) => `Error al crear lote: ${e.message}`,
             });
 
-            if (!error) {
+            const result = await promise;
+
+            if (result) {
                 setIsSuccess(true);
             }
         });
@@ -124,7 +102,6 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
 
     const handleClose = () => {
         form.reset();
-        setBlocks([]); // Limpiar bloques al cerrar
     };
 
     useEffect(() => {
@@ -132,7 +109,6 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
             form.reset();
             setOpen(false);
             setIsSuccess(false);
-            setBlocks([]);
         }
     }, [isSuccess, form]);
 

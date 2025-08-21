@@ -17,6 +17,7 @@ import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjec
 import { useActiveBlocks } from "@/app/(admin)/admin/projects/[id]/blocks/_hooks/useBlocks";
 import { useLots } from "@/app/(admin)/admin/projects/lots/_hooks/useLots";
 import InformationQuotationForm from "./InformationQuotationForm";
+import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface QuotationFormProps {
   leadsData: Array<SummaryLead>;
@@ -28,9 +29,10 @@ interface QuotationFormProps {
     blockId?: string;
     lotId?: string;
   };
+  userData: UserGetDTO;
 }
 
-export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSelection }: QuotationFormProps) {
+export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSelection, userData }: QuotationFormProps) {
     const router = useRouter();
 
     // Hook para proyectos activos
@@ -210,6 +212,7 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                         setProjectName={setProjectName}
                         setBlockName={setBlockName}
                         setLotNumber={setLotNumber}
+                        userData={userData}
                     />
 
                     {/* Columna derecha - Resumen visual */}

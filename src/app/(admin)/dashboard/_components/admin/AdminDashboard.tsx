@@ -152,7 +152,7 @@ export default function AdminDashboardComponent() {
                                             <p className="text-slate-600 text-sm font-medium dark:text-slate-400">Ingresos</p>
                                         </div>
                                         <p className="text-2xl font-bold text-green-700 dark:text-green-400">
-                                            S/ {((data?.monthlyRevenue ?? 0) / 1000000).toFixed(1)}M
+                                            S/ {((data?.annualRevenue ?? 0)).toFixed(1)}
                                         </p>
                                         <div className="flex items-center gap-1 mt-1">
                                             <Badge

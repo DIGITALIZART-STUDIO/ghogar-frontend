@@ -11,13 +11,15 @@ import { useUpdateQuotation } from "../../../_hooks/useQuotations";
 import { Quotation } from "../../../_types/quotation";
 import { QuotationForm } from "../../../create/_components/QuotationForm";
 import { CreateQuotationSchema, quotationSchema } from "../../../create/_schemas/createQuotationsSchema";
+import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface UpdateClientQuotationPageProps {
   leadsData: Array<SummaryLead>;
   data: Quotation;
+  userData: UserGetDTO;
 }
 
-export default function UpdateClientQuotationPage({ leadsData, data }: UpdateClientQuotationPageProps) {
+export default function UpdateClientQuotationPage({ leadsData, data, userData }: UpdateClientQuotationPageProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
@@ -124,6 +126,7 @@ export default function UpdateClientQuotationPage({ leadsData, data }: UpdateCli
                 blockId: selectedBlockId,
                 lotId: selectedLotId,
             }}
+            userData={userData}
         />
     );
 }

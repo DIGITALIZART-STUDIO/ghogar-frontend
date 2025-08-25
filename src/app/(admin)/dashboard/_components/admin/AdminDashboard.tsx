@@ -176,73 +176,61 @@ export default function AdminDashboardComponent() {
                             <TabsTrigger
                                 value="overview"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
                                 )}
                             >
-                                <div className="flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4" />
-                                    <span>Resumen</span>
-                                </div>
+                                <TrendingUp className="w-4 h-4 shrink-0" />
+                                <span className="truncate text-ellipsis">Resumen</span>
                             </TabsTrigger>
 
                             <TabsTrigger
                                 value="projects"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2 ",
                                 )}
                             >
-                                <div className="flex items-center gap-2">
-                                    <Building2 className="w-4 h-4" />
-                                    <span>Proyectos</span>
-                                </div>
+                                <Building2 className="w-4 h-4 shrink-0" />
+                                <span className="truncate text-ellipsis">Proyectos</span>
                             </TabsTrigger>
 
                             <TabsTrigger
                                 value="team"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
                                 )}
                             >
-                                <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4" />
-                                    <span>Equipo</span>
-                                </div>
+                                <Users className="w-4 h-4 shrink-0" />
+                                <span className="truncate text-ellipsis">Equipo</span>
                             </TabsTrigger>
 
                             <TabsTrigger
                                 value="leads"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
                                 )}
                             >
-                                <div className="flex items-center gap-2">
-                                    <UserCheck className="w-4 h-4" />
-                                    <span>Leads & Ventas</span>
-                                </div>
+                                <UserCheck className="w-4 h-4 shrink-0" />
+                                <span className="truncate text-ellipsis">Leads & Ventas</span>
                             </TabsTrigger>
 
                             <TabsTrigger
                                 value="clients"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
                                 )}
                             >
-                                <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4" />
-                                    <span>Clientes</span>
-                                </div>
+                                <Users className="w-4 h-4" />
+                                <span className="truncate text-ellipsis">Clientes</span>
                             </TabsTrigger>
 
                             <TabsTrigger
                                 value="payments"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
                                 )}
                             >
-                                <div className="flex items-center gap-2">
-                                    <DollarSign className="w-4 h-4" />
-                                    <span>Pagos</span>
-                                </div>
+                                <DollarSign className="w-4 h-4 shrink-0" />
+                                <span className="truncate text-ellipsis">Pagos</span>
                             </TabsTrigger>
                         </TabsList>
                     </div>

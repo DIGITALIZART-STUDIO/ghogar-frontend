@@ -82,45 +82,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/dashboard/admin": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    year?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["DashboardAdminDto"];
-                        "application/json": components["schemas"]["DashboardAdminDto"];
-                        "text/json": components["schemas"]["DashboardAdminDto"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -1026,6 +987,84 @@ export interface paths {
                     };
                     content: {
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Dashboard/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["DashboardAdminDto"];
+                        "application/json": components["schemas"]["DashboardAdminDto"];
+                        "text/json": components["schemas"]["DashboardAdminDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Dashboard/advisor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AdvisorDashboardDto"];
+                        "application/json": components["schemas"]["AdvisorDashboardDto"];
+                        "text/json": components["schemas"]["AdvisorDashboardDto"];
                     };
                 };
             };
@@ -5298,6 +5337,47 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AdvisorDashboardDto: {
+            myLeads?: components["schemas"]["MyLeadsDto"];
+            performance?: components["schemas"]["PerformanceDto"];
+            assignedLeads?: Array<components["schemas"]["AssignedLeadDto"]>;
+            myTasks?: Array<components["schemas"]["MyTaskDto"]>;
+            myQuotations?: Array<components["schemas"]["MyQuotationDto"]>;
+            myReservations?: Array<components["schemas"]["MyReservationDto"]>;
+            monthlyPerformance?: Array<components["schemas"]["AdvisorMonthlyPerformanceDto"]>;
+            myLeadSources?: Array<components["schemas"]["MyLeadSourceDto"]>;
+            tasksByType?: Array<components["schemas"]["TasksByTypeDto"]>;
+            myProjects?: Array<components["schemas"]["MyProjectDto"]>;
+        };
+        AdvisorMonthlyPerformanceDto: {
+            month?: string;
+            /** Format: int32 */
+            leadsAssigned?: number;
+            /** Format: int32 */
+            leadsCompleted?: number;
+            /** Format: int32 */
+            quotations?: number;
+            /** Format: int32 */
+            reservations?: number;
+        };
+        AssignedLeadDto: {
+            /** Format: uuid */
+            id?: string;
+            clientName?: string;
+            clientPhone?: string;
+            clientEmail?: string | null;
+            captureSource?: string;
+            status?: string;
+            /** Format: int32 */
+            daysUntilExpiration?: number;
+            projectName?: string;
+            /** Format: date-time */
+            entryDate?: string;
+            /** Format: date-time */
+            lastContact?: string | null;
+            nextTask?: string;
+            priority?: string;
+        };
         BatchOperationResult: {
             successIds?: Array<string>;
             failedIds?: Array<string>;
@@ -5975,7 +6055,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -5993,7 +6073,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6011,7 +6091,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6029,7 +6109,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6047,7 +6127,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block2"];
+            block?: components["schemas"]["Block4"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6121,6 +6201,90 @@ export interface components {
             sales?: number;
             /** Format: double */
             revenue?: number;
+        };
+        MyLeadsDto: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            registered?: number;
+            /** Format: int32 */
+            attended?: number;
+            /** Format: int32 */
+            inFollowUp?: number;
+            /** Format: int32 */
+            completed?: number;
+            /** Format: int32 */
+            canceled?: number;
+            /** Format: int32 */
+            expired?: number;
+        };
+        MyLeadSourceDto: {
+            source?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: int32 */
+            converted?: number;
+            color?: string;
+        };
+        MyProjectDto: {
+            project?: string;
+            /** Format: int32 */
+            leadsAssigned?: number;
+            /** Format: int32 */
+            leadsCompleted?: number;
+            /** Format: int32 */
+            quotationsIssued?: number;
+            /** Format: int32 */
+            reservationsMade?: number;
+            /** Format: double */
+            conversionRate?: number;
+        };
+        MyQuotationDto: {
+            /** Format: uuid */
+            id?: string;
+            code?: string;
+            clientName?: string;
+            projectName?: string;
+            lotNumber?: string;
+            /** Format: double */
+            totalPrice?: number;
+            /** Format: double */
+            finalPrice?: number;
+            status?: string;
+            quotationDate?: string;
+            /** Format: date-time */
+            validUntil?: string;
+            currency?: string;
+        };
+        MyReservationDto: {
+            /** Format: uuid */
+            id?: string;
+            clientName?: string;
+            projectName?: string;
+            lotNumber?: string;
+            /** Format: double */
+            amountPaid?: number;
+            currency?: string;
+            status?: string;
+            paymentMethod?: string;
+            /** Format: date */
+            reservationDate?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+            notified?: boolean;
+        };
+        MyTaskDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            leadId?: string;
+            clientName?: string;
+            type?: string;
+            description?: string;
+            /** Format: date-time */
+            scheduledDate?: string;
+            isCompleted?: boolean;
+            priority?: string;
         };
         /** @enum {unknown|null} */
         NullableOfClientType: "Natural" | "Juridico" | null;
@@ -6295,6 +6459,20 @@ export interface components {
             paymentMethod: components["schemas"]["PaymentMethod"];
             referenceNumber?: string | null;
             paymentIds: Array<string>;
+        };
+        PerformanceDto: {
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: double */
+            avgResponseTime?: number;
+            /** Format: int32 */
+            quotationsIssued?: number;
+            /** Format: int32 */
+            reservationsGenerated?: number;
+            /** Format: int32 */
+            tasksCompleted?: number;
+            /** Format: int32 */
+            tasksPending?: number;
         };
         ProblemDetails: {
             type?: string | null;
@@ -6862,6 +7040,15 @@ export interface components {
             leadId?: string | null;
             type?: string | null;
             isCompleted?: boolean | null;
+        };
+        TasksByTypeDto: {
+            type?: string;
+            /** Format: int32 */
+            scheduled?: number;
+            /** Format: int32 */
+            completed?: number;
+            /** Format: int32 */
+            pending?: number;
         };
         /** @enum {unknown} */
         TaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other";

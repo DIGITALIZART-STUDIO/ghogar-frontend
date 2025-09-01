@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { PaymentMethodLabels } from "@/app/(admin)/reservations/_utils/reservations.utils";
 import DatePicker from "@/components/ui/date-time-picker";
-import { PaymentTransactionCreateFormData } from "../../_schemas/createPaymentTransactionSchema";
+import { PaymentTransactionCreateFormData } from "../../../_schemas/createPaymentTransactionSchema";
 import { UseFormReturn } from "react-hook-form";
 
 interface CreatePaymentsTransactionFormProps {
@@ -30,11 +30,11 @@ interface CreatePaymentsTransactionFormProps {
 
 export default function CreatePaymentsTransactionHeader({ form, totalSelectedAmount, selectedPayments, progressPercentage }: CreatePaymentsTransactionFormProps) {
     return (
-        <Card className="border overflow-hidden pt-0 bg-white dark:bg-gray-900">
-            <CardHeader className="pb-4 bg-slate-100 dark:bg-gray-800 text-slate-800 dark:text-gray-100 pt-4">
+        <Card className="border overflow-hidden pt-0">
+            <CardHeader className="pb-4 bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-gray-100 pt-4">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-slate-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                        <Zap className="h-5 w-5 text-slate-500 dark:text-yellow-400" />
+                    <div className="h-10 w-10 bg-slate-200 dark:bg-zinc-900 rounded-lg flex items-center justify-center">
+                        <Zap className="h-5 w-5 text-gray-500 dark:text-gray-300" />
                     </div>
                     <div>
                         <h3 className="font-semibold text-lg">Configuración de Transacción</h3>

@@ -5,8 +5,8 @@ import type { PaymentTransactionCreateFormData } from "../../_schemas/createPaym
 import { useEffect, useMemo } from "react";
 import { Form } from "@/components/ui/form";
 import type { PaymentQuotaSimple } from "../../_types/paymentTransaction";
-import CreatePaymentsTransactionHeader from "../create/CreatePaymentsTransactionHeader";
-import CreatePaymentsTransactionSelector from "../create/CreatePaymentsTransactionSelector";
+import CreatePaymentsTransactionHeader from "../../[id_reservation]/create/_components/CreatePaymentsTransactionHeader";
+import CreatePaymentsTransactionSelector from "../../[id_reservation]/create/_components/CreatePaymentsTransactionSelector";
 
 interface UpdatePaymentsTransactionFormProps {
   form: UseFormReturn<PaymentTransactionCreateFormData>

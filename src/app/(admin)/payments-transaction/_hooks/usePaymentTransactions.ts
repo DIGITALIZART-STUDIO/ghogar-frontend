@@ -8,7 +8,7 @@ import {
     getPaymentTransactionsByReservationId,
     getQuotaStatusByReservationId,
 } from "../_actions/PaymentTransactionActions";
-import { PaymentTransactionCreate, PaymentTransactionUpdate } from "../_types/paymentTransaction";
+import { PaymentTransactionCreateFormData } from "../_schemas/createPaymentTransactionSchema";
 
 // Obtener todas las transacciones
 export function usePaymentTransactions() {
@@ -69,12 +69,12 @@ export function useQuotaStatusByReservation(reservationId: string, excludeTransa
     });
 }
 
-// Crear una transacción
+// Crear una transacción con soporte para archivos
 export function useCreatePaymentTransaction() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (dto: PaymentTransactionCreate) => {
-            const [data, error] = await createPaymentTransaction(dto);
+        mutationFn: async (transactionData: PaymentTransactionCreateFormData & { comprobanteFile?: File | null }) => {
+            const [data, error] = await createPaymentTransaction(transactionData);
             if (error) {
                 throw new Error(error.message);
             }
@@ -82,6 +82,7 @@ export function useCreatePaymentTransaction() {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
+            // Invalidar queries relacionadas con la reserva
             if (variables.reservationId) {
                 queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", variables.reservationId] });
                 queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", variables.reservationId] });
@@ -92,12 +93,12 @@ export function useCreatePaymentTransaction() {
     });
 }
 
-// Actualizar una transacción
+// Actualizar una transacción con soporte para archivos
 export function useUpdatePaymentTransaction() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ id, dto }: { id: string; dto: PaymentTransactionUpdate }) => {
-            const [data, error] = await updatePaymentTransaction(id, dto);
+        mutationFn: async ({ id, transactionData }: { id: string; transactionData: PaymentTransactionCreateFormData & { comprobanteFile?: File | null } }) => {
+            const [data, error] = await updatePaymentTransaction(id, transactionData);
             if (error) {
                 throw new Error(error.message);
             }
@@ -105,11 +106,8 @@ export function useUpdatePaymentTransaction() {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
-            if (variables.dto.reservationId) {
-                queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", variables.dto.reservationId] });
-                queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", variables.dto.reservationId] });
-                queryClient.invalidateQueries({ queryKey: ["paymentSchedule", variables.dto.reservationId] });
-            }
+            queryClient.invalidateQueries({ queryKey: ["paymentTransaction", variables.id] });
+            // Invalidar queries relacionadas con la reserva si tenemos el reservationId
             queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
         },
     });

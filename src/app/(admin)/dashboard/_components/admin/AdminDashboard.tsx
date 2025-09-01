@@ -1,29 +1,79 @@
 "use client";
 
-import { Building2, DollarSign, FileText, MapPin, UserCheck, Users, TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Building2, DollarSign, FileText, MapPin, TrendingUp, UserCheck, Users } from "lucide-react";
+import { createPortal } from "react-dom";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { FilterYear } from "@/components/ui/filter-year";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { useDashboardAdmin } from "../../_hooks/useDashboard";
+import { AdminDashboard } from "../../_types/dashboard";
+import ClientsTabsContent from "./clients/ClientsTabsContent";
+import LeadsTabsContent from "./leads/LeadsTabsContent";
 import OverviewTabsContent from "./overview/OverviewTabsContent";
+import PaymentsTabsContent from "./payments/PaymentsTabsContent";
 import ProjectsTabsContent from "./projects/ProjectsTabsContent";
 import TeamTabsContent from "./team/TeamTabsContent";
-import LeadsTabsContent from "./leads/LeadsTabsContent";
-import ClientsTabsContent from "./clients/ClientsTabsContent";
-import PaymentsTabsContent from "./payments/PaymentsTabsContent";
-import { cn } from "@/lib/utils";
-import { AdminDashboard } from "../../_types/dashboard";
 
 export default function AdminDashboardComponent() {
-    const { data, isLoading } = useDashboardAdmin(2025);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [activeTab, setActiveTab] = useState("overview");
+    const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+    const { data, isLoading } = useDashboardAdmin(selectedYear);
+
+    // Buscar el elemento headerContent cuando el componente se monta
+    useEffect(() => {
+        const findElement = () => {
+            const element = document.getElementById("headerContent");
+            if (element) {
+                setPortalElement(element);
+            }
+        };
+
+        // Buscar inmediatamente
+        findElement();
+
+        // Si no existe, usar MutationObserver para detectar cuando se crea
+        if (!portalElement) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "childList") {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                const foundElement = (node as Element).querySelector("#headerContent");
+                                if (foundElement) {
+                                    setPortalElement(foundElement as HTMLElement);
+                                    observer.disconnect();
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            return () => observer.disconnect();
+        }
+    }, [portalElement]);
 
     return (
         <div>
+            {portalElement &&
+            createPortal(
+                <FilterYear selectedYear={selectedYear} onSelectYear={setSelectedYear} />,
+                portalElement
+            )}
+
             <div className="space-y-4">
                 {/* Header con métricas principales rediseñado */}
                 <div className="mb-4">
-
                     {/* KPIs principales rediseñados */}
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         <Card className="relative overflow-hidden">
@@ -152,7 +202,7 @@ export default function AdminDashboardComponent() {
                                             <p className="text-slate-600 text-sm font-medium dark:text-slate-400">Ingresos</p>
                                         </div>
                                         <p className="text-2xl font-bold text-green-700 dark:text-green-400">
-                                            S/ {((data?.annualRevenue ?? 0)).toFixed(1)}
+                                            S/ {(data?.annualRevenue ?? 0).toFixed(1)}
                                         </p>
                                         <div className="flex items-center gap-1 mt-1">
                                             <Badge
@@ -170,13 +220,13 @@ export default function AdminDashboardComponent() {
                 </div>
 
                 {/* Tabs principales rediseñados */}
-                <Tabs defaultValue="overview" className="space-y-6">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                     <div>
                         <TabsList className="h-auto p-1 border border-card grid w-full grid-cols-6 ">
                             <TabsTrigger
                                 value="overview"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2"
                                 )}
                             >
                                 <TrendingUp className="w-4 h-4 shrink-0" />
@@ -186,7 +236,7 @@ export default function AdminDashboardComponent() {
                             <TabsTrigger
                                 value="projects"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2 ",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2 "
                                 )}
                             >
                                 <Building2 className="w-4 h-4 shrink-0" />
@@ -196,7 +246,7 @@ export default function AdminDashboardComponent() {
                             <TabsTrigger
                                 value="team"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2"
                                 )}
                             >
                                 <Users className="w-4 h-4 shrink-0" />
@@ -206,7 +256,7 @@ export default function AdminDashboardComponent() {
                             <TabsTrigger
                                 value="leads"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2"
                                 )}
                             >
                                 <UserCheck className="w-4 h-4 shrink-0" />
@@ -216,7 +266,7 @@ export default function AdminDashboardComponent() {
                             <TabsTrigger
                                 value="clients"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2"
                                 )}
                             >
                                 <Users className="w-4 h-4" />
@@ -226,7 +276,7 @@ export default function AdminDashboardComponent() {
                             <TabsTrigger
                                 value="payments"
                                 className={cn(
-                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                                    "relative px-4 py-3 text-sm font-medium transition-all duration-200 flex items-center gap-2"
                                 )}
                             >
                                 <DollarSign className="w-4 h-4 shrink-0" />

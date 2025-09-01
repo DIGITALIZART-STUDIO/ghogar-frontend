@@ -931,7 +931,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -3134,9 +3135,36 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PaymentTransactionCreateDTO"];
-                    "text/json": components["schemas"]["PaymentTransactionCreateDTO"];
-                    "application/*+json": components["schemas"]["PaymentTransactionCreateDTO"];
+                    "application/x-www-form-urlencoded": {
+                        /** Format: date-time */
+                        PaymentDate?: string;
+                        /** Format: double */
+                        AmountPaid?: number;
+                        /** Format: uuid */
+                        ReservationId?: string;
+                        PaymentMethod?: string;
+                        ReferenceNumber?: string;
+                        ComprobanteUrl?: string;
+                        PaymentIds?: Array<string>;
+                    } & {
+                        /** @default null */
+                        ContentType?: string;
+                        /** @default null */
+                        ContentDisposition?: string;
+                        /** @default null */
+                        Headers?: {
+                            [key: string]: Array<string>;
+                        };
+                        /**
+                         * Format: int64
+                         * @default null
+                         */
+                        Length?: number;
+                        /** @default null */
+                        Name?: string;
+                        /** @default null */
+                        FileName?: string;
+                    };
                 };
             };
             responses: {
@@ -3201,9 +3229,39 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["PaymentTransactionUpdateDTO"];
-                    "text/json": components["schemas"]["PaymentTransactionUpdateDTO"];
-                    "application/*+json": components["schemas"]["PaymentTransactionUpdateDTO"];
+                    "application/x-www-form-urlencoded": {
+                        /** Format: date-time */
+                        PaymentDate?: string;
+                        /** Format: double */
+                        AmountPaid?: number;
+                        /** Format: uuid */
+                        ReservationId?: string;
+                        /** @default null */
+                        PaymentMethod?: string;
+                        /** @default null */
+                        ReferenceNumber?: string;
+                        /** @default null */
+                        ComprobanteUrl?: string;
+                        PaymentIds?: Array<string>;
+                    } & {
+                        /** @default null */
+                        ContentType?: string;
+                        /** @default null */
+                        ContentDisposition?: string;
+                        /** @default null */
+                        Headers?: {
+                            [key: string]: Array<string>;
+                        };
+                        /**
+                         * Format: int64
+                         * @default null
+                         */
+                        Length?: number;
+                        /** @default null */
+                        Name?: string;
+                        /** @default null */
+                        FileName?: string;
+                    };
                 };
             };
             responses: {
@@ -5683,8 +5741,6 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -6055,7 +6111,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6073,7 +6129,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6091,7 +6147,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6109,7 +6165,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6127,7 +6183,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block4"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6421,17 +6477,6 @@ export interface components {
             /** Format: date-time */
             dueDate?: string;
         };
-        PaymentTransactionCreateDTO: {
-            /** Format: date-time */
-            paymentDate: string;
-            /** Format: double */
-            amountPaid: number;
-            /** Format: uuid */
-            reservationId?: string | null;
-            paymentMethod: components["schemas"]["PaymentMethod"];
-            referenceNumber?: string | null;
-            paymentIds: Array<string>;
-        };
         PaymentTransactionDTO: {
             /** Format: uuid */
             id?: string;
@@ -6443,22 +6488,12 @@ export interface components {
             reservationId?: string | null;
             paymentMethod?: components["schemas"]["PaymentMethod"];
             referenceNumber?: string | null;
+            comprobanteUrl?: string | null;
             payments?: Array<components["schemas"]["PaymentDTO"]>;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
-        };
-        PaymentTransactionUpdateDTO: {
-            /** Format: date-time */
-            paymentDate: string;
-            /** Format: double */
-            amountPaid: number;
-            /** Format: uuid */
-            reservationId?: string | null;
-            paymentMethod: components["schemas"]["PaymentMethod"];
-            referenceNumber?: string | null;
-            paymentIds: Array<string>;
         };
         PerformanceDto: {
             /** Format: double */

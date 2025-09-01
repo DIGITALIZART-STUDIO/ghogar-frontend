@@ -11,10 +11,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ReservationWithPaymentsDto } from "@/app/(admin)/reservations/_types/reservation";
 import { PaymentMethodLabels } from "@/app/(admin)/reservations/_utils/reservations.utils";
 import { useState } from "react";
-import { CreatePaymentTransactionDialog } from "../create/CreatePaymentsTransactionDialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
 import { DownloadSchedulePDF, DownloadProcessedPaymentsPDF } from "../../_actions/PaymentTransactionActions";
+import { useRouter } from "next/navigation";
 
 const getCurrencyIcon = (currency: string) => (currency === "DOLARES" ? "$" : "S/");
 
@@ -166,16 +166,13 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
     {
         id: "actions",
         cell: function Cell({ row }) {
-            const [createDialogOpen, setCreateDialogOpen] = useState(false);
             const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
             const [processedPaymentsDialogOpen, setProcessedPaymentsDialogOpen] = useState(false);
+            const router = useRouter();
 
             return (
                 <div>
                     <div>
-                        {createDialogOpen && (
-                            <CreatePaymentTransactionDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} reservation={row.original} />
-                        )}
                         {scheduleDialogOpen && (
                             <DocumentDownloadDialog
                                 documentId={row.original.id!}
@@ -206,12 +203,13 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
 
-                            <DropdownMenuItem onSelect={() => setCreateDialogOpen(true)}>
+                            <DropdownMenuItem onSelect={() => router.push(`/payments-transaction/${row.original.id}/create`)}	>
                                 Crear Transacción
                                 <DropdownMenuShortcut>
                                     <Plus className="size-4" aria-hidden="true" />
                                 </DropdownMenuShortcut>
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => setScheduleDialogOpen(true)}>
                                 Cronograma de Pagos
                                 <DropdownMenuShortcut>

@@ -1,13 +1,13 @@
 import { backend } from "@/types/backend2";
 
 // Hook para obtener los datos del dashboard admin
-export function useDashboardAdmin(year?: number) {
+export function useDashboardAdmin(year: number = new Date().getFullYear()) {
     return backend.useQuery(
         "get",
         "/api/Dashboard/admin",
         { year },
         {
-            enabled: year !== undefined, // Solo ejecuta si year está definido
+            enabled: true, // Siempre ejecuta con el año por defecto
         }
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Receipt, Calendar, Hash, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, MoreHorizontal, Pencil, Trash, FileDown } from "lucide-react";
+import { Receipt, Calendar, Hash, ArrowRight, CheckCircle2, ChevronDown, ChevronUp, MoreHorizontal, Pencil, Trash, FileDown, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +11,12 @@ import type { PaymentTransaction } from "../../../_types/paymentTransaction";
 import { PaymentMethodLabels } from "@/app/(admin)/reservations/_utils/reservations.utils";
 import type { PaymentMethod } from "@/app/(admin)/reservations/_types/reservation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { DeletePaymentTransactionDialog } from "../../delete/DeletePaymentTransactionDialog";
-import { UpdatePaymentTransactionSheet } from "../../update/UpdatePaymentsTransactionSheet";
 import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
 import { DownloadReceiptPDF } from "../../../_actions/PaymentTransactionActions";
+import { ComprobanteViewerDialog } from "./ComprobanteViewerDialog";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface PaymentTransactionsPanelProps {
 	transactions: Array<PaymentTransaction>
@@ -22,13 +24,15 @@ interface PaymentTransactionsPanelProps {
 }
 
 export function PaymentTransactionsPanel({ transactions, currency }: PaymentTransactionsPanelProps) {
+    const router = useRouter();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
     const [expandedTransactions, setExpandedTransactions] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
     const [selectedReservationId, setSelectedReservationId] = useState<string | null>(null);
-    const [updateSheetOpen, setUpdateSheetOpen] = useState(false);
-    const [selectedTransaction, setSelectedTransaction] = useState<PaymentTransaction | null>(null);
     const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
+    const [comprobanteViewerOpen, setComprobanteViewerOpen] = useState(false);
+    const [selectedComprobanteUrl, setSelectedComprobanteUrl] = useState<string | null>(null);
 
     const totalTransacted = transactions.reduce((sum, transaction) => sum + (transaction.amountPaid ?? 0), 0);
     const totalPaymentsCovered = transactions.reduce((sum, transaction) => sum + (transaction.payments?.length ?? 0), 0);
@@ -55,9 +59,9 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
     // Funciones placeholder para las acciones
     const handleEdit = (transactionId: string) => {
         const transaction = transactions.find((t) => t.id === transactionId);
-        if (transaction) {
-            setSelectedTransaction(transaction);
-            setUpdateSheetOpen(true);
+        if (transaction && transaction.reservationId) {
+            // Redirigir a la página de edición usando Next.js 15
+            router.push(`/payments-transaction/${transaction.reservationId}/edit/${transactionId}`);
         }
     };
 
@@ -65,6 +69,11 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
         setSelectedTransactionId(transactionId);
         setSelectedReservationId(reservationId ?? null);
         setDeleteDialogOpen(true);
+    };
+
+    const handleViewComprobante = (comprobanteUrl: string) => {
+        setSelectedComprobanteUrl(comprobanteUrl);
+        setComprobanteViewerOpen(true);
     };
 
     return (
@@ -217,6 +226,14 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
                                                                 <Pencil className="size-4" aria-hidden="true" />
                                                             </DropdownMenuShortcut>
                                                         </DropdownMenuItem>
+                                                        {transaction.comprobanteUrl && (
+                                                            <DropdownMenuItem onClick={() => handleViewComprobante(transaction.comprobanteUrl!)}>
+                                                                Ver Comprobante
+                                                                <DropdownMenuShortcut>
+                                                                    <Eye className="size-4" aria-hidden="true" />
+                                                                </DropdownMenuShortcut>
+                                                            </DropdownMenuItem>
+                                                        )}
                                                         <DropdownMenuItem
                                                             onClick={() => {
                                                                 setSelectedReservationId(transaction.reservationId ?? "");
@@ -384,15 +401,17 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
                     </div>
                 )}
             </div>
-            {/* Sheet para actualizar transacción */}
-            {updateSheetOpen && selectedTransaction && (
-                <UpdatePaymentTransactionSheet
-                    open={updateSheetOpen}
-                    onOpenChange={setUpdateSheetOpen}
-                    reservationId={selectedTransaction.reservationId ?? ""}
-                    transaction={selectedTransaction}
+
+            {/* Visualizador de Comprobante */}
+            {comprobanteViewerOpen && selectedComprobanteUrl && (
+                <ComprobanteViewerDialog
+                    open={comprobanteViewerOpen}
+                    onOpenChange={setComprobanteViewerOpen}
+                    comprobanteUrl={selectedComprobanteUrl}
+                    isDesktop={isDesktop}
                 />
             )}
+
             {/* Diálogo de eliminación */}
             {deleteDialogOpen && (
                 <DeletePaymentTransactionDialog

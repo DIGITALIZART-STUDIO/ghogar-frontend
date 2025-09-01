@@ -55,10 +55,7 @@ export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<Fet
         // Si es error 401 y tenemos refresh token, intentar refresh
         if (data.response.status === 401 && refreshToken?.value) {
             try {
-                const refreshResponse = await backend.POST("/api/Auth/refresh", {
-                    // @ts-expect-error - TODO: fix this
-                    body: { refreshToken: refreshToken.value },
-                });
+                const refreshResponse = await backend.POST("/api/Auth/refresh", {});
 
                 if (refreshResponse.data) {
                     // Reintentar la petición original con el nuevo token

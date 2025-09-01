@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { UseFormReturn } from "react-hook-form";
-import { PaymentTransactionCreateFormData } from "../../_schemas/createPaymentTransactionSchema";
+import { PaymentTransactionCreateFormData } from "../../../_schemas/createPaymentTransactionSchema";
 import { useEffect, useMemo } from "react";
 
-import { PaymentQuotaSimple } from "../../_types/paymentTransaction";
+import { PaymentQuotaSimple } from "../../../_types/paymentTransaction";
 import CreatePaymentsTransactionHeader from "./CreatePaymentsTransactionHeader";
 import CreatePaymentsTransactionSelector from "./CreatePaymentsTransactionSelector";
+import CropperReceiptForm from "./CropperReceiptForm";
 
 interface CreatePaymentsTransactionFormProps {
       form: UseFormReturn<PaymentTransactionCreateFormData>;
@@ -19,13 +20,11 @@ interface CreatePaymentsTransactionFormProps {
       availablePayments: Array<PaymentQuotaSimple>;
       selectedPayments: Array<string>;
       setSelectedPayments: React.Dispatch<React.SetStateAction<Array<string>>>;
-      isLoading: boolean;
-      error: Error | null;
       totalSelectedAmount: number;
-      onOpenChange: (open: boolean) => void;
+      initialImageUrl?: string; // URL de imagen existente para edición
 }
 
-export default function CreatePaymentsTransactionForm({ form, onSubmit, availablePayments, selectedPayments, setSelectedPayments, isLoading, error, totalSelectedAmount, onOpenChange }: CreatePaymentsTransactionFormProps) {
+export default function CreatePaymentsTransactionForm({ form, onSubmit, availablePayments, selectedPayments, setSelectedPayments, totalSelectedAmount, initialImageUrl }: CreatePaymentsTransactionFormProps) {
 
     const totalAvailableAmount = useMemo(
         () => availablePayments.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0),
@@ -49,34 +48,52 @@ export default function CreatePaymentsTransactionForm({ form, onSubmit, availabl
         }
     }, [totalSelectedAmount, selectedPayments.length, form]);
 
+    // Manejar la imagen recortada
+    const handleImageCropped = (blob: Blob) => {
+        // Convertir blob a File para el formulario (JPEG con máxima calidad)
+        const file = new File([blob], "comprobante.jpg", { type: "image/jpeg" });
+        form.setValue("comprobanteFile", file);
+    };
+
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <CreatePaymentsTransactionHeader
-                    form={form}
-                    totalSelectedAmount={totalSelectedAmount}
-                    selectedPayments={selectedPayments}
-                    progressPercentage={progressPercentage}
-                />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Layout responsive: Header y Selector a la izquierda, Imagen a la derecha */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Columna izquierda: Header y Selector */}
+                    <div className="space-y-6">
+                        <CreatePaymentsTransactionHeader
+                            form={form}
+                            totalSelectedAmount={totalSelectedAmount}
+                            selectedPayments={selectedPayments}
+                            progressPercentage={progressPercentage}
+                        />
 
-                {/* Selector de cuotas ultra moderno */}
-                <CreatePaymentsTransactionSelector
-                    availablePayments={availablePayments}
-                    selectedPayments={selectedPayments}
-                    setSelectedPayments={setSelectedPayments}
-                    isLoading={isLoading}
-                    error={error}
-                    totalSelectedAmount={totalSelectedAmount}
-                    totalAvailableAmount={totalAvailableAmount}
-                    form={form}
-                />
+                        {/* Selector de cuotas ultra moderno */}
+                        <CreatePaymentsTransactionSelector
+                            availablePayments={availablePayments}
+                            selectedPayments={selectedPayments}
+                            setSelectedPayments={setSelectedPayments}
+                            totalSelectedAmount={totalSelectedAmount}
+                            totalAvailableAmount={totalAvailableAmount}
+                            form={form}
+                        />
+                    </div>
+
+                    {/* Columna derecha: Comprobante Cropper */}
+                    <div className="space-y-6">
+                        <CropperReceiptForm
+                            onImageCropped={handleImageCropped}
+                            initialImageUrl={initialImageUrl}
+                        />
+                    </div>
+                </div>
 
                 {/* Botones de acción mejorados */}
-                <div className="flex justify-end gap-4">
+                <div className="flex justify-end gap-4 pt-6 border-t">
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => onOpenChange(false)}
                         className="px-6 py-2 border-slate-300 text-slate-700 hover:bg-slate-50"
                     >
                         Cancelar

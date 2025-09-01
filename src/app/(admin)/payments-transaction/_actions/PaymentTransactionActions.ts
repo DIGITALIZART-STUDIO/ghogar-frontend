@@ -1,8 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { backend, DownloadFile, FetchError, wrapper } from "@/types/backend";
-import { Result } from "@/utils/result";
-import { PaymentQuotaSimple, PaymentTransaction, PaymentTransactionCreate, PaymentTransactionUpdate } from "../_types/paymentTransaction";
+import { Result, err, ok } from "@/utils/result";
+import { PaymentQuotaSimple, PaymentTransaction } from "../_types/paymentTransaction";
+import { PaymentTransactionCreateFormData } from "../_schemas/createPaymentTransactionSchema";
 
 // Obtener todas las transacciones de pago
 export async function getAllPaymentTransactions(): Promise<Result<Array<PaymentTransaction>, FetchError>> {
@@ -47,28 +50,108 @@ export async function getQuotaStatusByReservationId(
     );
 }
 
-// Crear una transacción de pago
+// Crear una transacción de pago con soporte para archivos
 export async function createPaymentTransaction(
-    dto: PaymentTransactionCreate
+    transactionData: PaymentTransactionCreateFormData & { comprobanteFile?: File | null }
 ): Promise<Result<PaymentTransaction, FetchError>> {
-    return await wrapper(async (auth) => backend.POST("/api/PaymentTransaction", {
+    const { comprobanteFile, ...dtoData } = transactionData;
+
+    // Crear FormData para enviar tanto el DTO como el archivo
+    const formData = new FormData();
+
+    // Agregar cada campo del DTO individualmente
+    formData.append("dto.paymentDate", dtoData.paymentDate);
+    formData.append("dto.amountPaid", dtoData.amountPaid.toString());
+    formData.append("dto.paymentMethod", dtoData.paymentMethod);
+
+    if (dtoData.reservationId !== undefined && dtoData.reservationId !== null) {
+        formData.append("dto.reservationId", dtoData.reservationId);
+    }
+
+    if (dtoData.referenceNumber !== undefined && dtoData.referenceNumber !== null) {
+        formData.append("dto.referenceNumber", dtoData.referenceNumber);
+    }
+
+    // Agregar los IDs de pagos como array
+    dtoData.paymentIds.forEach((paymentId, index) => {
+        formData.append(`dto.paymentIds[${index}]`, paymentId);
+    });
+
+    // Agregar el archivo de comprobante si existe
+    if (comprobanteFile) {
+        formData.append("comprobanteFile", comprobanteFile);
+    }
+
+    const [response, error] = await wrapper(async (auth) => backend.POST("/api/PaymentTransaction", {
         ...auth,
-        body: dto,
-    })
-    );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        body: formData as any,
+        formData: true,
+    }));
+
+    revalidatePath("/(admin)/payments-transaction", "page");
+
+    if (error) {
+        console.log("Error creating payment transaction:", error);
+        return err(error);
+    }
+    return ok(response);
 }
 
-// Actualizar una transacción de pago
+// Actualizar una transacción de pago con soporte para archivos
 export async function updatePaymentTransaction(
     id: string,
-    dto: PaymentTransactionUpdate
+    transactionData: PaymentTransactionCreateFormData & { comprobanteFile?: File | null }
 ): Promise<Result<PaymentTransaction, FetchError>> {
-    return await wrapper(async (auth) => backend.PUT("/api/PaymentTransaction/{id}", {
+    const { comprobanteFile, ...dtoData } = transactionData;
+
+    // Crear FormData para enviar tanto el DTO como el archivo
+    const formData = new FormData();
+
+    // Agregar cada campo del DTO individualmente
+    if (dtoData.paymentDate !== undefined && dtoData.paymentDate !== null) {
+        formData.append("dto.paymentDate", dtoData.paymentDate);
+    }
+    if (dtoData.amountPaid !== undefined && dtoData.amountPaid !== null) {
+        formData.append("dto.amountPaid", dtoData.amountPaid.toString());
+    }
+    if (dtoData.paymentMethod !== undefined && dtoData.paymentMethod !== null) {
+        formData.append("dto.paymentMethod", dtoData.paymentMethod);
+    }
+    if (dtoData.reservationId !== undefined && dtoData.reservationId !== null) {
+        formData.append("dto.reservationId", dtoData.reservationId);
+    }
+    if (dtoData.referenceNumber !== undefined && dtoData.referenceNumber !== null) {
+        formData.append("dto.referenceNumber", dtoData.referenceNumber);
+    }
+
+    // Agregar los IDs de pagos como array
+    if (dtoData.paymentIds && dtoData.paymentIds.length > 0) {
+        dtoData.paymentIds.forEach((paymentId, index) => {
+            formData.append(`dto.paymentIds[${index}]`, paymentId);
+        });
+    }
+
+    // Agregar el archivo de comprobante si existe
+    if (comprobanteFile) {
+        formData.append("comprobanteFile", comprobanteFile);
+    }
+
+    const [response, error] = await wrapper(async (auth) => backend.PUT("/api/PaymentTransaction/{id}", {
         ...auth,
         params: { path: { id } },
-        body: dto,
-    })
-    );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        body: formData as any,
+        formData: true,
+    }));
+
+    revalidatePath("/(admin)/payments-transaction", "page");
+
+    if (error) {
+        console.log("Error updating payment transaction:", error);
+        return err(error);
+    }
+    return ok(response);
 }
 
 // Eliminar una transacción de pago

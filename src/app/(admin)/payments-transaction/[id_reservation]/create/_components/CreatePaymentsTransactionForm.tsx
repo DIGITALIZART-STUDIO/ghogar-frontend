@@ -9,7 +9,7 @@ import { UseFormReturn } from "react-hook-form";
 import { PaymentTransactionCreateFormData } from "../../../_schemas/createPaymentTransactionSchema";
 import { useEffect, useMemo } from "react";
 
-import { PaymentQuotaSimple } from "../../../_types/paymentTransaction";
+import { PaymentQuotaStatus } from "../../../_types/paymentTransaction";
 import CreatePaymentsTransactionHeader from "./CreatePaymentsTransactionHeader";
 import CreatePaymentsTransactionSelector from "./CreatePaymentsTransactionSelector";
 import CropperReceiptForm from "./CropperReceiptForm";
@@ -17,7 +17,7 @@ import CropperReceiptForm from "./CropperReceiptForm";
 interface CreatePaymentsTransactionFormProps {
       form: UseFormReturn<PaymentTransactionCreateFormData>;
       onSubmit: (data: PaymentTransactionCreateFormData) => void;
-      availablePayments: Array<PaymentQuotaSimple>;
+      availablePayments: PaymentQuotaStatus;
       selectedPayments: Array<string>;
       setSelectedPayments: React.Dispatch<React.SetStateAction<Array<string>>>;
       totalSelectedAmount: number;
@@ -26,15 +26,18 @@ interface CreatePaymentsTransactionFormProps {
 
 export default function CreatePaymentsTransactionForm({ form, onSubmit, availablePayments, selectedPayments, setSelectedPayments, totalSelectedAmount, initialImageUrl }: CreatePaymentsTransactionFormProps) {
 
+    // Usar el totalAmountRemaining de la BD si está disponible, sino calcularlo
     const totalAvailableAmount = useMemo(
-        () => availablePayments.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0),
+        () => availablePayments.totalAmountRemaining ?? availablePayments.pendingQuotas?.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0) ?? 0,
         [availablePayments],
     );
 
-    const progressPercentage = useMemo(
-        () => (totalSelectedAmount / totalAvailableAmount) * 100,
-        [totalSelectedAmount, totalAvailableAmount],
-    );
+    const progressPercentage = useMemo(() => {
+        if (totalAvailableAmount > 0) {
+            return (totalSelectedAmount / totalAvailableAmount) * 100;
+        }
+        return 0;
+    }, [totalSelectedAmount, totalAvailableAmount]);
 
     // Actualizar el formulario cuando cambian las selecciones
     useEffect(() => {
@@ -101,14 +104,13 @@ export default function CreatePaymentsTransactionForm({ form, onSubmit, availabl
                     <Button
                         type="submit"
                         variant={"default"}
-                        disabled={selectedPayments.length === 0}
                         className="disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <ArrowRight className="h-4 w-4 mr-2" />
+
                         Procesar Pago
-                        {selectedPayments.length > 0 && (
-                            <Badge className="ml-2 bg-white/20  border-white/30">{selectedPayments.length}</Badge>
-                        )}
+                        <Badge className="ml-2 bg-white/20 border-white/30">{selectedPayments.length}</Badge>
+
                     </Button>
                 </div>
             </form>

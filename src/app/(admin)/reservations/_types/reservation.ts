@@ -3,6 +3,7 @@ import { components } from "@/types/api";
 export type ReservationDto = components["schemas"]["ReservationDto"];
 export type ReservationWithPaymentsDto = components["schemas"]["ReservationWithPaymentsDto"];
 export type ReservationCreateDto = components["schemas"]["ReservationCreateDto"];
+export type ReservationWithPendingPaymentsDto = components["schemas"]["ReservationWithPendingPaymentsDto"];
 
 export enum ReservationStatus {
   ISSUED = "ISSUED",

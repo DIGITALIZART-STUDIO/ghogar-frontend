@@ -8,12 +8,12 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { PaymentQuotaSimple, PaymentTransaction } from "@/app/(admin)/payments-transaction/_types/paymentTransaction";
+import { PaymentQuotaStatus, PaymentTransaction } from "@/app/(admin)/payments-transaction/_types/paymentTransaction";
 import CreatePaymentsTransactionForm from "../../../../create/_components/CreatePaymentsTransactionForm";
 import { PaymentMethod } from "@/app/(admin)/reservations/_types/reservation";
 
 interface ClientUpdatePaymentsTransactionPageProps {
-    availablePayments: Array<PaymentQuotaSimple>;
+    availablePayments: PaymentQuotaStatus;
     id: string;
     transaction: PaymentTransaction | undefined;
     paymentTransactionId: string;
@@ -42,12 +42,12 @@ export default function ClientUpdatePaymentsTransactionPage({ availablePayments,
 
     // Calcular totales de manera segura
     const selectedPaymentDetails = useMemo(
-        () => availablePayments.filter((p) => selectedPayments.includes(p.id ?? "")),
+        () => availablePayments?.pendingQuotas?.filter((p) => selectedPayments.includes(p.id ?? "")),
         [selectedPayments, availablePayments],
     );
 
     const totalSelectedAmount = useMemo(
-        () => selectedPaymentDetails.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0),
+        () => selectedPaymentDetails?.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0),
         [selectedPaymentDetails],
     );
 
@@ -87,7 +87,7 @@ export default function ClientUpdatePaymentsTransactionPage({ availablePayments,
             availablePayments={availablePayments}
             selectedPayments={selectedPayments}
             setSelectedPayments={setSelectedPayments}
-            totalSelectedAmount={totalSelectedAmount}
+            totalSelectedAmount={totalSelectedAmount ?? 0}
             initialImageUrl={transaction?.comprobanteUrl ?? undefined}
         />
     );

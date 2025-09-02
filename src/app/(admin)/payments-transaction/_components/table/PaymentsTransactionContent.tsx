@@ -20,6 +20,9 @@ export function PaymentsExpandedContent({ reservation }: PaymentsExpandedContent
         error: errorTx,
     } = usePaymentTransactionsByReservation(reservation.id ?? "");
 
+    console.log("payments", JSON.stringify(payments, null, 2));
+    console.log("transactions", JSON.stringify(transactions, null, 2));
+
     return (
         <div className="p-6">
 

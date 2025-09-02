@@ -63,32 +63,50 @@ export const LeadCaptureSourceLabels: Record<
     label: string;
     icon: React.ElementType;
     className: string;
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
   }
 > = {
     [LeadCaptureSource.Company]: {
         label: "Empresa",
         icon: Building,
         className: "text-indigo-600 border-indigo-200",
+        bgColor: "bg-indigo-50",
+        borderColor: "border-indigo-200",
+        textColor: "text-indigo-600",
     },
     [LeadCaptureSource.PersonalFacebook]: {
         label: "Facebook personal",
         icon: Facebook,
         className: "text-blue-600 border-blue-200",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-200",
+        textColor: "text-blue-600",
     },
     [LeadCaptureSource.RealEstateFair]: {
         label: "Feria inmobiliaria",
         icon: Users,
         className: "text-orange-600 border-orange-200",
+        bgColor: "bg-orange-50",
+        borderColor: "border-orange-200",
+        textColor: "text-orange-600",
     },
     [LeadCaptureSource.Institutional]: {
         label: "Institucional",
         icon: Briefcase,
         className: "text-teal-600 border-teal-200",
+        bgColor: "bg-teal-50",
+        borderColor: "border-teal-200",
+        textColor: "text-teal-600",
     },
     [LeadCaptureSource.Loyalty]: {
         label: "Fidelización",
         icon: Heart,
         className: "text-pink-600 border-pink-200",
+        bgColor: "bg-pink-50",
+        borderColor: "border-pink-200",
+        textColor: "text-pink-600",
     },
 };
 

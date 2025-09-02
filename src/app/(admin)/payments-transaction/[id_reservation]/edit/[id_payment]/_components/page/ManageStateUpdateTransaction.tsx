@@ -16,7 +16,7 @@ interface ManageStateUpdateTransactionProps {
 }
 
 export default function ManageStateUpdateTransaction({ id, idPayment }: ManageStateUpdateTransactionProps) {
-    const { data: availablePayments = [], isLoading, error } = useQuotaStatusByReservation(id, idPayment);
+    const { data: availablePayments, isLoading, error } = useQuotaStatusByReservation(id, idPayment);
     const { data: transaction, isLoading: isLoadingTransaction, error: errorTransaction } = usePaymentTransaction(idPayment ?? "");
 
     const { data: reservation, isLoading: isLoadingReservation, error: errorReservation } = useReservationById(id ?? "");
@@ -64,7 +64,7 @@ export default function ManageStateUpdateTransaction({ id, idPayment }: ManageSt
             <HeaderPage title="Editar transacción" description="Modifica los datos de la transacción." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <ClientUpdatePaymentsTransactionPage
-                    availablePayments={availablePayments}
+                    availablePayments={availablePayments ?? { pendingQuotas: [] }}
                     id={id}
                     transaction={transaction}
                     paymentTransactionId={idPayment}

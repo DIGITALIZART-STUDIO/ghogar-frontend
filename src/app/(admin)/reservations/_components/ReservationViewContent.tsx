@@ -47,7 +47,7 @@ export default function ReservationViewContent({
             <div className="rounded-lg bg-card p-6 text-card-foreground">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold">
-                        Reserva #{data.id}
+                        Reserva
                     </h3>
                     {data.status && ReservationStatusLabels[data.status as ReservationStatus] ? (
                         <Badge variant="outline" className={ReservationStatusLabels[data.status as ReservationStatus].className}>

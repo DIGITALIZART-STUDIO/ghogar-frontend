@@ -4,7 +4,6 @@ import {
     FileCheck,
     FileText,
     LayoutDashboard,
-    LineChart,
     ListChecks,
     Users,
     DollarSign,
@@ -87,16 +86,6 @@ export const sidebarData: SidebarData = {
                     title: "Mis Leads",
                     url: "/assignments",
                     icon: ClipboardList,
-                },
-            ],
-        },
-        {
-            title: "Reportes",
-            items: [
-                {
-                    title: "Reportes",
-                    url: "/reports",
-                    icon: LineChart,
                 },
             ],
         },

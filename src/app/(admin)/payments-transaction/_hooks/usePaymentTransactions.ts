@@ -63,7 +63,7 @@ export function useQuotaStatusByReservation(reservationId: string, excludeTransa
             if (error) {
                 throw new Error(error.message);
             }
-            return data ?? [];
+            return data;
         },
         enabled: !!reservationId,
     });

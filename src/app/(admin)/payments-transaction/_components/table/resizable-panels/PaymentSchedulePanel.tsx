@@ -17,22 +17,32 @@ const getPaymentStatus = (payment: PaymentDto): PaymentStatus => {
     if (payment.paid) {
         return PaymentStatus.PAID;
     }
+
     const dueDate = payment.dueDate ? new Date(payment.dueDate) : new Date(0);
     const today = new Date();
+
     if (dueDate < today) {
         return PaymentStatus.OVERDUE;
     }
+
+    // Si hay pagos parciales, mostrar como pendiente pero con indicador visual
     return PaymentStatus.PENDING;
 };
 
 export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePanelProps) {
+    // Usar los nuevos campos para cálculos más precisos
     const totalAmount = payments.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0);
-    const paidAmount = payments.filter((p) => p.paid).reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0);
-    const progressPercentage = totalAmount > 0 ? (paidAmount / totalAmount) * 100 : 0;
+    const totalPaidAmount = payments.reduce((sum, payment) => sum + (payment.amountPaid ?? 0), 0);
+    const totalRemainingAmount = payments.reduce((sum, payment) => sum + (payment.remainingAmount ?? 0), 0);
 
-    const paidCount = payments.filter((p) => p.paid).length;
-    const pendingCount = payments.filter((p) => !p.paid && p.dueDate && new Date(p.dueDate) >= new Date()).length;
-    const overdueCount = payments.filter((p) => !p.paid && p.dueDate && new Date(p.dueDate) < new Date()).length;
+    // Calcular progreso basado en el monto realmente pagado
+    const progressPercentage = totalAmount > 0 ? (totalPaidAmount / totalAmount) * 100 : 0;
+
+    // Contadores más precisos
+    const fullyPaidCount = payments.filter((p) => p.paid).length;
+    const partiallyPaidCount = payments.filter((p) => (p.amountPaid ?? 0) > 0 && !p.paid).length;
+    const pendingCount = payments.filter((p) => (p.amountPaid ?? 0) === 0 && p.dueDate && new Date(p.dueDate) >= new Date()).length;
+    const overdueCount = payments.filter((p) => (p.amountPaid ?? 0) === 0 && p.dueDate && new Date(p.dueDate) < new Date()).length;
 
     const currencySymbol = currency === "DOLARES" ? "$" : "S/";
 
@@ -61,17 +71,34 @@ export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePane
                 </div>
 
                 {/* Estadísticas adaptables */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-5">
                     <div className="bg-white dark:bg-gray-950 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border border-green-100 dark:border-green-900 min-w-0">
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                             <div className="p-1 sm:p-2 bg-green-100 rounded-lg flex-shrink-0">
                                 <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <div className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-green-700">{paidCount}</div>
+                                <div className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-green-700">{fullyPaidCount}</div>
                                 <div className="text-xs lg:text-sm text-green-600 font-medium overflow-hidden">
-                                    <span className="hidden sm:inline">Pagadas</span>
+                                    <span className="hidden sm:inline">Completamente Pagadas</span>
                                     <span className="sm:hidden">Pag.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-gray-950 p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl border border-blue-100 dark:border-blue-900 min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <div className="p-1 sm:p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-blue-700">
+                                    {partiallyPaidCount}
+                                </div>
+                                <div className="text-xs lg:text-sm text-blue-600 font-medium overflow-hidden">
+                                    <span className="hidden sm:inline">Parcialmente Pagadas</span>
+                                    <span className="sm:hidden">Parc.</span>
                                 </div>
                             </div>
                         </div>
@@ -120,7 +147,7 @@ export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePane
                         <div className="text-left sm:text-right">
                             <div className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
                                 {currencySymbol}
-                                {paidAmount.toLocaleString()}
+                                {totalPaidAmount.toLocaleString()}
                             </div>
                             <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                 de {currencySymbol}
@@ -133,7 +160,7 @@ export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePane
                         <span className="text-xs text-gray-500 dark:text-gray-400">{progressPercentage.toFixed(1)}% completado</span>
                         <span className="text-xs font-medium text-gray-700 dark:text-gray-200">
                             {currencySymbol}
-                            {(totalAmount - paidAmount).toLocaleString()} restante
+                            {totalRemainingAmount.toLocaleString()} restante
                         </span>
                     </div>
                 </div>
@@ -209,7 +236,7 @@ export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePane
                                 </div>
 
                                 {/* Información de la cuota adaptable */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                                     <div className="space-y-1">
                                         <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
                                             Fecha de Vencimiento
@@ -224,7 +251,7 @@ export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePane
 
                                     <div className="space-y-1">
                                         <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
-                                            Monto a Pagar
+                                            Monto Total
                                         </label>
                                         <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                             <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-300" />
@@ -232,6 +259,34 @@ export function PaymentSchedulePanel({ payments, currency }: PaymentSchedulePane
                                                 {currencySymbol}
                                                 {(payment.amountDue ?? 0).toLocaleString()}
                                             </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
+                                            {payment.paid ? "Pagado" : (payment.amountPaid ?? 0) > 0 ? "Parcialmente Pagado" : "Pendiente"}
+                                        </label>
+                                        <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                            <div className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-300">
+                                                {currencySymbol}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                {(payment.amountPaid ?? 0) > 0 && (
+                                                    <span className="text-xs lg:text-sm font-bold text-green-600 dark:text-green-400">
+                                                        {(payment.amountPaid ?? 0).toLocaleString()}
+                                                    </span>
+                                                )}
+                                                {(payment.remainingAmount ?? 0) > 0 && (
+                                                    <span className="text-xs lg:text-sm font-medium text-amber-600 dark:text-amber-400">
+                                                        {(payment.remainingAmount ?? 0).toLocaleString()}
+                                                    </span>
+                                                )}
+                                                {(payment.amountPaid ?? 0) === 0 && (payment.remainingAmount ?? 0) === 0 && (
+                                                    <span className="text-xs lg:text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                        Sin pagos
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

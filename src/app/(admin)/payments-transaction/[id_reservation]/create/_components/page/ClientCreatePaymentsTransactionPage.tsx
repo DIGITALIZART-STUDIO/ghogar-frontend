@@ -9,10 +9,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import CreatePaymentsTransactionForm from "../CreatePaymentsTransactionForm";
-import { PaymentQuotaSimple } from "@/app/(admin)/payments-transaction/_types/paymentTransaction";
+import {  PaymentQuotaStatus } from "@/app/(admin)/payments-transaction/_types/paymentTransaction";
 
 interface ClientCreatePaymentsTransactionPageProps {
-    availablePayments: Array<PaymentQuotaSimple>;
+    availablePayments: PaymentQuotaStatus;
     id: string;
 }
 
@@ -35,27 +35,56 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
     });
         // Calcular totales de manera segura
     const selectedPaymentDetails = useMemo(
-        () => availablePayments.filter((p) => selectedPayments.includes(p.id ?? "")),
+        () => availablePayments.pendingQuotas?.filter((p) => selectedPayments.includes(p.id ?? "")),
         [selectedPayments, availablePayments],
     );
 
     const totalSelectedAmount = useMemo(
-        () => selectedPaymentDetails.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0),
+        () => selectedPaymentDetails?.reduce((sum, payment) => sum + (payment.amountDue ?? 0), 0),
         [selectedPaymentDetails],
     );
 
     const onSubmit = async (data: PaymentTransactionCreateFormData) => {
+        // Si no hay cuotas seleccionadas, usar asignación automática
+        if (selectedPayments.length === 0) {
+            if (!data.amountPaid || data.amountPaid <= 0) {
+                toast.error("Debes ingresar un monto para la asignación automática de cuotas");
+                return;
+            }
+
+            // Para asignación automática, solo necesitamos el monto y reservationId
+            const promise = createPaymentTransaction.mutateAsync({
+                ...data,
+                paymentIds: undefined, // El backend asignará automáticamente
+                reservationId: id, // Necesario para asignación automática
+            });
+
+            toast.promise(promise, {
+                loading: "Registrando transacción con asignación automática...",
+                success: "Transacción registrada correctamente.",
+                error: (e) => `Error al registrar transacción: ${e.message ?? e}`,
+            });
+
+            promise.then(() => {
+                form.reset();
+                setSelectedPayments([]);
+                router.push("/payments-transaction");
+            });
+            return;
+        }
+
+        // Validación para cuotas seleccionadas manualmente
         if (data.amountPaid !== totalSelectedAmount) {
             toast.error("El monto ingresado no coincide con el total de las cuotas seleccionadas", {
-                description: "Verifica los montos antes de continuar.",
+                description: `Monto ingresado: ${data.amountPaid}, Total cuotas: ${totalSelectedAmount}`,
             });
             return;
         }
 
         const promise = createPaymentTransaction.mutateAsync({
             ...data,
-            // reservationId se envía desde el formulario si existe
-            // comprobanteFile se envía desde el ModernImageCropper si existe
+            paymentIds: selectedPayments,
+            reservationId: id,
         });
 
         toast.promise(promise, {
@@ -77,7 +106,7 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
             availablePayments={availablePayments}
             selectedPayments={selectedPayments}
             setSelectedPayments={setSelectedPayments}
-            totalSelectedAmount={totalSelectedAmount}
+            totalSelectedAmount={totalSelectedAmount ?? 0}
         />
     );
 }

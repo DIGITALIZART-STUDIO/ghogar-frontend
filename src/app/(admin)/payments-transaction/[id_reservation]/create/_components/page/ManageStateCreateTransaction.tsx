@@ -14,7 +14,7 @@ interface ManageStateCreateTransactionProps {
 }
 
 export default function ManageStateCreateTransaction({ id }: ManageStateCreateTransactionProps) {
-    const { data: availablePayments = [], isLoading, error } = useQuotaStatusByReservation(id ?? "");
+    const { data: availablePayments, isLoading, error } = useQuotaStatusByReservation(id ?? "");
 
     const { data: reservation, isLoading: isLoadingReservation, error: errorReservation } = useReservationById(id ?? "");
 
@@ -39,6 +39,18 @@ export default function ManageStateCreateTransaction({ id }: ManageStateCreateTr
             </div>
         );
     }
+
+    if (!availablePayments) {
+        return (
+            <div className="space-y-6">
+                <HeaderPage title="Crear transacción" description="No se encontraron cuotas disponibles" />
+                <ErrorGeneral
+                    title="No se encontraron cuotas disponibles"
+                />
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="mb-4">

@@ -13,6 +13,7 @@ const protectedRoutes = [
     "/profile",
     "/pending-contracts",
     "/payments-transaction",
+    "/credit-management",
 ];
 
 export function middleware(request: NextRequest) {

@@ -7,7 +7,8 @@ import {
     ListChecks,
     Users,
     DollarSign,
-    FileSignature
+    FileSignature,
+    Coins
 } from "lucide-react";
 
 import { rolePermissions, type SidebarData } from "../types";
@@ -71,6 +72,11 @@ export const sidebarData: SidebarData = {
                     title: "Contratos Pendientes",
                     url: "/pending-contracts",
                     icon: FileSignature,
+                },
+                {
+                    title: "Gestión de Creditos",
+                    url: "/credit-management",
+                    icon: Coins,
                 },
                 {
                     title: "Gestión de Pagos",

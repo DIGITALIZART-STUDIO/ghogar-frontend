@@ -11,13 +11,18 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
     const router = useRouter();
-    const { isAuthenticated, isLoading } = useAuthContext();
+    const { isAuthenticated, isLoading, isLoggingOut } = useAuthContext();
 
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
+        if (!isLoading && !isAuthenticated && !isLoggingOut) {
             router.replace("/login");
         }
-    }, [isAuthenticated, isLoading, router]);
+    }, [isAuthenticated, isLoading, isLoggingOut, router]);
+
+    // Mostrar loader durante logout
+    if (isLoggingOut) {
+        return <FullPageLoader text="Cerrando sesión..." />;
+    }
 
     // Mostrar loader mientras se verifica la autenticación
     if (isLoading) {

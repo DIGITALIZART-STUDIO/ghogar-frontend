@@ -15,20 +15,25 @@ import { useUsers } from "./admin/users/_hooks/useUser";
 import { useAuthContext } from "@/context/auth-provider";
 
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
-    const { handleAuthError } = useAuthContext();
+    const { handleAuthError, isLoggingOut } = useAuthContext();
     const { data, error, isLoading } = useUsers();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const e = error as any;
 
     useEffect(() => {
-        if (!isLoading && !!e && (e.statusCode === 401 || e.statusCode === 403)) {
+        if (!isLoading && !!e && (e.statusCode === 401 || e.statusCode === 403) && !isLoggingOut) {
             handleAuthError(e);
         }
-    }, [e, isLoading, handleAuthError]);
+    }, [e, isLoading, handleAuthError, isLoggingOut]);
 
     if (isLoading) {
         return <FullPageLoader text="Cargando aplicación..." />;
+    }
+
+    // Si estamos haciendo logout, mostrar loader
+    if (isLoggingOut) {
+        return <FullPageLoader text="Cerrando sesión..." />;
     }
 
     // Si hay error de autenticación, mostrar loading mientras se procesa

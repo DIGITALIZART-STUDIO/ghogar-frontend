@@ -11,6 +11,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: unknown | null;
+  isLoggingOut: boolean;
 }
 
 interface AuthContextType extends AuthState {
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: false,
         isLoading: true,
         user: null,
+        isLoggingOut: false,
     });
 
     // Variable para evitar múltiples refreshes simultáneos
@@ -61,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         ...prev,
                         isAuthenticated: true,
                         isLoading: false,
+                        isLoggingOut: false,
                     }));
 
                     // Invalidar todo el cache de React Query para forzar nuevas peticiones
@@ -87,6 +90,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Función para hacer logout
     const handleLogout = async () => {
+        // Marcar que estamos haciendo logout para evitar handleAuthError
+        setAuthState((prev) => ({
+            ...prev,
+            isLoggingOut: true,
+        }));
+
         try {
             await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Auth/logout`, {
                 method: "POST",
@@ -99,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated: false,
                 isLoading: false,
                 user: null,
+                isLoggingOut: false,
             });
 
             // Limpiar cache de React Query al hacer logout
@@ -111,6 +121,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Función para interceptar errores 401 y intentar refresh
     const handleAuthError = async (error: unknown) => {
+        // Si estamos haciendo logout, no procesar errores de autenticación
+        if (authState.isLoggingOut) {
+            return false;
+        }
+
         if ((error as { statusCode?: number })?.statusCode === 401) {
             // Si ya se está refrescando, no hacer nada
             if (isRefreshing) {
@@ -139,6 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     isAuthenticated: false,
                     isLoading: false,
                     user: null,
+                    isLoggingOut: false,
                 });
                 return;
             }
@@ -148,6 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated: true,
                 isLoading: false,
                 user: null,
+                isLoggingOut: false,
             });
         };
 

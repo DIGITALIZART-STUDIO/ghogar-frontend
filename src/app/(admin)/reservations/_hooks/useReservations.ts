@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { GetAllCanceledPendingValidationReservationsPaginated, GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetReservationById, ToggleContractValidationStatus } from "../_actions/ReservationActions";
+import { GetAllCanceledPendingValidationReservationsPaginated, GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetAllReservationsWithPendingPaymentsPaginated, GetReservationById, ToggleContractValidationStatus } from "../_actions/ReservationActions";
 import type { PaginatedResponse } from "@/types/api/paginated-response";
 import type { components } from "@/types/api";
 import type { FetchError } from "@/types/backend";
@@ -38,6 +38,20 @@ export function usePaginatedCanceledReservations(page: number = 1, pageSize: num
         queryKey: ["canceledReservationsPaginated", page, pageSize],
         queryFn: async () => {
             const [data, error] = await GetAllCanceledReservationsPaginated(page, pageSize);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data!;
+        },
+    });
+}
+
+// Hook para reservas con pagos pendientes paginadas
+export function usePaginatedReservationsWithPendingPayments(page: number = 1, pageSize: number = 10) {
+    return useQuery<PaginatedResponse<components["schemas"]["ReservationWithPendingPaymentsDto"]>, FetchError>({
+        queryKey: ["reservationsWithPendingPaymentsPaginated", page, pageSize],
+        queryFn: async () => {
+            const [data, error] = await GetAllReservationsWithPendingPaymentsPaginated(page, pageSize);
             if (error) {
                 throw new Error(error.message);
             }

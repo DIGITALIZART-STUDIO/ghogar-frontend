@@ -64,6 +64,38 @@ export async function GetAllCanceledPendingValidationReservationsPaginated(
     });
 }
 
+// Obtener reservas con pagos pendientes paginadas
+export async function GetAllReservationsWithPendingPaymentsPaginated(
+    page: number = 1,
+    pageSize: number = 10
+): Promise<Result<PaginatedResponse<components["schemas"]["ReservationWithPendingPaymentsDto"]>, FetchError>> {
+    const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/pending-payments/paginated", {
+        ...auth,
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    }));
+
+    if (error) {
+        console.log("Error getting paginated reservations with pending payments:", error);
+        return err(error);
+    }
+
+    // Normaliza la respuesta para que nunca sea undefined
+    return ok({
+        data: response?.data ?? [],
+        meta: response?.meta ?? {
+            page: page,
+            pageSize: pageSize,
+            totalCount: 0,
+            totalPages: 0,
+        },
+    });
+}
+
 // Traer reservas canceladas paginadas
 export async function GetAllCanceledReservationsPaginated(
     page: number = 1,

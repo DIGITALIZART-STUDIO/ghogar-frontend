@@ -4542,6 +4542,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Reservations/pending-payments/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationWithPendingPaymentsDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationWithPendingPaymentsDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationWithPendingPaymentsDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Reservations/{id}": {
         parameters: {
             query?: never;
@@ -5629,6 +5669,15 @@ export interface components {
             separateProperty?: boolean;
             separatePropertyData?: string | null;
         };
+        ClientDto: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            dni?: string;
+            ruc?: string | null;
+            email?: string | null;
+            phoneNumber?: string;
+        };
         ClientDTO: {
             /** Format: uuid */
             id?: string;
@@ -6112,7 +6161,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6130,7 +6179,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6148,7 +6197,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6166,7 +6215,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6184,7 +6233,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6199,6 +6248,15 @@ export interface components {
             price: number;
             /** Format: uuid */
             blockId: string;
+        };
+        LotDto: {
+            /** Format: uuid */
+            id?: string;
+            lotNumber?: string;
+            /** Format: double */
+            area?: number;
+            /** Format: double */
+            price?: number;
         };
         LotDTO: {
             /** Format: uuid */
@@ -6377,6 +6435,10 @@ export interface components {
             data?: Array<components["schemas"]["ReservationWithPaymentsDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
+        PaginatedResponseV2OfReservationWithPendingPaymentsDto: {
+            data?: Array<components["schemas"]["ReservationWithPendingPaymentsDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+        };
         PaginatedResponseV2OfUserGetDTO: {
             data?: Array<components["schemas"]["UserGetDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
@@ -6517,6 +6579,19 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
+        };
+        PendingPaymentDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: double */
+            amountDue?: number;
+            /** Format: double */
+            amountPaid?: number;
+            /** Format: double */
+            remainingAmount?: number;
+            isOverdue?: boolean;
         };
         PerformanceDto: {
             /** Format: double */
@@ -6740,6 +6815,12 @@ export interface components {
             modifiedAt?: string;
             blocks?: Array<components["schemas"]["Block5"]>;
         } | null;
+        ProjectDto: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            location?: string;
+        };
         ProjectDTO: {
             /** Format: uuid */
             id?: string;
@@ -6809,6 +6890,17 @@ export interface components {
             quotationDate?: string | null;
             /** Format: int32 */
             validityDays?: number;
+        };
+        QuotationDto: {
+            /** Format: uuid */
+            id?: string;
+            code?: string;
+            /** Format: double */
+            finalPrice?: number;
+            /** Format: int32 */
+            monthsFinanced?: number;
+            /** Format: double */
+            quotaAmount?: number;
         };
         QuotationDTO: {
             /** Format: uuid */
@@ -7044,6 +7136,40 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
+        };
+        ReservationWithPendingPaymentsDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            reservationDate?: string;
+            /** Format: double */
+            amountPaid?: number;
+            paymentMethod?: components["schemas"]["PaymentMethod"];
+            status?: components["schemas"]["ReservationStatus"];
+            currency?: components["schemas"]["Currency"];
+            /** Format: double */
+            exchangeRate?: number;
+            /** Format: date-time */
+            expiresAt?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            client?: components["schemas"]["ClientDto"];
+            lot?: components["schemas"]["LotDto"];
+            project?: components["schemas"]["ProjectDto"];
+            quotation?: components["schemas"]["QuotationDto"];
+            pendingPayments?: Array<components["schemas"]["PendingPaymentDto"]>;
+            /** Format: double */
+            totalAmountDue?: number;
+            /** Format: double */
+            totalAmountPaid?: number;
+            /** Format: double */
+            totalRemainingAmount?: number;
+            /** Format: int32 */
+            totalPendingQuotas?: number;
+            /** Format: date-time */
+            nextPaymentDueDate?: string | null;
         };
         ResponseApiDni: {
             numero?: string;

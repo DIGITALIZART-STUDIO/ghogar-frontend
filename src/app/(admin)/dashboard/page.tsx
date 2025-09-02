@@ -7,6 +7,7 @@ import AdminDashboard from "./_components/admin/AdminDashboard";
 import SupervisorDashboard from "./_components/supervisor/SupervisorDashboard";
 import SalesAdvisorDashboard from "./_components/sales-advisor/SalesAdvisorDashboard";
 import ManagerDashboard from "./_components/manager/ManagerDashboard";
+import FinanceManagerDashboard from "./_components/finance-manager/FinanceManagerDashboard";
 
 export default function DashboardPage() {
     const { data, error, isLoading } = useUsers();
@@ -23,7 +24,7 @@ export default function DashboardPage() {
     return (
         <div>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <DashboardGreeting userName={user.user.name} />
+                <DashboardGreeting userName={user.user.name} role={user.roles[0]} />
                 <div id="headerContent" className="mb-4 justify-items-end sm:mb-0" />
             </div>
             {user.roles[0] === "SuperAdmin" && <AdminDashboard />}
@@ -31,6 +32,7 @@ export default function DashboardPage() {
             {user.roles[0] === "Supervisor" && <SupervisorDashboard />}
             {user.roles[0] === "SalesAdvisor" && <SalesAdvisorDashboard />}
             {user.roles[0] === "Manager" && <ManagerDashboard />}
+            {user.roles[0] === "FinanceManager" && <FinanceManagerDashboard />}
         </div>
     );
 }

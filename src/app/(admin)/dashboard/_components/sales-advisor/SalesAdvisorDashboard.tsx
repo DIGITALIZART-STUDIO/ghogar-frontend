@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -14,21 +13,18 @@ import {
     Clock,
     AlertTriangle,
     CheckCircle,
-    Search,
     User,
     Mail,
     MapPin,
     Target,
     Activity,
     BarChart3,
-    TrendingUp,
-    Plus,
     Edit,
-    Eye,
-    MessageSquare,
-    UserPlus,
     UserCheck,
     ClipboardList,
+    Plus,
+    Eye,
+    MessageSquare,
 } from "lucide-react";
 import {
     BarChart,
@@ -40,21 +36,20 @@ import {
     ResponsiveContainer,
     Line,
     ComposedChart,
-    PieChart as RechartsPieChart,
-    Cell,
-    Pie,
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useDashboardSalesAdvisor } from "../../_hooks/useDashboard";
 import { createPortal } from "react-dom";
 import { FilterYear } from "@/components/ui/filter-year";
+import LeadsTabsContent from "./leads/LeadsTabsContent";
+import { SalesAdvisorDashboard as SalesAdvisorDashboardType } from "../../_types/dashboard";
 
 export default function SalesAdvisorDashboard() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [activeTab, setActiveTab] = useState("leads");
     const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-    const { data } = useDashboardSalesAdvisor(selectedYear);
+    const { data, isLoading } = useDashboardSalesAdvisor(selectedYear);
 
     // Buscar el elemento headerContent cuando el componente se monta
     useEffect(() => {
@@ -238,204 +233,7 @@ export default function SalesAdvisorDashboard() {
 
                 </TabsList>
 
-                <TabsContent value="leads" className="space-y-6">
-                    {/* Gestión rápida de leads */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-[#072b3d]">
-                                <UserPlus className="w-5 h-5" />
-                                Gestión Rápida
-                            </CardTitle>
-                            <CardDescription>Acciones inmediatas para mis leads</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <Button className="h-16 flex-col gap-2 bg-[#105D88] hover:bg-[#072b3d] text-white">
-                                    <Plus className="w-5 h-5" />
-                                    <span className="text-xs">Nuevo Lead</span>
-                                </Button>
-                                <Button className="h-16 flex-col gap-2 bg-[#17949B] hover:bg-[#105D88] text-white">
-                                    <Phone className="w-5 h-5" />
-                                    <span className="text-xs">Llamar</span>
-                                </Button>
-                                <Button className="h-16 flex-col gap-2 bg-[#73BFB7] hover:bg-[#17949B] text-white">
-                                    <FileText className="w-5 h-5" />
-                                    <span className="text-xs">Cotizar</span>
-                                </Button>
-                                <Button className="h-16 flex-col gap-2 bg-[#C3E7DF] hover:bg-[#73BFB7] text-[#072b3d]">
-                                    <Calendar className="w-5 h-5" />
-                                    <span className="text-xs">Programar</span>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Lista de mis leads asignados */}
-                    <Card>
-                        <CardHeader>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <CardTitle className="text-[#072b3d]">Mis Leads Asignados</CardTitle>
-                                    <CardDescription>Leads bajo mi responsabilidad</CardDescription>
-                                </div>
-                                <div className="flex gap-2">
-                                    <div className="relative">
-                                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                                        <Input placeholder="Buscar cliente..." className="pl-10 w-64" />
-                                    </div>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {data?.assignedLeads?.map((lead) => (
-                                    <div
-                                        key={lead.id}
-                                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-[#105D88] rounded-full flex items-center justify-center text-white font-bold">
-                                                {(lead.clientName ?? "")
-                                                    .split(" ")
-                                                    .filter((n) => n.length > 0)
-                                                    .map((n) => n[0])
-                                                    .join("")}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-medium text-[#072b3d]">{lead.clientName}</h4>
-                                                <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                    <span className="flex items-center gap-1">
-                                                        <Phone className="w-3 h-3" />
-                                                        {lead.clientPhone}
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Mail className="w-3 h-3" />
-                                                        {lead.clientEmail}
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <MapPin className="w-3 h-3" />
-                                                        {lead.projectName}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Badge
-                                                        className={`text-xs ${
-                                                            lead.status === "Registered"
-                                                                ? "bg-blue-500"
-                                                                : lead.status === "Attended"
-                                                                    ? "bg-green-500"
-                                                                    : lead.status === "InFollowUp"
-                                                                        ? "bg-yellow-500"
-                                                                        : "bg-gray-500"
-                                                        } text-white`}
-                                                    >
-                                                        {lead.status}
-                                                    </Badge>
-                                                    <span className="text-xs text-gray-500">{lead.captureSource}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-right">
-                                                <p className="text-sm font-medium text-[#072b3d]">{lead.nextTask}</p>
-                                                <p
-                                                    className={`text-xs ${
-                                                        typeof lead.daysUntilExpiration === "number"
-                                                            ? lead.daysUntilExpiration <= 2
-                                                                ? "text-red-600"
-                                                                : lead.daysUntilExpiration <= 4
-                                                                    ? "text-yellow-600"
-                                                                    : "text-green-600"
-                                                            : "text-gray-400"
-                                                    }`}
-                                                >
-                                                    {lead.daysUntilExpiration} días restantes
-                                                </p>
-                                                {lead.lastContact && (
-                                                    <p className="text-xs text-gray-500">Último contacto: {lead.lastContact}</p>
-                                                )}
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button variant="outline" size="sm">
-                                                    <Phone className="w-3 h-3" />
-                                                </Button>
-                                                <Button variant="outline" size="sm">
-                                                    <Mail className="w-3 h-3" />
-                                                </Button>
-                                                <Button variant="outline" size="sm">
-                                                    <Eye className="w-3 h-3" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Análisis de mis fuentes */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#072b3d]">
-                                    <BarChart3 className="w-5 h-5" />
-                                    Mis Fuentes de Leads
-                                </CardTitle>
-                                <CardDescription>Distribución por LeadCaptureSource</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <RechartsPieChart>
-                                        <Pie
-                                            data={data?.myLeadSources}
-                                            cx="50%"
-                                            cy="50%"
-                                            outerRadius={80}
-                                            fill="#8884d8"
-                                            dataKey="count"
-                                            label={({ source, count }) => `${source}: ${count}`}
-                                        >
-                                            {data?.myLeadSources?.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </RechartsPieChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-[#072b3d]">
-                                    <TrendingUp className="w-5 h-5" />
-                                    Mi Rendimiento Mensual
-                                </CardTitle>
-                                <CardDescription>Evolución de mi gestión</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <ComposedChart data={data?.monthlyPerformance}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="month" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Bar dataKey="leadsAssigned" fill="#C3E7DF" name="Asignados" />
-                                        <Bar dataKey="leadsCompleted" fill="#73BFB7" name="Completados" />
-                                        <Bar dataKey="quotations" fill="#17949B" name="Cotizaciones" />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="reservations"
-                                            stroke="#072b3d"
-                                            strokeWidth={2}
-                                            name="Reservaciones"
-                                        />
-                                    </ComposedChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </TabsContent>
+                <LeadsTabsContent data={data as SalesAdvisorDashboardType} isLoading={isLoading} />
 
                 <TabsContent value="tasks" className="space-y-6">
                     {/* Mis tareas de hoy */}

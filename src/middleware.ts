@@ -14,6 +14,7 @@ const protectedRoutes = [
     "/pending-contracts",
     "/payments-transaction",
     "/credit-management",
+    "/select-project",
 ];
 
 export function middleware(request: NextRequest) {

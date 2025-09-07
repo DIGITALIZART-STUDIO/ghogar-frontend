@@ -10,6 +10,7 @@ import { FullPageLoader } from "@/components/ui/loading-spinner";
 import { ProfileDropdown } from "@/components/ui/profile-dropdown";
 import { Search } from "@/components/ui/search";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
+import { ProjectSelector } from "@/components/ui/project-selector";
 import { AuthorizationContext, ProtectedRoute, Role } from "./_authorization_context";
 import { useUsers } from "./admin/users/_hooks/useUser";
 import { useAuthContext } from "@/context/auth-provider";
@@ -65,6 +66,7 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
                     <Header>
                         <Search />
                         <div className="ml-auto flex items-center space-x-4">
+                            <ProjectSelector />
                             <ThemeSwitch />
                             <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
                         </div>

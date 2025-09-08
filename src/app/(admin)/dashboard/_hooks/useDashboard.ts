@@ -23,3 +23,21 @@ export function useDashboardSalesAdvisor(year?: number) {
         }
     );
 }
+
+// Hook para obtener los datos del dashboard finance manager
+export function useDashboardFinanceManager(year?: number, projectId?: string | null) {
+    // Preparar los parámetros, excluyendo projectId si es null
+    const params: { year?: number; projectId?: string } = { year };
+    if (projectId !== null && projectId !== undefined) {
+        params.projectId = projectId;
+    }
+
+    return backend.useQuery(
+        "get",
+        "/api/Dashboard/finance",
+        params,
+        {
+            enabled: year !== undefined, // Solo ejecuta si year está definido
+        }
+    );
+}

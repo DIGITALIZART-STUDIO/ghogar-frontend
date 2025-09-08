@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetAllCanceledPendingValidationReservationsPaginated, GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetAllReservationsWithPendingPaymentsPaginated, GetReservationById, ToggleContractValidationStatus } from "../_actions/ReservationActions";
+import { useSelectedProject } from "@/hooks/use-selected-project";
 import type { PaginatedResponse } from "@/types/api/paginated-response";
 import type { components } from "@/types/api";
 import type { FetchError } from "@/types/backend";
@@ -20,10 +21,15 @@ export function useCanceledReservations() {
 
 // Hook para reservas canceladas pendientes de validación paginadas
 export function usePaginatedCanceledPendingValidationReservations(page: number = 1, pageSize: number = 10) {
+    const { selectedProject, isAllProjectsSelected } = useSelectedProject();
+
+    // Determinar el projectId a enviar: si es "Todos los proyectos" no se envía nada
+    const projectIdToSend = isAllProjectsSelected ? null : selectedProject?.id;
+
     return useQuery<PaginatedResponse<components["schemas"]["ReservationDto"]>, FetchError>({
-        queryKey: ["canceledPendingValidationReservationsPaginated", page, pageSize],
+        queryKey: ["canceledPendingValidationReservationsPaginated", page, pageSize, projectIdToSend],
         queryFn: async () => {
-            const [data, error] = await GetAllCanceledPendingValidationReservationsPaginated(page, pageSize);
+            const [data, error] = await GetAllCanceledPendingValidationReservationsPaginated(page, pageSize, projectIdToSend);
             if (error) {
                 throw new Error(error.message);
             }
@@ -34,10 +40,15 @@ export function usePaginatedCanceledPendingValidationReservations(page: number =
 
 // Hook para reservas canceladas paginadas (retorna la query completa)
 export function usePaginatedCanceledReservations(page: number = 1, pageSize: number = 10) {
+    const { selectedProject, isAllProjectsSelected } = useSelectedProject();
+
+    // Determinar el projectId a enviar: si es "Todos los proyectos" no se envía nada
+    const projectIdToSend = isAllProjectsSelected ? null : selectedProject?.id;
+
     return useQuery<PaginatedResponse<components["schemas"]["ReservationWithPaymentsDto"]>, FetchError>({
-        queryKey: ["canceledReservationsPaginated", page, pageSize],
+        queryKey: ["canceledReservationsPaginated", page, pageSize, projectIdToSend],
         queryFn: async () => {
-            const [data, error] = await GetAllCanceledReservationsPaginated(page, pageSize);
+            const [data, error] = await GetAllCanceledReservationsPaginated(page, pageSize, projectIdToSend);
             if (error) {
                 throw new Error(error.message);
             }
@@ -48,10 +59,15 @@ export function usePaginatedCanceledReservations(page: number = 1, pageSize: num
 
 // Hook para reservas con pagos pendientes paginadas
 export function usePaginatedReservationsWithPendingPayments(page: number = 1, pageSize: number = 10) {
+    const { selectedProject, isAllProjectsSelected } = useSelectedProject();
+
+    // Determinar el projectId a enviar: si es "Todos los proyectos" no se envía nada
+    const projectIdToSend = isAllProjectsSelected ? null : selectedProject?.id;
+
     return useQuery<PaginatedResponse<components["schemas"]["ReservationWithPendingPaymentsDto"]>, FetchError>({
-        queryKey: ["reservationsWithPendingPaymentsPaginated", page, pageSize],
+        queryKey: ["reservationsWithPendingPaymentsPaginated", page, pageSize, projectIdToSend],
         queryFn: async () => {
-            const [data, error] = await GetAllReservationsWithPendingPaymentsPaginated(page, pageSize);
+            const [data, error] = await GetAllReservationsWithPendingPaymentsPaginated(page, pageSize, projectIdToSend);
             if (error) {
                 throw new Error(error.message);
             }

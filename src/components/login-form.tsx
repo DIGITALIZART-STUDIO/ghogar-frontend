@@ -56,7 +56,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
         loginPromise.then(() => {
             // Los tokens se establecen automáticamente en las cookies por el backend
-            router.push("/");
+            router.push("/select-project");
         });
     }
 

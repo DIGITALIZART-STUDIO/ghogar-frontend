@@ -35,15 +35,22 @@ export async function GetAllCanceledReservations(): Promise<Result<Array<compone
 
 export async function GetAllCanceledPendingValidationReservationsPaginated(
     page: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    projectId?: string | null
 ): Promise<Result<PaginatedResponse<components["schemas"]["ReservationDto"]>, FetchError>> {
+    const queryParams: { page: number; pageSize: number; projectId?: string } = {
+        page,
+        pageSize,
+    };
+
+    if (projectId !== null && projectId !== undefined) {
+        queryParams.projectId = projectId;
+    }
+
     const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/canceled/pending-validation/paginated", {
         ...auth,
         params: {
-            query: {
-                page,
-                pageSize,
-            },
+            query: queryParams,
         },
     })
     );
@@ -67,15 +74,22 @@ export async function GetAllCanceledPendingValidationReservationsPaginated(
 // Obtener reservas con pagos pendientes paginadas
 export async function GetAllReservationsWithPendingPaymentsPaginated(
     page: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    projectId?: string | null
 ): Promise<Result<PaginatedResponse<components["schemas"]["ReservationWithPendingPaymentsDto"]>, FetchError>> {
+    const queryParams: { page: number; pageSize: number; projectId?: string } = {
+        page,
+        pageSize,
+    };
+
+    if (projectId !== null && projectId !== undefined) {
+        queryParams.projectId = projectId;
+    }
+
     const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/pending-payments/paginated", {
         ...auth,
         params: {
-            query: {
-                page,
-                pageSize,
-            },
+            query: queryParams,
         },
     }));
 
@@ -99,15 +113,22 @@ export async function GetAllReservationsWithPendingPaymentsPaginated(
 // Traer reservas canceladas paginadas
 export async function GetAllCanceledReservationsPaginated(
     page: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    projectId?: string | null
 ): Promise<Result<PaginatedResponse<components["schemas"]["ReservationWithPaymentsDto"]>, FetchError>> {
+    const queryParams: { page: number; pageSize: number; projectId?: string } = {
+        page,
+        pageSize,
+    };
+
+    if (projectId !== null && projectId !== undefined) {
+        queryParams.projectId = projectId;
+    }
+
     const [response, error] = await wrapper((auth) => backend.GET("/api/Reservations/canceled/paginated", {
         ...auth,
         params: {
-            query: {
-                page,
-                pageSize,
-            },
+            query: queryParams,
         },
     }));
 

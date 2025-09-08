@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { useState } from "react";
 import { ThemeProvider } from "@/context/theme-context";
 import { AuthProvider } from "@/context/auth-provider";
+import { ProjectProvider } from "@/context/project-context";
 
 export default function ClientProviders({
     children
@@ -24,8 +25,10 @@ export default function ClientProviders({
                 disableTransitionOnChange
             >
                 <AuthProvider>
-                    {children}
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    <ProjectProvider>
+                        {children}
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    </ProjectProvider>
                 </AuthProvider>
             </ThemeProvider>
             <Toaster

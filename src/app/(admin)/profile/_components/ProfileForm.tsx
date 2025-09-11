@@ -18,7 +18,7 @@ import { PasswordRequirement } from "../_types/password";
 import { PasswordForm, passwordSchema, UserInfoForm, userInfoSchema } from "../_schemas/updateProfileSchema";
 import { useUpdateProfilePassword, useUpdateUser } from "../../admin/users/_hooks/useUser";
 import { toast } from "sonner";
-import { LogoutAction } from "@/app/(auth)/login/actions";
+import { useAuthContext } from "@/context/auth-provider";
 import ProfileInformation from "./ProfileInformation";
 import SecurityForm from "./SecurityForm";
 
@@ -31,6 +31,7 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
     const updateUser = useUpdateUser();
     const updateProfilePassword = useUpdateProfilePassword();
+    const { handleLogout } = useAuthContext();
 
     // Asume que data tiene la estructura adecuada
     const userData = {
@@ -132,7 +133,7 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
         promise.then(() => {
             passwordForm.reset();
-            LogoutAction();
+            handleLogout();
         });
     };
     return (

@@ -931,7 +931,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -1612,9 +1613,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead10"]>;
-                        "application/json": Array<components["schemas"]["Lead10"]>;
-                        "text/json": Array<components["schemas"]["Lead10"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1641,9 +1642,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead10"];
-                        "application/json": components["schemas"]["Lead10"];
-                        "text/json": components["schemas"]["Lead10"];
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
                     };
                 };
             };
@@ -1718,9 +1719,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead10"];
-                        "application/json": components["schemas"]["Lead10"];
-                        "text/json": components["schemas"]["Lead10"];
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
                     };
                 };
             };
@@ -1748,9 +1749,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead10"];
-                        "application/json": components["schemas"]["Lead10"];
-                        "text/json": components["schemas"]["Lead10"];
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
                     };
                 };
             };
@@ -1812,9 +1813,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead10"];
-                        "application/json": components["schemas"]["Lead10"];
-                        "text/json": components["schemas"]["Lead10"];
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
                     };
                 };
             };
@@ -1848,9 +1849,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead10"]>;
-                        "application/json": Array<components["schemas"]["Lead10"]>;
-                        "text/json": Array<components["schemas"]["Lead10"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1887,9 +1888,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead10"]>;
-                        "application/json": Array<components["schemas"]["Lead10"]>;
-                        "text/json": Array<components["schemas"]["Lead10"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -1926,9 +1927,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead10"]>;
-                        "application/json": Array<components["schemas"]["Lead10"]>;
-                        "text/json": Array<components["schemas"]["Lead10"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -2007,9 +2008,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead10"]>;
-                        "application/json": Array<components["schemas"]["Lead10"]>;
-                        "text/json": Array<components["schemas"]["Lead10"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -2083,9 +2084,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Lead10"];
-                        "application/json": components["schemas"]["Lead10"];
-                        "text/json": components["schemas"]["Lead10"];
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
                     };
                 };
             };
@@ -2118,9 +2119,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["Lead10"]>;
-                        "application/json": Array<components["schemas"]["Lead10"]>;
-                        "text/json": Array<components["schemas"]["Lead10"]>;
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
                     };
                 };
             };
@@ -3337,11 +3338,8 @@ export interface paths {
                         AmountPaid?: number;
                         /** Format: uuid */
                         ReservationId?: string;
-                        /** @default null */
                         PaymentMethod?: string;
-                        /** @default null */
                         ReferenceNumber?: string;
-                        /** @default null */
                         ComprobanteUrl?: string;
                         PaymentIds?: Array<string>;
                         StartFromLastCuota?: boolean;
@@ -6204,8 +6202,6 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -6491,7 +6487,7 @@ export interface components {
             code: string;
             /** Format: uuid */
             clientId?: string | null;
-            client?: components["schemas"]["Client2"];
+            client?: components["schemas"]["Client6"];
             /** Format: uuid */
             assignedToId?: string | null;
             assignedTo?: components["schemas"];
@@ -6561,7 +6557,7 @@ export interface components {
             code: string;
             /** Format: uuid */
             clientId?: string | null;
-            client?: components["schemas"]["Client2"];
+            client?: components["schemas"]["Client6"];
             /** Format: uuid */
             assignedToId?: string | null;
             assignedTo?: components["schemas"];
@@ -6779,7 +6775,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6797,7 +6793,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6815,7 +6811,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6833,7 +6829,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6851,7 +6847,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6869,7 +6865,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6887,7 +6883,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6905,7 +6901,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block8"];
+            block?: components["schemas"]["Block3"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7101,7 +7097,7 @@ export interface components {
             meta?: components["schemas"]["PaginationMetadata"];
         };
         PaginatedResponseV2OfLead: {
-            data?: Array<components["schemas"]["Lead10"]>;
+            data?: Array<components["schemas"]["Lead3"]>;
             meta?: components["schemas"]["PaginationMetadata"];
         };
         PaginatedResponseV2OfQuotationSummaryDTO: {
@@ -7842,7 +7838,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead"];
@@ -7866,7 +7862,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7878,7 +7874,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead6"];
@@ -7902,7 +7898,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7914,7 +7910,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead8"];
@@ -7938,7 +7934,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7950,7 +7946,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead10"];
@@ -7974,7 +7970,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7992,7 +7988,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8004,7 +8000,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead2"];
@@ -8028,7 +8024,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8040,7 +8036,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead3"];
@@ -8064,7 +8060,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8076,7 +8072,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead4"];
@@ -8100,7 +8096,7 @@ export interface components {
             referredLead?: components["schemas"];
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project15"];
+            project?: components["schemas"]["Project5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8112,7 +8108,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
+            referrerClient?: components["schemas"]["Client5"];
             /** Format: uuid */
             referredLeadId: string;
             referredLead?: components["schemas"]["Lead5"];

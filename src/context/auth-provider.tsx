@@ -97,6 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }));
 
         try {
+            // Llamar al endpoint de logout del backend
             await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Auth/logout`, {
                 method: "POST",
                 credentials: "include",
@@ -104,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error("Error during logout:", error);
         } finally {
+            // Limpiar estado local
             setAuthState({
                 isAuthenticated: false,
                 isLoading: false,
@@ -114,7 +116,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Limpiar cache de React Query al hacer logout
             queryClient.clear();
 
+            // Limpiar cookies del cliente también (por si acaso)
             Cookies.remove(ACCESS_TOKEN_KEY);
+            Cookies.remove(`${ACCESS_TOKEN_KEY}_refresh`);
+
+            // Limpiar cookies con diferentes opciones para asegurar que se eliminen
+            Cookies.remove(ACCESS_TOKEN_KEY, { path: "/", domain: ".araozu.dev" });
+            Cookies.remove(`${ACCESS_TOKEN_KEY}_refresh`, { path: "/", domain: ".araozu.dev" });
+            Cookies.remove(ACCESS_TOKEN_KEY, { path: "/" });
+            Cookies.remove(`${ACCESS_TOKEN_KEY}_refresh`, { path: "/" });
             router.push("/login");
         }
     };

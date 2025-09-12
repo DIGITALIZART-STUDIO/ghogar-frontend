@@ -97,6 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }));
 
         try {
+            // Cancelar todas las queries activas ANTES de hacer logout
+            await queryClient.cancelQueries();
+
             // Llamar al endpoint de logout del backend
             await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Auth/logout`, {
                 method: "POST",

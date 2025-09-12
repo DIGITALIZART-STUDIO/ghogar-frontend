@@ -6,10 +6,11 @@ import { useAuthContext } from "@/context/auth-provider";
 import { toast } from "sonner";
 
 export function useUsers() {
-    const { handleAuthError } = useAuthContext();
+    const { handleAuthError, isLoggingOut } = useAuthContext();
 
     return api.useQuery("get", "/api/Users", undefined, {
         retry: false, // NO hacer retries automáticos
+        enabled: !isLoggingOut, // No ejecutar si estamos haciendo logout
         onError: async (error: unknown) => {
             await handleAuthError(error);
         },

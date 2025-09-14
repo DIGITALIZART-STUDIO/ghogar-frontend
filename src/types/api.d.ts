@@ -879,6 +879,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Clients/paginated-search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfClient"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfClient"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfClient"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Clients/excel": {
         parameters: {
             query?: never;
@@ -931,8 +974,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file?: string;
+                        file?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -1403,6 +1445,162 @@ export interface paths {
         trace?: never;
     };
     "/api/ExchangeRate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Landing/referral": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReferralCreateDto"];
+                    "text/json": components["schemas"]["ReferralCreateDto"];
+                    "application/*+json": components["schemas"]["ReferralCreateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReferralResultDto"];
+                        "application/json": components["schemas"]["ReferralResultDto"];
+                        "text/json": components["schemas"]["ReferralResultDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Landing/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ContactCreateDto"];
+                    "text/json": components["schemas"]["ContactCreateDto"];
+                    "application/*+json": components["schemas"]["ContactCreateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ContactResultDto"];
+                        "application/json": components["schemas"]["ContactResultDto"];
+                        "text/json": components["schemas"]["ContactResultDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Landing/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<unknown>;
+                        "application/json": Array<unknown>;
+                        "text/json": Array<unknown>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Landing/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -2566,6 +2764,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/users/summary/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfUserSummaryDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfUserSummaryDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfUserSummaryDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Leads/assigned/{assignedToId}/summary": {
         parameters: {
             query?: never;
@@ -3097,6 +3338,502 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/OptimizedPagination/paginate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OptimizedPaginationRequest"];
+                    "text/json": components["schemas"]["OptimizedPaginationRequest"];
+                    "application/*+json": components["schemas"]["OptimizedPaginationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OptimizedPaginatedResponseOfObject"];
+                        "application/json": components["schemas"]["OptimizedPaginatedResponseOfObject"];
+                        "text/json": components["schemas"]["OptimizedPaginatedResponseOfObject"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/OptimizedPagination/performance-stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    entityType?: string;
+                    filterHash?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginationPerformanceStats"];
+                        "application/json": components["schemas"]["PaginationPerformanceStats"];
+                        "text/json": components["schemas"]["PaginationPerformanceStats"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/OptimizedPagination/index-recommendations/{entityType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    entityType: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["IndexRecommendation"]>;
+                        "application/json": Array<components["schemas"]["IndexRecommendation"]>;
+                        "text/json": Array<components["schemas"]["IndexRecommendation"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/OptimizedPagination/invalidate-cache": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["InvalidateCacheRequest"];
+                    "text/json": components["schemas"]["InvalidateCacheRequest"];
+                    "application/*+json": components["schemas"]["InvalidateCacheRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/performance-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    hours?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginationPerformanceReport"];
+                        "application/json": components["schemas"]["PaginationPerformanceReport"];
+                        "text/json": components["schemas"]["PaginationPerformanceReport"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/metrics-by-operation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    hours?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": {
+                            [key: string]: components["schemas"]["OperationMetrics"];
+                        };
+                        "application/json": {
+                            [key: string]: components["schemas"]["OperationMetrics"];
+                        };
+                        "text/json": {
+                            [key: string]: components["schemas"]["OperationMetrics"];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/metrics-by-entity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    hours?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": {
+                            [key: string]: components["schemas"]["EntityMetrics"];
+                        };
+                        "application/json": {
+                            [key: string]: components["schemas"]["EntityMetrics"];
+                        };
+                        "text/json": {
+                            [key: string]: components["schemas"]["EntityMetrics"];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/slow-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    thresholdMultiplier?: number;
+                    hours?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaginationMetric"]>;
+                        "application/json": Array<components["schemas"]["PaginationMetric"]>;
+                        "text/json": Array<components["schemas"]["PaginationMetric"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/optimization-recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["OptimizationRecommendation"]>;
+                        "application/json": Array<components["schemas"]["OptimizationRecommendation"]>;
+                        "text/json": Array<components["schemas"]["OptimizationRecommendation"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/export-metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    hours?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/cleanup-old-metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    retentionHours?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/PaginationMetrics/health-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": unknown;
+                        "application/json": unknown;
+                        "text/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Payments/reservation/{id}/schedule": {
         parameters: {
             query?: never;
@@ -3182,8 +3919,11 @@ export interface paths {
                         AmountPaid?: number;
                         /** Format: uuid */
                         ReservationId?: string;
+                        /** @default null */
                         PaymentMethod?: string;
+                        /** @default null */
                         ReferenceNumber?: string;
+                        /** @default null */
                         ComprobanteUrl?: string;
                         PaymentIds?: Array<string>;
                         StartFromLastCuota?: boolean;
@@ -3572,6 +4312,53 @@ export interface paths {
                         "text/plain": Array<components["schemas"]["ProjectDTO"]>;
                         "application/json": Array<components["schemas"]["ProjectDTO"]>;
                         "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Projects/active/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get active projects with pagination
+         * @description Retrieves active projects with pagination, search and ordering capabilities
+         */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
                     };
                 };
             };
@@ -5779,6 +6566,32 @@ export interface components {
             separateProperty?: boolean | null;
             separatePropertyData?: string | null;
         };
+        ContactCreateDto: {
+            nombres: string;
+            apellidos: string;
+            numeroDocumento: string;
+            telefono: string;
+            email: string;
+            /** Format: uuid */
+            projectId: string;
+        };
+        ContactProcessInfo: {
+            clientExisted?: boolean;
+            clientCreated?: boolean;
+            leadCreated?: boolean;
+        };
+        ContactResultDto: {
+            /** Format: uuid */
+            clientId?: string;
+            /** Format: uuid */
+            leadId?: string;
+            leadCode?: string;
+            /** Format: uuid */
+            projectId?: string;
+            projectName?: string;
+            processInfo?: components["schemas"]["ContactProcessInfo"];
+            message?: string;
+        };
         /** @enum {unknown} */
         ContractValidationStatus: "None" | "PendingValidation" | "Validated";
         /** @enum {unknown} */
@@ -5838,6 +6651,21 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
+        EntityMetrics: {
+            entityType?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            averageExecutionTimeMs?: number;
+            /** Format: int64 */
+            maxExecutionTimeMs?: number;
+            /** Format: int32 */
+            totalRecords?: number;
+            /** Format: double */
+            averagePageSize?: number;
+            /** Format: int32 */
+            mostCommonPageSize?: number;
+        };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
@@ -5884,6 +6712,8 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
+        /** Format: binary */
+        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -5903,6 +6733,17 @@ export interface components {
             realistic?: number;
             /** Format: double */
             optimistic?: number;
+        };
+        IndexRecommendation: {
+            indexName: string;
+            description: string;
+            priority: components["schemas"]["Priority"];
+            columns?: Array<string>;
+            filter?: string | null;
+        };
+        InvalidateCacheRequest: {
+            pattern?: string | null;
+            keys?: Array<string> | null;
         };
         KpiIndicatorsDto: {
             /** Format: double */
@@ -5944,6 +6785,7 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project"];
+            referral?: components["schemas"]["Referral"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -5978,6 +6820,7 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project3"];
+            referral?: components["schemas"]["Referral2"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -6012,6 +6855,7 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project5"];
+            referral?: components["schemas"]["Referral3"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -6046,6 +6890,7 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project7"];
+            referral?: components["schemas"]["Referral4"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -6080,6 +6925,7 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project9"];
+            referral?: components["schemas"]["Referral5"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -6277,7 +7123,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6295,7 +7141,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6313,7 +7159,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6331,7 +7177,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6349,7 +7195,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -6540,37 +7386,162 @@ export interface components {
         NullableOfQuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED" | null;
         /** @enum {unknown|null} */
         NullableOfTaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other" | null;
+        OperationMetrics: {
+            operationType?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            averageExecutionTimeMs?: number;
+            /** Format: int64 */
+            maxExecutionTimeMs?: number;
+            /** Format: int64 */
+            minExecutionTimeMs?: number;
+            /** Format: int32 */
+            totalRecords?: number;
+            /** Format: double */
+            averagePageSize?: number;
+            /** Format: double */
+            averagePage?: number;
+        };
+        OptimizationRecommendation: {
+            type?: string;
+            priority?: string;
+            title?: string;
+            description?: string;
+            suggestedActions?: Array<string>;
+        };
+        OptimizedPaginatedResponseOfObject: {
+            data?: Array<unknown>;
+            meta?: components["schemas"]["OptimizedPaginationMetadata"];
+            performance?: components["schemas"]["PaginationPerformanceInfo"];
+        };
+        OptimizedPaginationMetadata: {
+            cacheHit?: boolean;
+            /** Format: int32 */
+            queryComplexity?: number;
+            /** Format: int32 */
+            recommendedPageSize?: number;
+            hasOptimizedIndexes?: boolean;
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+            hasPrevious?: boolean;
+            /** Format: int32 */
+            currentPageCount?: number;
+            /** Format: int32 */
+            startIndex?: number;
+            /** Format: int32 */
+            endIndex?: number;
+            /** Format: int64 */
+            executionTimeMs?: number;
+            isEmpty?: boolean;
+            hasData?: boolean;
+        };
+        OptimizedPaginationRequest: {
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            entityType: string;
+            filters?: Array<components["schemas"]["PaginationFilter"]> | null;
+            orderBy?: Array<components["schemas"]["PaginationOrderBy"]> | null;
+            includes?: Array<string> | null;
+            useCursorPagination?: boolean;
+            cursor?: string | null;
+            useCache?: boolean;
+            /** Format: int32 */
+            cacheTTLMinutes?: number;
+        };
         PaginatedResponseV2OfClient: {
             data?: Array<components["schemas"]["Client"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfLead: {
             data?: Array<components["schemas"]["Lead5"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginatedResponseV2OfProjectDTO: {
+            data?: Array<components["schemas"]["ProjectDTO"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfQuotationSummaryDTO: {
             data?: Array<components["schemas"]["QuotationSummaryDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfReservationDto: {
             data?: Array<components["schemas"]["ReservationDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfReservationWithPaymentsDto: {
             data?: Array<components["schemas"]["ReservationWithPaymentsDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfReservationWithPendingPaymentsDto: {
             data?: Array<components["schemas"]["ReservationWithPendingPaymentsDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfUserGetDTO: {
             data?: Array<components["schemas"]["UserGetDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
         };
         PaginatedResponseV2OfUserHigherRankDTO: {
             data?: Array<components["schemas"]["UserHigherRankDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginatedResponseV2OfUserSummaryDto: {
+            data?: Array<components["schemas"]["UserSummaryDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginationFilter: {
+            field?: string;
+            operator?: string;
+            value?: unknown;
         };
         PaginationMetadata: {
             /** Format: int32 */
@@ -6583,6 +7554,81 @@ export interface components {
             totalPages?: number;
             hasNext?: boolean;
             hasPrevious?: boolean;
+            /** Format: int32 */
+            currentPageCount?: number;
+            /** Format: int32 */
+            startIndex?: number;
+            /** Format: int32 */
+            endIndex?: number;
+            /** Format: int64 */
+            executionTimeMs?: number;
+            isEmpty?: boolean;
+            hasData?: boolean;
+        };
+        PaginationMetric: {
+            /** Format: date-time */
+            timestamp?: string;
+            operationType?: string;
+            entityType?: string;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int32 */
+            totalRecords?: number;
+            /** Format: int64 */
+            executionTimeMs?: number;
+            operationId?: string;
+            errorMessage?: string | null;
+            isSuccess?: boolean;
+        };
+        PaginationOrderBy: {
+            field?: string;
+            direction?: string;
+        };
+        PaginationPerformanceInfo: {
+            /** Format: int64 */
+            queryExecutionTimeMs?: number;
+            /** Format: int64 */
+            countExecutionTimeMs?: number;
+            /** Format: double */
+            cacheHitRate?: number;
+            /** Format: double */
+            indexUtilization?: number;
+        };
+        PaginationPerformanceReport: {
+            timeWindow?: string;
+            /** Format: int32 */
+            totalOperations?: number;
+            /** Format: int32 */
+            totalRecordsProcessed?: number;
+            /** Format: double */
+            averageExecutionTimeMs?: number;
+            /** Format: int64 */
+            maxExecutionTimeMs?: number;
+            /** Format: int64 */
+            minExecutionTimeMs?: number;
+            operationTypeCounts?: {
+                [key: string]: number;
+            };
+            /** Format: int32 */
+            slowOperationsCount?: number;
+            slowOperations?: Array<components["schemas"]["PaginationMetric"]>;
+            /** Format: double */
+            performanceScore?: number;
+        };
+        PaginationPerformanceStats: {
+            /** Format: int32 */
+            totalRecords?: number;
+            /** Format: int32 */
+            queryComplexity?: number;
+            /** Format: int32 */
+            estimatedPageCount?: number;
+            /** Format: int64 */
+            countExecutionTimeMs?: number;
+            /** Format: int32 */
+            recommendedPageSize?: number;
+            hasIndexes?: boolean;
         };
         PaymentDetailDTO: {
             /** Format: uuid */
@@ -6744,6 +7790,7 @@ export interface components {
             /** Format: int32 */
             tasksPending?: number;
         };
+        Priority: number;
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -7161,6 +8208,128 @@ export interface components {
             hasCoOwners?: boolean;
             separateProperty?: boolean;
         };
+        Referral: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            referrerClientId: string;
+            referrerClient?: components["schemas"]["Client"];
+            /** Format: uuid */
+            referredLeadId: string;
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        Referral2: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            referrerClientId: string;
+            referrerClient?: components["schemas"]["Client"];
+            /** Format: uuid */
+            referredLeadId: string;
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        Referral3: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            referrerClientId: string;
+            referrerClient?: components["schemas"]["Client"];
+            /** Format: uuid */
+            referredLeadId: string;
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        Referral4: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            referrerClientId: string;
+            referrerClient?: components["schemas"]["Client"];
+            /** Format: uuid */
+            referredLeadId: string;
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        Referral5: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            referrerClientId: string;
+            referrerClient?: components["schemas"]["Client"];
+            /** Format: uuid */
+            referredLeadId: string;
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project"];
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        ReferralCreateDto: {
+            referrer: components["schemas"]["ReferrerDataDto"];
+            referred: components["schemas"]["ReferredDataDto"];
+        };
+        ReferralProcessInfo: {
+            referrerClientExisted?: boolean;
+            referrerClientCreated?: boolean;
+            referredClientExisted?: boolean;
+            referredClientCreated?: boolean;
+            referredLeadCreated?: boolean;
+            referralCreated?: boolean;
+        };
+        ReferralResultDto: {
+            /** Format: uuid */
+            referralId?: string;
+            /** Format: uuid */
+            referrerClientId?: string;
+            /** Format: uuid */
+            referredLeadId?: string;
+            referredLeadCode?: string;
+            processInfo?: components["schemas"]["ReferralProcessInfo"];
+            message?: string;
+        };
+        ReferredDataDto: {
+            nombres: string;
+            apellidos: string;
+            numeroDocumento: string;
+            telefono: string;
+            email: string;
+        };
+        ReferrerDataDto: {
+            nombres: string;
+            apellidos: string;
+            numeroDocumento: string;
+            telefono: string;
+            email: string;
+        };
         ReservationCreateDto: {
             /** Format: uuid */
             quotationId: string;
@@ -7501,6 +8670,8 @@ export interface components {
             /** Format: uuid */
             id?: string;
             userName?: string;
+            email?: string;
+            roles?: Array<string>;
         };
         UserUpdateDTO: {
             name: string;
@@ -7510,6 +8681,17 @@ export interface components {
         };
         UserUpdatePasswordDTO: {
             newPassword: string;
+        };
+        ValidationProblemDetails: {
+            type?: string | null;
+            title?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            detail?: string | null;
+            instance?: string | null;
+            errors?: {
+                [key: string]: Array<string>;
+            };
         };
         VerifyOtpRequestDto: {
             otpCode: string;

@@ -1,5 +1,6 @@
 import createFetchClient from "openapi-fetch";
 import createClient from "openapi-react-query";
+
 import type { paths } from "./api";
 
 export type FetchError = {
@@ -13,13 +14,12 @@ if (!BACKEND_URL) {
     throw new Error("NEXT_PUBLIC_BACKEND_URL environment variable is not set");
 }
 
-// Create a custom fetch implementation that better handles errors
-const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+export const backendUrl = (baseUrl: string, version?: string) => (version ? `${baseUrl}/${version}` : baseUrl);
 
-    if (process.env.NODE_ENV === "development") {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-
+/**
+ * Custom fetch implementation that includes credentials and handles errors
+ */
+export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     let response: Response;
     try {
         response = await fetch(input, {
@@ -27,31 +27,7 @@ const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
             credentials: "include",
         });
     } catch (e) {
-        throw {
-            statusCode: 503,
-            message: "Servidor no disponible",
-            error: e,
-        };
-    }
-
-    if (!response.ok) {
-        const text = await response.text();
-
-        let parsedError;
-
-        // Try to parse as JSON, but fall back to plain text if it fails
-        try {
-            parsedError = JSON.parse(text);
-        } catch {
-            // Not JSON, use the raw text
-            parsedError = { rawText: text };
-        }
-
-        throw {
-            statusCode: response.status,
-            message: response.statusText,
-            error: parsedError,
-        };
+        throw e;
     }
 
     return response;
@@ -61,7 +37,7 @@ const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
  * Client for connecting with the backend
  */
 const fetchClient = createFetchClient<paths>({
-    baseUrl: BACKEND_URL,
+    baseUrl: backendUrl(BACKEND_URL),
     fetch: enhancedFetch,
 });
 

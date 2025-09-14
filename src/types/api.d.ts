@@ -6235,6 +6235,10 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
                 };
                 header?: never;
                 path?: never;

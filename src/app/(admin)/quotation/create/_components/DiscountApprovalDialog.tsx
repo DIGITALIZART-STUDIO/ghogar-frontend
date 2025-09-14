@@ -5,13 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputOTP, InputOTPSlot, InputOTPGroup } from "@/components/ui/input-otp";
-import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { ResponsiveDialog } from "@/components/common/ResponsiveDialog";
-import { useUsersWithHigherRank } from "@/app/(admin)/admin/users/_hooks/useUser";
-import { getUserRoleLabel } from "@/app/(admin)/admin/users/_utils/user.utils";
+import { UserHigherRankSearch } from "@/app/(admin)/admin/users/_components/search/UserHigherRankSearch";
 import { useSendOtpToUser, useValidateOtp } from "../../_hooks/useQuotations";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { toast } from "sonner";
@@ -38,48 +35,6 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
     // Hooks para OTP
     const sendOtpMutation = useSendOtpToUser();
     const validateOtpMutation = useValidateOtp();
-
-    // Hook para búsqueda de usuarios con mayor rango usando el hook existente
-    const useSearchHook = (searchTerm: string) => {
-        const { data: users, isLoading } = useUsersWithHigherRank(
-            searchTerm || undefined,
-            20
-        );
-
-        // Actualizar el estado con los usuarios actuales
-        useEffect(() => {
-            if (users) {
-                setCurrentSearchUsers(users);
-            }
-        }, [users]);
-
-        // Convertir a formato Option para el AutoComplete incluyendo todos los datos
-        const options: Array<Option> = (users ?? []).map((user) => ({
-            value: user.id ?? "",
-            label: user.name ?? "Usuario sin nombre",
-            // Agregar datos completos del usuario para el render usando las propiedades estándar
-            email: user.email ?? "",
-            roles: JSON.stringify(user.roles ?? []),
-        }));
-
-        return {
-            data: options,
-            isLoading,
-        };
-    };
-
-    // Obtener usuarios iniciales (sin filtro) y mantenerlos en estado
-    const { data: initialUsers, isLoading: isLoadingInitial } = useUsersWithHigherRank();
-    const [allUsers, setAllUsers] = useState<Array<UserHigherRankDTO>>([]);
-    const [currentSearchUsers, setCurrentSearchUsers] = useState<Array<UserHigherRankDTO>>([]);
-
-    // Actualizar el estado cuando cambien los datos iniciales
-    useEffect(() => {
-        if (initialUsers) {
-            setAllUsers(initialUsers);
-            setCurrentSearchUsers(initialUsers);
-        }
-    }, [initialUsers]);
 
     const supervisorForm = useForm<SupervisorFormData>({
         resolver: zodResolver(supervisorSchema),
@@ -116,32 +71,14 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
         return () => clearInterval(interval);
     }, [otpExpiresAt]);
 
-    // Convertir usuarios a opciones para el AutoComplete
-    const supervisorOptions: Array<Option> = allUsers.map((user) => ({
-        value: user.id ?? "",
-        label: user.name ?? "Usuario sin nombre",
-        // Agregar datos completos del usuario para el render
-        email: user.email ?? "",
-        roles: JSON.stringify(user.roles ?? []),
-    }));
-
     const handleSendOtp = async () => {
-        const supervisorId = supervisorForm.getValues("supervisorId");
-        if (!supervisorId) {
+        if (!selectedSupervisor) {
             toast.error("Debe seleccionar un supervisor primero");
             return;
         }
 
-        // Buscar el supervisor en los datos actuales del hook de búsqueda
-        const supervisor = currentSearchUsers.find((s) => s.id === supervisorId);
-
-        if (!supervisor) {
-            toast.error("Supervisor no encontrado");
-            return;
-        }
-
         try {
-            const [data, error] = await sendOtpMutation.mutateAsync(supervisor.id!);
+            const [data, error] = await sendOtpMutation.mutateAsync(selectedSupervisor.id!);
 
             if (error) {
                 toast.error("Error al enviar el código de verificación");
@@ -149,7 +86,6 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
             }
 
             if (data) {
-                setSelectedSupervisor(supervisor);
                 setOtpExpiresAt(new Date(data.expiresAt));
                 setCanResendOtp(false);
                 setOtpSent(true);
@@ -245,28 +181,6 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
         }
     };
 
-    // Renderizar opción del AutoComplete
-    const renderSupervisorOption = (option: Option) => {
-        // Usar datos del option directamente
-        const email = option.email || "";
-        const roles = option.roles ? JSON.parse(option.roles) : [];
-        const role = roles[0];
-        const roleInfo = role ? getUserRoleLabel(role) : getUserRoleLabel("Other");
-
-        return (
-            <div className="flex flex-col gap-2">
-                <div className="flex flex-col">
-                    <span className="font-medium">{option.label}</span>
-                    <span className="text-sm text-muted-foreground lowercase">{email}</span>
-                </div>
-                <Badge variant="outline" className={roleInfo.className}>
-                    <roleInfo.icon className="w-3 h-3 mr-1" />
-                    {roleInfo.label}
-                </Badge>
-            </div>
-        );
-    };
-
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -360,19 +274,16 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
                                         <FormItem>
                                             <FormLabel>Seleccionar Supervisor</FormLabel>
                                             <FormControl>
-                                                <AutoComplete
-                                                    options={supervisorOptions}
-                                                    value={supervisorOptions.find((option) => option.value === field.value)}
-                                                    onValueChange={(option) => {
-                                                        field.onChange(option.value);
+                                                <UserHigherRankSearch
+                                                    value={field.value ?? ""}
+                                                    onSelect={(userId, user) => {
+                                                        field.onChange(userId);
+                                                        setSelectedSupervisor(user);
                                                     }}
-                                                    useSearchHook={useSearchHook}
                                                     placeholder="Buscar supervisor autorizado..."
+                                                    searchPlaceholder="Buscar por nombre, email, rol..."
                                                     emptyMessage="No se encontraron supervisores"
-                                                    isLoading={isLoadingInitial}
-                                                    renderOption={renderSupervisorOption}
-                                                    debounceMs={300}
-                                                    minSearchLength={2}
+                                                    preselectedId={field.value}
                                                 />
                                             </FormControl>
                                             <FormMessage />

@@ -20,6 +20,7 @@ interface UserSearchProps {
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
+    preselectedId?: string;
 }
 
 export function UserSearch({
@@ -29,8 +30,9 @@ export function UserSearch({
     placeholder = "Selecciona un usuario...",
     searchPlaceholder = "Buscar por nombre, email, rol...",
     emptyMessage = "No se encontraron usuarios",
+    preselectedId,
 }: UserSearchProps) {
-    const { allUsers, query, handleScrollEnd, handleSearchChange, search } = usePaginatedUsersWithSearch();
+    const { allUsers, query, handleScrollEnd, handleSearchChange, search } = usePaginatedUsersWithSearch(10, preselectedId);
 
     const userOptions: Array<Option<UserSummary>> = useMemo(() => allUsers.map((user) => {
         const primaryRole = user.roles?.[0] ?? "Other";

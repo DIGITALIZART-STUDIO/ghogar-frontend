@@ -157,7 +157,7 @@ export function useDownloadImportTemplate() {
 }
 
 // Hook para paginación infinita de clientes con búsqueda (usando backend2)
-export function usePaginatedClientsWithSearch(pageSize: number = 10) {
+export function usePaginatedClientsWithSearch(pageSize: number = 10, preselectedId?: string) {
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
@@ -173,6 +173,7 @@ export function usePaginatedClientsWithSearch(pageSize: number = 10) {
                     pageSize,
                     orderBy,
                     orderDirection,
+                    preselectedId,
                 },
             },
         },

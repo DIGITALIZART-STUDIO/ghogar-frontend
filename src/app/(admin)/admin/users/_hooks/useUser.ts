@@ -11,6 +11,8 @@ export function useUsers() {
     return api.useQuery("get", "/api/Users", undefined, {
         retry: false, // NO hacer retries automáticos
         enabled: !isLoggingOut, // No ejecutar si estamos haciendo logout
+        refetchOnWindowFocus: true, // Revalidar al volver al foco
+        refetchOnReconnect: true, // Revalidar al reconectar red
         onError: async (error: unknown) => {
             await handleAuthError(error);
         },

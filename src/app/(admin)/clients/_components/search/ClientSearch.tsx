@@ -20,6 +20,7 @@ interface ClientSearchProps {
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
+    preselectedId?: string;
 }
 
 export function ClientSearch({
@@ -29,8 +30,9 @@ export function ClientSearch({
     placeholder = "Selecciona un cliente...",
     searchPlaceholder = "Buscar por nombre, DNI, RUC, teléfono...",
     emptyMessage = "No se encontraron clientes",
+    preselectedId,
 }: ClientSearchProps) {
-    const { allClients, query, handleScrollEnd, handleSearchChange, search } = usePaginatedClientsWithSearch();
+    const { allClients, query, handleScrollEnd, handleSearchChange, search } = usePaginatedClientsWithSearch(10, preselectedId);
 
     const clientOptions: Array<Option<Client>> = useMemo(() => allClients.map((client) => ({
         value: client.id ?? "",

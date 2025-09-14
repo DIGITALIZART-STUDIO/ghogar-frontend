@@ -18,6 +18,7 @@ interface ProjectSearchProps {
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
+    preselectedId?: string;
 }
 
 export function ProjectSearch({
@@ -27,8 +28,9 @@ export function ProjectSearch({
     placeholder = "Selecciona un proyecto...",
     searchPlaceholder = "Buscar por nombre, ubicación...",
     emptyMessage = "No se encontraron proyectos",
+    preselectedId,
 }: ProjectSearchProps) {
-    const { allProjects, query, handleScrollEnd, handleSearchChange, search } = usePaginatedActiveProjectsWithSearch();
+    const { allProjects, query, handleScrollEnd, handleSearchChange, search } = usePaginatedActiveProjectsWithSearch(10, preselectedId);
 
     const projectOptions: Array<Option<Project>> = useMemo(() => allProjects.map((project) => ({
         value: project.id ?? "",

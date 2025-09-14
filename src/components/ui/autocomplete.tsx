@@ -317,7 +317,7 @@ export function AutoComplete<T = unknown>({
                                     <AlertCircle className="h-8 w-8 text-destructive" />
                                     <p className="text-sm text-muted-foreground text-center">{messages.error}</p>
                                     {refetch && (
-                                        <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">
+                                        <Button type="button" variant="outline" size="sm" onClick={() => refetch()} className="mt-2">
                                             Reintentar
                                         </Button>
                                     )}

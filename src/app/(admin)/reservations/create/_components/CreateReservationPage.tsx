@@ -9,10 +9,12 @@ import { toast } from "sonner";
 import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
 import { CreateReservation } from "../../_actions/ReservationActions";
 import { ReservationForm } from "./ReservationForm";
-import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
+import type { components } from "@/types/api";
+
+type QuotationSummary = components["schemas"]["QuotationSummaryDTO"];
 
 interface CreateReservationPageProps {
-    quotationsData: Array<SummaryQuotation>;
+    quotationsData: Array<QuotationSummary>;
 }
 
 export default function CreateReservationPage({ quotationsData }: CreateReservationPageProps) {

@@ -5060,7 +5060,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Quotations/advisor/accepted/{advisorId}": {
+    "/api/Quotations/advisor/accepted": {
         parameters: {
             query?: never;
             header?: never;
@@ -5069,11 +5069,16 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    advisorId: string;
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
                 };
+                header?: never;
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -5084,9 +5089,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["QuotationSummaryDTO"]>;
-                        "application/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
-                        "text/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
                     };
                 };
             };
@@ -7262,7 +7267,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7280,7 +7285,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7298,7 +7303,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7316,7 +7321,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7334,7 +7339,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8381,7 +8386,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8398,7 +8403,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8415,7 +8420,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8432,7 +8437,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8449,7 +8454,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;

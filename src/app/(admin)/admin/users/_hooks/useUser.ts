@@ -15,7 +15,10 @@ export function useUsers() {
         refetchOnWindowFocus: true, // Revalidar al volver al foco
         refetchOnReconnect: true, // Revalidar al reconectar red
         onError: async (error: unknown) => {
-            await handleAuthError(error);
+            // Solo manejar errores si no estamos haciendo logout
+            if (!isLoggingOut) {
+                await handleAuthError(error);
+            }
         },
     });
 }

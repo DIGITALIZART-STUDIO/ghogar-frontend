@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import ErrorGeneral from "@/components/errors/general-error";
 import AdminLayout from "@/components/layout/admin-layout";
@@ -22,28 +22,50 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const e = error as any;
 
+    // Normalizar el status del error (401/403) desde distintas formas que puede venir
+    const normalizedStatus = useMemo(() => {
+        if (!e) {
+            return undefined;
+        }
+
+        // Si estamos haciendo logout, ignorar todos los errores para prevenir el ErrorGeneral
+        if (isLoggingOut) {
+            return undefined;
+        }
+
+        const s = e?.statusCode ?? e?.status ?? e?.response?.status ?? e?.error?.statusCode ?? e?.error?.status;
+        if (s) {
+            return s as number;
+        }
+        const raw = e?.error?.rawText as string | undefined;
+        if (raw && /unauthorized/i.test(raw)) {
+            return 401;
+        }
+        return undefined;
+    }, [e, isLoggingOut]);
+
     useEffect(() => {
-        if (!isLoading && !!e && (e.statusCode === 401 || e.statusCode === 403) && !isLoggingOut) {
+        if (!isLoading && !!e && (normalizedStatus === 401 || normalizedStatus === 403) && !isLoggingOut) {
             handleAuthError(e);
         }
-    }, [e, isLoading, handleAuthError, isLoggingOut]);
+    }, [e, isLoading, handleAuthError, isLoggingOut, normalizedStatus]);
+
+    // Prioridad 1: Si estamos haciendo logout, mostrar loader inmediatamente y detener todo lo demás.
+    if (isLoggingOut) {
+        return <FullPageLoader text="Cerrando sesión..." />;
+    }
 
     if (isLoading) {
         return <FullPageLoader text="Cargando aplicación..." />;
     }
 
-    // Si estamos haciendo logout, mostrar loader
-    if (isLoggingOut) {
-        return <FullPageLoader text="Cerrando sesión..." />;
-    }
-
-    // Si hay error de autenticación, mostrar loading mientras se procesa
-    if (!!e && (e.statusCode === 401 || e.statusCode === 403)) {
+    // Si hay error de autenticación, mostrar loading mientras se procesa (sin romper el refresh)
+    if (!!e && (normalizedStatus === 401 || normalizedStatus === 403)) {
         return <FullPageLoader text="Verificando sesión..." />;
     }
 
     // Si hay error y NO es de autenticación, muestra error general
-    if (!!e && e.statusCode !== 401 && e.statusCode !== 403) {
+    if (!!e && normalizedStatus !== 401 && normalizedStatus !== 403) {
         return <ErrorGeneral />;
     }
 

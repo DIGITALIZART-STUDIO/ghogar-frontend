@@ -96,10 +96,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoggingOut: true,
         }));
 
-        try {
-            // Cancelar todas las queries activas ANTES de hacer logout
-            await queryClient.cancelQueries();
+        // Cancelar todas las queries activas INMEDIATAMENTE (sin await)
+        queryClient.cancelQueries();
 
+        try {
             // Llamar al endpoint de logout del backend
             await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Auth/logout`, {
                 method: "POST",
@@ -108,26 +108,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error("Error during logout:", error);
         } finally {
-            // Limpiar estado local
+            // Limpiar cache de React Query al hacer logout ANTES de cambiar el estado
+            queryClient.clear();
+
+            // Limpiar estado local PERO mantener isLoggingOut: true para evitar nuevas queries
             setAuthState({
                 isAuthenticated: false,
                 isLoading: false,
                 user: null,
-                isLoggingOut: false,
+                isLoggingOut: true, // Mantener true para evitar nuevas queries
             });
 
-            // Limpiar cache de React Query al hacer logout
-            queryClient.clear();
-
-            // Limpiar cookies del cliente también (por si acaso)
-            Cookies.remove(ACCESS_TOKEN_KEY);
-            Cookies.remove(`${ACCESS_TOKEN_KEY}_refresh`);
-
-            // Limpiar cookies con diferentes opciones para asegurar que se eliminen
-            Cookies.remove(ACCESS_TOKEN_KEY, { path: "/", domain: ".araozu.dev" });
-            Cookies.remove(`${ACCESS_TOKEN_KEY}_refresh`, { path: "/", domain: ".araozu.dev" });
-            Cookies.remove(ACCESS_TOKEN_KEY, { path: "/" });
-            Cookies.remove(`${ACCESS_TOKEN_KEY}_refresh`, { path: "/" });
+            // Redirigir inmediatamente sin delay
             router.push("/login");
         }
     };
@@ -182,6 +174,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         checkAuth();
+    }, []);
+
+    // Resetear estado de logout cuando se llega a la página de login
+    useEffect(() => {
+        if (typeof window !== "undefined" && window.location.pathname === "/login") {
+            setAuthState((prev) => ({
+                ...prev,
+                isLoggingOut: false,
+            }));
+        }
     }, []);
 
     return (

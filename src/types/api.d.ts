@@ -1021,8 +1021,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file?: string;
+                        file?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -4058,8 +4057,11 @@ export interface paths {
                         AmountPaid?: number;
                         /** Format: uuid */
                         ReservationId?: string;
+                        /** @default null */
                         PaymentMethod?: string;
+                        /** @default null */
                         ReferenceNumber?: string;
+                        /** @default null */
                         ComprobanteUrl?: string;
                         PaymentIds?: Array<string>;
                         StartFromLastCuota?: boolean;
@@ -6858,6 +6860,8 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
+        /** Format: binary */
+        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;

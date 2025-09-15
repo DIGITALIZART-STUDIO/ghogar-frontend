@@ -644,9 +644,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Client"];
-                        "application/json": components["schemas"]["Client"];
-                        "text/json": components["schemas"]["Client"];
+                        "text/plain": components["schemas"]["Client3"];
+                        "application/json": components["schemas"]["Client3"];
+                        "text/json": components["schemas"]["Client3"];
                     };
                 };
             };
@@ -721,9 +721,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Client"];
-                        "application/json": components["schemas"]["Client"];
-                        "text/json": components["schemas"]["Client"];
+                        "text/plain": components["schemas"]["Client3"];
+                        "application/json": components["schemas"]["Client3"];
+                        "text/json": components["schemas"]["Client3"];
                     };
                 };
             };
@@ -751,9 +751,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Client"];
-                        "application/json": components["schemas"]["Client"];
-                        "text/json": components["schemas"]["Client"];
+                        "text/plain": components["schemas"]["Client3"];
+                        "application/json": components["schemas"]["Client3"];
+                        "text/json": components["schemas"]["Client3"];
                     };
                 };
             };
@@ -1525,7 +1525,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Landing/referral": {
+    "/api/LeadTasks": {
         parameters: {
             query?: never;
             header?: never;
@@ -1649,6 +1649,816 @@ export interface paths {
         trace?: never;
     };
     "/api/Landing/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LeadCreateDto"];
+                    "text/json": components["schemas"]["LeadCreateDto"];
+                    "application/*+json": components["schemas"]["LeadCreateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LeadUpdateDto"];
+                    "text/json": components["schemas"]["LeadUpdateDto"];
+                    "application/*+json": components["schemas"]["LeadUpdateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LeadStatusUpdateDto"];
+                    "text/json": components["schemas"]["LeadStatusUpdateDto"];
+                    "application/*+json": components["schemas"]["LeadStatusUpdateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/inactive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/client/{clientId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    clientId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/assignedto/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/assignedto/{userId}/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path: {
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLead"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/status/{status}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    status: components["schemas"]["LeadStatus"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/{id}/recycle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Lead3"];
+                        "application/json": components["schemas"]["Lead3"];
+                        "text/json": components["schemas"]["Lead3"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/expired": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["Lead3"]>;
+                        "application/json": Array<components["schemas"]["Lead3"]>;
+                        "text/json": Array<components["schemas"]["Lead3"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/check-expired": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": Array<string>;
+                    "text/json": Array<string>;
+                    "application/*+json": Array<string>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["BatchOperationResult"];
+                        "application/json": components["schemas"]["BatchOperationResult"];
+                        "text/json": components["schemas"]["BatchOperationResult"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/batch/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": Array<string>;
+                    "text/json": Array<string>;
+                    "application/*+json": Array<string>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["BatchOperationResult"];
+                        "application/json": components["schemas"]["BatchOperationResult"];
+                        "text/json": components["schemas"]["BatchOperationResult"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/users/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/assigned/{assignedToId}/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    assignedToId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/available-for-quotation/{excludeQuotationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    excludeQuotationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/export": {
         parameters: {
             query?: never;
             header?: never;
@@ -2001,7 +2811,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/LeadTasks/completed": {
+    "/api/Leads/assigned/{assignedToId}/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -2078,906 +2888,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/LeadTasks/{id}/complete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Lead3"]>;
-                        "application/json": Array<components["schemas"]["Lead3"]>;
-                        "text/json": Array<components["schemas"]["Lead3"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["LeadCreateDto"];
-                    "text/json": components["schemas"]["LeadCreateDto"];
-                    "application/*+json": components["schemas"]["LeadCreateDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Lead4"];
-                        "application/json": components["schemas"]["Lead4"];
-                        "text/json": components["schemas"]["Lead4"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    page?: number;
-                    pageSize?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["PaginatedResponseV2OfLead"];
-                        "application/json": components["schemas"]["PaginatedResponseV2OfLead"];
-                        "text/json": components["schemas"]["PaginatedResponseV2OfLead"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Lead4"];
-                        "application/json": components["schemas"]["Lead4"];
-                        "text/json": components["schemas"]["Lead4"];
-                    };
-                };
-            };
-        };
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["LeadUpdateDto"];
-                    "text/json": components["schemas"]["LeadUpdateDto"];
-                    "application/*+json": components["schemas"]["LeadUpdateDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Lead4"];
-                        "application/json": components["schemas"]["Lead4"];
-                        "text/json": components["schemas"]["Lead4"];
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/{id}/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["LeadStatusUpdateDto"];
-                    "text/json": components["schemas"]["LeadStatusUpdateDto"];
-                    "application/*+json": components["schemas"]["LeadStatusUpdateDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Lead4"];
-                        "application/json": components["schemas"]["Lead4"];
-                        "text/json": components["schemas"]["Lead4"];
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/inactive": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Lead3"]>;
-                        "application/json": Array<components["schemas"]["Lead3"]>;
-                        "text/json": Array<components["schemas"]["Lead3"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/client/{clientId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    clientId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Lead3"]>;
-                        "application/json": Array<components["schemas"]["Lead3"]>;
-                        "text/json": Array<components["schemas"]["Lead3"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/assignedto/{userId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    userId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Lead3"]>;
-                        "application/json": Array<components["schemas"]["Lead3"]>;
-                        "text/json": Array<components["schemas"]["Lead3"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/assignedto/{userId}/paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    page?: number;
-                    pageSize?: number;
-                };
-                header?: never;
-                path: {
-                    userId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["PaginatedResponseV2OfLead"];
-                        "application/json": components["schemas"]["PaginatedResponseV2OfLead"];
-                        "text/json": components["schemas"]["PaginatedResponseV2OfLead"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/status/{status}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    status: components["schemas"]["LeadStatus"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Lead3"]>;
-                        "application/json": Array<components["schemas"]["Lead3"]>;
-                        "text/json": Array<components["schemas"]["Lead3"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/{id}/activate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/{id}/recycle": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Lead4"];
-                        "application/json": components["schemas"]["Lead4"];
-                        "text/json": components["schemas"]["Lead4"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/expired": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["Lead3"]>;
-                        "application/json": Array<components["schemas"]["Lead3"]>;
-                        "text/json": Array<components["schemas"]["Lead3"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/check-expired": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/batch": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["BatchOperationResult"];
-                        "application/json": components["schemas"]["BatchOperationResult"];
-                        "text/json": components["schemas"]["BatchOperationResult"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/batch/activate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": Array<string>;
-                    "text/json": Array<string>;
-                    "application/*+json": Array<string>;
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["BatchOperationResult"];
-                        "application/json": components["schemas"]["BatchOperationResult"];
-                        "text/json": components["schemas"]["BatchOperationResult"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/users/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/users/summary/paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    page?: number;
-                    pageSize?: number;
-                    search?: string;
-                    orderBy?: string;
-                    orderDirection?: string;
-                    preselectedId?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["PaginatedResponseV2OfUserSummaryDto"];
-                        "application/json": components["schemas"]["PaginatedResponseV2OfUserSummaryDto"];
-                        "text/json": components["schemas"]["PaginatedResponseV2OfUserSummaryDto"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/assigned/{assignedToId}/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    assignedToId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/available-for-quotation/{excludeQuotationId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    excludeQuotationId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "application/json": Array<components["schemas"]["LeadSummaryDto"]>;
-                        "text/json": Array<components["schemas"]["LeadSummaryDto"]>;
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Leads/available-for-quotation/paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    page?: number;
-                    pageSize?: number;
-                    search?: string;
-                    orderBy?: string;
-                    orderDirection?: string;
-                    preselectedId?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["PaginatedResponseV2OfLeadSummaryDto"];
-                        "application/json": components["schemas"]["PaginatedResponseV2OfLeadSummaryDto"];
-                        "text/json": components["schemas"]["PaginatedResponseV2OfLeadSummaryDto"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Leads/export": {
         parameters: {
             query?: never;
@@ -2985,11 +2895,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: {
+        get?: never;
+        put?: never;
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    id: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
@@ -3003,8 +2917,6 @@ export interface paths {
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6544,6 +6456,48 @@ export interface components {
             isActive?: boolean;
             lots?: Array<components["schemas"]["Lot5"]>;
         };
+        Block6: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project12"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot6"]>;
+        };
+        Block7: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project14"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot7"]>;
+        };
+        Block8: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: uuid */
+            projectId: string;
+            project?: components["schemas"]["Project16"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            isActive?: boolean;
+            lots?: Array<components["schemas"]["Lot8"]>;
+        };
         BlockCreateDTO: {
             name: string;
             /** Format: uuid */
@@ -6606,6 +6560,7 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
             displayName?: string | null;
+            referrals?: Array<components["schemas"]["Referral"]> | null;
         };
         Client2: {
             /** Format: uuid */
@@ -6628,6 +6583,99 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
             displayName?: string | null;
+            referrals?: components["schemas"];
+        } | null;
+        Client3: {
+            /** Format: uuid */
+            id?: string;
+            name?: string | null;
+            dni?: string | null;
+            ruc?: string | null;
+            companyName?: string | null;
+            phoneNumber: string;
+            email?: string | null;
+            address?: string | null;
+            country?: string | null;
+            type?: components["schemas"]["NullableOfClientType"];
+            coOwners?: string | null;
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            displayName?: string | null;
+            referrals?: Array<components["schemas"]["Referral3"]> | null;
+        };
+        Client4: {
+            /** Format: uuid */
+            id?: string;
+            name?: string | null;
+            dni?: string | null;
+            ruc?: string | null;
+            companyName?: string | null;
+            phoneNumber: string;
+            email?: string | null;
+            address?: string | null;
+            country?: string | null;
+            type?: components["schemas"]["NullableOfClientType"];
+            coOwners?: string | null;
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            displayName?: string | null;
+            referrals?: components["schemas"];
+        } | null;
+        Client5: {
+            /** Format: uuid */
+            id?: string;
+            name?: string | null;
+            dni?: string | null;
+            ruc?: string | null;
+            companyName?: string | null;
+            phoneNumber: string;
+            email?: string | null;
+            address?: string | null;
+            country?: string | null;
+            type?: components["schemas"]["NullableOfClientType"];
+            coOwners?: string | null;
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            displayName?: string | null;
+            referrals?: Array<components["schemas"]["Referral5"]> | null;
+        };
+        Client6: {
+            /** Format: uuid */
+            id?: string;
+            name?: string | null;
+            dni?: string | null;
+            ruc?: string | null;
+            companyName?: string | null;
+            phoneNumber: string;
+            email?: string | null;
+            address?: string | null;
+            country?: string | null;
+            type?: components["schemas"]["NullableOfClientType"];
+            coOwners?: string | null;
+            separateProperty?: boolean;
+            separatePropertyData?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            displayName?: string | null;
+            referrals?: components["schemas"];
         } | null;
         ClientAnalysisDto: {
             /** Format: int32 */
@@ -6929,7 +6977,6 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project"];
-            referral?: components["schemas"]["Referral"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -6937,14 +6984,49 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
-        } | null;
+        };
+        Lead10: {
+            /** Format: uuid */
+            id?: string;
+            code: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"]["User"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project15"];
+            referral?: components["schemas"]["Referral16"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         Lead2: {
             /** Format: uuid */
             id?: string;
             code: string;
             /** Format: uuid */
             clientId?: string | null;
-            client?: components["schemas"]["Client2"];
+            client?: components["schemas"]["Client4"];
             /** Format: uuid */
             assignedToId?: string | null;
             assignedTo?: components["schemas"]["User"];
@@ -6964,7 +7046,6 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project3"];
-            referral?: components["schemas"]["Referral2"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -6972,14 +7053,14 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             modifiedAt?: string;
-        } | null;
+        };
         Lead3: {
             /** Format: uuid */
             id?: string;
             code: string;
             /** Format: uuid */
             clientId?: string | null;
-            client?: components["schemas"]["Client2"];
+            client?: components["schemas"]["Client6"];
             /** Format: uuid */
             assignedToId?: string | null;
             assignedTo?: components["schemas"]["User"];
@@ -6999,7 +7080,6 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project5"];
-            referral?: components["schemas"]["Referral3"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -7014,7 +7094,7 @@ export interface components {
             code: string;
             /** Format: uuid */
             clientId?: string | null;
-            client?: components["schemas"]["Client2"];
+            client?: components["schemas"];
             /** Format: uuid */
             assignedToId?: string | null;
             assignedTo?: components["schemas"]["User"];
@@ -7034,7 +7114,6 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project7"];
-            referral?: components["schemas"]["Referral4"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -7049,7 +7128,7 @@ export interface components {
             code: string;
             /** Format: uuid */
             clientId?: string | null;
-            client?: components["schemas"]["Client2"];
+            client?: components["schemas"];
             /** Format: uuid */
             assignedToId?: string | null;
             assignedTo?: components["schemas"]["User"];
@@ -7069,7 +7148,6 @@ export interface components {
             /** Format: uuid */
             projectId?: string | null;
             project?: components["schemas"]["Project9"];
-            referral?: components["schemas"]["Referral5"];
             completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
             cancellationReason?: string | null;
             isActive?: boolean;
@@ -7078,6 +7156,146 @@ export interface components {
             /** Format: date-time */
             modifiedAt?: string;
         };
+        Lead6: {
+            /** Format: uuid */
+            id?: string;
+            code: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"]["User"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project11"];
+            referral?: components["schemas"]["Referral12"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Lead7: {
+            /** Format: uuid */
+            id?: string;
+            code: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"]["Client6"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"];
+            referral?: components["schemas"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
+        Lead8: {
+            /** Format: uuid */
+            id?: string;
+            code: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"]["User"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"]["User"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"]["Project13"];
+            referral?: components["schemas"]["Referral14"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        Lead9: {
+            /** Format: uuid */
+            id?: string;
+            code: string;
+            /** Format: uuid */
+            clientId?: string | null;
+            client?: components["schemas"]["Client6"];
+            /** Format: uuid */
+            assignedToId?: string | null;
+            assignedTo?: components["schemas"];
+            status: components["schemas"]["LeadStatus"];
+            captureSource: components["schemas"]["LeadCaptureSource"];
+            /** Format: date-time */
+            entryDate: string;
+            /** Format: date-time */
+            expirationDate: string;
+            /** Format: int32 */
+            recycleCount?: number;
+            /** Format: date-time */
+            lastRecycledAt?: string | null;
+            /** Format: uuid */
+            lastRecycledById?: string | null;
+            lastRecycledBy?: components["schemas"];
+            /** Format: uuid */
+            projectId?: string | null;
+            project?: components["schemas"];
+            referral?: components["schemas"];
+            completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+            cancellationReason?: string | null;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        } | null;
         /** @enum {unknown} */
         LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
         LeadCreateDto: {
@@ -7149,7 +7367,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             leadId: string;
-            lead?: components["schemas"]["Lead"];
+            lead?: components["schemas"]["Lead7"];
             /** Format: uuid */
             assignedToId: string;
             assignedTo?: components["schemas"]["User"];
@@ -7171,7 +7389,7 @@ export interface components {
             id?: string;
             /** Format: uuid */
             leadId: string;
-            lead?: components["schemas"]["Lead2"];
+            lead?: components["schemas"]["Lead9"];
             /** Format: uuid */
             assignedToId: string;
             assignedTo?: components["schemas"]["User"];
@@ -7267,7 +7485,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7285,7 +7503,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7303,7 +7521,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7321,7 +7539,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7339,7 +7557,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7611,7 +7829,7 @@ export interface components {
             count?: number;
         };
         PaginatedResponseV2OfClient: {
-            data?: Array<components["schemas"]["Client"]>;
+            data?: Array<components["schemas"]["Client5"]>;
             meta?: components["schemas"]["PaginationMetadata"];
             hasData?: boolean;
             isEmpty?: boolean;
@@ -7619,7 +7837,7 @@ export interface components {
             count?: number;
         };
         PaginatedResponseV2OfLead: {
-            data?: Array<components["schemas"]["Lead5"]>;
+            data?: Array<components["schemas"]["Lead3"]>;
             meta?: components["schemas"]["PaginationMetadata"];
             hasData?: boolean;
             isEmpty?: boolean;
@@ -8007,6 +8225,126 @@ export interface components {
             modifiedAt?: string;
             blocks?: components["schemas"];
         };
+        Project11: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block6"]>;
+        } | null;
+        Project12: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
+        Project13: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block7"]>;
+        } | null;
+        Project14: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
+        Project15: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: Array<components["schemas"]["Block8"]>;
+        } | null;
+        Project16: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            location: string;
+            currency: string;
+            isActive: boolean;
+            /** Format: double */
+            defaultDownPayment?: number | null;
+            /** Format: int32 */
+            defaultFinancingMonths?: number | null;
+            /** Format: double */
+            maxDiscountPercentage?: number | null;
+            projectUrlImage?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+            blocks?: components["schemas"];
+        };
         Project2: {
             /** Format: uuid */
             id?: string;
@@ -8375,128 +8713,6 @@ export interface components {
             daysAgo?: number;
             hasCoOwners?: boolean;
             separateProperty?: boolean;
-        };
-        Referral: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
-            /** Format: uuid */
-            referredLeadId: string;
-            /** Format: uuid */
-            projectId?: string | null;
-            project?: components["schemas"]["Project"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        } | null;
-        Referral2: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
-            /** Format: uuid */
-            referredLeadId: string;
-            /** Format: uuid */
-            projectId?: string | null;
-            project?: components["schemas"]["Project"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        } | null;
-        Referral3: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
-            /** Format: uuid */
-            referredLeadId: string;
-            /** Format: uuid */
-            projectId?: string | null;
-            project?: components["schemas"]["Project"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        } | null;
-        Referral4: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
-            /** Format: uuid */
-            referredLeadId: string;
-            /** Format: uuid */
-            projectId?: string | null;
-            project?: components["schemas"]["Project"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        } | null;
-        Referral5: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            referrerClientId: string;
-            referrerClient?: components["schemas"]["Client"];
-            /** Format: uuid */
-            referredLeadId: string;
-            /** Format: uuid */
-            projectId?: string | null;
-            project?: components["schemas"]["Project"];
-            isActive?: boolean;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            modifiedAt?: string;
-        } | null;
-        ReferralCreateDto: {
-            referrer: components["schemas"]["ReferrerDataDto"];
-            referred: components["schemas"]["ReferredDataDto"];
-        };
-        ReferralProcessInfo: {
-            referrerClientExisted?: boolean;
-            referrerClientCreated?: boolean;
-            referredClientExisted?: boolean;
-            referredClientCreated?: boolean;
-            referredLeadCreated?: boolean;
-            referralCreated?: boolean;
-        };
-        ReferralResultDto: {
-            /** Format: uuid */
-            referralId?: string;
-            /** Format: uuid */
-            referrerClientId?: string;
-            /** Format: uuid */
-            referredLeadId?: string;
-            referredLeadCode?: string;
-            processInfo?: components["schemas"]["ReferralProcessInfo"];
-            message?: string;
-        };
-        ReferredDataDto: {
-            nombres: string;
-            apellidos: string;
-            numeroDocumento: string;
-            telefono: string;
-            email: string;
-        };
-        ReferrerDataDto: {
-            nombres: string;
-            apellidos: string;
-            numeroDocumento: string;
-            telefono: string;
-            email: string;
         };
         ReservationCreateDto: {
             /** Format: uuid */

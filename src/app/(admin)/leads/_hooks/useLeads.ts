@@ -299,7 +299,6 @@ export function usePaginatedUsersWithSearch(pageSize: number = 10, preselectedId
 // Hook para paginación infinita de leads disponibles para cotización con búsqueda (usando backend2)
 export function usePaginatedAvailableLeadsForQuotationWithSearch(
     pageSize: number = 10,
-    excludeQuotationId?: string,
     preselectedId?: string
 ) {
     const [search, setSearch] = useState<string | undefined>(undefined);
@@ -317,7 +316,6 @@ export function usePaginatedAvailableLeadsForQuotationWithSearch(
                     pageSize,
                     orderBy,
                     orderDirection,
-                    excludeQuotationId,
                     preselectedId,
                 },
             },

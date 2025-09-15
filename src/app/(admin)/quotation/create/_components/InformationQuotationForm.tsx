@@ -4,7 +4,6 @@ import {  CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "luc
 import { toast } from "sonner";
 
 import { LogoSunat } from "@/assets/icons/LogoSunat";
-import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import {  FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -18,17 +17,11 @@ import { DiscountApprovalDialog } from "./DiscountApprovalDialog";
 import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
 import { LeadSearch } from "@/app/(admin)/leads/_components/search/LeadSearch";
-
-// Tipos para las opciones
-type BlockOption = Option<{ projectId: string; projectName: string }>;
-type LotOption = Option<{ area: string; price: string; pricePerM2: string; blockId: string; blockName: string; projectId: string; projectName: string }>;
+import { BlockSearch } from "@/app/(admin)/admin/projects/[id]/blocks/_components/search/BlockSearch";
+import { LotSearch } from "@/app/(admin)/admin/projects/lots/_components/search/LotSearch";
 
 interface InformationQuotationFormProps {
     form: UseFormReturn<CreateQuotationSchema>;
-    lots: Array<LotOption>;
-    blocks: Array<BlockOption>;
-    loadingBlocks: boolean;
-    loadingLots: boolean;
     setProjectName: (name: string) => void;
     setBlockName: (name: string) => void;
     setLotNumber: (number: string) => void;
@@ -36,7 +29,7 @@ interface InformationQuotationFormProps {
     setSelectedLead: (lead: { name: string; code: string } | null) => void;
 }
 
-export default function InformationQuotationForm({ form, lots, blocks, loadingBlocks, loadingLots, setProjectName, setBlockName, setLotNumber, userData, setSelectedLead }: InformationQuotationFormProps) {
+export default function InformationQuotationForm({ form, setProjectName, setBlockName, setLotNumber, userData, setSelectedLead }: InformationQuotationFormProps) {
     const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
     const [isDiscountApproved, setIsDiscountApproved] = useState(false);
     // Y luego añade esta función para manejar el clic del botón
@@ -243,36 +236,35 @@ export default function InformationQuotationForm({ form, lots, blocks, loadingBl
 
                                 <FormField
                                     control={form.control}
-                                    name="blockId" // Cambio: usar directamente blockId en vez de block
+                                    name="blockId"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-amber-700">Manzana</FormLabel>
-                                            <AutoComplete
-                                                options={blocks}
-                                                emptyMessage={
-                                                    field.value
-                                                        ? "No hay manzanas disponibles en este proyecto"
-                                                        : "Seleccione primero un proyecto"
-                                                }
-                                                placeholder="Seleccione una manzana"
-                                                isLoading={loadingBlocks}
-                                                disabled={!form.watch("projectId")}
-                                                value={blocks.find((block) => block.value === field.value)}
-                                                onValueChange={(selectedOption) => {
-                                                    // Actualizar el valor del campo directamente
-                                                    field.onChange(selectedOption?.value ?? "");
+                                            <FormControl>
+                                                <BlockSearch
+                                                    projectId={form.watch("projectId") ?? ""}
+                                                    value={field.value ?? ""}
+                                                    onSelect={(blockId, block) => {
+                                                        // Actualizar el valor del campo directamente
+                                                        field.onChange(blockId);
 
-                                                    // Para mostrar el nombre del bloque en el resumen
-                                                    setBlockName(selectedOption?.label ?? "");
+                                                        // Para mostrar el nombre del bloque en el resumen
+                                                        setBlockName(block.name ?? "");
 
-                                                    // Resetear lote
-                                                    form.setValue("lotId", "");
+                                                        // Resetear lote
+                                                        form.setValue("lotId", "");
 
-                                                    // Limpiar campos del lote
-                                                    form.setValue("area", "");
-                                                    form.setValue("pricePerM2", "");
-                                                }}
-                                            />
+                                                        // Limpiar campos del lote
+                                                        form.setValue("area", "");
+                                                        form.setValue("pricePerM2", "");
+                                                    }}
+                                                    placeholder="Seleccione una manzana"
+                                                    searchPlaceholder="Buscar por nombre de manzana..."
+                                                    emptyMessage="No hay manzanas disponibles en este proyecto"
+                                                    preselectedId={field.value}
+                                                    disabled={!form.watch("projectId")}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -281,31 +273,32 @@ export default function InformationQuotationForm({ form, lots, blocks, loadingBl
                                 {/* Lote - Ahora es un autocomplete */}
                                 <FormField
                                     control={form.control}
-                                    name="lotId" // Cambio: usar directamente lotId
+                                    name="lotId"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-amber-700">Lote</FormLabel>
-                                            <AutoComplete
-                                                options={lots}
-                                                emptyMessage={
-                                                    form.watch("blockId")
-                                                        ? "No hay lotes disponibles en esta manzana"
-                                                        : "Seleccione primero una manzana"
-                                                }
-                                                placeholder="Seleccione un lote"
-                                                isLoading={loadingLots}
-                                                disabled={!form.watch("blockId")}
-                                                value={lots.find((lot) => lot.value === field.value)}
-                                                onValueChange={(selectedOption) => {
-                                                    // Actualizar el valor del campo directamente
-                                                    field.onChange(selectedOption?.value ?? "");
+                                            <FormControl>
+                                                <LotSearch
+                                                    blockId={form.watch("blockId") ?? ""}
+                                                    value={field.value ?? ""}
+                                                    onSelect={(lotId, lot) => {
+                                                        // Actualizar el valor del campo directamente
+                                                        field.onChange(lotId);
 
-                                                    // Para mostrar el número del lote en el resumen
-                                                    setLotNumber(selectedOption?.label ?? "");
+                                                        // Para mostrar el número del lote en el resumen
+                                                        setLotNumber(lot.lotNumber ?? "");
 
-                                                    // No hay valores dependientes que resetear
-                                                }}
-                                            />
+                                                        // Actualizar campos del lote
+                                                        form.setValue("area", lot.area?.toString() ?? "");
+                                                        form.setValue("pricePerM2", lot.pricePerSquareMeter?.toString() ?? "");
+                                                    }}
+                                                    placeholder="Seleccione un lote"
+                                                    searchPlaceholder="Buscar por número de lote, área, precio..."
+                                                    emptyMessage="No hay lotes disponibles en esta manzana"
+                                                    preselectedId={field.value}
+                                                    disabled={!form.watch("blockId")}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}

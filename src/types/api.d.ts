@@ -390,6 +390,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Blocks/project/{projectId}/active/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                };
+                header?: never;
+                path: {
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Blocks/{id}": {
         parameters: {
             query?: never;
@@ -2903,7 +2949,6 @@ export interface paths {
                     search?: string;
                     orderBy?: string;
                     orderDirection?: string;
-                    excludeQuotationId?: string;
                     preselectedId?: string;
                 };
                 header?: never;
@@ -3057,6 +3102,52 @@ export interface paths {
                         "text/plain": Array<components["schemas"]["LotDTO"]>;
                         "application/json": Array<components["schemas"]["LotDTO"]>;
                         "text/json": Array<components["schemas"]["LotDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Lots/block/{blockId}/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                };
+                header?: never;
+                path: {
+                    blockId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLotDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLotDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLotDTO"];
                     };
                 };
             };
@@ -7506,6 +7597,14 @@ export interface components {
             /** Format: int32 */
             cacheTTLMinutes?: number;
         };
+        PaginatedResponseV2OfBlockDTO: {
+            data?: Array<components["schemas"]["BlockDTO"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
         PaginatedResponseV2OfClient: {
             data?: Array<components["schemas"]["Client"]>;
             meta?: components["schemas"]["PaginationMetadata"];
@@ -7524,6 +7623,14 @@ export interface components {
         };
         PaginatedResponseV2OfLeadSummaryDto: {
             data?: Array<components["schemas"]["LeadSummaryDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginatedResponseV2OfLotDTO: {
+            data?: Array<components["schemas"]["LotDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
             hasData?: boolean;
             isEmpty?: boolean;

@@ -7,13 +7,9 @@ import { es } from "date-fns/locale";
 import { ArrowRight, CreditCard, DollarSign, FileText, MapPin, RefreshCcw } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
-import { Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
-
-import { useActiveBlocks } from "@/app/(admin)/admin/projects/[id]/blocks/_hooks/useBlocks";
-import { useLots } from "@/app/(admin)/admin/projects/lots/_hooks/useLots";
 import InformationQuotationForm from "./InformationQuotationForm";
 import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
@@ -40,82 +36,26 @@ export function QuotationForm({ form, onSubmit, isPending, initialSelection, use
     // Estados para almacenar información del lead seleccionado
     const [selectedLead, setSelectedLead] = useState<{ name: string; code: string } | null>(null);
 
-    const projectId = form.watch("projectId");
-    const blockId = form.watch("blockId");
-    const lotId = form.watch("lotId");
     const area = form.watch("area");
     const pricePerM2 = form.watch("pricePerM2");
     const discount = form.watch("discount");
     const downPayment = form.watch("downPayment");
 
-    // Bloques activos por proyecto
-    const { data: blocksData = [], isLoading: loadingBlocks } = useActiveBlocks(projectId);
-    const blocks: Array<Option<{ projectId: string; projectName: string }>> = blocksData.map((block) => ({
-        value: block.id ?? "",
-        label: block.name ?? "",
-        projectId: block.projectId ?? "",
-        projectName: block.projectName ?? "",
-    }));
-
-    // Lotes por bloque
-    const { data: lotsData = [], isLoading: loadingLots } = useLots(blockId);
-    const lots: Array<Option<{ area: string; price: string; pricePerM2: string; blockId: string; blockName: string; projectId: string; projectName: string }>> = lotsData.map((lot) => ({
-        value: lot.id ?? "",
-        label: lot.lotNumber ?? "",
-        area: lot.area?.toString() ?? "",
-        price: lot.price?.toString() ?? "",
-        pricePerM2: lot.pricePerSquareMeter !== undefined && lot.pricePerSquareMeter !== null
-            ? Number(lot.pricePerSquareMeter).toFixed(2)
-            : "",
-        blockId: lot.blockId ?? "",
-        blockName: lot.blockName ?? "",
-        projectId: lot.projectId ?? "",
-        projectName: lot.projectName ?? "",
-    }));
+    // Los datos de bloques y lotes ahora se manejan directamente en los componentes de búsqueda
 
     // Inicializar nombres de bloque y lote si estamos en modo edición
     useEffect(() => {
         if (initialSelection) {
-            if (initialSelection.blockId && blocks.length > 0) {
-                const block = blocks.find((b) => b.value === initialSelection.blockId);
-                if (block) {
-                    setBlockName(block.label);
-                }
+            if (initialSelection.blockId) {
+                // El nombre del bloque se establecerá cuando se seleccione en BlockSearch
             }
-            if (initialSelection.lotId && lots.length > 0) {
-                const lot = lots.find((l) => l.value === initialSelection.lotId);
-                if (lot) {
-                    setLotNumber(lot.label);
-                }
+            if (initialSelection.lotId) {
+                // El número del lote se establecerá cuando se seleccione en LotSearch
             }
         }
-    }, [initialSelection, blocks, lots]);
+    }, [initialSelection]);
 
-    // Actualizar los campos del formulario cuando se selecciona un lote
-    useEffect(() => {
-        const selectedLotId = form.watch("lotId");
-        if (!selectedLotId) {
-            return;
-        }
-
-        const selectedLot = lots.find((lot) => lot.value === selectedLotId);
-        if (!selectedLot) {
-            return;
-        }
-
-        // Solo actualiza si los valores son diferentes
-        if (form.getValues("area") !== selectedLot.entity?.area) {
-            form.setValue("area", selectedLot.entity?.area ?? "");
-        }
-        if (form.getValues("pricePerM2") !== selectedLot.entity?.pricePerM2) {
-            form.setValue("pricePerM2", selectedLot.entity?.pricePerM2 ? Number(selectedLot.entity.pricePerM2).toFixed(2) : "");
-        }
-
-        setLotNumber(selectedLot.label);
-        setBlockName(selectedLot.entity?.blockName ?? "");
-        setProjectName(selectedLot.entity?.projectName ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lotId, lots]);
+    // Los campos del formulario ahora se actualizan directamente en LotSearch
 
     // Calcular valores automáticamente
     useEffect(() => {
@@ -154,10 +94,6 @@ export function QuotationForm({ form, onSubmit, isPending, initialSelection, use
                     {/* Columna izquierda - Información principal */}
                     <InformationQuotationForm
                         form={form}
-                        lots={lots}
-                        blocks={blocks}
-                        loadingBlocks={loadingBlocks}
-                        loadingLots={loadingLots}
                         setProjectName={setProjectName}
                         setBlockName={setBlockName}
                         setLotNumber={setLotNumber}

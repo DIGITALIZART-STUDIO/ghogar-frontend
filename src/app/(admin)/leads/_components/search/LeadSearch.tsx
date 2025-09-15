@@ -35,8 +35,6 @@ export function LeadSearch({
 }: LeadSearchProps) {
     const { allLeads, query, handleScrollEnd, handleSearchChange, search } = usePaginatedAvailableLeadsForQuotationWithSearch(10, preselectedId);
 
-    console.log(JSON.stringify(allLeads, null, 2));
-
     const leadOptions: Array<Option<LeadSummary>> = useMemo(() => allLeads.map((lead) => ({
         value: lead.id ?? "",
         label: lead.code ?? "Lead sin código",

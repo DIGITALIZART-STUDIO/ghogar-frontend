@@ -106,7 +106,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <div className="w-6 h-6 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                                         <Hash className="h-3 w-3 text-gray-600 dark:text-gray-300" />
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Código de Cotización</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Código de Cotización</span>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="font-mono text-lg font-bold text-gray-900 dark:text-gray-100">{code}</p>
@@ -161,7 +161,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                                         <User className="h-4 w-4 text-blue-600 dark:text-blue-300" />
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Información del Cliente</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Información del Cliente</span>
                                 </div>
                                 <div className="space-y-2">
                                     <div>
@@ -226,7 +226,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
                                         <Building2 className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Proyecto Inmobiliario</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Proyecto Inmobiliario</span>
                                 </div>
                                 <div className="space-y-2">
                                     <div>
@@ -287,7 +287,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
                                         <MapPin className="h-4 w-4 text-orange-600 dark:text-orange-300" />
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Información del Lote</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Información del Lote</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
@@ -351,12 +351,12 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
                                         <DollarSign className="h-4 w-4 text-green-600 dark:text-green-300" />
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Detalles de Precio</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Detalles de Precio</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
                                         <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">Precio Final</p>
-                                        <p className="font-bold text-2xl text-gray-900 dark:text-gray-100">{formatCurrency(finalPrice || 0, currency)}</p>
+                                        <p className="font-bold text-lg text-gray-900 dark:text-gray-100">{formatCurrency(finalPrice || 0, currency)}</p>
                                     </div>
                                     {totalPrice && totalPrice !== finalPrice && (
                                         <div className="space-y-2 pt-2 border-t border-gray-200 dark:border-gray-600">
@@ -442,7 +442,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     >
                                         {statusDetails.icon}
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Estado de Cotización</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Estado de Cotización</span>
                                 </div>
 
                                 <div className="space-y-3">

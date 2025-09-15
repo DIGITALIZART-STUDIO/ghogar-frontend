@@ -3,23 +3,17 @@
 import { useState } from "react";
 import { useTasksWithFilters } from "../../assignments/[id]/tasks/_hooks/useLeadTasks";
 import { LeadTaskDetail, TaskFilters } from "../../assignments/[id]/tasks/_types/leadTask";
-import { ClientSummaryDto } from "../../clients/_types/client";
-import { UserSummaryDto } from "../../leads/_types/lead";
 import { AdminTasksViewer } from "./AdminTasksViewer";
 import ErrorGeneral from "@/components/errors/general-error";
 
 interface TaskPageClientProps {
   initialFrom: Date;
   initialTo: Date;
-  usersSummary: Array<UserSummaryDto>;
-  clientsSummary: Array<ClientSummaryDto>;
 }
 
 export function TaskPageClient({
     initialFrom,
     initialTo,
-    usersSummary,
-    clientsSummary,
 }: TaskPageClientProps) {
     const [dateRange, setDateRange] = useState({
         from: initialFrom,
@@ -68,8 +62,6 @@ export function TaskPageClient({
             data={tasksResult as Array<LeadTaskDetail>}
             dateRange={dateRange}
             setDateRange={handleDateRangeChange}
-            usersSummary={usersSummary}
-            clientsSummary={clientsSummary}
             filters={filters}
             setFilters={handleFiltersChange}
             showFilters={showFilters}

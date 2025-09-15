@@ -14,26 +14,29 @@ import { UseFormReturn } from "react-hook-form";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
 import { toastWrapper } from "@/types/toasts";
 import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
-import { renderBlockOption, renderLeadOption, renderLotOption, renderProjectOption } from "../_utils/create-quotation.utils";
 import { DiscountApprovalDialog } from "./DiscountApprovalDialog";
 import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
+import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
+import { LeadSearch } from "@/app/(admin)/leads/_components/search/LeadSearch";
+
+// Tipos para las opciones
+type BlockOption = Option<{ projectId: string; projectName: string }>;
+type LotOption = Option<{ area: string; price: string; pricePerM2: string; blockId: string; blockName: string; projectId: string; projectName: string }>;
 
 interface InformationQuotationFormProps {
     form: UseFormReturn<CreateQuotationSchema>;
-    leadsOptions: Array<Option>;
-    projects: Array<Option>;
-    lots: Array<Option>;
-    blocks: Array<Option>;
+    lots: Array<LotOption>;
+    blocks: Array<BlockOption>;
     loadingBlocks: boolean;
     loadingLots: boolean;
-    loadingProjects: boolean;
     setProjectName: (name: string) => void;
     setBlockName: (name: string) => void;
     setLotNumber: (number: string) => void;
     userData: UserGetDTO;
+    setSelectedLead: (lead: { name: string; code: string } | null) => void;
 }
 
-export default function InformationQuotationForm({ form, leadsOptions, projects, lots, blocks, loadingBlocks, loadingLots, loadingProjects, setProjectName, setBlockName, setLotNumber, userData }: InformationQuotationFormProps) {
+export default function InformationQuotationForm({ form, lots, blocks, loadingBlocks, loadingLots, setProjectName, setBlockName, setLotNumber, userData, setSelectedLead }: InformationQuotationFormProps) {
     const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
     const [isDiscountApproved, setIsDiscountApproved] = useState(false);
     // Y luego añade esta función para manejar el clic del botón
@@ -156,61 +159,69 @@ export default function InformationQuotationForm({ form, leadsOptions, projects,
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-blue-700">Nombre del Cliente</FormLabel>
-                                            <AutoComplete
-                                                options={leadsOptions}
-                                                emptyMessage="No se encontró el cliente."
-                                                placeholder="Seleccione un cliente"
-                                                onValueChange={(selectedOption) => {
-                                                    field.onChange(selectedOption?.value ?? "");
-                                                }}
-                                                value={leadsOptions.find((option) => option.value === field.value) ?? undefined}
-                                                renderOption={renderLeadOption}
-                                                renderSelectedValue={renderLeadOption}
-                                            />
+                                            <FormControl>
+                                                <LeadSearch
+                                                    value={field.value ?? ""}
+                                                    onSelect={(leadId, lead) => {
+                                                        // Actualizar el valor del campo directamente
+                                                        field.onChange(leadId);
+
+                                                        // Actualizar el estado del lead seleccionado para el resumen
+                                                        setSelectedLead({
+                                                            name: lead.client?.name ?? "Cliente sin nombre",
+                                                            code: lead.code ?? "Lead sin código"
+                                                        });
+                                                    }}
+                                                    placeholder="Seleccione un cliente"
+                                                    searchPlaceholder="Buscar por código, cliente, proyecto..."
+                                                    emptyMessage="No se encontró el cliente"
+                                                    preselectedId={field.value}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                                {/* Proyecto - Ahora es un autocomplete */}
+                                {/* Proyecto - Usando ProjectSearch */}
                                 <FormField
                                     control={form.control}
-                                    name="projectId" // Cambio: usar directamente projectId en vez de projectName
+                                    name="projectId"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-blue-700">Proyecto</FormLabel>
-                                            <AutoComplete
-                                                options={projects}
-                                                emptyMessage="No hay proyectos disponibles"
-                                                placeholder="Seleccione un proyecto"
-                                                isLoading={loadingProjects}
-                                                value={projects.find((project) => project.value === field.value)}
-                                                onValueChange={(selectedOption) => {
-                                                    // Actualizar el valor del campo directamente
-                                                    field.onChange(selectedOption?.value ?? "");
+                                            <FormControl>
+                                                <ProjectSearch
+                                                    value={field.value ?? ""}
+                                                    onSelect={(projectId, project) => {
+                                                        // Actualizar el valor del campo directamente
+                                                        field.onChange(projectId);
 
-                                                    // Para mostrar el nombre del proyecto en el resumen
-                                                    setProjectName(selectedOption?.label ?? "");
+                                                        // Para mostrar el nombre del proyecto en el resumen
+                                                        setProjectName(project.name ?? "");
 
-                                                    // Resetear valores dependientes
+                                                        // Resetear valores dependientes
+                                                        form.setValue("blockId", "");
+                                                        form.setValue("lotId", "");
 
-                                                    form.setValue("blockId", "");
-                                                    form.setValue("lotId", "");
+                                                        // Establecer valores por defecto del proyecto seleccionado
+                                                        if (project.defaultDownPayment) {
+                                                            form.setValue("downPayment", project.defaultDownPayment.toString());
+                                                        }
+                                                        if (project.defaultFinancingMonths) {
+                                                            form.setValue("monthsFinanced", project.defaultFinancingMonths.toString());
+                                                        }
 
-                                                    // Establecer valores por defecto del proyecto seleccionado
-                                                    if (selectedOption?.defaultDownPayment) {
-                                                        form.setValue("downPayment", selectedOption.defaultDownPayment);
-                                                    }
-                                                    if (selectedOption?.defaultFinancingMonths) {
-                                                        form.setValue("monthsFinanced", selectedOption.defaultFinancingMonths);
-                                                    }
-
-                                                    // Limpiar campos del lote
-                                                    form.setValue("area", "");
-                                                    form.setValue("pricePerM2", "");
-                                                }}
-                                                renderOption={renderProjectOption}
-                                            />
+                                                        // Limpiar campos del lote
+                                                        form.setValue("area", "");
+                                                        form.setValue("pricePerM2", "");
+                                                    }}
+                                                    placeholder="Seleccione un proyecto"
+                                                    searchPlaceholder="Buscar por nombre, ubicación..."
+                                                    emptyMessage="No hay proyectos disponibles"
+                                                    preselectedId={field.value}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -255,14 +266,12 @@ export default function InformationQuotationForm({ form, leadsOptions, projects,
                                                     setBlockName(selectedOption?.label ?? "");
 
                                                     // Resetear lote
-
                                                     form.setValue("lotId", "");
 
                                                     // Limpiar campos del lote
                                                     form.setValue("area", "");
                                                     form.setValue("pricePerM2", "");
                                                 }}
-                                                renderOption={renderBlockOption}
                                             />
                                             <FormMessage />
                                         </FormItem>
@@ -296,7 +305,6 @@ export default function InformationQuotationForm({ form, leadsOptions, projects,
 
                                                     // No hay valores dependientes que resetear
                                                 }}
-                                                renderOption={renderLotOption}
                                             />
                                             <FormMessage />
                                         </FormItem>
@@ -363,10 +371,9 @@ export default function InformationQuotationForm({ form, leadsOptions, projects,
                                                 const isSalesAdvisor = userData?.roles?.[0] === "SalesAdvisor";
 
                                                 // Calcular el descuento máximo permitido solo para SalesAdvisor no aprobado
-                                                const selectedProject = projects.find((p) => p.value === form.watch("projectId"));
-                                                const maxDiscount = selectedProject?.maxDiscountPercentage
-                                                    ? parseFloat(selectedProject.maxDiscountPercentage)
-                                                    : 15; // Valor predeterminado del 15% si no hay configuración
+                                                // Nota: El maxDiscountPercentage se obtendrá del proyecto seleccionado
+                                                // Por ahora usamos un valor predeterminado del 15%
+                                                const maxDiscount = 15; // Valor predeterminado del 15% si no hay configuración
 
                                                 // Solo aplicar límite si es SalesAdvisor y no está aprobado
                                                 const shouldApplyLimit = isSalesAdvisor && !isDiscountApproved;

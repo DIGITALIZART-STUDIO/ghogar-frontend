@@ -2888,6 +2888,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/available-for-quotation/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    excludeQuotationId?: string;
+                    preselectedId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLeadSummaryDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLeadSummaryDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLeadSummaryDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Leads/export": {
         parameters: {
             query?: never;
@@ -7471,6 +7516,14 @@ export interface components {
         };
         PaginatedResponseV2OfLead: {
             data?: Array<components["schemas"]["Lead5"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginatedResponseV2OfLeadSummaryDto: {
+            data?: Array<components["schemas"]["LeadSummaryDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
             hasData?: boolean;
             isEmpty?: boolean;

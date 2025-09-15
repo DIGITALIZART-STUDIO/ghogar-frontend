@@ -3,8 +3,6 @@
 import React from "react";
 import Link from "next/link";
 
-import { useAvailableLeadsForQuotation } from "@/app/(admin)/leads/_hooks/useLeads";
-import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
 import {
@@ -29,10 +27,8 @@ export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotati
     // Obtener cotización
     const { data: quotationData, error: errorQuotation, isLoading: loadingQuotation } = useQuotationById(quotationId);
 
-    const { data: leadsData, error: errorLeads, isLoading: loadingLeads } = useAvailableLeadsForQuotation(quotationId);
-
     // Loading
-    if (loadingQuotation || loadingLeads || loadingUser) {
+    if (loadingQuotation || loadingUser) {
         return (
             <div>
                 <HeaderPage
@@ -45,7 +41,7 @@ export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotati
     }
 
     // Error
-    if (errorQuotation || errorLeads || errorUser) {
+    if (errorQuotation || errorUser) {
         return (
             <div>
                 <HeaderPage
@@ -96,7 +92,7 @@ export default function UpdateQuotationPageClient({ quotationId }: UpdateQuotati
                 description={`Ingrese la información requerida para actualizar la cotización de ${clientName}.`}
             />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0" />
-            <UpdateClientQuotationPage data={quotationData} leadsData={leadsData as Array<SummaryLead>} userData={userData as UserGetDTO} />
+            <UpdateClientQuotationPage data={quotationData} userData={userData as UserGetDTO} />
         </div>
     );
 }

@@ -7,20 +7,17 @@ import { es } from "date-fns/locale";
 import { ArrowRight, CreditCard, DollarSign, FileText, MapPin, RefreshCcw } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
-import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
 import { Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
 
-import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
 import { useActiveBlocks } from "@/app/(admin)/admin/projects/[id]/blocks/_hooks/useBlocks";
 import { useLots } from "@/app/(admin)/admin/projects/lots/_hooks/useLots";
 import InformationQuotationForm from "./InformationQuotationForm";
 import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface QuotationFormProps {
-  leadsData: Array<SummaryLead>;
   form: UseFormReturn<CreateQuotationSchema>;
   onSubmit: (data: CreateQuotationSchema) => void;
   isPending: boolean;
@@ -32,61 +29,16 @@ interface QuotationFormProps {
   userData: UserGetDTO;
 }
 
-export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSelection, userData }: QuotationFormProps) {
+export function QuotationForm({ form, onSubmit, isPending, initialSelection, userData }: QuotationFormProps) {
     const router = useRouter();
-
-    // Hook para proyectos activos
-    const { data: projectsData = [], isLoading: loadingProjects } = useActiveProjects();
-
-    // Opciones para proyectos
-    const projects: Array<Option> = projectsData.map((project) => ({
-        value: project.id ?? "",
-        label: project.name ?? "",
-        location: project.location ?? "",
-        defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
-        defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
-        maxDiscountPercentage: project.maxDiscountPercentage?.toString() ?? "",
-    }));
 
     // Estados para los nombres visuales que se mostrarán en el resumen
     const [projectName, setProjectName] = useState("");
     const [blockName, setBlockName] = useState("");
     const [lotNumber, setLotNumber] = useState("");
 
-    // Inicializar estos valores si estamos en modo edición
-    useEffect(() => {
-        if (initialSelection) {
-            if (initialSelection.projectId) {
-                const project = projects.find((p) => p.value === initialSelection.projectId);
-                if (project) {
-                    setProjectName(project.label);
-                }
-            }
-        }
-    }, [initialSelection, projects]);
-
-    const leadsOptions = leadsData.map((lead) => {
-        const code = lead.code ?? "";
-        const dni = lead.client?.dni;
-        const ruc = lead.client?.ruc;
-        const name = lead.client?.name ?? "";
-
-        const idPart = dni ?? ruc ?? "";
-        let label = code;
-        if (idPart) {
-            label += ` ${idPart} - ${name}`;
-        } else {
-            label += ` - ${name}`;
-        }
-
-        return {
-            value: lead.id ?? "",
-            label,
-            code,
-            idPart,
-            name,
-        };
-    });
+    // Estados para almacenar información del lead seleccionado
+    const [selectedLead, setSelectedLead] = useState<{ name: string; code: string } | null>(null);
 
     const projectId = form.watch("projectId");
     const blockId = form.watch("blockId");
@@ -98,7 +50,7 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
 
     // Bloques activos por proyecto
     const { data: blocksData = [], isLoading: loadingBlocks } = useActiveBlocks(projectId);
-    const blocks: Array<Option> = blocksData.map((block) => ({
+    const blocks: Array<Option<{ projectId: string; projectName: string }>> = blocksData.map((block) => ({
         value: block.id ?? "",
         label: block.name ?? "",
         projectId: block.projectId ?? "",
@@ -107,7 +59,7 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
 
     // Lotes por bloque
     const { data: lotsData = [], isLoading: loadingLots } = useLots(blockId);
-    const lots: Array<Option> = lotsData.map((lot) => ({
+    const lots: Array<Option<{ area: string; price: string; pricePerM2: string; blockId: string; blockName: string; projectId: string; projectName: string }>> = lotsData.map((lot) => ({
         value: lot.id ?? "",
         label: lot.lotNumber ?? "",
         area: lot.area?.toString() ?? "",
@@ -152,16 +104,16 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
         }
 
         // Solo actualiza si los valores son diferentes
-        if (form.getValues("area") !== selectedLot.area) {
-            form.setValue("area", selectedLot.area);
+        if (form.getValues("area") !== selectedLot.entity?.area) {
+            form.setValue("area", selectedLot.entity?.area ?? "");
         }
-        if (form.getValues("pricePerM2") !== selectedLot.pricePerM2) {
-            form.setValue("pricePerM2", selectedLot.pricePerM2 ? Number(selectedLot.pricePerM2).toFixed(2) : "");
+        if (form.getValues("pricePerM2") !== selectedLot.entity?.pricePerM2) {
+            form.setValue("pricePerM2", selectedLot.entity?.pricePerM2 ? Number(selectedLot.entity.pricePerM2).toFixed(2) : "");
         }
 
         setLotNumber(selectedLot.label);
-        setBlockName(selectedLot.blockName);
-        setProjectName(selectedLot.projectName);
+        setBlockName(selectedLot.entity?.blockName ?? "");
+        setProjectName(selectedLot.entity?.projectName ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lotId, lots]);
 
@@ -202,17 +154,15 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                     {/* Columna izquierda - Información principal */}
                     <InformationQuotationForm
                         form={form}
-                        leadsOptions={leadsOptions}
-                        projects={projects}
                         lots={lots}
                         blocks={blocks}
                         loadingBlocks={loadingBlocks}
                         loadingLots={loadingLots}
-                        loadingProjects={loadingProjects}
                         setProjectName={setProjectName}
                         setBlockName={setBlockName}
                         setLotNumber={setLotNumber}
                         userData={userData}
+                        setSelectedLead={setSelectedLead}
                     />
 
                     {/* Columna derecha - Resumen visual */}
@@ -234,7 +184,7 @@ export function QuotationForm({ leadsData, form, onSubmit, isPending, initialSel
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                                 <div className="text-gray-500">Cliente:</div>
                                                 <div className="font-medium text-right text-gray-900">
-                                                    {leadsData.find((c) => c.id === form.watch("leadId"))?.client?.name ?? "—"}
+                                                    {selectedLead?.name ?? "—"}
                                                 </div>
                                                 <div className="text-gray-500">Proyecto:</div>
                                                 <div className="font-medium text-right text-gray-900">{projectName || "—"}</div>

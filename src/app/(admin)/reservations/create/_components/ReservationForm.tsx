@@ -13,7 +13,6 @@ import {
 import { UseFormReturn } from "react-hook-form";
 
 import { InputWithIcon } from "@/components/input-with-icon";
-import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -21,11 +20,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { CreateReservationSchema } from "../_schemas/createReservationSchema";
 import { CurrencyLabels, PaymentMethodLabels } from "../../_utils/reservations.utils";
-import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
+import { QuotationSearch } from "@/app/(admin)/quotation/_components/search/QuotationSearch";
+import type { components } from "@/types/api";
 import { useEffect } from "react";
 
+type QuotationSummary = components["schemas"]["QuotationSummaryDTO"];
+
 interface ReservationFormProps {
-    quotationsData: Array<SummaryQuotation>;
+    quotationsData: Array<QuotationSummary>;
     form: UseFormReturn<CreateReservationSchema>;
     onSubmit: (data: CreateReservationSchema) => void;
     isPending: boolean;
@@ -33,12 +35,6 @@ interface ReservationFormProps {
 
 export function ReservationForm({ quotationsData, form, onSubmit, isPending }: ReservationFormProps) {
     const router = useRouter();
-
-    // Prepare quotation options for dropdown
-    const quotationOptions: Array<Option> = quotationsData.map((quotation) => ({
-        value: quotation.id ?? "",
-        label: `${quotation.code} - ${quotation.clientName} (${quotation.projectName})`,
-    }));
 
     // Get selected quotation for displaying client info
     const selectedQuotationId = form.watch("quotationId");
@@ -116,14 +112,14 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                                 <FormLabel>
                                                     Cotización
                                                 </FormLabel>
-                                                <AutoComplete
-                                                    options={quotationOptions}
-                                                    emptyMessage="No se encontró la cotización."
-                                                    placeholder="Seleccione una cotización"
-                                                    onValueChange={(selectedOption) => {
-                                                        field.onChange(selectedOption?.value ?? "");
+                                                <QuotationSearch
+                                                    value={field.value}
+                                                    onSelect={(quotationId) => {
+                                                        field.onChange(quotationId);
                                                     }}
-                                                    value={quotationOptions.find((option) => option.value === field.value) ?? undefined}
+                                                    placeholder="Seleccione una cotización"
+                                                    searchPlaceholder="Buscar por cliente, proyecto, lote..."
+                                                    emptyMessage="No se encontraron cotizaciones"
                                                 />
                                                 <FormMessage />
                                             </FormItem>
@@ -382,11 +378,8 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                                             Lote:
                                         </span>
                                         <span className="font-medium">
-                                            Mz.
-                                            {selectedQuotation.blockName}
-                                            {" "}
-                                            Lt.
-                                            {selectedQuotation.lotNumber}
+                                            {selectedQuotation.blockName && `Mz. ${selectedQuotation.blockName}`}
+                                            {selectedQuotation.lotNumber && ` Lt. ${selectedQuotation.lotNumber}`}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">

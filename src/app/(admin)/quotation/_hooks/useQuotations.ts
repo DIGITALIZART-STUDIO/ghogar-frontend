@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback } from "react";
 import {
     GetAllQuotations,
     GetQuotationById,
     GetQuotationsByAdvisor,
-    GetAcceptedQuotationsByAdvisor,
     CreateQuotation,
     UpdateQuotation,
     DeleteQuotation,
@@ -16,6 +16,7 @@ import {
 import type { PaginatedResponse } from "@/types/api/paginated-response";
 import type { components } from "@/types/api";
 import type { FetchError } from "@/types/backend";
+import { backend } from "@/types/backend2";
 
 // Todas las cotizaciones
 export function useAllQuotations() {
@@ -70,21 +71,6 @@ export function useQuotationsByAdvisor(advisorId: string, enabled = true) {
         queryKey: ["quotations", "advisor", advisorId],
         queryFn: async () => {
             const [data, error] = await GetQuotationsByAdvisor(advisorId);
-            if (error) {
-                throw error;
-            }
-            return data ?? [];
-        },
-        enabled: !!advisorId && enabled,
-    });
-}
-
-// Cotizaciones aceptadas por asesor
-export function useAcceptedQuotationsByAdvisor(advisorId: string, enabled = true) {
-    return useQuery({
-        queryKey: ["quotations", "advisor", "accepted", advisorId],
-        queryFn: async () => {
-            const [data, error] = await GetAcceptedQuotationsByAdvisor(advisorId);
             if (error) {
                 throw error;
             }
@@ -176,4 +162,96 @@ export function useValidateOtp() {
     return useMutation({
         mutationFn: ({ userId, otpCode }: { userId: string; otpCode: string }) => ValidateOtp(userId, otpCode),
     });
+}
+
+// Hook para paginación infinita de cotizaciones aceptadas con búsqueda
+export function usePaginatedAcceptedQuotationsWithSearch(pageSize: number = 10, preselectedId?: string) {
+    const [search, setSearch] = useState<string | undefined>(undefined);
+    const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
+    const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+
+    const query = backend.useInfiniteQuery(
+        "get",
+        "/api/Quotations/advisor/accepted",
+        {
+            params: {
+                query: {
+                    search,
+                    page: 1, // Este valor será reemplazado automáticamente por pageParam
+                    pageSize,
+                    orderBy,
+                    orderDirection,
+                    preselectedId,
+                },
+            },
+        },
+        {
+            getNextPageParam: (lastPage) => {
+                // Si hay más páginas disponibles, devolver el siguiente número de página
+                if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+                    return lastPage.meta.page + 1;
+                }
+                return undefined; // No hay más páginas
+            },
+            getPreviousPageParam: (firstPage) => {
+                // Si no estamos en la primera página, devolver la página anterior
+                if (firstPage.meta?.page && firstPage.meta.page > 1) {
+                    return firstPage.meta.page - 1;
+                }
+                return undefined; // No hay páginas anteriores
+            },
+            initialPageParam: 1,
+            pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+        }
+    );
+
+    // Obtener todas las cotizaciones de todas las páginas de forma plana
+    const allQuotations = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+    const handleScrollEnd = useCallback(() => {
+        if (query.hasNextPage && !query.isFetchingNextPage) {
+            query.fetchNextPage();
+        }
+    }, [query]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        if (value !== "None" && value !== null && value !== undefined) {
+            setSearch(value.trim());
+        } else {
+            setSearch(undefined);
+        }
+    }, []);
+
+    const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+        setOrderBy(field);
+        setOrderDirection(direction);
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        setSearch(undefined);
+        setOrderBy(undefined);
+        setOrderDirection("asc");
+    }, []);
+
+    return {
+        query,
+        allQuotations, // Todas las cotizaciones acumuladas
+        fetchNextPage: query.fetchNextPage,
+        hasNextPage: query.hasNextPage,
+        isFetchingNextPage: query.isFetchingNextPage,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        search,
+        setSearch,
+        orderBy,
+        orderDirection,
+        handleScrollEnd,
+        handleSearchChange,
+        handleOrderChange,
+        resetSearch,
+        // Información de paginación
+        totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+        totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+        currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+    };
 }

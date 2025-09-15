@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback } from "react";
+import { backend } from "@/types/backend2";
 import {
     GetAllBlocks,
     GetBlocksByProject,
@@ -177,4 +179,100 @@ export function useDeactivateBlock() {
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
     });
+}
+
+// Hook para obtener bloques activos paginados por proyecto con búsqueda
+export function usePaginatedActiveBlocksByProjectWithSearch(
+    projectId: string,
+    pageSize: number = 10,
+    preselectedId?: string
+) {
+    const [search, setSearch] = useState<string | undefined>(undefined);
+    const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
+    const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+
+    const query = backend.useInfiniteQuery(
+        "get",
+        "/api/Blocks/project/{projectId}/active/paginated",
+        {
+            params: {
+                path: {
+                    projectId,
+                },
+                query: {
+                    search,
+                    page: 1, // Este valor será reemplazado automáticamente por pageParam
+                    pageSize,
+                    orderBy,
+                    orderDirection,
+                    preselectedId,
+                },
+            },
+        },
+        {
+            getNextPageParam: (lastPage) => {
+                if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+                    return lastPage.meta.page + 1;
+                }
+                return undefined;
+            },
+            getPreviousPageParam: (firstPage) => {
+                if (firstPage.meta?.page && firstPage.meta.page > 1) {
+                    return firstPage.meta.page - 1;
+                }
+                return undefined;
+            },
+            initialPageParam: 1,
+            pageParamName: "page",
+            enabled: !!projectId,
+        }
+    );
+
+    const allBlocks = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+    const handleScrollEnd = useCallback(() => {
+        if (query.hasNextPage && !query.isFetchingNextPage) {
+            query.fetchNextPage();
+        }
+    }, [query]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        if (value !== "None" && value !== null && value !== undefined) {
+            setSearch(value.trim());
+        } else {
+            setSearch(undefined);
+        }
+    }, []);
+
+    const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+        setOrderBy(field);
+        setOrderDirection(direction);
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        setSearch(undefined);
+        setOrderBy(undefined);
+        setOrderDirection("asc");
+    }, []);
+
+    return {
+        query,
+        allBlocks,
+        fetchNextPage: query.fetchNextPage,
+        hasNextPage: query.hasNextPage,
+        isFetchingNextPage: query.isFetchingNextPage,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        search,
+        setSearch,
+        orderBy,
+        orderDirection,
+        handleScrollEnd,
+        handleSearchChange,
+        handleOrderChange,
+        resetSearch,
+        totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+        totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+        currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+    };
 }

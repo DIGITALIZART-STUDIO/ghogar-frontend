@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
 import { toastWrapper } from "@/types/toasts";
 import { useUpdateQuotation } from "../../../_hooks/useQuotations";
 import { Quotation } from "../../../_types/quotation";
@@ -14,12 +13,11 @@ import { CreateQuotationSchema, quotationSchema } from "../../../create/_schemas
 import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface UpdateClientQuotationPageProps {
-  leadsData: Array<SummaryLead>;
   data: Quotation;
   userData: UserGetDTO;
 }
 
-export default function UpdateClientQuotationPage({ leadsData, data, userData }: UpdateClientQuotationPageProps) {
+export default function UpdateClientQuotationPage({ data, userData }: UpdateClientQuotationPageProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
@@ -117,7 +115,6 @@ export default function UpdateClientQuotationPage({ leadsData, data, userData }:
 
     return (
         <QuotationForm
-            leadsData={leadsData}
             form={form}
             isPending={isPending}
             onSubmit={onSubmit}

@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LeadTaskDetail, TaskFilters } from "../../assignments/[id]/tasks/_types/leadTask";
 import { getTaskClasses, getTaskIcon, getTaskLabel } from "../../assignments/[id]/tasks/_utils/tasks.utils";
-import { ClientSummaryDto } from "../../clients/_types/client";
-import { UserSummaryDto } from "../../leads/_types/lead";
 import FilterAdminTaskViewer from "./FilterAdminTaskViewer";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
@@ -22,8 +20,6 @@ interface AdminTasksViewerProps {
     to: Date;
   };
   setDateRange: (range: { from: Date; to: Date }) => void;
-  usersSummary: Array<UserSummaryDto>;
-  clientsSummary: Array<ClientSummaryDto>;
   filters: TaskFilters;
   setFilters: (filters: TaskFilters) => void;
   showFilters: boolean;
@@ -35,8 +31,6 @@ export function AdminTasksViewer({
     data,
     dateRange,
     setDateRange,
-    usersSummary,
-    clientsSummary,
     filters,
     setFilters,
     showFilters,
@@ -85,13 +79,13 @@ export function AdminTasksViewer({
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             const taskDetail = data.find((t) => t.id === task.id);
-            const advisor = usersSummary.find((a) => a.id === task.assignedToId);
+            const advisor = task.assignedTo;
 
             const matchesDescription = task.description.toLowerCase().includes(query);
             const matchesLead =
         taskDetail?.lead?.client?.name.toLowerCase().includes(query) ??
         taskDetail?.lead?.client?.companyName?.toLowerCase().includes(query);
-            const matchesAdvisor = advisor?.userName?.toLowerCase().includes(query) ?? false;
+            const matchesAdvisor = advisor?.name?.toLowerCase().includes(query) ?? false;
             const matchesType = getTaskLabel(task.type).toLowerCase()
                 .includes(query);
 
@@ -139,7 +133,6 @@ export function AdminTasksViewer({
                 <FilterAdminTaskViewer
                     clearFilters={clearFilters}
                     dateRange={dateRange}
-                    clientsSummary={clientsSummary}
                     filters={filters}
                     getAdvisorName={getAdvisorName}
                     getLeadName={getLeadName}
@@ -149,7 +142,6 @@ export function AdminTasksViewer({
                     setSearchQuery={setSearchQuery}
                     showFilters={showFilters}
                     setShowFilters={setShowFilters}
-                    usersSummary={usersSummary}
                 />
 
                 {/* Resumen de tareas */}

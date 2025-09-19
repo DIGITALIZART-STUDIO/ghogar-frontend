@@ -8,16 +8,13 @@ import { usePaginatedAvailableLeadsForQuotationWithSearch } from "../../_hooks/u
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { components } from "@/types/api";
 import { LeadStatusLabels } from "../../_utils/leads.utils";
-import { LeadStatus } from "../../_types/lead";
-
-type LeadSummary = components["schemas"]["LeadSummaryDto"];
+import { LeadStatus, SummaryLead } from "../../_types/lead";
 
 interface LeadSearchProps {
     disabled?: boolean;
     value: string;
-    onSelect: (leadId: string, lead: LeadSummary) => void;
+    onSelect: (leadId: string, lead: SummaryLead) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -35,7 +32,7 @@ export function LeadSearch({
 }: LeadSearchProps) {
     const { allLeads, query, handleScrollEnd, handleSearchChange, search } = usePaginatedAvailableLeadsForQuotationWithSearch(10, preselectedId);
 
-    const leadOptions: Array<Option<LeadSummary>> = useMemo(() => allLeads.map((lead) => ({
+    const leadOptions: Array<Option<SummaryLead>> = useMemo(() => allLeads.map((lead) => ({
         value: lead.id ?? "",
         label: lead.code ?? "Lead sin código",
         entity: lead,
@@ -122,7 +119,7 @@ export function LeadSearch({
 
     const selectedLead = leadOptions.find((lead) => lead.value === value);
 
-    const handleSelect = ({ value, entity }: Option<LeadSummary>) => {
+    const handleSelect = ({ value, entity }: Option<SummaryLead>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar el lead. Por favor, inténtalo de nuevo.");
             return;
@@ -131,7 +128,7 @@ export function LeadSearch({
     };
 
     return (
-        <AutoComplete<LeadSummary>
+        <AutoComplete<SummaryLead>
             queryState={query}
             options={leadOptions}
             value={selectedLead}

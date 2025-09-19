@@ -8,10 +8,8 @@ import { usePaginatedClientsWithSearch } from "../../_hooks/useClients";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { components } from "@/types/api";
 import { ClientTypesLabels } from "../../_utils/clients.utils";
-
-type Client = components["schemas"]["Client"];
+import { Client } from "../../_types/client";
 
 interface ClientSearchProps {
     disabled?: boolean;

@@ -8,15 +8,13 @@ import { usePaginatedActiveBlocksByProjectWithSearch } from "../../_hooks/useBlo
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { components } from "@/types/api";
-
-type Block = components["schemas"]["BlockDTO"];
+import { BlockData } from "../../_types/block";
 
 interface BlockSearchProps {
     projectId: string;
     disabled?: boolean;
     value: string;
-    onSelect: (blockId: string, block: Block) => void;
+    onSelect: (blockId: string, block: BlockData) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -35,7 +33,7 @@ export function BlockSearch({
 }: BlockSearchProps) {
     const { allBlocks, query, handleScrollEnd, handleSearchChange, search } = usePaginatedActiveBlocksByProjectWithSearch(projectId, 10, preselectedId);
 
-    const blockOptions: Array<Option<Block>> = useMemo(() => allBlocks.map((block) => ({
+    const blockOptions: Array<Option<BlockData>> = useMemo(() => allBlocks.map((block) => ({
         value: block.id ?? "",
         label: block.name ?? "Sin nombre",
         entity: block,
@@ -76,7 +74,7 @@ export function BlockSearch({
 
     const selectedBlock = blockOptions.find((block) => block.value === value);
 
-    const handleSelect = ({ value, entity }: Option<Block>) => {
+    const handleSelect = ({ value, entity }: Option<BlockData>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar la manzana. Por favor, inténtalo de nuevo.");
             return;
@@ -85,7 +83,7 @@ export function BlockSearch({
     };
 
     return (
-        <AutoComplete<Block>
+        <AutoComplete<BlockData>
             queryState={query}
             options={blockOptions}
             value={selectedBlock}

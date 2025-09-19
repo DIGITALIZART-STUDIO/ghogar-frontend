@@ -26,8 +26,8 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
     const filteredLots = useMemo(
         () => lots?.filter((lot) => {
             const matchesSearch =
-          lot.lotNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          lot.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lot.lotNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+          lot.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ??
           lot.blockName?.toLowerCase().includes(searchTerm.toLowerCase());
 
             const matchesStatus = statusFilter === "all" || lot.status === statusFilter;
@@ -247,14 +247,14 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
                         {filteredLots.length}
                         )
                     </h2>
-                    {(searchTerm ?? statusFilter !== "all" ?? projectFilter !== "all") && (
+                    {(searchTerm || statusFilter !== "all" || projectFilter !== "all") && (
                         <Button variant="outline" onClick={clearFilters}>
                             Limpiar Filtros
                         </Button>
                     )}
                 </div>
 
-                {filteredLots.length === 0 && (searchTerm ?? statusFilter !== "all" ?? projectFilter !== "all") ? (
+                {filteredLots.length === 0 && (searchTerm || statusFilter !== "all" || projectFilter !== "all") ? (
                     <Card className="border-0">
                         <CardContent className="p-12 text-center">
                             <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />

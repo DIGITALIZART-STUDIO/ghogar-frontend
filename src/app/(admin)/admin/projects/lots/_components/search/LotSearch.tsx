@@ -8,15 +8,13 @@ import { usePaginatedLotsByBlockWithSearch } from "../../_hooks/useLots";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { components } from "@/types/api";
-
-type Lot = components["schemas"]["LotDTO"];
+import { LotData } from "../../_types/lot";
 
 interface LotSearchProps {
     blockId: string;
     disabled?: boolean;
     value: string;
-    onSelect: (lotId: string, lot: Lot) => void;
+    onSelect: (lotId: string, lot: LotData) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -35,7 +33,7 @@ export function LotSearch({
 }: LotSearchProps) {
     const { allLots, query, handleScrollEnd, handleSearchChange, search } = usePaginatedLotsByBlockWithSearch(blockId, 10, preselectedId);
 
-    const lotOptions: Array<Option<Lot>> = useMemo(() => allLots.map((lot) => ({
+    const lotOptions: Array<Option<LotData>> = useMemo(() => allLots.map((lot) => ({
         value: lot.id ?? "",
         label: lot.lotNumber ?? "Sin número",
         entity: lot,
@@ -88,7 +86,7 @@ export function LotSearch({
 
     const selectedLot = lotOptions.find((lot) => lot.value === value);
 
-    const handleSelect = ({ value, entity }: Option<Lot>) => {
+    const handleSelect = ({ value, entity }: Option<LotData>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar el lote. Por favor, inténtalo de nuevo.");
             return;
@@ -97,7 +95,7 @@ export function LotSearch({
     };
 
     return (
-        <AutoComplete<Lot>
+        <AutoComplete<LotData>
             queryState={query}
             options={lotOptions}
             value={selectedLot}

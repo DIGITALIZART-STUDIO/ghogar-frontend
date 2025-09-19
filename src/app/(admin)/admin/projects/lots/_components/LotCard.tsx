@@ -37,7 +37,7 @@ export function LotCard({ lot, projectId }: LotCardProps) {
     const pricePerSquareMeter = area > 0 ? price / area : 0;
 
     // Obtener configuración del status actual
-    const statusConfig = getLotStatusConfig(status);
+    const statusConfig = getLotStatusConfig(status as LotStatus);
     const StatusIcon = statusConfig.icon;
 
     const handleStatusChange = async(newStatus: LotStatus) => {
@@ -69,7 +69,7 @@ export function LotCard({ lot, projectId }: LotCardProps) {
         try {
             if (lot.isActive) {
                 // Desactivar lote usando hook
-                const promise = deactivateLot.mutateAsync(lot.id);
+                const promise = deactivateLot.mutateAsync(lot.id!);
 
                 toast.promise(promise, {
                     loading: "Desactivando lote...",
@@ -82,7 +82,7 @@ export function LotCard({ lot, projectId }: LotCardProps) {
                 lot.isActive = false;
             } else {
                 // Activar lote usando hook
-                const promise = activateLot.mutateAsync(lot.id);
+                const promise = activateLot.mutateAsync(lot.id!);
 
                 toast.promise(promise, {
                     loading: "Activando lote...",

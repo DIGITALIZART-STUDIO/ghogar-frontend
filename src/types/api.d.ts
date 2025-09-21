@@ -1021,7 +1021,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -4057,11 +4058,8 @@ export interface paths {
                         AmountPaid?: number;
                         /** Format: uuid */
                         ReservationId?: string;
-                        /** @default null */
                         PaymentMethod?: string;
-                        /** @default null */
                         ReferenceNumber?: string;
-                        /** @default null */
                         ComprobanteUrl?: string;
                         PaymentIds?: Array<string>;
                         StartFromLastCuota?: boolean;
@@ -4310,12 +4308,19 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all projects
-         * @description Retrieves all projects in the system
+         * Get all projects with pagination
+         * @description Retrieves all projects with pagination, search and ordering capabilities
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -4328,9 +4333,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectDTO"]>;
-                        "application/json": Array<components["schemas"]["ProjectDTO"]>;
-                        "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
                     };
                 };
             };
@@ -6860,8 +6865,6 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -7271,7 +7274,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7289,7 +7292,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7307,7 +7310,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7325,7 +7328,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7343,7 +7346,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block5"];
+            block?: components["schemas"]["Block"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8390,7 +8393,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8407,7 +8410,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8424,7 +8427,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8441,7 +8444,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8458,7 +8461,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project9"];
+            project?: components["schemas"]["Project"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;

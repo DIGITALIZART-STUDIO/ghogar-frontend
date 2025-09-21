@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowRight } from "lucide-react";
-import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { usePaginatedActiveProjectsWithSearch } from "@/app/(admin)/admin/projects/_hooks/useProjects";
 import { useProjectContext } from "@/context/project-context";
 import { ProjectData } from "@/app/(admin)/admin/projects/_types/project";
 import { Button } from "@/components/ui/button";
@@ -15,10 +15,47 @@ import HomeProjectCard from "./HomeProjectCard";
 
 export function ProjectSelectionPage() {
     const router = useRouter();
-    const { data: activeProjects = [], isLoading, error } = useActiveProjects();
+    const {
+        allProjects: activeProjects,
+        handleScrollEnd,
+        isLoading,
+        isError,
+        hasNextPage,
+        isFetchingNextPage
+    } = usePaginatedActiveProjectsWithSearch(8); // 8 proyectos por página
     const { setSelectedProject, setIsAllProjectsSelected } = useProjectContext();
     const [selectedProject, setSelectedProjectState] = useState<ProjectData | "all" | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Ref para el elemento que detectará cuando hacer scroll infinito
+    const loadMoreRef = useRef<HTMLDivElement>(null);
+
+    // Intersection Observer para detectar cuando el usuario llega al final
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const target = entries[0];
+                if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+                    handleScrollEnd();
+                }
+            },
+            {
+                threshold: 0.1,
+                rootMargin: "100px", // Cargar cuando esté a 100px del final
+            }
+        );
+
+        const currentRef = loadMoreRef.current;
+        if (currentRef) {
+            observer.observe(currentRef);
+        }
+
+        return () => {
+            if (currentRef) {
+                observer.unobserve(currentRef);
+            }
+        };
+    }, [hasNextPage, isFetchingNextPage, handleScrollEnd]);
 
     const handleSelectProject = (project: ProjectData | "all") => {
         setSelectedProjectState(project);
@@ -62,7 +99,7 @@ export function ProjectSelectionPage() {
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <div className="bg-gradient-to-br from-primary/5 via-background to-primary/5 min-h-screen">
                 <ErrorGeneral />
@@ -102,6 +139,21 @@ export function ProjectSelectionPage() {
                             />
                         ))}
                     </div>
+
+                    {/* Indicador de carga para más proyectos */}
+                    {isFetchingNextPage && (
+                        <div className="flex justify-center items-center py-8">
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span className="text-sm">Cargando más proyectos...</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Elemento invisible para detectar scroll infinito */}
+                    {hasNextPage && (
+                        <div ref={loadMoreRef} className="h-4" />
+                    )}
 
                     {/* Botón en la parte superior derecha */}
                     <div className="flex justify-end mb-6">

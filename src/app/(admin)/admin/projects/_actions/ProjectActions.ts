@@ -7,19 +7,6 @@ import { backend, FetchError, wrapper } from "@/types/backend";
 import { err, ok, Result } from "@/utils/result";
 import { CreateProjectSchema } from "../_schemas/createProjectsSchema";
 
-// Obtener todos los proyectos
-export async function GetAllProjects(): Promise<Result<Array<components["schemas"]["ProjectDTO"]>, FetchError>> {
-    const [response, error] = await wrapper((auth) => backend.GET("/api/Projects", {
-        ...auth,
-    }));
-
-    if (error) {
-        console.log("Error getting projects:", error);
-        return err(error);
-    }
-    return ok(response);
-}
-
 // Obtener proyectos activos
 export async function GetActiveProjects(): Promise<Result<Array<components["schemas"]["ProjectDTO"]>, FetchError>> {
     const [response, error] = await wrapper((auth) => backend.GET("/api/Projects/active", {

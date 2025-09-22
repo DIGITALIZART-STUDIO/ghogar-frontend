@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend as api, uploadFile } from "@/types/backend2";
+import { backend as api, uploadFile } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import type { components } from "@/types/api";
 

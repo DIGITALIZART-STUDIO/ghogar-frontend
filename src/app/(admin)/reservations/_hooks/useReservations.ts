@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { backend as api, downloadFileWithClient } from "@/types/backend2";
+import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import { useSelectedProject } from "@/hooks/use-selected-project";
 

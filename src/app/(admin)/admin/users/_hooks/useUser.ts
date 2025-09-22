@@ -1,4 +1,4 @@
-import { backend as api } from "@/types/backend2";
+import { backend as api } from "@/types/backend";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "@/context/auth-provider";
 import { toast } from "sonner";

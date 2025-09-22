@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { backend } from "@/types/backend2";
+import { backend } from "@/types/backend";
 import loginImage from "../assets/images/ImageLogin.webp";
 import { PasswordInput } from "./ui/password-input";
 

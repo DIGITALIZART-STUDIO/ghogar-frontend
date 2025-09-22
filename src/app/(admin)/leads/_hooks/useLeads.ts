@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend as api } from "@/types/backend2";
+import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Para todos los leads paginados

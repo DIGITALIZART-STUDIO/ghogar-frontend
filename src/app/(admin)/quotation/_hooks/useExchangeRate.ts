@@ -1,4 +1,4 @@
-import { backend as api } from "@/types/backend2";
+import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Hook para obtener el tipo de cambio actual

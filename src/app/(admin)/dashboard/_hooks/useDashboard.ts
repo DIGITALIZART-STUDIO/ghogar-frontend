@@ -1,4 +1,4 @@
-import { backend } from "@/types/backend2";
+import { backend } from "@/types/backend";
 
 // Hook para obtener los datos del dashboard admin
 export function useDashboardAdmin(year: number = new Date().getFullYear()) {

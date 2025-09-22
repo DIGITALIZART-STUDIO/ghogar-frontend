@@ -13,7 +13,7 @@ import { PaymentMethodLabels } from "@/app/(admin)/reservations/_utils/reservati
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
-import { DownloadSchedulePDF, DownloadProcessedPaymentsPDF } from "../../_actions/PaymentTransactionActions";
+import { useDownloadSchedulePDF, useDownloadProcessedPaymentsPDF } from "../../_hooks/usePaymentTransactions";
 import { useRouter } from "next/navigation";
 
 const getCurrencyIcon = (currency: string) => (currency === "DOLARES" ? "$" : "S/");
@@ -169,6 +169,8 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
             const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
             const [processedPaymentsDialogOpen, setProcessedPaymentsDialogOpen] = useState(false);
             const router = useRouter();
+            const downloadSchedulePDF = useDownloadSchedulePDF();
+            const downloadProcessedPaymentsPDF = useDownloadProcessedPaymentsPDF();
 
             return (
                 <div>
@@ -179,7 +181,7 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
                                 isOpen={scheduleDialogOpen}
                                 onOpenChange={setScheduleDialogOpen}
                                 title="Cronograma de Pagos"
-                                pdfAction={DownloadSchedulePDF}
+                                pdfAction={downloadSchedulePDF}
                                 pdfFileName={`cronograma-${row.original.id}.pdf`}
                             />
                         )}
@@ -189,7 +191,7 @@ export const paymentsTransactionColumns = (): Array<ColumnDef<ReservationWithPay
                                 isOpen={processedPaymentsDialogOpen}
                                 onOpenChange={setProcessedPaymentsDialogOpen}
                                 title="Pagos Realizados"
-                                pdfAction={DownloadProcessedPaymentsPDF}
+                                pdfAction={downloadProcessedPaymentsPDF}
                                 pdfFileName={`pagos-realizados-${row.original.id}.pdf`}
                             />
                         )}

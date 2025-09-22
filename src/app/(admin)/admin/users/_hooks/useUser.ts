@@ -7,27 +7,16 @@ import { useState, useCallback } from "react";
 export function useUsers() {
     const { handleAuthError, isLoggingOut } = useAuthContext();
 
-    console.log("👤 [USE-USER] useUsers hook ejecutándose, isLoggingOut:", isLoggingOut);
-
     return api.useQuery("get", "/api/Users", undefined, {
         retry: false, // NO hacer retries automáticos
         enabled: !isLoggingOut, // No ejecutar si estamos haciendo logout
         refetchOnWindowFocus: true, // Revalidar al volver al foco
         refetchOnReconnect: true, // Revalidar al reconectar red
         onError: async (error: unknown) => {
-            console.log("👤 [USE-USER] Error en useUsers:", error);
-            console.log("👤 [USE-USER] isLoggingOut:", isLoggingOut);
-
             // Solo manejar errores si no estamos haciendo logout
             if (!isLoggingOut) {
-                console.log("👤 [USE-USER] Llamando handleAuthError");
                 await handleAuthError(error);
-            } else {
-                console.log("👤 [USE-USER] Ignorando error porque estamos haciendo logout");
             }
-        },
-        onSuccess: (data: unknown) => {
-            console.log("👤 [USE-USER] useUsers exitoso:", !!data);
         },
     });
 }

@@ -98,8 +98,10 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
     const onUserInfoSubmit = async (formData: UserInfoForm) => {
         const promise = updateUser.mutateAsync({
-            userId: data.user.id ?? "",
-            user: {
+            params: {
+                path: { userId: data.user.id ?? "" },
+            },
+            body: {
                 name: formData.name,
                 email: userData.email ?? "",
                 phone: formData.phone,
@@ -120,9 +122,11 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
     const onPasswordSubmit = async (formData: PasswordForm) => {
         const promise = updateProfilePassword.mutateAsync({
-            currentPassword: formData.current,
-            newPassword: formData.new,
-            confirmPassword: formData.confirm,
+            body: {
+                currentPassword: formData.current,
+                newPassword: formData.new,
+                confirmPassword: formData.confirm,
+            },
         });
 
         toast.promise(promise, {

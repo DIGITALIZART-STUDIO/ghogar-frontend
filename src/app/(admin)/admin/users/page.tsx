@@ -41,12 +41,12 @@ export default function UsersPage() {
             <HeaderPage title="Usuarios" description="Usuarios registrados en el sistema." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <UsersTable
-                    data={paginatedUsers.data}
+                    data={paginatedUsers.data ?? []}
                     pagination={{
-                        page: paginatedUsers.meta.page ?? 1,
-                        pageSize: paginatedUsers.meta.pageSize ?? 10,
-                        total: paginatedUsers.meta.total ?? 0,
-                        totalPages: paginatedUsers.meta.totalPages ?? 1,
+                        page: paginatedUsers.meta?.page ?? 1,
+                        pageSize: paginatedUsers.meta?.pageSize ?? 10,
+                        total: paginatedUsers.meta?.total ?? 0,
+                        totalPages: paginatedUsers.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
                 />

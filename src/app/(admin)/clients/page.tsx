@@ -41,12 +41,12 @@ export default function ClientsPage() {
             <HeaderPage title="Clientes" description="Clientes registrados en el sistema." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <ClientsTable
-                    data={paginatedClients.data}
+                    data={paginatedClients.data ?? []}
                     pagination={{
-                        page: paginatedClients.meta.page ?? 1,
-                        pageSize: paginatedClients.meta.pageSize ?? 10,
-                        total: paginatedClients.meta.total ?? 0,
-                        totalPages: paginatedClients.meta.totalPages ?? 1,
+                        page: paginatedClients.meta?.page ?? 1,
+                        pageSize: paginatedClients.meta?.pageSize ?? 10,
+                        total: paginatedClients.meta?.total ?? 0,
+                        totalPages: paginatedClients.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
                 />

@@ -1,33 +1,54 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { ActivateLeads, CheckAndUpdateExpiredLeads, CreateLead, DeleteLeads, DownloadLeadsExcel, GetAssignedLeadsSummary, GetAvailableLeadsForQuotation, GetPaginatedLeads, GetPaginatedLeadsByAssignedTo, GetUsersSummary, UpdateLead, UpdateLeadStatus } from "../_actions/LeadActions";
-import { backend } from "@/types/backend2";
-import { components } from "@/types/api";
+import { backend as api } from "@/types/backend2";
+import { useAuthContext } from "@/context/auth-provider";
 
 // Para todos los leads paginados
 export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
+
     return useQuery({
         queryKey: ["paginatedLeads", page, pageSize],
         queryFn: async () => {
-            const [data, error] = await GetPaginatedLeads(page, pageSize);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Leads/paginated?page=${page}&pageSize=${pageSize}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data!;
+
+            return await response.json();
         },
     });
 }
 
 // Para leads asignados a un usuario, paginados
 export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, pageSize: number = 10) {
+
     return useQuery({
         queryKey: ["paginatedLeadsByAssignedTo", userId, page, pageSize],
         queryFn: async () => {
-            const [data, error] = await GetPaginatedLeadsByAssignedTo(userId, page, pageSize);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Leads/assignedto/${userId}/paginated?page=${page}&pageSize=${pageSize}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data!;
+
+            return await response.json();
         },
         enabled: !!userId, // solo consulta si hay userId
     });
@@ -36,50 +57,57 @@ export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, 
 // Hook para actualizar el estado de un lead
 export function useUpdateLeadStatus() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, dto }: { id: string; dto: components["schemas"]["LeadStatusUpdateDto"] }) => {
-            const [data, error] = await UpdateLeadStatus(id, dto);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Leads/{id}/status", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para obtener resumen de usuarios
 export function useUsersSummary() {
+
     return useQuery({
         queryKey: ["usersSummary"],
         queryFn: async () => {
-            const [data, error] = await GetUsersSummary();
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch("/api/Leads/users/summary", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data ?? [];
+
+            return await response.json();
         },
     });
 }
 
 export function useCreateLead() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (lead: components["schemas"]["LeadCreateDto"]) => {
-            const [data, error] = await CreateLead(lead);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Leads", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -87,18 +115,16 @@ export function useCreateLead() {
 // Actualizar lead
 export function useUpdateLead() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, lead }: { id: string; lead: components["schemas"]["LeadUpdateDto"] }) => {
-            const [data, error] = await UpdateLead(id, lead);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Leads/{id}", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -106,18 +132,16 @@ export function useUpdateLead() {
 // Eliminar múltiples leads
 export function useDeleteLeads() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (ids: Array<string>) => {
-            const [data, error] = await DeleteLeads(ids);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Leads/batch", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -125,18 +149,16 @@ export function useDeleteLeads() {
 // Activar múltiples leads
 export function useActivateLeads() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (ids: Array<string>) => {
-            const [data, error] = await ActivateLeads(ids);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Leads/batch/activate", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -144,18 +166,16 @@ export function useActivateLeads() {
 // Chequear y actualizar leads expirados
 export function useCheckAndUpdateExpiredLeads() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async () => {
-            const [data, error] = await CheckAndUpdateExpiredLeads();
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Leads/check-expired", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -165,41 +185,78 @@ export function useAvailableLeadsForQuotation(
     excludeQuotationId?: string,
     enabled = true
 ) {
+
     return useQuery({
         queryKey: ["getAvailableLeadsForQuotation", excludeQuotationId],
         queryFn: async () => {
-            const [data, error] = await GetAvailableLeadsForQuotation(excludeQuotationId);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Leads/available-for-quotation/${excludeQuotationId ?? ""}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data ?? [];
+
+            return await response.json();
         },
         enabled: enabled,
     });
 }
 
 export function useAssignedLeadsSummary(assignedToId: string, enabled = true) {
+
     return useQuery({
         queryKey: ["assignedLeadsSummary", assignedToId],
         queryFn: async () => {
-            const [data, error] = await GetAssignedLeadsSummary(assignedToId);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Leads/assigned/${assignedToId}/summary`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data ?? [];
+
+            return await response.json();
         },
         enabled: !!assignedToId && enabled,
     });
 }
 
 export function useDownloadLeadsExcel() {
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async () => {
-            const [blob, error] = await DownloadLeadsExcel();
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch("/api/Leads/export", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return blob!;
+
+            return await response.blob();
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -209,8 +266,9 @@ export function usePaginatedUsersWithSearch(pageSize: number = 10, preselectedId
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Leads/users/summary/paginated",
         {
@@ -242,6 +300,9 @@ export function usePaginatedUsersWithSearch(pageSize: number = 10, preselectedId
             },
             initialPageParam: 1,
             pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
         }
     );
 
@@ -304,8 +365,9 @@ export function usePaginatedAvailableLeadsForQuotationWithSearch(
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Leads/available-for-quotation/paginated",
         {
@@ -337,6 +399,9 @@ export function usePaginatedAvailableLeadsForQuotationWithSearch(
             },
             initialPageParam: 1,
             pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
         }
     );
 

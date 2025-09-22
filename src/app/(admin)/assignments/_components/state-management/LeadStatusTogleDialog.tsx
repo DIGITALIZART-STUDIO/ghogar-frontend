@@ -55,8 +55,10 @@ export function LeadStatusToggleDialog({
 
         startTransition(async () => {
             const promise = updateLeadStatus.mutateAsync({
-                id: leadId,
-                dto: {
+                params: {
+                    path: { id: leadId },
+                },
+                body: {
                     status: selectedStatus as LeadStatus,
                     completionReason: requiresReason ? (selectedReason as LeadCompletionReason) : undefined,
                 },

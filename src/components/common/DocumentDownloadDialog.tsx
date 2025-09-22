@@ -5,18 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Download, FileText, Eye } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Result } from "@/utils/result";
-import type { FetchError } from "@/types/backend";
-
-type ServerAction = (id: string) => Promise<Result<Blob, FetchError>>;
-
 interface DocumentDownloadDialogProps {
     isOpen: boolean;
     onOpenChange: (v: boolean) => void;
     documentId: string;
     title: string;
-    pdfAction: ServerAction;
-    wordAction?: ServerAction;
+    pdfAction: (id: string) => Promise<Blob>;
+    wordAction?: (id: string) => Promise<Blob>;
     pdfFileName?: string;
     wordFileName?: string;
 }
@@ -54,15 +49,12 @@ export function DocumentDownloadDialog({
 
             (async() => {
                 try {
-                    const [pdfBlob, fetchError] = await pdfAction(documentId);
-                    if (!!fetchError) {
-                        console.error(fetchError);
-                        setError(`Error cargando PDF: ${fetchError.message}`);
-                        return;
-                    }
-
+                    const pdfBlob = await pdfAction(documentId);
                     const dataUrl = URL.createObjectURL(pdfBlob);
                     setPdfUrl(dataUrl);
+                } catch (error) {
+                    console.error("Error loading PDF:", error);
+                    setError(`Error cargando PDF: ${error instanceof Error ? error.message : "Error desconocido"}`);
                 } finally {
                     isLoadingRef.current = false;
                 }
@@ -80,13 +72,7 @@ export function DocumentDownloadDialog({
 
     const handleDownloadPdf = async () => {
         try {
-            const [pdfBlob, fetchError] = await pdfAction(documentId);
-            if (!!fetchError) {
-                console.error(fetchError);
-                setError(`Error descargando PDF: ${fetchError.message}`);
-                return;
-            }
-
+            const pdfBlob = await pdfAction(documentId);
             const url = URL.createObjectURL(pdfBlob);
             const a = document.createElement("a");
             a.href = url;
@@ -95,9 +81,9 @@ export function DocumentDownloadDialog({
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Error downloading PDF:", err);
-            setError("Error descargando PDF");
+        } catch (error) {
+            console.error("Error downloading PDF:", error);
+            setError(`Error descargando PDF: ${error instanceof Error ? error.message : "Error desconocido"}`);
         }
     };
 
@@ -107,13 +93,7 @@ export function DocumentDownloadDialog({
         }
 
         try {
-            const [wordBlob, fetchError] = await wordAction(documentId);
-            if (!!fetchError) {
-                console.error(fetchError);
-                setError(`Error descargando Word: ${fetchError.message}`);
-                return;
-            }
-
+            const wordBlob = await wordAction(documentId);
             const url = URL.createObjectURL(wordBlob);
             const a = document.createElement("a");
             a.href = url;
@@ -122,9 +102,9 @@ export function DocumentDownloadDialog({
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Error downloading Word:", err);
-            setError("Error descargando Word");
+        } catch (error) {
+            console.error("Error downloading Word:", error);
+            setError(`Error descargando Word: ${error instanceof Error ? error.message : "Error desconocido"}`);
         }
     };
 

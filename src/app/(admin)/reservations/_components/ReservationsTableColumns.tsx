@@ -29,7 +29,7 @@ import { ReservationStatusLabels, PaymentMethodLabels } from "../_utils/reservat
 import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationStatusChangeDialog } from "./ReservationStatusChangeDialog";
-import { DownloadReservationPDF, DownloadReservationSchedulePDF } from "../_actions/ReservationActions";
+import { useDownloadReservationPDF, useDownloadReservationSchedulePDF } from "../_hooks/useReservations";
 import { useRouter } from "next/navigation";
 
 /**
@@ -550,6 +550,10 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
             const [openStatusChangeDialog, setOpenStatusChangeDialog] = useState(false);
             const navigate = useRouter();
 
+            // Hooks para descargas
+            const downloadReservationPDF = useDownloadReservationPDF();
+            const downloadSchedulePDF = useDownloadReservationSchedulePDF();
+
             return (
                 <div>
                     {openViewDialog && (
@@ -565,7 +569,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             isOpen={openReservationDocumentDialog}
                             onOpenChange={setOpenReservationDocumentDialog}
                             title="Documento de Separación"
-                            pdfAction={DownloadReservationPDF}
+                            pdfAction={downloadReservationPDF}
                             pdfFileName={`separacion-${id}.pdf`}
                         />
                     )}
@@ -575,7 +579,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             isOpen={openScheduleDocumentDialog}
                             onOpenChange={setOpenScheduleDocumentDialog}
                             title="Cronograma de Pagos"
-                            pdfAction={DownloadReservationSchedulePDF}
+                            pdfAction={downloadSchedulePDF}
                             pdfFileName={`cronograma-${id}.pdf`}
                         />
                     )}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +8,7 @@ import { toast } from "sonner";
 
 import { components } from "@/types/api";
 import { EditReservationSchema, editReservationSchema } from "../_schemas/editReservationSchema";
-import { UpdateReservation } from "../../../_actions/ReservationActions";
+import { useUpdateReservation } from "../../../_hooks/useReservations";
 import { EditReservationForm } from "./EditReservationForm";
 import { Quotation } from "@/app/(admin)/quotation/_types/quotation";
 
@@ -22,7 +21,7 @@ interface EditReservationPageProps {
 
 export default function EditReservationPage({ reservationData, quotationData }: EditReservationPageProps) {
     const router = useRouter();
-    const [isPending, setIsPending] = useState(false);
+    const updateReservation = useUpdateReservation();
 
     const form = useForm<EditReservationSchema>({
         resolver: zodResolver(editReservationSchema),
@@ -41,8 +40,6 @@ export default function EditReservationPage({ reservationData, quotationData }: 
     });
 
     const onSubmit = async (data: EditReservationSchema) => {
-        setIsPending(true);
-
         try {
             // Prepare the reservation data
             const reservationUpdateData = {
@@ -58,21 +55,23 @@ export default function EditReservationPage({ reservationData, quotationData }: 
                 schedule: data.schedule ?? undefined,
             };
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const [, error] = await UpdateReservation(reservationData.id!, reservationUpdateData as any);
+            await toast.promise(
+                updateReservation.mutateAsync({
+                    params: {
+                        path: { id: reservationData.id! },
+                    },
+                    body: reservationUpdateData,
+                }),
+                {
+                    loading: "Actualizando separación...",
+                    success: "Separación actualizada exitosamente",
+                    error: (error) => `Error al actualizar la separación: ${error.message ?? "Error desconocido"}`,
+                }
+            );
 
-            if (error) {
-                toast.error(`Error al actualizar la separación: ${error.message || "Error desconocido"}`);
-                return;
-            }
-
-            toast.success("Separación actualizada exitosamente");
             router.push("/reservations");
         } catch (error) {
             console.error("Error updating reservation:", error);
-            toast.error("Error inesperado al actualizar la separación");
-        } finally {
-            setIsPending(false);
         }
     };
 
@@ -81,7 +80,7 @@ export default function EditReservationPage({ reservationData, quotationData }: 
             quotationData={quotationData}
             form={form}
             onSubmit={onSubmit}
-            isPending={isPending}
+            isPending={updateReservation.isPending}
         />
     );
 }

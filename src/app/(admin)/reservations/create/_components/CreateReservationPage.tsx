@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
-import { CreateReservation } from "../../_actions/ReservationActions";
+import { useCreateReservation } from "../../_hooks/useReservations";
 import { ReservationForm } from "./ReservationForm";
 import type { components } from "@/types/api";
 
@@ -19,7 +18,7 @@ interface CreateReservationPageProps {
 
 export default function CreateReservationPage({ quotationsData }: CreateReservationPageProps) {
     const router = useRouter();
-    const [isPending, setIsPending] = useState(false);
+    const createReservation = useCreateReservation();
 
     const form = useForm<CreateReservationSchema>({
         resolver: zodResolver(reservationSchema),
@@ -39,8 +38,6 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
     });
 
     const onSubmit = async (data: CreateReservationSchema) => {
-        setIsPending(true);
-
         try {
             // Prepare the reservation data - backend will extract client ID from quotation's lead
             const reservationData = {
@@ -55,21 +52,20 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
                 schedule: data.schedule ?? undefined,
             };
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const [, error] = await CreateReservation(reservationData as any);
+            await toast.promise(
+                createReservation.mutateAsync({
+                    body: reservationData,
+                }),
+                {
+                    loading: "Creando separación...",
+                    success: "Separación creada exitosamente",
+                    error: (error) => `Error al crear la separación: ${error.message ?? "Error desconocido"}`,
+                }
+            );
 
-            if (error) {
-                toast.error(`Error al crear la separación: ${error.message || "Error desconocido"}`);
-                return;
-            }
-
-            toast.success("Separación creada exitosamente");
             router.push("/reservations");
         } catch (error) {
             console.error("Error creating reservation:", error);
-            toast.error("Error inesperado al crear la separación");
-        } finally {
-            setIsPending(false);
         }
     };
 
@@ -79,7 +75,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
             // @ts-expect-error those damn uncontrolled inputs
             form={form}
             onSubmit={onSubmit}
-            isPending={isPending}
+            isPending={createReservation.isPending}
         />
     );
 }

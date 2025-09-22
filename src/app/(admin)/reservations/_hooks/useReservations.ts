@@ -1,20 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { GetAllCanceledPendingValidationReservationsPaginated, GetAllCanceledReservations, GetAllCanceledReservationsPaginated, GetAllReservationsWithPendingPaymentsPaginated, GetReservationById, ToggleContractValidationStatus } from "../_actions/ReservationActions";
+import { useQueryClient } from "@tanstack/react-query";
+import { backend as api, downloadFileWithClient } from "@/types/backend2";
+import { useAuthContext } from "@/context/auth-provider";
 import { useSelectedProject } from "@/hooks/use-selected-project";
-import type { PaginatedResponse } from "@/types/api/paginated-response";
-import type { components } from "@/types/api";
-import type { FetchError } from "@/types/backend";
 
 // Hook para reservas canceladas (no paginado)
 export function useCanceledReservations() {
-    return useQuery({
-        queryKey: ["canceledReservations"],
-        queryFn: async () => {
-            const [data, error] = await GetAllCanceledReservations();
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data ?? [];
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Reservations/canceled", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -22,18 +17,21 @@ export function useCanceledReservations() {
 // Hook para reservas canceladas pendientes de validación paginadas
 export function usePaginatedCanceledPendingValidationReservations(page: number = 1, pageSize: number = 10) {
     const { selectedProject, isAllProjectsSelected } = useSelectedProject();
+    const { handleAuthError } = useAuthContext();
 
     // Determinar el projectId a enviar: si es "Todos los proyectos" no se envía nada
     const projectIdToSend = isAllProjectsSelected ? null : selectedProject?.id;
 
-    return useQuery<PaginatedResponse<components["schemas"]["ReservationDto"]>, FetchError>({
-        queryKey: ["canceledPendingValidationReservationsPaginated", page, pageSize, projectIdToSend],
-        queryFn: async () => {
-            const [data, error] = await GetAllCanceledPendingValidationReservationsPaginated(page, pageSize, projectIdToSend);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
+    return api.useQuery("get", "/api/Reservations/canceled/pending-validation/paginated", {
+        params: {
+            query: {
+                page,
+                pageSize,
+                ...(projectIdToSend && { projectId: projectIdToSend }),
+            },
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -41,18 +39,21 @@ export function usePaginatedCanceledPendingValidationReservations(page: number =
 // Hook para reservas canceladas paginadas (retorna la query completa)
 export function usePaginatedCanceledReservations(page: number = 1, pageSize: number = 10) {
     const { selectedProject, isAllProjectsSelected } = useSelectedProject();
+    const { handleAuthError } = useAuthContext();
 
     // Determinar el projectId a enviar: si es "Todos los proyectos" no se envía nada
     const projectIdToSend = isAllProjectsSelected ? null : selectedProject?.id;
 
-    return useQuery<PaginatedResponse<components["schemas"]["ReservationWithPaymentsDto"]>, FetchError>({
-        queryKey: ["canceledReservationsPaginated", page, pageSize, projectIdToSend],
-        queryFn: async () => {
-            const [data, error] = await GetAllCanceledReservationsPaginated(page, pageSize, projectIdToSend);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
+    return api.useQuery("get", "/api/Reservations/canceled/paginated", {
+        params: {
+            query: {
+                page,
+                pageSize,
+                ...(projectIdToSend && { projectId: projectIdToSend }),
+            },
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -60,56 +61,244 @@ export function usePaginatedCanceledReservations(page: number = 1, pageSize: num
 // Hook para reservas con pagos pendientes paginadas
 export function usePaginatedReservationsWithPendingPayments(page: number = 1, pageSize: number = 10) {
     const { selectedProject, isAllProjectsSelected } = useSelectedProject();
+    const { handleAuthError } = useAuthContext();
 
     // Determinar el projectId a enviar: si es "Todos los proyectos" no se envía nada
     const projectIdToSend = isAllProjectsSelected ? null : selectedProject?.id;
 
-    return useQuery<PaginatedResponse<components["schemas"]["ReservationWithPendingPaymentsDto"]>, FetchError>({
-        queryKey: ["reservationsWithPendingPaymentsPaginated", page, pageSize, projectIdToSend],
-        queryFn: async () => {
-            const [data, error] = await GetAllReservationsWithPendingPaymentsPaginated(page, pageSize, projectIdToSend);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
+    return api.useQuery("get", "/api/Reservations/pending-payments/paginated", {
+        params: {
+            query: {
+                page,
+                pageSize,
+                ...(projectIdToSend && { projectId: projectIdToSend }),
+            },
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para obtener una reserva por ID
 export function useReservationById(reservationId: string, enabled = true) {
-    return useQuery<components["schemas"]["ReservationDto"], FetchError>({
-        queryKey: ["reservation", reservationId],
-        queryFn: async () => {
-            const [data, error] = await GetReservationById(reservationId);
-            if (error) {
-                throw error;
-            }
-            if (!data) {
-                throw new Error("No se encontró la reserva");
-            }
-            return data;
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Reservations/{id}", {
+        params: {
+            path: { id: reservationId },
         },
         enabled: !!reservationId && enabled,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para obtener todas las reservas
+export function useAllReservations() {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Reservations", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para obtener reservas por ID de cliente
+export function useReservationsByClientId(clientId: string) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Reservations/client/{clientId}", {
+        params: {
+            path: { clientId },
+        },
+        enabled: !!clientId,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para obtener reservas por ID de cotización
+export function useReservationsByQuotationId(quotationId: string) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Reservations/quotation/{quotationId}", {
+        params: {
+            path: { quotationId },
+        },
+        enabled: !!quotationId,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para crear una nueva reserva
+export function useCreateReservation() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Reservations", {
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para actualizar una reserva existente
+export function useUpdateReservation() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("patch", "/api/Reservations/{id}", {
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para eliminar una reserva
+export function useDeleteReservation() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Reservations/{id}", {
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para cambiar el estado de una reserva
+export function useChangeReservationStatus() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Reservations/{id}/status", {
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para cambiar el estado de validación del contrato
 export function useToggleContractValidationStatus() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
 
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [, error] = await ToggleContractValidationStatus(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-        },
+    return api.useMutation("put", "/api/Reservations/{id}/toggle-validation-status", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservations"] });
             queryClient.invalidateQueries({ queryKey: ["reservation"] });
             queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
+}
+
+// Hook para descargar PDF de reserva
+export function useDownloadReservationPDF() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (id: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Reservations/{id}/pdf",
+                { path: { id } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
+    };
+}
+
+// Hook para descargar PDF de contrato de reserva
+export function useDownloadReservationContractPDF() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (id: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Reservations/{id}/contract/pdf",
+                { path: { id } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
+    };
+}
+
+// Hook para descargar DOCX de contrato de reserva
+export function useDownloadReservationContractDOCX() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (id: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Reservations/{id}/contract/docx",
+                { path: { id } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
+    };
+}
+
+// Hook para descargar PDF de cronograma de reserva
+export function useDownloadReservationSchedulePDF() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (id: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Reservations/{id}/schedule/pdf",
+                { path: { id } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
+    };
 }

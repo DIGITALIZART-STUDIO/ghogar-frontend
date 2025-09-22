@@ -21,7 +21,7 @@ import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
 import { ReservationWithPendingPaymentsDto } from "../../reservations/_types/reservation";
 import { PaymentMethodLabels } from "../../reservations/_utils/reservations.utils";
-import { DownloadReservationContractDOCX, DownloadReservationContractPDF, DownloadReservationPDF } from "../../reservations/_actions/ReservationActions";
+import { useDownloadReservationPDF, useDownloadReservationContractPDF, useDownloadReservationContractDOCX } from "../../reservations/_hooks/useReservations";
 import { ToggleValidationStatusDialog } from "./ToggleValidationStatusDialog";
 
 /**
@@ -245,6 +245,11 @@ export const creditManagementColumns = (): Array<ColumnDef<ReservationWithPendin
             // Nuevo estado para el toggle
             const [openToggleValidationDialog, setOpenToggleValidationDialog] = useState(false);
 
+            // Hooks para descargas
+            const downloadReservationPDF = useDownloadReservationPDF();
+            const downloadContractPDF = useDownloadReservationContractPDF();
+            const downloadContractDOCX = useDownloadReservationContractDOCX();
+
             return (
                 <div>
                     {openViewDialog && (
@@ -260,7 +265,7 @@ export const creditManagementColumns = (): Array<ColumnDef<ReservationWithPendin
                             isOpen={openReservationDocumentDialog}
                             onOpenChange={setOpenReservationDocumentDialog}
                             title="Documento de Separación"
-                            pdfAction={DownloadReservationPDF}
+                            pdfAction={downloadReservationPDF}
                             pdfFileName={`separacion-${id}.pdf`}
                         />
                     )}
@@ -270,8 +275,8 @@ export const creditManagementColumns = (): Array<ColumnDef<ReservationWithPendin
                             isOpen={openContractDocumentDialog}
                             onOpenChange={setOpenContractDocumentDialog}
                             title="Contrato"
-                            pdfAction={DownloadReservationContractPDF}
-                            wordAction={DownloadReservationContractDOCX}
+                            pdfAction={downloadContractPDF}
+                            wordAction={downloadContractDOCX}
                             pdfFileName={`contrato-${id}.pdf`}
                             wordFileName={`contrato-${id}.docx`}
                         />

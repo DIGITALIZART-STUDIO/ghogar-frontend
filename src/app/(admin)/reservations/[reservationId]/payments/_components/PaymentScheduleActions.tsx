@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
-import { DownloadReservationSchedulePDF } from "../../../_actions/ReservationActions";
+import { useDownloadReservationSchedulePDF } from "../../../_hooks/useReservations";
 
 interface PaymentScheduleActionsProps {
     reservationId: string;
@@ -12,6 +12,7 @@ interface PaymentScheduleActionsProps {
 
 export function PaymentScheduleActions({ reservationId }: PaymentScheduleActionsProps) {
     const [openScheduleDialog, setOpenScheduleDialog] = useState(false);
+    const downloadSchedulePDF = useDownloadReservationSchedulePDF();
 
     return (
         <>
@@ -32,7 +33,7 @@ export function PaymentScheduleActions({ reservationId }: PaymentScheduleActions
                     isOpen={openScheduleDialog}
                     onOpenChange={setOpenScheduleDialog}
                     title="Cronograma de Pagos"
-                    pdfAction={DownloadReservationSchedulePDF}
+                    pdfAction={downloadSchedulePDF}
                     pdfFileName={`cronograma-${reservationId}.pdf`}
                 />
             )}

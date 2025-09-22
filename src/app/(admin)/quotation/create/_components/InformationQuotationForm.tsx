@@ -1,4 +1,4 @@
-import { useTransition, useState } from "react";
+import { useState } from "react";
 import { format, parse } from "date-fns";
 import {  CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
 import { toast } from "sonner";
@@ -11,8 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UseFormReturn } from "react-hook-form";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
-import { toastWrapper } from "@/types/toasts";
-import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
+import { useCurrentExchangeRate } from "../../_hooks/useExchangeRate";
 import { DiscountApprovalDialog } from "./DiscountApprovalDialog";
 import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
@@ -30,21 +29,19 @@ interface InformationQuotationFormProps {
 }
 
 export default function InformationQuotationForm({ form, setProjectName, setBlockName, setLotNumber, userData, setSelectedLead }: InformationQuotationFormProps) {
-    const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
     const [isDiscountApproved, setIsDiscountApproved] = useState(false);
-    // Y luego añade esta función para manejar el clic del botón
-    const handleGetExchangeRate = () => {
-        startTransitionExchangeRate(async () => {
-            const [exchangeRate, error] = await toastWrapper(GetCurrentExchangeRate(), {
-                loading: "Obteniendo tipo de cambio...",
-                success: "Tipo de cambio obtenido correctamente de SUNAT",
-                error: (e) => `Error al obtener tipo de cambio: ${e.message}`,
-            });
 
-            if (!error && exchangeRate) {
-                form.setValue("exchangeRate", exchangeRate.toString());
-            }
-        });
+    // Hook para obtener el tipo de cambio
+    const exchangeRateQuery = useCurrentExchangeRate();
+
+    // Función para manejar el clic del botón
+    const handleGetExchangeRate = () => {
+        if (exchangeRateQuery.data) {
+            form.setValue("exchangeRate", String(exchangeRateQuery.data));
+            toast.success("Tipo de cambio obtenido correctamente de SUNAT");
+        } else {
+            exchangeRateQuery.refetch();
+        }
     };
     return (
         <div className="lg:col-span-2">
@@ -97,7 +94,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                             min={0}
                                             step={0.01}
                                             className="w-full"
-                                            disabled={isPendingExchangeRate}
+                                            disabled={exchangeRateQuery.isLoading}
                                         />
                                     </FormControl>
                                     <TooltipProvider>
@@ -109,9 +106,9 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                                     size="icon"
                                                     className="h-10 w-10"
                                                     onClick={handleGetExchangeRate}
-                                                    disabled={isPendingExchangeRate}
+                                                    disabled={exchangeRateQuery.isLoading}
                                                 >
-                                                    {isPendingExchangeRate ? (
+                                                    {exchangeRateQuery.isLoading ? (
                                                         <RefreshCcw className="h-4 w-4 animate-spin" />
                                                     ) : (
                                                         <LogoSunat className="h-4 w-4" />

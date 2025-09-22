@@ -88,11 +88,13 @@ export function UserCreateDialog() {
 
     const onSubmit = async (values: UserCreateDTO) => {
         const promise = createUserMutation.mutateAsync({
-            name: values.name,
-            phone: values.phone,
-            email: values.email,
-            role: values.role,
-            password: values.password,
+            body: {
+                name: values.name,
+                phone: values.phone,
+                email: values.email,
+                role: values.role,
+                password: values.password,
+            },
         });
 
         toast.promise(promise, {

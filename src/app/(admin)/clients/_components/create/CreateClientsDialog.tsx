@@ -87,7 +87,9 @@ export function CreateClientsDialog() {
                 }),
             };
 
-            const promise = createClient.mutateAsync(clientData);
+            const promise = createClient.mutateAsync({
+                body: clientData,
+            });
 
             toast.promise(promise, {
                 loading: "Creando cliente...",

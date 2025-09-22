@@ -35,17 +35,17 @@ export default function LotsServerComponent({
     if (blockId) {
         // Si hay blockId, usar lotes del bloque específico
         isLoading = lotsByBlockQuery.isLoading;
-        error = lotsByBlockQuery.error as Error;
+        error = lotsByBlockQuery.error as Error | null;
         lots = (lotsByBlockQuery.data ?? []) as Array<LotData>;
     } else if (projectId) {
         // Si hay projectId, usar lotes del proyecto específico
         isLoading = lotsByProjectQuery.isLoading;
-        error = lotsByProjectQuery.error as Error;
+        error = lotsByProjectQuery.error as Error | null;
         lots = (lotsByProjectQuery.data ?? []) as Array<LotData>;
     } else {
         // Si no hay parámetros, usar todos los lotes
         isLoading = allLotsQuery.isLoading;
-        error = allLotsQuery.error as Error;
+        error = allLotsQuery.error as Error | null;
         lots = (allLotsQuery.data ?? []) as Array<LotData>;
     }
 

@@ -83,7 +83,12 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
                 blockId: input.blockId,
             };
 
-            const promise = updateLot.mutateAsync({ id: lot.id, lot: lotData });
+            const promise = updateLot.mutateAsync({
+                params: {
+                    path: { id: lot.id },
+                },
+                body: lotData,
+            });
 
             toast.promise(promise, {
                 loading: "Actualizando lote...",

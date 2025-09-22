@@ -84,7 +84,9 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                 // No incluir projectId aquí si el backend lo obtiene del bloque
             };
 
-            const promise = createLot.mutateAsync(lotData);
+            const promise = createLot.mutateAsync({
+                body: lotData,
+            });
 
             toast.promise(promise, {
                 loading: "Creando lote...",

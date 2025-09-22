@@ -302,3 +302,20 @@ export function useDownloadReservationSchedulePDF() {
         }
     };
 }
+
+// Hook para descargar PDF de contrato de documento
+export function useDownloadContractPDF() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (contractId: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Documents/{contractId}/pdf",
+                { path: { contractId } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
+    };
+}

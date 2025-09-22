@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DownloadContractPDF } from "./actions";
+import { useDownloadContractPDF } from "../../reservations/_hooks/useReservations";
 
 export function ContractDownloadDialog({
     isOpen,
@@ -17,6 +17,7 @@ export function ContractDownloadDialog({
 }) {
     const [, setError] = useState("");
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const downloadContractPDF = useDownloadContractPDF();
 
     // Download the PDF from the backend on open
     useEffect(
@@ -26,15 +27,14 @@ export function ContractDownloadDialog({
             }
 
             (async () => {
-                const [pdfBlob, error] = await DownloadContractPDF(ContractId);
-                if (!!error) {
+                try {
+                    const pdfBlob = await downloadContractPDF(ContractId);
+                    const dataUrl = URL.createObjectURL(pdfBlob);
+                    setPdfUrl(dataUrl);
+                } catch (error) {
                     console.error(error);
-                    setError(`Error cargando PDF: ${error.message}`);
-                    return;
+                    setError(`Error cargando PDF: ${error instanceof Error ? error.message : "Error desconocido"}`);
                 }
-
-                const dataUrl = URL.createObjectURL(pdfBlob);
-                setPdfUrl(dataUrl);
             })();
 
             return () => {

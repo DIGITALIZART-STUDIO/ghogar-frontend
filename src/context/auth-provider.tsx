@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Función para refrescar el token
     const refreshAccessToken = async (): Promise<boolean> => {
+
         // Evitar múltiples refreshes simultáneos
         if (isRefreshing) {
             return false;
@@ -126,12 +127,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Función para interceptar errores 401 y intentar refresh
     const handleAuthError = async (error: unknown) => {
+
         // Si estamos haciendo logout, no procesar errores de autenticación
         if (authState.isLoggingOut) {
             return false;
         }
 
-        if ((error as { statusCode?: number })?.statusCode === 401) {
+        const statusCode = (error as { statusCode?: number })?.statusCode;
+        const errorMessage = (error as { error?: string })?.error;
+
+        if (statusCode === 401 || errorMessage === "Unauthorized") {
+
             // Si ya se está refrescando, no hacer nada
             if (isRefreshing) {
                 return false;

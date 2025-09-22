@@ -24,6 +24,7 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
 
     // Normalizar el status del error (401/403) desde distintas formas que puede venir
     const normalizedStatus = useMemo(() => {
+
         if (!e) {
             return undefined;
         }
@@ -34,9 +35,16 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         }
 
         const s = e?.statusCode ?? e?.status ?? e?.response?.status ?? e?.error?.statusCode ?? e?.error?.status;
+
         if (s) {
             return s as number;
         }
+
+        // Detectar error 401 por el mensaje "Unauthorized"
+        if (e?.error === "Unauthorized") {
+            return 401;
+        }
+
         const raw = e?.error?.rawText as string | undefined;
         if (raw && /unauthorized/i.test(raw)) {
             return 401;
@@ -44,6 +52,7 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         return undefined;
     }, [e, isLoggingOut]);
 
+    // Manejar errores 401/403 directamente aquí ya que onError de useUser.ts no se ejecuta
     useEffect(() => {
         if (!isLoading && !!e && (normalizedStatus === 401 || normalizedStatus === 403) && !isLoggingOut) {
             handleAuthError(e);

@@ -81,7 +81,6 @@ export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit
             message: response.statusText,
             error: response.statusText,
         };
-        console.log("🚨 [BACKEND2] Error HTTP:", response.status, response.statusText);
         throw error;
     }
 

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend as api } from "@/types/backend2";
+import { backend as api, uploadFile } from "@/types/backend2";
 import { useAuthContext } from "@/context/auth-provider";
 import type { components } from "@/types/api";
 
@@ -101,7 +101,11 @@ export function useImportClients() {
     const queryClient = useQueryClient();
     const { handleAuthError } = useAuthContext();
 
-    return api.useMutation("post", "/api/Clients/import", {
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const response = await uploadFile(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Clients/import`, file);
+            return response.json();
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });

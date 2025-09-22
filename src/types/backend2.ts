@@ -18,16 +18,71 @@ export const backendUrl = (baseUrl: string, version?: string) => (version ? `${b
 
 /**
  * Custom fetch implementation that includes credentials and handles errors
+ * Automatically handles FormData for file uploads
  */
 export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     let response: Response;
     try {
-        response = await fetch(input, {
+        // Preparar la configuración de fetch
+        const fetchInit: RequestInit = {
             ...init,
             credentials: "include",
-        });
+        };
+
+        // Detectar si el body contiene archivos y crear FormData si es necesario
+        if (init?.body && typeof init.body === "object" && !(init.body instanceof FormData)) {
+            const bodyObj = init.body as unknown as Record<string, unknown>;
+
+            // Verificar si hay archivos en el body
+            const hasFiles = Object.values(bodyObj).some((value) => value instanceof File ||
+                (Array.isArray(value) && value.some((item) => item instanceof File)));
+
+            if (hasFiles) {
+                // Crear FormData para archivos
+                const formData = new FormData();
+
+                Object.entries(bodyObj).forEach(([key, value]) => {
+                    if (value instanceof File) {
+                        formData.append(key, value);
+                    } else if (Array.isArray(value)) {
+                        value.forEach((item, index) => {
+                            if (item instanceof File) {
+                                formData.append(`${key}[${index}]`, item);
+                            } else {
+                                formData.append(`${key}[${index}]`, String(item));
+                            }
+                        });
+                    } else if (value !== null && value !== undefined) {
+                        formData.append(key, String(value));
+                    }
+                });
+
+                fetchInit.body = formData;
+                // No establecer Content-Type para FormData, el navegador lo hará automáticamente
+            } else {
+                // Para objetos JSON sin archivos, establecer Content-Type
+                fetchInit.headers = {
+                    "Content-Type": "application/json",
+                    ...init.headers,
+                };
+                fetchInit.body = JSON.stringify(bodyObj);
+            }
+        }
+
+        response = await fetch(input, fetchInit);
     } catch (e) {
         throw e;
+    }
+
+    // Si la respuesta no es exitosa, lanzar un error para que React Query lo maneje
+    if (!response.ok) {
+        const error = {
+            statusCode: response.status,
+            message: response.statusText,
+            error: response.statusText,
+        };
+        console.log("🚨 [BACKEND2] Error HTTP:", response.status, response.statusText);
+        throw error;
     }
 
     return response;
@@ -42,3 +97,24 @@ const fetchClient = createFetchClient<paths>({
 });
 
 export const backend = createClient(fetchClient);
+
+/**
+ * Helper function to create FormData for file uploads
+ */
+export const createFormDataForFile = (file: File, fieldName: string = "file"): FormData => {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+    return formData;
+};
+
+/**
+ * Helper function to upload files using enhanced fetch
+ */
+export const uploadFile = async (url: string, file: File, fieldName: string = "file"): Promise<Response> => {
+    const formData = createFormDataForFile(file, fieldName);
+
+    return enhancedFetch(url, {
+        method: "POST",
+        body: formData,
+    });
+};

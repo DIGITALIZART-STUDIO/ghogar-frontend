@@ -71,7 +71,12 @@ export function UpdateBlocksSheet({ block, projectId, open, onOpenChange, refetc
                 projectId: projectId,
             };
 
-            const promise = updateBlock.mutateAsync({ id: block.id, block: blockData });
+            const promise = updateBlock.mutateAsync({
+                params: {
+                    path: { id: block.id },
+                },
+                body: blockData,
+            });
 
             toast.promise(promise, {
                 loading: "Actualizando manzana...",

@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useCreateLot } from "../../_hooks/useLots";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
 import { useActiveBlocks } from "../../../[id]/blocks/_hooks/useBlocks";
+import { BlockData } from "../../../[id]/blocks/_types/block";
 import CreateLotsForm from "./CreateLotsForm";
 
 const dataForm = {
@@ -67,7 +68,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
 
     // Si hay un blockId preseleccionado, establecerlo en el form cuando los bloques se cargan
     useEffect(() => {
-        if (blockId && blocks.length > 0 && blocks.some((block) => block.id === blockId)) {
+        if (blockId && blocks.length > 0 && blocks.some((block: BlockData) => block.id === blockId)) {
             form.setValue("blockId", blockId);
         }
     }, [blockId, blocks, form]);

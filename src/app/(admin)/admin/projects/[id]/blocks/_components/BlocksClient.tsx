@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useActivateBlock, useDeactivateBlock, useBlocks } from "../_hooks/useBlocks";
 import { ProjectData } from "../../../_types/project";
+import { BlockData } from "../_types/block";
 import { BlockCard } from "./BlockCard";
 import { CreateBlocksDialog } from "./create/CreateBlocksDialog";
 
@@ -39,7 +40,7 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
         if (!searchTerm.trim()) {
             return blocks;
         }
-        return blocks.filter((block) => (block.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()));
+        return blocks.filter((block: BlockData) => (block.name ?? "").toLowerCase().includes(searchTerm.toLowerCase()));
     }, [blocks, searchTerm]);
 
     // Mostrar error si ocurre
@@ -57,7 +58,11 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
             try {
                 if (isActive) {
                     // Activar bloque
-                    const promise = activateBlock.mutateAsync(blockId);
+                    const promise = activateBlock.mutateAsync({
+                        params: {
+                            path: { id: blockId },
+                        },
+                    });
 
                     toast.promise(promise, {
                         loading: "Activando manzana...",
@@ -68,7 +73,11 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
                     await promise;
                 } else {
                     // Desactivar bloque
-                    const promise = deactivateBlock.mutateAsync(blockId);
+                    const promise = deactivateBlock.mutateAsync({
+                        params: {
+                            path: { id: blockId },
+                        },
+                    });
 
                     toast.promise(promise, {
                         loading: "Desactivando manzana...",
@@ -179,7 +188,7 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
                             </div>
                         ) : (
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {filteredBlocks.map((block) => (
+                                {filteredBlocks.map((block: BlockData) => (
                                     <BlockCard
                                         key={block.id}
                                         block={block}

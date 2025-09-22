@@ -67,7 +67,9 @@ export function CreateBlocksDialog({ projectId, refetch }: CreateBlocksDialogPro
                 projectId: projectId,
             };
 
-            const promise = createBlock.mutateAsync(blockData);
+            const promise = createBlock.mutateAsync({
+                body: blockData,
+            });
 
             toast.promise(promise, {
                 loading: "Creando manzana...",

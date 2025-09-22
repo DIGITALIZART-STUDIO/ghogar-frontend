@@ -1,43 +1,54 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend } from "@/types/backend2";
-import {
-    GetAllBlocks,
-    GetBlocksByProject,
-    GetActiveBlocksByProject,
-    GetBlock,
-    CreateBlock,
-    UpdateBlock,
-    DeleteBlock,
-    ActivateBlock,
-    DeactivateBlock,
-} from "../_actions/BlockActions";
-import type { components } from "@/types/api";
+import { backend as api } from "@/types/backend2";
+import { useAuthContext } from "@/context/auth-provider";
 
 // Hook para obtener todos los bloques
 export function useAllBlocks() {
+
     return useQuery({
         queryKey: ["allBlocks"],
         queryFn: async () => {
-            const [data, error] = await GetAllBlocks();
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch("/api/Blocks", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data ?? [];
+
+            return await response.json();
         },
     });
 }
 
 // Hook para obtener bloques por proyecto
 export function useBlocks(projectId: string) {
+
     return useQuery({
         queryKey: ["blocks", projectId],
         queryFn: async () => {
-            const [blocks, error] = await GetBlocksByProject(projectId);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Blocks/project/${projectId}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return blocks ?? [];
+
+            return await response.json();
         },
         enabled: !!projectId,
     });
@@ -45,14 +56,25 @@ export function useBlocks(projectId: string) {
 
 // Hook para obtener bloques activos por proyecto
 export function useActiveBlocks(projectId: string) {
+
     return useQuery({
         queryKey: ["activeBlocks", projectId],
         queryFn: async () => {
-            const [blocks, error] = await GetActiveBlocksByProject(projectId);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Blocks/project/${projectId}/active`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return blocks ?? [];
+
+            return await response.json();
         },
         enabled: !!projectId,
     });
@@ -60,14 +82,25 @@ export function useActiveBlocks(projectId: string) {
 
 // Hook para obtener un bloque específico
 export function useBlock(id: string) {
+
     return useQuery({
         queryKey: ["block", id],
         queryFn: async () => {
-            const [data, error] = await GetBlock(id);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Blocks/${id}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data!;
+
+            return await response.json();
         },
         enabled: !!id,
     });
@@ -76,20 +109,18 @@ export function useBlock(id: string) {
 // Hook para crear un bloque
 export function useCreateBlock() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (block: components["schemas"]["BlockCreateDTO"]) => {
-            const [data, error] = await CreateBlock(block);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Blocks", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -97,21 +128,20 @@ export function useCreateBlock() {
 // Hook para actualizar un bloque
 export function useUpdateBlock() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, block }: { id: string; block: components["schemas"]["BlockUpdateDTO"] }) => {
-            const [data, error] = await UpdateBlock(id, block);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-        onSuccess: (_, { id }) => {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Blocks/{id}", {
+        onSuccess: (_, variables) => {
+            const id = variables.params.path.id;
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["block", id] });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -119,14 +149,9 @@ export function useUpdateBlock() {
 // Hook para eliminar un bloque
 export function useDeleteBlock() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [data, error] = await DeleteBlock(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Blocks/{id}", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
@@ -134,27 +159,29 @@ export function useDeleteBlock() {
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para activar un bloque
 export function useActivateBlock() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [data, error] = await ActivateBlock(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-        onSuccess: (_, id) => {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Blocks/{id}/activate", {
+        onSuccess: (_, variables) => {
+            const id = variables.params.path.id;
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["block", id] });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -162,21 +189,20 @@ export function useActivateBlock() {
 // Hook para desactivar un bloque
 export function useDeactivateBlock() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [data, error] = await DeactivateBlock(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-        onSuccess: (_, id) => {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Blocks/{id}/deactivate", {
+        onSuccess: (_, variables) => {
+            const id = variables.params.path.id;
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["block", id] });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -190,8 +216,9 @@ export function usePaginatedActiveBlocksByProjectWithSearch(
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Blocks/project/{projectId}/active/paginated",
         {
@@ -225,6 +252,9 @@ export function usePaginatedActiveBlocksByProjectWithSearch(
             initialPageParam: 1,
             pageParamName: "page",
             enabled: !!projectId,
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
         }
     );
 

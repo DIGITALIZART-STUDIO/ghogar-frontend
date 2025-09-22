@@ -417,7 +417,6 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
             {deleteDialogOpen && (
                 <DeletePaymentTransactionDialog
                     paymentTransactionId={selectedTransactionId ?? ""}
-                    reservationId={selectedReservationId ?? ""}
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onSuccess={() => {

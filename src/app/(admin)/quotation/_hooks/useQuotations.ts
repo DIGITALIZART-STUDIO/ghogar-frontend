@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend as api } from "@/types/backend";
+import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Todas las cotizaciones
@@ -261,5 +261,39 @@ export function usePaginatedAcceptedQuotationsWithSearch(pageSize: number = 10, 
         totalCount: query.data?.pages[0]?.meta?.total ?? 0,
         totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
         currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+    };
+}
+
+// Hook para descargar PDF de cotización
+export function useDownloadQuotationPDF() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (quotationId: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Quotations/{id}/pdf",
+                { path: { id: quotationId } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
+    };
+}
+
+// Hook para descargar PDF de separación
+export function useDownloadSeparationPDF() {
+    const { handleAuthError } = useAuthContext();
+
+    return async (quotationId: string) => {
+        try {
+            return await downloadFileWithClient(
+                "/api/Quotations/{id}/separation/pdf",
+                { path: { id: quotationId } }
+            );
+        } catch (error) {
+            await handleAuthError(error);
+            throw error;
+        }
     };
 }

@@ -41,12 +41,12 @@ export default function PendingContractsPage() {
             <HeaderPage title="Separaciones pendientes de validación" description="Listado de contratos y reservas que requieren validación de estado." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <PendingContractsTable
-                    data={paginatedLeads.data}
+                    data={paginatedLeads.data ?? []}
                     pagination={{
-                        page: paginatedLeads.meta.page ?? 1,
-                        pageSize: paginatedLeads.meta.pageSize ?? 10,
-                        total: paginatedLeads.meta.total ?? 0,
-                        totalPages: paginatedLeads.meta.totalPages ?? 1,
+                        page: paginatedLeads.meta?.page ?? 1,
+                        pageSize: paginatedLeads.meta?.pageSize ?? 10,
+                        total: paginatedLeads.meta?.total ?? 0,
+                        totalPages: paginatedLeads.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
                 />

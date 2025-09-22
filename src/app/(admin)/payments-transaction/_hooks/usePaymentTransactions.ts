@@ -114,15 +114,13 @@ export function useDeletePaymentTransaction() {
         onError: async (error: unknown) => {
             await handleAuthError(error);
         },
-        onSuccess: (_: unknown, variables: unknown) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
             queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            if (variables && typeof variables === "object" && "reservationId" in variables) {
-                const reservationId = (variables as { reservationId: string }).reservationId;
-                queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", reservationId] });
-                queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", reservationId] });
-                queryClient.invalidateQueries({ queryKey: ["paymentSchedule", reservationId] });
-            }
+            // Invalidar todas las queries relacionadas con transacciones de pago
+            queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation"] });
+            queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation"] });
+            queryClient.invalidateQueries({ queryKey: ["paymentSchedule"] });
         },
     });
 }

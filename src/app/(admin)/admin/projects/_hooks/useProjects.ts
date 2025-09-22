@@ -1,41 +1,54 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import {
-    GetActiveProjects,
-    GetProject,
-    CreateProject,
-    UpdateProject,
-    DeleteProject,
-    ActivateProject,
-    DeactivateProject,
-} from "../_actions/ProjectActions";
-import { CreateProjectSchema } from "../_schemas/createProjectsSchema";
-import { backend } from "@/types/backend2";
+import { backend as api } from "@/types/backend2";
+import { useAuthContext } from "@/context/auth-provider";
 
 // Hook para obtener proyectos activos
 export function useActiveProjects() {
+
     return useQuery({
         queryKey: ["activeProjects"],
         queryFn: async () => {
-            const [data, error] = await GetActiveProjects();
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch("/api/Projects/active", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data ?? [];
+
+            return await response.json();
         },
     });
 }
 
 // Hook para obtener un proyecto específico
 export function useProject(id: string) {
+
     return useQuery({
         queryKey: ["project", id],
         queryFn: async () => {
-            const [data, error] = await GetProject(id);
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`/api/Projects/${id}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const error = {
+                    statusCode: response.status,
+                    message: response.statusText,
+                    error: response.statusText,
+                };
+                throw error;
             }
-            return data!;
+
+            return await response.json();
         },
         enabled: !!id,
     });
@@ -44,14 +57,9 @@ export function useProject(id: string) {
 // Hook para crear un proyecto
 export function useCreateProject() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (project: CreateProjectSchema) => {
-            const [data, error] = await CreateProject(project);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Projects", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
             // Invalidar queries paginadas de proyectos activos
@@ -62,6 +70,9 @@ export function useCreateProject() {
             queryClient.invalidateQueries({
                 queryKey: ["get", "/api/Projects"]
             });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -69,15 +80,11 @@ export function useCreateProject() {
 // Hook para actualizar un proyecto
 export function useUpdateProject() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, project }: { id: string; project: CreateProjectSchema }) => {
-            const [data, error] = await UpdateProject(id, project);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-        onSuccess: (_, { id }) => {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Projects/{id}", {
+        onSuccess: (_, variables) => {
+            const id = variables.params.path.id;
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
             queryClient.invalidateQueries({ queryKey: ["project", id] });
             // Invalidar queries paginadas de proyectos activos
@@ -89,20 +96,18 @@ export function useUpdateProject() {
                 queryKey: ["get", "/api/Projects"]
             });
         },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para eliminar un proyecto
 export function useDeleteProject() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [data, error] = await DeleteProject(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Projects/{id}", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
             // Invalidar queries paginadas de proyectos activos
@@ -114,21 +119,20 @@ export function useDeleteProject() {
                 queryKey: ["get", "/api/Projects"]
             });
         },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para activar un proyecto
 export function useActivateProject() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [data, error] = await ActivateProject(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-        onSuccess: (_, id) => {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Projects/{id}/activate", {
+        onSuccess: (_, variables) => {
+            const id = variables.params.path.id;
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
             queryClient.invalidateQueries({ queryKey: ["project", id] });
@@ -140,6 +144,9 @@ export function useActivateProject() {
             queryClient.invalidateQueries({
                 queryKey: ["get", "/api/Projects"]
             });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -147,15 +154,11 @@ export function useActivateProject() {
 // Hook para desactivar un proyecto
 export function useDeactivateProject() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const [data, error] = await DeactivateProject(id);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-        onSuccess: (_, id) => {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Projects/{id}/deactivate", {
+        onSuccess: (_, variables) => {
+            const id = variables.params.path.id;
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
             queryClient.invalidateQueries({ queryKey: ["project", id] });
@@ -167,6 +170,9 @@ export function useDeactivateProject() {
             queryClient.invalidateQueries({
                 queryKey: ["get", "/api/Projects"]
             });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -176,8 +182,9 @@ export function usePaginatedActiveProjectsWithSearch(pageSize: number = 10, pres
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Projects/active/paginated",
         {
@@ -209,6 +216,9 @@ export function usePaginatedActiveProjectsWithSearch(pageSize: number = 10, pres
             },
             initialPageParam: 1,
             pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
         }
     );
 
@@ -268,8 +278,9 @@ export function usePaginatedAllProjectsWithSearch(pageSize: number = 10, presele
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Projects",
         {
@@ -301,6 +312,9 @@ export function usePaginatedAllProjectsWithSearch(pageSize: number = 10, presele
             },
             initialPageParam: 1,
             pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
         }
     );
 

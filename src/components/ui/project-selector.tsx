@@ -1,130 +1,101 @@
 "use client";
 
-import { Check, Building2, ChevronDown } from "lucide-react";
+import { useMemo } from "react";
 import { useProjectContext } from "@/context/project-context";
-import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
-import { useEffect } from "react";
-
-import { cn } from "@/lib/utils";
-import { Button } from "./button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
+import { usePaginatedActiveProjectsWithSearch } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
+import { ProjectData } from "@/app/(admin)/admin/projects/_types/project";
 
 export function ProjectSelector() {
     const {
         selectedProject,
         setSelectedProject,
-        setProjects,
         isAllProjectsSelected,
         setIsAllProjectsSelected
     } = useProjectContext();
-    const { data: activeProjects = [], isLoading, error } = useActiveProjects();
 
-    // Actualizar la lista de proyectos en el contexto cuando se carguen
-    useEffect(() => {
-        if (activeProjects.length > 0) {
-            setProjects(activeProjects);
+    // Usar el hook con paginación infinita y búsqueda
+    const { allProjects, query, handleScrollEnd, handleSearchChange } =
+        usePaginatedActiveProjectsWithSearch(10, selectedProject?.id);
 
-            // Si no hay proyecto seleccionado ni "todos los proyectos" seleccionado,
-            // y hay proyectos disponibles, seleccionar el primero
-            if (!selectedProject && !isAllProjectsSelected && activeProjects.length > 0) {
-                setSelectedProject(activeProjects[0]);
-            }
+    // Crear opciones para el AutoComplete
+    const projectOptions: Array<Option<ProjectData>> = useMemo(() => {
+        // Opción "Todos los proyectos"
+        const allProjectsOption: Option<ProjectData> = {
+            value: "all",
+            label: "Todos los proyectos",
+            entity: undefined,
+        };
+
+        // Opciones de proyectos individuales
+        const individualProjectOptions: Array<Option<ProjectData>> = allProjects.map((project) => ({
+            value: project.id ?? "",
+            label: project.name ?? "Sin nombre",
+            entity: project,
+        }));
+
+        return [allProjectsOption, ...individualProjectOptions];
+    }, [allProjects]);
+
+    // Determinar el valor seleccionado
+    const selectedOption = useMemo(() => {
+        if (isAllProjectsSelected) {
+            return projectOptions.find((option) => option.value === "all");
         }
-    }, [activeProjects, selectedProject, isAllProjectsSelected, setProjects, setSelectedProject]);
+        if (selectedProject) {
+            return projectOptions.find((option) => option.value === selectedProject.id);
+        }
+        return undefined;
+    }, [isAllProjectsSelected, selectedProject, projectOptions]);
 
-    if (isLoading) {
-        return (
-            <Button variant="outline" size="sm" disabled className="min-w-[200px]">
-                <Building2 className="size-4 mr-2" />
-                Cargando proyectos...
-            </Button>
-        );
-    }
+    // Manejar selección
+    const handleSelect = ({ value, entity }: Option<ProjectData>) => {
+        if (value === "all") {
+            setIsAllProjectsSelected(true);
+            setSelectedProject(null);
+        } else {
+            setIsAllProjectsSelected(false);
+            setSelectedProject(entity ?? null);
+        }
+    };
 
-    if (error) {
+    // Mostrar loading o error
+    if (query.isLoading || query.isError) {
         return (
-            <Button variant="outline" size="sm" disabled className="min-w-[200px]">
-                <Building2 className="size-4 mr-2" />
-                Error al cargar proyectos
-            </Button>
-        );
-    }
-
-    if (activeProjects.length === 0) {
-        return (
-            <Button variant="outline" size="sm" disabled className="min-w-[200px]">
-                <Building2 className="size-4 mr-2" />
-                No hay proyectos activos
-            </Button>
+            <AutoComplete<ProjectData>
+                queryState={query}
+                options={[]}
+                value={undefined}
+                onValueChange={() => {}}
+                onSearchChange={() => {}}
+                onScrollEnd={() => {}}
+                placeholder={query.isLoading ? "Cargando..." : "Error al cargar"}
+                searchPlaceholder="Buscar proyectos..."
+                emptyMessage={query.isLoading ? "Cargando..." : "Error al cargar"}
+                debounceMs={400}
+                className="w-full min-w-[200px]"
+                variant="outline"
+                disabled
+                showComponentOnSelection={false}
+            />
         );
     }
 
     return (
-        <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="min-w-[200px] justify-between">
-                    <div className="flex items-center">
-                        <Building2 className="size-4 mr-2" />
-                        <span className="truncate">
-                            {isAllProjectsSelected
-                                ? "Todos los proyectos"
-                                : selectedProject?.name ?? "Seleccionar proyecto"
-                            }
-                        </span>
-                    </div>
-                    <ChevronDown className="size-4 ml-2" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-[250px]">
-                {/* Opción "Todos los proyectos" */}
-                <DropdownMenuItem
-                    onClick={() => {
-                        setIsAllProjectsSelected(true);
-                        setSelectedProject(null);
-                    }}
-                    className="flex items-center justify-between"
-                >
-                    <div className="flex flex-col items-start">
-                        <span className="font-medium">Todos los proyectos</span>
-                        <span className="text-xs text-muted-foreground">
-                            Acceso completo
-                        </span>
-                    </div>
-                    <Check
-                        size={14}
-                        className={cn(
-                            "ml-auto",
-                            !isAllProjectsSelected && "hidden"
-                        )}
-                    />
-                </DropdownMenuItem>
-
-                {/* Proyectos individuales */}
-                {activeProjects.map((project) => (
-                    <DropdownMenuItem
-                        key={project.id}
-                        onClick={() => {
-                            setSelectedProject(project);
-                            setIsAllProjectsSelected(false);
-                        }}
-                        className="flex items-center justify-between"
-                    >
-                        <div className="flex flex-col items-start">
-                            <span className="font-medium">{project.name}</span>
-                            <span className="text-xs text-muted-foreground">
-                                {project.location}
-                            </span>
-                        </div>
-                        <Check
-                            size={14}
-                            className={cn(
-                                "ml-auto",
-                                selectedProject?.id !== project.id && "hidden"
-                            )}
-                        />
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <AutoComplete<ProjectData>
+            queryState={query}
+            options={projectOptions}
+            value={selectedOption}
+            onValueChange={handleSelect}
+            onSearchChange={handleSearchChange}
+            onScrollEnd={handleScrollEnd}
+            placeholder="Seleccionar proyecto..."
+            searchPlaceholder="Buscar proyectos..."
+            emptyMessage="No hay proyectos disponibles"
+            debounceMs={400}
+            className="w-full min-w-[200px]"
+            variant="outline"
+            showComponentOnSelection={false}
+        />
     );
 }

@@ -62,7 +62,17 @@ export function CreateProjectsDialog() {
 
     const onSubmit = async (input: CreateProjectSchema) => {
         startTransition(async () => {
-            const promise = createProject.mutateAsync(input);
+            const promise = createProject.mutateAsync({
+                body: {
+                    Name: input.name,
+                    Location: input.location,
+                    Currency: input.currency,
+                    DefaultDownPayment: input.defaultDownPayment,
+                    DefaultFinancingMonths: input.defaultFinancingMonths,
+                    MaxDiscountPercentage: input.maxDiscountPercentage,
+                    ...(input.projectImage && { projectImage: input.projectImage }),
+                },
+            });
 
             toast.promise(promise, {
                 loading: "Creando proyecto...",

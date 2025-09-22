@@ -1,82 +1,61 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import {
-    GetAllQuotations,
-    GetQuotationById,
-    GetQuotationsByAdvisor,
-    CreateQuotation,
-    UpdateQuotation,
-    DeleteQuotation,
-    ChangeQuotationStatus,
-    GetQuotationsByAdvisorPaginated,
-    GetQuotationByReservationId,
-    SendOtpToUser,
-    ValidateOtp,
-} from "../_actions/QuotationActions";
-import type { PaginatedResponse } from "@/types/api/paginated-response";
-import type { components } from "@/types/api";
-import type { FetchError } from "@/types/backend";
-import { backend } from "@/types/backend2";
+import { backend as api } from "@/types/backend2";
+import { useAuthContext } from "@/context/auth-provider";
 
 // Todas las cotizaciones
 export function useAllQuotations() {
-    return useQuery({
-        queryKey: ["quotations"],
-        queryFn: async () => {
-            const [data, error] = await GetAllQuotations();
-            if (error) {
-                throw error;
-            }
-            return data ?? [];
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Quotations", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Cotización por ID
 export function useQuotationById(id: string, enabled = true) {
-    return useQuery({
-        queryKey: ["quotation", id],
-        queryFn: async () => {
-            const [data, error] = await GetQuotationById(id);
-            if (error) {
-                throw error;
-            }
-            return data!;
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Quotations/{id}", {
+        params: {
+            path: { id },
         },
         enabled: !!id && enabled,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Cotizaciones por ID de reserva
 export function useQuotationByReservationId(reservationId: string, enabled = true) {
-    return useQuery<components["schemas"]["QuotationDTO"], FetchError>({
-        queryKey: ["quotationByReservation", reservationId],
-        queryFn: async () => {
-            const [data, error] = await GetQuotationByReservationId(reservationId);
-            if (error) {
-                throw error;
-            }
-            if (!data) {
-                throw new Error("No se encontró cotización para la reserva");
-            }
-            return data;
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Quotations/by-reservation/{reservationId}", {
+        params: {
+            path: { reservationId },
         },
         enabled: !!reservationId && enabled,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Cotizaciones por asesor
 export function useQuotationsByAdvisor(advisorId: string, enabled = true) {
-    return useQuery({
-        queryKey: ["quotations", "advisor", advisorId],
-        queryFn: async () => {
-            const [data, error] = await GetQuotationsByAdvisor(advisorId);
-            if (error) {
-                throw error;
-            }
-            return data ?? [];
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Quotations/advisor/{advisorId}", {
+        params: {
+            path: { advisorId },
         },
         enabled: !!advisorId && enabled,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
@@ -87,27 +66,32 @@ export function usePaginatedQuotationsByAdvisor(
     pageSize: number = 10,
     enabled: boolean = true
 ) {
-    return useQuery<PaginatedResponse<components["schemas"]["QuotationSummaryDTO"]>, FetchError>({
-        queryKey: ["quotationsByAdvisorPaginated", advisorId, page, pageSize],
-        queryFn: async () => {
-            const [data, error] = await GetQuotationsByAdvisorPaginated(advisorId, page, pageSize);
-            if (error) {
-                throw error;
-            }
-            return data!;
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Quotations/advisor/{advisorId}/paginated", {
+        params: {
+            path: { advisorId },
+            query: { page, pageSize },
         },
         enabled: !!advisorId && enabled,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Crear cotización
 export function useCreateQuotation() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: CreateQuotation,
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Quotations", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["quotations"] });
             queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -115,12 +99,16 @@ export function useCreateQuotation() {
 // Actualizar cotización
 export function useUpdateQuotation() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, quotation }: { id: string; quotation: components["schemas"]["QuotationUpdateDTO"] }) => UpdateQuotation(id, quotation),
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Quotations/{id}", {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            queryClient.invalidateQueries({ queryKey: ["quotation", variables.id] });
+            queryClient.invalidateQueries({ queryKey: ["quotation", variables.params.path.id] });
             queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -128,11 +116,15 @@ export function useUpdateQuotation() {
 // Eliminar cotización
 export function useDeleteQuotation() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: DeleteQuotation,
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Quotations/{id}", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["quotations"] });
             queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -140,27 +132,39 @@ export function useDeleteQuotation() {
 // Cambiar estado de cotización
 export function useChangeQuotationStatus() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, statusDto }: { id: string; statusDto: components["schemas"]["QuotationStatusDTO"] }) => ChangeQuotationStatus(id, statusDto),
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Quotations/{id}/status", {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            queryClient.invalidateQueries({ queryKey: ["quotation", variables.id] });
+            queryClient.invalidateQueries({ queryKey: ["quotation", variables.params.path.id] });
             queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Enviar OTP a un usuario
 export function useSendOtpToUser() {
-    return useMutation({
-        mutationFn: SendOtpToUser,
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Quotations/{userId}/send-otp", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Validar OTP de un usuario
 export function useValidateOtp() {
-    return useMutation({
-        mutationFn: ({ userId, otpCode }: { userId: string; otpCode: string }) => ValidateOtp(userId, otpCode),
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Quotations/{userId}/validate-otp", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
@@ -169,8 +173,9 @@ export function usePaginatedAcceptedQuotationsWithSearch(pageSize: number = 10, 
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Quotations/advisor/accepted",
         {
@@ -202,6 +207,9 @@ export function usePaginatedAcceptedQuotationsWithSearch(pageSize: number = 10, 
             },
             initialPageParam: 1,
             pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
         }
     );
 

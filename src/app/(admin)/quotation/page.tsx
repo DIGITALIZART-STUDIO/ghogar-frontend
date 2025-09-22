@@ -53,12 +53,12 @@ export default function QuotationPage() {
             <HeaderPage title="Mis Cotizaciones" description="Gestión de cotizaciones generadas por el usuario." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <QuotationsTable
-                    data={paginatedQuotations.data}
+                    data={paginatedQuotations.data ?? []}
                     pagination={{
-                        page: paginatedQuotations.meta.page ?? 1,
-                        pageSize: paginatedQuotations.meta.pageSize ?? 10,
-                        total: paginatedQuotations.meta.total ?? 0,
-                        totalPages: paginatedQuotations.meta.totalPages ?? 1,
+                        page: paginatedQuotations.meta?.page ?? 1,
+                        pageSize: paginatedQuotations.meta?.pageSize ?? 10,
+                        total: paginatedQuotations.meta?.total ?? 0,
+                        totalPages: paginatedQuotations.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
                 />

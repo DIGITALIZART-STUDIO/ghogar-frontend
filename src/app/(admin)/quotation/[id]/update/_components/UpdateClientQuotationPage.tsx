@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { toastWrapper } from "@/types/toasts";
+import { toast } from "sonner";
 import { useUpdateQuotation } from "../../../_hooks/useQuotations";
 import { Quotation } from "../../../_types/quotation";
 import { QuotationForm } from "../../../create/_components/QuotationForm";
@@ -90,18 +90,23 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
             };
 
             const promise = updateQuotationMutation.mutateAsync({
-                id: data?.id ?? "",
-                quotation: quotationData,
+                params: {
+                    path: { id: data?.id ?? "" },
+                },
+                body: quotationData,
             });
 
-            const [, error] = await toastWrapper(promise, {
+            toast.promise(promise, {
                 loading: "Actualizando cotización...",
                 success: "Cotización actualizada exitosamente",
                 error: (e) => `Error al actualizar cotización: ${e.message}`,
             });
 
-            if (!error) {
+            try {
+                await promise;
                 setIsSuccess(true);
+            } catch {
+                // Error ya manejado por toast.promise
             }
         });
     };

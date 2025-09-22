@@ -1,56 +1,31 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api } from "@/types/backend2";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Hook para obtener proyectos activos
 export function useActiveProjects() {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["activeProjects"],
-        queryFn: async () => {
-            const response = await fetch("/api/Projects/active", {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Projects/active", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para obtener un proyecto específico
 export function useProject(id: string) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["project", id],
-        queryFn: async () => {
-            const response = await fetch(`/api/Projects/${id}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Projects/{id}", {
+        params: {
+            path: { id },
         },
         enabled: !!id,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 

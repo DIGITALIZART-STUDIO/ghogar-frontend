@@ -1,108 +1,61 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api } from "@/types/backend2";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Hook para obtener todos los bloques
 export function useAllBlocks() {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["allBlocks"],
-        queryFn: async () => {
-            const response = await fetch("/api/Blocks", {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Blocks", {
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para obtener bloques por proyecto
 export function useBlocks(projectId: string) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["blocks", projectId],
-        queryFn: async () => {
-            const response = await fetch(`/api/Blocks/project/${projectId}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Blocks/project/{projectId}", {
+        params: {
+            path: { projectId },
         },
         enabled: !!projectId,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para obtener bloques activos por proyecto
 export function useActiveBlocks(projectId: string) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["activeBlocks", projectId],
-        queryFn: async () => {
-            const response = await fetch(`/api/Blocks/project/${projectId}/active`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Blocks/project/{projectId}/active", {
+        params: {
+            path: { projectId },
         },
         enabled: !!projectId,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 // Hook para obtener un bloque específico
 export function useBlock(id: string) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["block", id],
-        queryFn: async () => {
-            const response = await fetch(`/api/Blocks/${id}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Blocks/{id}", {
+        params: {
+            path: { id },
         },
         enabled: !!id,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 

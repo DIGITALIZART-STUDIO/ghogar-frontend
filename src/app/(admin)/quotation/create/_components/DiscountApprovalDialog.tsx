@@ -78,15 +78,14 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
         }
 
         try {
-            const [data, error] = await sendOtpMutation.mutateAsync(selectedSupervisor.id!);
+            const data = await sendOtpMutation.mutateAsync({
+                params: {
+                    path: { userId: selectedSupervisor.id! },
+                },
+            });
 
-            if (error) {
-                toast.error("Error al enviar el código de verificación");
-                return;
-            }
-
-            if (data) {
-                setOtpExpiresAt(new Date(data.expiresAt));
+            if (data && typeof data === "object" && "expiresAt" in data) {
+                setOtpExpiresAt(new Date((data as { expiresAt: string }).expiresAt));
                 setCanResendOtp(false);
                 setOtpSent(true);
                 toast.success("Código de verificación enviado exitosamente");
@@ -103,15 +102,14 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
         }
 
         try {
-            const [data, error] = await sendOtpMutation.mutateAsync(selectedSupervisor.id!);
+            const data = await sendOtpMutation.mutateAsync({
+                params: {
+                    path: { userId: selectedSupervisor.id! },
+                },
+            });
 
-            if (error) {
-                toast.error("Error al reenviar el código");
-                return;
-            }
-
-            if (data) {
-                setOtpExpiresAt(new Date(data.expiresAt));
+            if (data && typeof data === "object" && "expiresAt" in data) {
+                setOtpExpiresAt(new Date((data as { expiresAt: string }).expiresAt));
                 setCanResendOtp(false);
                 otpForm.setValue("otpCode", "");
                 toast.success("Nuevo código enviado");
@@ -134,15 +132,14 @@ export function DiscountApprovalDialog({ userData, isDiscountApproved, onDiscoun
         }
 
         try {
-            const [response, error] = await validateOtpMutation.mutateAsync({
-                userId: selectedSupervisor.id!,
-                otpCode: data.otpCode,
+            const response = await validateOtpMutation.mutateAsync({
+                params: {
+                    path: { userId: selectedSupervisor.id! },
+                },
+                body: {
+                    otpCode: data.otpCode,
+                },
             });
-
-            if (error) {
-                toast.error("Código de verificación inválido");
-                return;
-            }
 
             if (response) {
                 setIsSuccess(true);

@@ -319,9 +319,20 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get blocks by project with pagination
+         * @description Retrieves blocks by project with pagination, search and ordering capabilities
+         */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                };
                 header?: never;
                 path: {
                     projectId: string;
@@ -336,9 +347,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
                     };
                 };
             };
@@ -7274,7 +7285,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7292,7 +7303,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7310,7 +7321,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7328,7 +7339,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -7346,7 +7357,7 @@ export interface components {
             status: components["schemas"]["LotStatus"];
             /** Format: uuid */
             blockId: string;
-            block?: components["schemas"]["Block"];
+            block?: components["schemas"]["Block5"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8393,7 +8404,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project"];
+            project?: components["schemas"]["Project9"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8410,7 +8421,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project"];
+            project?: components["schemas"]["Project9"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8427,7 +8438,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project"];
+            project?: components["schemas"]["Project9"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8444,7 +8455,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project"];
+            project?: components["schemas"]["Project9"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -8461,7 +8472,7 @@ export interface components {
             referredLeadId: string;
             /** Format: uuid */
             projectId?: string | null;
-            project?: components["schemas"]["Project"];
+            project?: components["schemas"]["Project9"];
             isActive?: boolean;
             /** Format: date-time */
             createdAt?: string;

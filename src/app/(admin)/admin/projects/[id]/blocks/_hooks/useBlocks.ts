@@ -14,19 +14,103 @@ export function useAllBlocks() {
     });
 }
 
-// Hook para obtener bloques por proyecto
-export function useBlocks(projectId: string) {
+// Hook para paginación infinita de bloques por proyecto con búsqueda
+export function useBlocks(projectId: string, pageSize: number = 10, preselectedId?: string) {
+    const [search, setSearch] = useState<string | undefined>(undefined);
+    const [orderBy, setOrderBy] = useState<string | undefined>("createdat");
+    const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("desc");
     const { handleAuthError } = useAuthContext();
 
-    return api.useQuery("get", "/api/Blocks/project/{projectId}", {
-        params: {
-            path: { projectId },
+    const query = api.useInfiniteQuery(
+        "get",
+        "/api/Blocks/project/{projectId}",
+        {
+            params: {
+                path: { projectId },
+                query: {
+                    search,
+                    page: 1, // Este valor será reemplazado automáticamente por pageParam
+                    pageSize,
+                    orderBy,
+                    orderDirection,
+                    preselectedId,
+                },
+            },
         },
-        enabled: !!projectId,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
+        {
+            getNextPageParam: (lastPage) => {
+                // Si hay más páginas disponibles, devolver el siguiente número de página
+                if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+                    return lastPage.meta.page + 1;
+                }
+                return undefined; // No hay más páginas
+            },
+            getPreviousPageParam: (firstPage) => {
+                // Si no estamos en la primera página, devolver la página anterior
+                if (firstPage.meta?.page && firstPage.meta.page > 1) {
+                    return firstPage.meta.page - 1;
+                }
+                return undefined; // No hay páginas anteriores
+            },
+            initialPageParam: 1,
+            pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            enabled: !!projectId,
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
+        }
+    );
+
+    // Obtener todos los bloques de todas las páginas de forma plana
+    const allBlocks = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+    const handleScrollEnd = useCallback(() => {
+        if (query.hasNextPage && !query.isFetchingNextPage) {
+            query.fetchNextPage();
+        }
+    }, [query]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        if (value !== "None" && value !== null && value !== undefined) {
+            setSearch(value.trim());
+        } else {
+            setSearch(undefined);
+        }
+    }, []);
+
+    const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+        setOrderBy(field);
+        setOrderDirection(direction);
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        setSearch(undefined);
+        setOrderBy("createdat");
+        setOrderDirection("desc");
+    }, []);
+
+    return {
+        query,
+        allBlocks, // Todos los bloques acumulados
+        fetchNextPage: query.fetchNextPage,
+        hasNextPage: query.hasNextPage,
+        isFetchingNextPage: query.isFetchingNextPage,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        refetch: query.refetch,
+        search,
+        setSearch,
+        orderBy,
+        orderDirection,
+        handleScrollEnd,
+        handleSearchChange,
+        handleOrderChange,
+        resetSearch,
+        // Información de paginación
+        totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+        totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+        currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+    };
 }
 
 // Hook para obtener bloques activos por proyecto
@@ -69,6 +153,15 @@ export function useCreateBlock() {
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
+            // Invalidar queries paginadas de bloques
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project"],
+                exact: false
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project/active/paginated"],
+                exact: false
+            });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
@@ -90,6 +183,15 @@ export function useUpdateBlock() {
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["block", id] });
+            // Invalidar queries paginadas de bloques
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project"],
+                exact: false
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project/active/paginated"],
+                exact: false
+            });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
@@ -109,6 +211,15 @@ export function useDeleteBlock() {
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
+            // Invalidar queries paginadas de bloques
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project"],
+                exact: false
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project/active/paginated"],
+                exact: false
+            });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
@@ -130,6 +241,15 @@ export function useActivateBlock() {
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["block", id] });
+            // Invalidar queries paginadas de bloques
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project"],
+                exact: false
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project/active/paginated"],
+                exact: false
+            });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
@@ -151,6 +271,15 @@ export function useDeactivateBlock() {
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["block", id] });
+            // Invalidar queries paginadas de bloques
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project"],
+                exact: false
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["get", "/api/Blocks/project/active/paginated"],
+                exact: false
+            });
             queryClient.invalidateQueries({ queryKey: ["allProjects"] });
             queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
         },
@@ -234,8 +363,8 @@ export function usePaginatedActiveBlocksByProjectWithSearch(
 
     const resetSearch = useCallback(() => {
         setSearch(undefined);
-        setOrderBy(undefined);
-        setOrderDirection("asc");
+        setOrderBy("createdat");
+        setOrderDirection("desc");
     }, []);
 
     return {

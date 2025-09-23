@@ -21,6 +21,7 @@ export const backendUrl = (baseUrl: string, version?: string) => (version ? `${b
  * Automatically handles FormData for file uploads
  */
 export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+
     let response: Response;
     try {
         // Preparar la configuración de fetch
@@ -71,6 +72,7 @@ export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit
 
         response = await fetch(input, fetchInit);
     } catch (e) {
+        // No loggear AbortError (cancelaciones normales de React Query)
         throw e;
     }
 
@@ -81,6 +83,7 @@ export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit
             message: response.statusText,
             error: response.statusText,
         };
+
         throw error;
     }
 

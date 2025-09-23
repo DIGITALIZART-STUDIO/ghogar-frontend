@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTasksWithFilters } from "../../assignments/[id]/tasks/_hooks/useLeadTasks";
 import { LeadTaskDetail, TaskFilters } from "../../assignments/[id]/tasks/_types/leadTask";
 import { AdminTasksViewer } from "./AdminTasksViewer";
@@ -31,16 +31,22 @@ export function TaskPageClient({
 
     // Hook react-query para obtener tareas con filtros
     const filterTasks = useTasksWithFilters();
+    const filterTasksRef = useRef(filterTasks);
+    filterTasksRef.current = filterTasks; // Mantener la referencia actualizada
+
     const [tasksResult, setTasksResult] = useState<Array<LeadTaskDetail>>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
+
+    // Ref para el timeout del debounce
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Función para aplicar filtros
     const applyFilters = useCallback(async () => {
         setIsLoading(true);
         setIsError(false);
         try {
-            const result = await filterTasks.mutateAsync({
+            const result = await filterTasksRef.current.mutateAsync({
                 body: {
                     from: dateRange.from.toISOString(),
                     to: dateRange.to.toISOString(),
@@ -57,12 +63,27 @@ export function TaskPageClient({
         } finally {
             setIsLoading(false);
         }
-    }, [filterTasks, dateRange, filters]);
+    }, [dateRange, filters]); // Remover filterTasks de las dependencias
 
-    // Aplicar filtros cuando cambien
+    // Aplicar filtros cuando cambien con debounce
     useEffect(() => {
-        applyFilters();
-    }, [dateRange, filters, applyFilters]);
+        // Limpiar timeout anterior
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+
+        // Establecer nuevo timeout
+        debounceTimeoutRef.current = setTimeout(() => {
+            applyFilters();
+        }, 300); // 300ms de debounce
+
+        // Cleanup
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, [applyFilters]);
 
     // Función para actualizar el rango de fechas
     const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {

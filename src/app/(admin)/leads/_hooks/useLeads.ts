@@ -1,56 +1,47 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Para todos los leads paginados
 export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["paginatedLeads", page, pageSize],
-        queryFn: async () => {
-            const response = await fetch(`/api/Leads/paginated?page=${page}&pageSize=${pageSize}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Leads/paginated", {
+        params: {
+            query: {
+                page,
+                pageSize,
+            },
+        },
+    }, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Para leads asignados a un usuario, paginados
 export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, pageSize: number = 10) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["paginatedLeadsByAssignedTo", userId, page, pageSize],
-        queryFn: async () => {
-            const response = await fetch(`/api/Leads/assignedto/${userId}/paginated?page=${page}&pageSize=${pageSize}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Leads/assignedto/{userId}/paginated", {
+        params: {
+            path: {
+                userId,
+            },
+            query: {
+                page,
+                pageSize,
+            },
         },
+    }, {
         enabled: !!userId, // solo consulta si hay userId
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
@@ -73,25 +64,12 @@ export function useUpdateLeadStatus() {
 
 // Hook para obtener resumen de usuarios
 export function useUsersSummary() {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["usersSummary"],
-        queryFn: async () => {
-            const response = await fetch("/api/Leads/users/summary", {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Leads/users/summary", undefined, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -185,76 +163,45 @@ export function useAvailableLeadsForQuotation(
     excludeQuotationId?: string,
     enabled = true
 ) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["getAvailableLeadsForQuotation", excludeQuotationId],
-        queryFn: async () => {
-            const response = await fetch(`/api/Leads/available-for-quotation/${excludeQuotationId ?? ""}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Leads/available-for-quotation/{excludeQuotationId}", {
+        params: {
+            path: {
+                excludeQuotationId: excludeQuotationId ?? "",
+            },
         },
+    }, {
         enabled: enabled,
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 export function useAssignedLeadsSummary(assignedToId: string, enabled = true) {
+    const { handleAuthError } = useAuthContext();
 
-    return useQuery({
-        queryKey: ["assignedLeadsSummary", assignedToId],
-        queryFn: async () => {
-            const response = await fetch(`/api/Leads/assigned/${assignedToId}/summary`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.json();
+    return api.useQuery("get", "/api/Leads/assigned/{assignedToId}/summary", {
+        params: {
+            path: {
+                assignedToId,
+            },
         },
+    }, {
         enabled: !!assignedToId && enabled,
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
     });
 }
 
 export function useDownloadLeadsExcel() {
     const { handleAuthError } = useAuthContext();
 
-    return useMutation({
-        mutationFn: async () => {
-            const response = await fetch("/api/Leads/export", {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const error = {
-                    statusCode: response.status,
-                    message: response.statusText,
-                    error: response.statusText,
-                };
-                throw error;
-            }
-
-            return await response.blob();
-        },
+    return api.useMutation("get", "/api/Leads/export", {
         onError: async (error: unknown) => {
             await handleAuthError(error);
         },

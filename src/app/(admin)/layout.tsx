@@ -18,6 +18,7 @@ import { useAuthContext } from "@/context/auth-provider";
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
     const { handleAuthError, isLoggingOut } = useAuthContext();
     const { data, error, isLoading } = useUsers();
+    // El GlobalErrorHandler se movió a client-providers.tsx para evitar múltiples inicializaciones
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const e = error as any;

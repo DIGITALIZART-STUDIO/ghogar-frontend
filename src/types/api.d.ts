@@ -3180,7 +3180,16 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    blockId?: string;
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                    status?: string;
+                };
                 header?: never;
                 path: {
                     projectId: string;
@@ -3195,9 +3204,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLotDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLotDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLotDTO"];
                     };
                 };
             };

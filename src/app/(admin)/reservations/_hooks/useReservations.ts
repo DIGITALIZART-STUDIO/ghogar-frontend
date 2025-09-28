@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import { useSelectedProject } from "@/hooks/use-selected-project";
+import { useReservationsByAdvisorPagination } from "@/hooks/useReservationsByAdvisorPagination";
 
 // Hook para reservas canceladas (no paginado)
 export function useCanceledReservations() {
@@ -148,6 +149,7 @@ export function useCreateReservation() {
             queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -168,6 +170,7 @@ export function useUpdateReservation() {
             queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -188,6 +191,7 @@ export function useDeleteReservation() {
             queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -208,6 +212,7 @@ export function useChangeReservationStatus() {
             queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -228,6 +233,7 @@ export function useToggleContractValidationStatus() {
             queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
             queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
+            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -318,4 +324,9 @@ export function useDownloadContractPDF() {
             throw error;
         }
     };
+}
+
+// Hook para paginación de reservas por asesor con filtros
+export function usePaginatedReservationsByAdvisor(page: number = 1, pageSize: number = 10) {
+    return useReservationsByAdvisorPagination(page, pageSize);
 }

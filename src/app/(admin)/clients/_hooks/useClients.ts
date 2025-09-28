@@ -3,24 +3,31 @@ import { useState, useCallback } from "react";
 import { backend as api, uploadFile } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import type { components } from "@/types/api";
+import { useClientsPagination } from "@/hooks/useClientsPagination";
 
-// Hook para paginación de clientes
+// Hook para paginación de clientes (wrapper del nuevo hook)
 export function usePaginatedClients(page: number = 1, pageSize: number = 10) {
-    const { handleAuthError } = useAuthContext();
+    const clientsPagination = useClientsPagination(page, pageSize);
 
-    return api.useQuery("get", "/api/Clients/paginated", {
-        params: {
-            query: {
-                page,
-                pageSize,
-            },
-        },
-    }, {
-        retry: false,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
+    return {
+        data: clientsPagination.data,
+        isLoading: clientsPagination.isLoading,
+        isError: clientsPagination.isError,
+        error: clientsPagination.error,
+        refetch: clientsPagination.refetch,
+        // Estados de búsqueda y filtros
+        search: clientsPagination.search,
+        isActive: clientsPagination.isActive,
+        type: clientsPagination.type,
+        orderBy: clientsPagination.orderBy,
+        orderDirection: clientsPagination.orderDirection,
+        // Handlers
+        setSearch: clientsPagination.setSearch,
+        setIsActive: clientsPagination.setIsActive,
+        setType: clientsPagination.setType,
+        handleOrderChange: clientsPagination.handleOrderChange,
+        resetFilters: clientsPagination.resetFilters,
+    };
 }
 
 // Hook para eliminar múltiples clientes

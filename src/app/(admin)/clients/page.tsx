@@ -11,14 +11,26 @@ export default function ClientsPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    const { data: paginatedClients, isLoading, error } = usePaginatedClients(page, pageSize);
+    const {
+        data: paginatedClients,
+        isLoading,
+        error,
+        search,
+        setSearch,
+        isActive,
+        setIsActive,
+        type,
+        setType,
+        handleOrderChange,
+        resetFilters
+    } = usePaginatedClients(page, pageSize);
 
     const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
         setPage(newPage);
         setPageSize(newPageSize);
     }, []);
 
-    if (isLoading) {
+    if (isLoading && !paginatedClients) {
         return (
             <div>
                 <HeaderPage title="Clientes" description="Cargando clientes..." />
@@ -49,6 +61,15 @@ export default function ClientsPage() {
                         totalPages: paginatedClients.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
+                    search={search}
+                    setSearch={setSearch}
+                    isActive={isActive}
+                    setIsActive={setIsActive}
+                    type={type}
+                    setType={setType}
+                    handleOrderChange={handleOrderChange}
+                    resetFilters={resetFilters}
+                    isLoading={isLoading}
                 />
             </div>
         </div>

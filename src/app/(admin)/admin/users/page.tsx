@@ -11,14 +11,25 @@ export default function UsersPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    const { data: paginatedUsers, isLoading, error } = usePaginatedUsers(page, pageSize);
+    const {
+        data: paginatedUsers,
+        isLoading,
+        error,
+        search,
+        setSearch,
+        isActive,
+        setIsActive,
+        roleName,
+        setRoleName,
+    } = usePaginatedUsers(page, pageSize);
 
     const handlePaginationChange = useCallback((newPage: number, newPageSize: number) => {
         setPage(newPage);
         setPageSize(newPageSize);
     }, []);
 
-    if (isLoading) {
+    // Solo mostrar skeleton completo en la carga inicial (cuando no hay datos)
+    if (isLoading && !paginatedUsers) {
         return (
             <div>
                 <HeaderPage title="Usuarios" description="Cargando usuarios..." />
@@ -49,6 +60,13 @@ export default function UsersPage() {
                         totalPages: paginatedUsers.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
+                    search={search}
+                    onSearchChange={setSearch}
+                    isActive={isActive}
+                    onIsActiveChange={setIsActive}
+                    roleName={roleName}
+                    onRoleNameChange={setRoleName}
+                    isLoading={isLoading}
                 />
             </div>
         </div>

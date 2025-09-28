@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "@/context/auth-provider";
 import { toast } from "sonner";
 import { useState, useCallback } from "react";
+import { useUsersPagination } from "@/hooks/useUsersPagination";
 
 export function useUsers() {
     const { handleAuthError, isLoggingOut } = useAuthContext();
@@ -32,23 +33,9 @@ export function useUpdateProfilePassword() {
     });
 }
 
-// Hook para paginación de usuarios
+// Hook para paginación de usuarios con búsqueda y filtros
 export function usePaginatedUsers(page: number = 1, pageSize: number = 10) {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/Users/all", {
-        params: {
-            query: {
-                page,
-                pageSize,
-            },
-        },
-    }, {
-        retry: false,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
+    return useUsersPagination(page, pageSize);
 }
 
 // Hook para crear usuario

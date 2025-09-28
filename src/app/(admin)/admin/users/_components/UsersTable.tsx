@@ -24,7 +24,7 @@ import { DeleteUsersDialog } from "./state-management/DeleteUsersDialog";
 import { ReactivateUsersDialog } from "./state-management/ReactivateUsersDialog";
 import { UpdateUsersSheet } from "./update/UpdateUsersSheet";
 import { UsersTableToolbarActions } from "./UserActions";
-import { facetedFilters } from "../_utils/user.filter.utils";
+import { createFacetedFilters } from "../_utils/user.filter.utils";
 import { UserRoleLabels } from "../_utils/user.utils";
 
 export interface UsersTableProps {
@@ -36,32 +36,57 @@ export interface UsersTableProps {
         totalPages: number;
     };
     onPaginationChange: (page: number, pageSize: number) => void;
+    search?: string;
+    onSearchChange: (search: string) => void;
+    isActive?: Array<boolean>;
+    onIsActiveChange: (isActive: Array<boolean>) => void;
+    roleName?: Array<string>;
+    onRoleNameChange: (roleName: Array<string>) => void;
+    isLoading?: boolean;
 }
 
 export function UsersTable({
     data,
     pagination,
     onPaginationChange,
+    search,
+    onSearchChange,
+    isActive,
+    onIsActiveChange,
+    roleName,
+    onRoleNameChange,
+    isLoading = false,
 }: UsersTableProps) {
     const columns = useMemo(() => usersColumns(), []);
 
+    // Crear filtros personalizados con callbacks del servidor
+    const customFacetedFilters = useMemo(
+        () => createFacetedFilters(onIsActiveChange, onRoleNameChange, isActive, roleName),
+        [onIsActiveChange, onRoleNameChange, isActive, roleName]
+    );
+
     return (
         <DataTableExpanded
-            isLoading={false}
+            isLoading={isLoading}
             data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => (
                 <UsersTableToolbarActions table={table} />
             )}
             filterPlaceholder="Buscar usuarios..."
-            facetedFilters={facetedFilters}
-            serverPagination={{
+            facetedFilters={customFacetedFilters}
+            serverConfig={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
                 pageCount: pagination.totalPages,
                 total: pagination.total,
                 onPaginationChange: async (pageIndex, pageSize) => {
                     onPaginationChange(pageIndex + 1, pageSize);
+                },
+                search: {
+                    search: search ?? "",
+                    onSearchChange: onSearchChange,
+                    searchPlaceholder: "Buscar usuarios...",
                 },
             }}
         />

@@ -32,21 +32,109 @@ export function useLots(blockId: string) {
     });
 }
 
-// Hook para obtener lotes por proyecto
-export function useLotsByProject(projectId: string) {
+// Hook para paginación infinita de lotes por proyecto con búsqueda
+export function useLotsByProject(projectId: string, pageSize: number = 10, preselectedId?: string, blockId?: string) {
+    const [search, setSearch] = useState<string | undefined>(undefined);
+    const [status, setStatus] = useState<string | undefined>(undefined);
+    const [orderBy, setOrderBy] = useState<string | undefined>("createdat");
+    const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("desc");
     const { handleAuthError } = useAuthContext();
 
-    return api.useQuery("get", "/api/Lots/project/{projectId}", {
-        params: {
-            path: { projectId },
+    const query = api.useInfiniteQuery(
+        "get",
+        "/api/Lots/project/{projectId}",
+        {
+            params: {
+                path: { projectId },
+                query: {
+                    blockId,
+                    search,
+                    page: 1,
+                    pageSize,
+                    orderBy,
+                    orderDirection,
+                    preselectedId,
+                    status,
+                },
+            },
         },
-    }, {
-        enabled: !!projectId,
-        retry: false,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
+        {
+            getNextPageParam: (lastPage) => {
+                if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+                    return lastPage.meta.page + 1;
+                }
+                return undefined;
+            },
+            getPreviousPageParam: (firstPage) => {
+                if (firstPage.meta?.page && firstPage.meta.page > 1) {
+                    return firstPage.meta.page - 1;
+                }
+                return undefined;
+            },
+            initialPageParam: 1,
+            pageParamName: "page",
+            enabled: !!projectId,
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
+        }
+    );
+
+    const allLots = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+    const handleScrollEnd = useCallback(() => {
+        if (query.hasNextPage && !query.isFetchingNextPage) {
+            query.fetchNextPage();
+        }
+    }, [query]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        if (value !== "None" && value !== null && value !== undefined) {
+            setSearch(value.trim());
+        } else {
+            setSearch(undefined);
+        }
+    }, []);
+
+    const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+        setOrderBy(field);
+        setOrderDirection(direction);
+    }, []);
+
+    const handleStatusChange = useCallback(() => {
+        // Esta función será manejada externamente ya que status viene como prop
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        setSearch(undefined);
+        setOrderBy("createdat");
+        setOrderDirection("desc");
+    }, []);
+
+    return {
+        query,
+        allLots,
+        fetchNextPage: query.fetchNextPage,
+        hasNextPage: query.hasNextPage,
+        isFetchingNextPage: query.isFetchingNextPage,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        refetch: query.refetch,
+        search,
+        setSearch,
+        status,
+        setStatus,
+        orderBy,
+        orderDirection,
+        handleScrollEnd,
+        handleSearchChange,
+        handleOrderChange,
+        handleStatusChange,
+        resetSearch,
+        totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+        totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+        currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+    };
 }
 
 // Hook para obtener lotes disponibles
@@ -89,6 +177,8 @@ export function useCreateLot() {
             queryClient.invalidateQueries({ queryKey: ["lots"] });
             queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
             queryClient.invalidateQueries({ queryKey: ["availableLots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"], exact: false });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"], exact: false });
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
@@ -162,6 +252,8 @@ export function useDeleteLot() {
             queryClient.invalidateQueries({ queryKey: ["lots"] });
             queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
             queryClient.invalidateQueries({ queryKey: ["availableLots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"], exact: false });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"], exact: false });
             queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
             queryClient.invalidateQueries({ queryKey: ["blocks"] });
             queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
@@ -231,6 +323,7 @@ export function usePaginatedLotsByBlockWithSearch(
     preselectedId?: string
 ) {
     const [search, setSearch] = useState<string | undefined>(undefined);
+    const [status, setStatus] = useState<string | undefined>(undefined);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
 
@@ -249,6 +342,7 @@ export function usePaginatedLotsByBlockWithSearch(
                     orderBy,
                     orderDirection,
                     preselectedId,
+                    status,
                 },
             },
         },
@@ -292,8 +386,17 @@ export function usePaginatedLotsByBlockWithSearch(
         setOrderDirection(direction);
     }, []);
 
+    const handleStatusChange = useCallback((value: string) => {
+        if (value === "all" || value === "" || value === null || value === undefined) {
+            setStatus(undefined);
+        } else {
+            setStatus(value);
+        }
+    }, []);
+
     const resetSearch = useCallback(() => {
         setSearch(undefined);
+        setStatus(undefined);
         setOrderBy(undefined);
         setOrderDirection("asc");
     }, []);
@@ -308,11 +411,14 @@ export function usePaginatedLotsByBlockWithSearch(
         isError: query.isError,
         search,
         setSearch,
+        status,
+        setStatus,
         orderBy,
         orderDirection,
         handleScrollEnd,
         handleSearchChange,
         handleOrderChange,
+        handleStatusChange,
         resetSearch,
         totalCount: query.data?.pages[0]?.meta?.total ?? 0,
         totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,

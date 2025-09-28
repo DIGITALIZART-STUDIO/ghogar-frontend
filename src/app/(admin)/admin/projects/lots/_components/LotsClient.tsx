@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Filter, Home, Search } from "lucide-react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
+import { Filter, Home, Search, X } from "lucide-react";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,27 +16,76 @@ interface LotsClientProps {
   lots: Array<LotData> | undefined;
   blockId?: string;
   projectId?: string;
+  onSearchChange?: (search: string) => void;
+  onStatusChange?: (status: string) => void;
+  onResetSearch?: () => void;
+  search?: string;
+  status?: string;
 }
 
-export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState<string>("all");
+export function LotsClient({ lots, projectId, onSearchChange, onStatusChange, onResetSearch, search, status }: LotsClientProps) {
     const [projectFilter, setProjectFilter] = useState<string>("all");
 
-    // Filtrar lotes basado en los términos de búsqueda
+    // Estado local para el input de búsqueda (como en AutoComplete)
+    const [searchInput, setSearchInput] = useState("");
+
+    // Ref para mantener el foco en el input
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    // Callback con debounce para búsqueda (como en AutoComplete)
+    const debouncedSearch = useDebouncedCallback((term: string) => {
+        if (term !== "None" && term !== null && term !== undefined) {
+            onSearchChange?.(term.trim());
+        } else {
+            onSearchChange?.("");
+        }
+    }, 500);
+
+    // Función para manejar cambios en el input de búsqueda (como en AutoComplete)
+    const handleInputChange = useCallback((value: string) => {
+        setSearchInput(value);
+        debouncedSearch(value);
+
+        // Mantener el foco después del cambio (como en AutoComplete)
+        if (searchInputRef.current) {
+            searchInputRef.current.focus();
+        }
+    }, [debouncedSearch]);
+
+    // Función para limpiar la búsqueda
+    const handleClearSearch = useCallback(() => {
+        setSearchInput("");
+        onResetSearch?.();
+
+        // Mantener el foco después de limpiar (como en AutoComplete)
+        if (searchInputRef.current) {
+            searchInputRef.current.focus();
+        }
+    }, [onResetSearch]);
+
+    // Sincronizar el input local con el estado del hook (como en AutoComplete)
+    useEffect(() => {
+        setSearchInput(search ?? "");
+    }, [search]);
+
+    // Mantener el foco en el input durante la búsqueda (como en AutoComplete)
+    useEffect(() => {
+        if (searchInputRef.current && searchInput && !lots) {
+            const timer = setTimeout(() => {
+                searchInputRef.current?.focus();
+            }, 10);
+            return () => clearTimeout(timer);
+        }
+    }, [searchInput, lots]);
+
+    // Los lotes ya vienen filtrados del backend, solo aplicamos filtros locales adicionales si es necesario
     const filteredLots = useMemo(
         () => lots?.filter((lot) => {
-            const matchesSearch =
-          lot.lotNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ??
-          lot.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ??
-          lot.blockName?.toLowerCase().includes(searchTerm.toLowerCase());
-
-            const matchesStatus = statusFilter === "all" || lot.status === statusFilter;
+            // Solo aplicar filtro de proyecto si es necesario (para casos especiales)
             const matchesProject = projectFilter === "all" || lot.projectName === projectFilter;
-
-            return matchesSearch && matchesStatus && matchesProject;
+            return matchesProject;
         }) ?? [],
-        [lots, searchTerm, statusFilter, projectFilter],
+        [lots, projectFilter],
     );
 
     // Calcular estadísticas - CORREGIDO para usar strings
@@ -51,33 +101,13 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
     );
 
     const clearFilters = () => {
-        setSearchTerm("");
-        setStatusFilter("all");
         setProjectFilter("all");
+        onResetSearch?.();
     };
-
-    if (lots?.length === 0) {
-        return (
-            <div className="text-center py-12">
-                <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    No hay lotes disponibles
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                    {blockId
-                        ? "Este bloque no tiene lotes asignados."
-                        : projectId
-                            ? "Este proyecto no tiene lotes disponibles."
-                            : "No se encontraron lotes en el sistema."}
-                </p>
-            </div>
-        );
-    }
 
     return (
         <div className="space-y-8">
-            {/* Filters - Solo mostrar si no es un bloque específico */}
-
+            {/* Filters */}
             <Card className="border pt-0">
                 <CardHeader className="my-4">
                     <CardTitle className="text-xl flex items-center mt-2">
@@ -91,15 +121,25 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                placeholder="Buscar por lote, proyecto o bloque..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
+                                ref={searchInputRef}
+                                type="text"
+                                placeholder="Buscar lotes por número, bloque o proyecto..."
+                                value={searchInput}
+                                onChange={(e) => handleInputChange(e.target.value)}
+                                className="w-full pl-10 pr-10 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
                             />
+                            {searchInput && (
+                                <button
+                                    onClick={handleClearSearch}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            )}
                         </div>
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <Select value={status ?? "all"} onValueChange={onStatusChange}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Filtrar por estado" />
                             </SelectTrigger>
@@ -126,6 +166,19 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Indicador de resultados de búsqueda */}
+            {search && (
+                <div className="text-sm text-muted-foreground">
+                    {lots && lots.length > 0 ? (
+                        <span>
+                            {lots.length} lote{lots.length !== 1 ? "s" : ""} encontrado{lots.length !== 1 ? "s" : ""} para &quot;{search}&quot;
+                        </span>
+                    ) : (
+                        <span>No se encontraron lotes para &quot;{search}&quot;</span>
+                    )}
+                </div>
+            )}
 
             {/* Quick Stats - Diseño mejorado */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -247,14 +300,14 @@ export function LotsClient({ lots, blockId, projectId }: LotsClientProps) {
                         {filteredLots.length}
                         )
                     </h2>
-                    {(searchTerm || statusFilter !== "all" || projectFilter !== "all") && (
+                    {(search || status !== "all" || projectFilter !== "all") && (
                         <Button variant="outline" onClick={clearFilters}>
                             Limpiar Filtros
                         </Button>
                     )}
                 </div>
 
-                {filteredLots.length === 0 && (searchTerm || statusFilter !== "all" || projectFilter !== "all") ? (
+                {filteredLots.length === 0 && (search || status !== "all" || projectFilter !== "all") ? (
                     <Card className="border-0">
                         <CardContent className="p-12 text-center">
                             <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />

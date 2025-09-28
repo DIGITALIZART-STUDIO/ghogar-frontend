@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
+import { useQuotationsByAdvisorPagination } from "@/hooks/useQuotationsByAdvisorPagination";
 
 // Todas las cotizaciones
 export function useAllQuotations() {
@@ -51,27 +52,6 @@ export function useQuotationsByAdvisor(advisorId: string, enabled = true) {
     return api.useQuery("get", "/api/Quotations/advisor/{advisorId}", {
         params: {
             path: { advisorId },
-        },
-        enabled: !!advisorId && enabled,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
-}
-
-// Cotizaciones paginadas por asesor
-export function usePaginatedQuotationsByAdvisor(
-    advisorId: string,
-    page: number = 1,
-    pageSize: number = 10,
-    enabled: boolean = true
-) {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/Quotations/advisor/{advisorId}/paginated", {
-        params: {
-            path: { advisorId },
-            query: { page, pageSize },
         },
         enabled: !!advisorId && enabled,
         onError: async (error: unknown) => {
@@ -296,4 +276,9 @@ export function useDownloadSeparationPDF() {
             throw error;
         }
     };
+}
+
+// Hook para paginación de cotizaciones por asesor con filtros
+export function usePaginatedQuotationsByAdvisor(page: number = 1, pageSize: number = 10) {
+    return useQuotationsByAdvisorPagination(page, pageSize);
 }

@@ -2,47 +2,61 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
+import { useLeadsPagination } from "@/hooks/useLeadsPagination";
+import { useLeadsByAssignedToPagination } from "@/hooks/useLeadsByAssignedToPagination";
 
-// Para todos los leads paginados
+// Para todos los leads paginados (wrapper del nuevo hook)
 export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
-    const { handleAuthError } = useAuthContext();
+    const leadsPagination = useLeadsPagination(page, pageSize);
 
-    return api.useQuery("get", "/api/Leads/paginated", {
-        params: {
-            query: {
-                page,
-                pageSize,
-            },
-        },
-    }, {
-        retry: false,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
+    return {
+        data: leadsPagination.data,
+        isLoading: leadsPagination.isLoading,
+        isError: leadsPagination.isError,
+        error: leadsPagination.error,
+        refetch: leadsPagination.refetch,
+        // Estados de búsqueda y filtros
+        search: leadsPagination.search,
+        status: leadsPagination.status,
+        captureSource: leadsPagination.captureSource,
+        completionReason: leadsPagination.completionReason,
+        orderBy: leadsPagination.orderBy,
+        orderDirection: leadsPagination.orderDirection,
+        // Handlers
+        setSearch: leadsPagination.setSearch,
+        setStatus: leadsPagination.setStatus,
+        setCaptureSource: leadsPagination.setCaptureSource,
+        setCompletionReason: leadsPagination.setCompletionReason,
+        handleOrderChange: leadsPagination.handleOrderChange,
+        resetFilters: leadsPagination.resetFilters,
+    };
 }
 
-// Para leads asignados a un usuario, paginados
+// Para leads asignados a un usuario, paginados (wrapper del nuevo hook)
 export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, pageSize: number = 10) {
-    const { handleAuthError } = useAuthContext();
+    const leadsPagination = useLeadsByAssignedToPagination(userId, page, pageSize);
 
-    return api.useQuery("get", "/api/Leads/assignedto/{userId}/paginated", {
-        params: {
-            path: {
-                userId,
-            },
-            query: {
-                page,
-                pageSize,
-            },
-        },
-    }, {
-        enabled: !!userId, // solo consulta si hay userId
-        retry: false,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
+    return {
+        data: leadsPagination.data,
+        isLoading: leadsPagination.isLoading,
+        isError: leadsPagination.isError,
+        error: leadsPagination.error,
+        refetch: leadsPagination.refetch,
+        // Estados de búsqueda y filtros
+        search: leadsPagination.search,
+        status: leadsPagination.status,
+        captureSource: leadsPagination.captureSource,
+        completionReason: leadsPagination.completionReason,
+        orderBy: leadsPagination.orderBy,
+        orderDirection: leadsPagination.orderDirection,
+        // Handlers
+        setSearch: leadsPagination.setSearch,
+        setStatus: leadsPagination.setStatus,
+        setCaptureSource: leadsPagination.setCaptureSource,
+        setCompletionReason: leadsPagination.setCompletionReason,
+        handleOrderChange: leadsPagination.handleOrderChange,
+        resetFilters: leadsPagination.resetFilters,
+    };
 }
 
 // Hook para actualizar el estado de un lead

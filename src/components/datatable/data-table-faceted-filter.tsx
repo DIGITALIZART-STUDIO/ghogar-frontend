@@ -25,18 +25,48 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     value: TValue; // Usamos TValue directamente
     icon?: React.ComponentType<{ className?: string }>;
   }>;
+  onFilterChange?: (value: TValue | undefined | Array<TValue>) => void; // Callback personalizado para el servidor
+  currentValue?: TValue; // Valor actual del filtro desde el servidor
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
     column,
     title,
     options,
+    onFilterChange,
+    currentValue,
 }: DataTableFacetedFilterProps<TData, TValue>) {
+    // Estado interno para mantener los valores seleccionados
+    const [internalSelectedValues, setInternalSelectedValues] = React.useState<Set<TValue>>(new Set());
+
     // Modificamos esta parte para manejar diferentes tipos de valores
     const filterValue = column?.getFilterValue(); // Extraemos esto fuera del useMemo
 
+    // Sincronizar estado interno con el valor del filtro cuando hay callback personalizado
+    React.useEffect(() => {
+        if (onFilterChange) {
+            // Priorizar currentValue si está disponible, sino usar filterValue
+            const valueToUse = currentValue ?? filterValue;
+
+            if (valueToUse !== undefined && valueToUse !== null) {
+                if (Array.isArray(valueToUse)) {
+                    setInternalSelectedValues(new Set(valueToUse as Array<TValue>));
+                } else {
+                    setInternalSelectedValues(new Set([valueToUse as TValue]));
+                }
+            } else {
+                setInternalSelectedValues(new Set());
+            }
+        }
+    }, [filterValue, currentValue, onFilterChange]);
+
     const selectedValues = React.useMemo(() => {
-    // Si no hay valor de filtro
+        // Si hay callback personalizado, usar estado interno
+        if (onFilterChange) {
+            return internalSelectedValues;
+        }
+
+        // Si no hay valor de filtro
         if (filterValue === undefined || filterValue === null) {
             return new Set<TValue>();
         }
@@ -48,7 +78,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 
         // Si es un valor único (como un booleano), lo envolvemos en un array
         return new Set<TValue>([filterValue as TValue]);
-    }, [filterValue]);
+    }, [filterValue, internalSelectedValues, onFilterChange]);
 
     return (
         <Popover>
@@ -104,12 +134,21 @@ export function DataTableFacetedFilter<TData, TValue>({
                                                 filterValues.add(option.value);
                                             }
 
-                                            // Si solo hay un valor booleano seleccionado, enviamos el valor directamente
-                                            // en lugar de un array, para que funcione mejor con el filtro booleano
-                                            if (filterValues.size === 1 && typeof Array.from(filterValues)[0] === "boolean") {
-                                                column?.setFilterValue(Array.from(filterValues)[0]);
+                                            // Usar callback personalizado si está disponible, sino usar el filtro local
+                                            if (onFilterChange) {
+                                                setInternalSelectedValues(filterValues);
+                                                // Para callbacks del servidor, siempre enviar array
+                                                const arrayValue = Array.from(filterValues) as Array<TValue>;
+                                                onFilterChange(arrayValue);
                                             } else {
-                                                column?.setFilterValue(filterValues.size ? Array.from(filterValues) : undefined);
+                                                // Para filtros locales, mantener lógica original
+                                                let finalValue: TValue | undefined;
+                                                if (filterValues.size === 1 && typeof Array.from(filterValues)[0] === "boolean") {
+                                                    finalValue = Array.from(filterValues)[0];
+                                                } else {
+                                                    finalValue = filterValues.size ? Array.from(filterValues)[0] : undefined;
+                                                }
+                                                column?.setFilterValue(finalValue);
                                             }
                                         }}
                                     >
@@ -134,7 +173,14 @@ export function DataTableFacetedFilter<TData, TValue>({
                                 <CommandSeparator />
                                 <CommandGroup>
                                     <CommandItem
-                                        onSelect={() => column?.setFilterValue(undefined)}
+                                        onSelect={() => {
+                                            if (onFilterChange) {
+                                                setInternalSelectedValues(new Set());
+                                                onFilterChange([]);
+                                            } else {
+                                                column?.setFilterValue(undefined);
+                                            }
+                                        }}
                                         className="justify-center text-center"
                                     >
                                         Limpiar filtros

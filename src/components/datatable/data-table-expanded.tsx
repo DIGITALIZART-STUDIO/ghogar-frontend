@@ -20,7 +20,7 @@ import {
 } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ServerPaginationTanstackTableConfig } from "@/types/tanstack-table/CustomPagination";
+import { ServerPaginationTanstackTableConfig, ServerPaginationWithSearchConfig } from "@/types/tanstack-table/CustomPagination";
 import { Empty } from "../common/Empty";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -41,8 +41,10 @@ interface DataTableExpandedProps<TData, TValue> {
     renderExpandedRow?: (row: TData) => React.ReactNode; // Nueva prop para el contenido expandido
     onClickRow?: (row: TData) => void;
     columnVisibilityConfig?: Partial<Record<keyof TData, boolean>>;
-    // Nuevas props para paginación del servidor
+    // Configuración para paginación del servidor (básica)
     serverPagination?: ServerPaginationTanstackTableConfig;
+    // Configuración extendida para paginación del servidor con búsqueda y filtros
+    serverConfig?: ServerPaginationWithSearchConfig;
     isLoading: boolean;
 }
 
@@ -56,6 +58,7 @@ export function DataTableExpanded<TData, TValue>({
     onClickRow,
     columnVisibilityConfig,
     serverPagination,
+    serverConfig,
     isLoading,
 }: DataTableExpandedProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
@@ -71,10 +74,13 @@ export function DataTableExpanded<TData, TValue>({
     // Usamos el estado expandedState de tanstack table directamente
     const [expanded, setExpanded] = React.useState({});
 
+    // Determinar qué configuración usar (prioridad: serverConfig > serverPagination)
+    const activeServerConfig = serverConfig ?? serverPagination;
+
     // Estado de paginación local o del servidor
     const [pagination, setPagination] = React.useState<PaginationState>({
-        pageIndex: serverPagination?.pageIndex ?? 0,
-        pageSize: serverPagination?.pageSize ?? 10,
+        pageIndex: activeServerConfig?.pageIndex ?? 0,
+        pageSize: activeServerConfig?.pageSize ?? 10,
     });
 
     // Manejar cambios de paginación
@@ -83,11 +89,11 @@ export function DataTableExpanded<TData, TValue>({
             const newPagination = typeof updaterOrValue === "function" ? updaterOrValue(pagination) : updaterOrValue;
 
             setPagination(newPagination);
-            if (serverPagination?.onPaginationChange) {
-                serverPagination.onPaginationChange(newPagination.pageIndex, newPagination.pageSize);
+            if (activeServerConfig?.onPaginationChange) {
+                activeServerConfig.onPaginationChange(newPagination.pageIndex, newPagination.pageSize);
             }
         },
-        [pagination, serverPagination],
+        [pagination, activeServerConfig],
     );
 
     const table = useReactTable<TData>({
@@ -118,14 +124,14 @@ export function DataTableExpanded<TData, TValue>({
         onPaginationChange: handlePaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: serverPagination ? undefined : getPaginationRowModel(),
+        getPaginationRowModel: activeServerConfig ? undefined : getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         globalFilterFn,
-        ...(serverPagination
+        ...(activeServerConfig
             ? {
-                pageCount: serverPagination.pageCount,
+                pageCount: activeServerConfig.pageCount,
                 manualPagination: true,
             }
             : {
@@ -151,6 +157,7 @@ export function DataTableExpanded<TData, TValue>({
                 toolbarActions={toolbarActions}
                 filterPlaceholder={filterPlaceholder}
                 facetedFilters={facetedFilters}
+                serverConfig={serverConfig}
             />
             <div className="rounded-md border">
                 <Table>
@@ -176,14 +183,18 @@ export function DataTableExpanded<TData, TValue>({
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
-                            // Show loading state while fetching data
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    <div className="flex justify-center">
-                                        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
+                            // Show skeleton rows while fetching data - solo el contenido de la tabla
+                            Array(5)
+                                .fill(0)
+                                .map((_, index) => (
+                                    <TableRow key={`skeleton-${index}`}>
+                                        {columns.map((_, colIndex) => (
+                                            <TableCell key={`skeleton-${index}-${colIndex}`} className="h-12">
+                                                <div className="h-4 bg-muted animate-pulse rounded" />
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <React.Fragment key={row.id}>
@@ -232,7 +243,7 @@ export function DataTableExpanded<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} serverPagination={serverPagination} />
+            <DataTablePagination table={table} serverPagination={activeServerConfig} />
         </div>
     );
 }

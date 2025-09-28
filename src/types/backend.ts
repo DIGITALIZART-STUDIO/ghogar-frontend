@@ -21,7 +21,6 @@ export const backendUrl = (baseUrl: string, version?: string) => (version ? `${b
  * Automatically handles FormData for file uploads
  */
 export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-
     let response: Response;
     try {
         // Preparar la configuración de fetch

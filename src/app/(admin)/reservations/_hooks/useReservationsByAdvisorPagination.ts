@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
-import { useBasePagination } from "./useBasePagination";
-import { useSelectedProject } from "./use-selected-project";
+import { useBasePagination } from "../../../../hooks/useBasePagination";
+import { useSelectedProject } from "../../../../hooks/use-selected-project";
 import { ReservationStatus, PaymentMethod } from "@/app/(admin)/reservations/_types/reservation";
 
 interface ReservationsFilters extends Record<string, Array<unknown>> {

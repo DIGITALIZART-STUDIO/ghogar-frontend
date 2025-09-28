@@ -1,19 +1,19 @@
 import { useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
-import { useBasePagination } from "./useBasePagination";
+import { useBasePagination } from "../../../../hooks/useBasePagination";
 
 /**
- * Hook específico para paginación de usuarios
- * Combina el hook base con la lógica específica de la API de usuarios
+ * Hook específico para paginación de clientes
+ * Combina el hook base con la lógica específica de la API de clientes
  */
-export function useUsersPagination(page: number = 1, pageSize: number = 10) {
+export function useClientsPagination(page: number = 1, pageSize: number = 10) {
     const { handleAuthError } = useAuthContext();
 
-    // Filtros iniciales específicos para usuarios
+    // Filtros iniciales específicos para clientes
     const initialFilters = {
         isActive: [] as Array<boolean>,
-        roleName: [] as Array<string>,
+        type: [] as Array<string>,
     };
 
     // Usar el hook base para la lógica común
@@ -22,8 +22,8 @@ export function useUsersPagination(page: number = 1, pageSize: number = 10) {
     // Construir parámetros de query
     const queryParams = basePagination.buildQueryParams(page, pageSize);
 
-    // Query específica para usuarios
-    const query = api.useQuery("get", "/api/Users/all", {
+    // Query específica para clientes
+    const query = api.useQuery("get", "/api/Clients/paginated", {
         params: {
             query: queryParams,
         },
@@ -34,13 +34,13 @@ export function useUsersPagination(page: number = 1, pageSize: number = 10) {
         },
     });
 
-    // Handlers específicos para usuarios
+    // Handlers específicos para clientes
     const setIsActive = useCallback((values: Array<boolean>) => {
         basePagination.setFilter("isActive", values);
     }, [basePagination]);
 
-    const setRoleName = useCallback((values: Array<string>) => {
-        basePagination.setFilter("roleName", values);
+    const setType = useCallback((values: Array<string>) => {
+        basePagination.setFilter("type", values);
     }, [basePagination]);
 
     return {
@@ -48,13 +48,13 @@ export function useUsersPagination(page: number = 1, pageSize: number = 10) {
         // Estados del hook base
         search: basePagination.search,
         isActive: basePagination.filters.isActive,
-        roleName: basePagination.filters.roleName,
+        type: basePagination.filters.type,
         orderBy: basePagination.orderBy,
         orderDirection: basePagination.orderDirection,
         // Handlers específicos
         setSearch: basePagination.setSearch,
         setIsActive,
-        setRoleName,
+        setType,
         handleOrderChange: basePagination.handleOrderChange,
         resetFilters: basePagination.resetFilters,
         // Información de paginación

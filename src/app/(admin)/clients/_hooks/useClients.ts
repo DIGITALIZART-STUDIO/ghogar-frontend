@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { backend as api, uploadFile } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import type { components } from "@/types/api";
-import { useClientsPagination } from "@/hooks/useClientsPagination";
+import { useClientsPagination } from "@/app/(admin)/clients/_hooks/useClientsPagination";
 
 // Hook para paginación de clientes (wrapper del nuevo hook)
 export function usePaginatedClients(page: number = 1, pageSize: number = 10) {

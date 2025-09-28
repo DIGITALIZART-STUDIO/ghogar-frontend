@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "@/context/auth-provider";
 import { toast } from "sonner";
 import { useState, useCallback } from "react";
-import { useUsersPagination } from "@/hooks/useUsersPagination";
+import { useUsersPagination } from "@/app/(admin)/admin/users/_hooks/useUsersPagination";
 
 export function useUsers() {
     const { handleAuthError, isLoggingOut } = useAuthContext();

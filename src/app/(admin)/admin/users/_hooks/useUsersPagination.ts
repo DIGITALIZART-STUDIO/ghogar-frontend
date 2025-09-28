@@ -1,20 +1,19 @@
 import { useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
-import { useBasePagination } from "./useBasePagination";
+import { useBasePagination } from "../../../../../hooks/useBasePagination";
 
 /**
- * Hook específico para paginación de leads
- * Combina el hook base con la lógica específica de la API de leads
+ * Hook específico para paginación de usuarios
+ * Combina el hook base con la lógica específica de la API de usuarios
  */
-export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
+export function useUsersPagination(page: number = 1, pageSize: number = 10) {
     const { handleAuthError } = useAuthContext();
 
-    // Filtros iniciales específicos para leads
+    // Filtros iniciales específicos para usuarios
     const initialFilters = {
-        status: [] as Array<string>,
-        captureSource: [] as Array<string>,
-        completionReason: [] as Array<string>,
+        isActive: [] as Array<boolean>,
+        roleName: [] as Array<string>,
     };
 
     // Usar el hook base para la lógica común
@@ -23,8 +22,8 @@ export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
     // Construir parámetros de query
     const queryParams = basePagination.buildQueryParams(page, pageSize);
 
-    // Query específica para leads
-    const query = api.useQuery("get", "/api/Leads/paginated", {
+    // Query específica para usuarios
+    const query = api.useQuery("get", "/api/Users/all", {
         params: {
             query: queryParams,
         },
@@ -35,33 +34,27 @@ export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
         },
     });
 
-    // Handlers específicos para leads
-    const setStatus = useCallback((values: Array<string>) => {
-        basePagination.setFilter("status", values);
+    // Handlers específicos para usuarios
+    const setIsActive = useCallback((values: Array<boolean>) => {
+        basePagination.setFilter("isActive", values);
     }, [basePagination]);
 
-    const setCaptureSource = useCallback((values: Array<string>) => {
-        basePagination.setFilter("captureSource", values);
-    }, [basePagination]);
-
-    const setCompletionReason = useCallback((values: Array<string>) => {
-        basePagination.setFilter("completionReason", values);
+    const setRoleName = useCallback((values: Array<string>) => {
+        basePagination.setFilter("roleName", values);
     }, [basePagination]);
 
     return {
         ...query,
         // Estados del hook base
         search: basePagination.search,
-        status: basePagination.filters.status,
-        captureSource: basePagination.filters.captureSource,
-        completionReason: basePagination.filters.completionReason,
+        isActive: basePagination.filters.isActive,
+        roleName: basePagination.filters.roleName,
         orderBy: basePagination.orderBy,
         orderDirection: basePagination.orderDirection,
         // Handlers específicos
         setSearch: basePagination.setSearch,
-        setStatus,
-        setCaptureSource,
-        setCompletionReason,
+        setIsActive,
+        setRoleName,
         handleOrderChange: basePagination.handleOrderChange,
         resetFilters: basePagination.resetFilters,
         // Información de paginación

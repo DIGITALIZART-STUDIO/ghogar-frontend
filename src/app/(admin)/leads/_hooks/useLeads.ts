@@ -2,8 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
-import { useLeadsPagination } from "@/hooks/useLeadsPagination";
-import { useLeadsByAssignedToPagination } from "@/hooks/useLeadsByAssignedToPagination";
+import { useLeadsPagination } from "@/app/(admin)/leads/_hooks/useLeadsPagination";
+import { useLeadsByAssignedToPagination } from "@/app/(admin)/leads/_hooks/useLeadsByAssignedToPagination";
 
 // Para todos los leads paginados (wrapper del nuevo hook)
 export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {

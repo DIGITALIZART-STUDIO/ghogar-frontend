@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import { useSelectedProject } from "@/hooks/use-selected-project";
-import { useReservationsByAdvisorPagination } from "@/hooks/useReservationsByAdvisorPagination";
+import { useReservationsByAdvisorPagination } from "@/app/(admin)/reservations/_hooks/useReservationsByAdvisorPagination";
 
 // Hook para reservas canceladas (no paginado)
 export function useCanceledReservations() {

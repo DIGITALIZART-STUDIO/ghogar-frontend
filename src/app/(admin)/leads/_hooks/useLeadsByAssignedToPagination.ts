@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
-import { useBasePagination } from "./useBasePagination";
+import { useBasePagination } from "../../../../hooks/useBasePagination";
 
 /**
  * Hook específico para paginación de leads asignados a un usuario

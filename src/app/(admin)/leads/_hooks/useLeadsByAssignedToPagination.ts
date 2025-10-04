@@ -19,6 +19,7 @@ export function useLeadsByAssignedToPagination(
         status: [] as Array<string>,
         captureSource: [] as Array<string>,
         completionReason: [] as Array<string>,
+        clientId: null as string | null,
     };
 
     // Usar el hook base para la lógica común
@@ -56,6 +57,10 @@ export function useLeadsByAssignedToPagination(
         basePagination.setFilter("completionReason", values);
     }, [basePagination]);
 
+    const setClientId = useCallback((value: string | null) => {
+        basePagination.setFilter("clientId", value);
+    }, [basePagination]);
+
     return {
         ...query,
         // Estados del hook base
@@ -63,6 +68,7 @@ export function useLeadsByAssignedToPagination(
         status: basePagination.filters.status,
         captureSource: basePagination.filters.captureSource,
         completionReason: basePagination.filters.completionReason,
+        clientId: basePagination.filters.clientId,
         orderBy: basePagination.orderBy,
         orderDirection: basePagination.orderDirection,
         // Handlers específicos
@@ -70,6 +76,7 @@ export function useLeadsByAssignedToPagination(
         setStatus,
         setCaptureSource,
         setCompletionReason,
+        setClientId,
         handleOrderChange: basePagination.handleOrderChange,
         resetFilters: basePagination.resetFilters,
         // Información de paginación

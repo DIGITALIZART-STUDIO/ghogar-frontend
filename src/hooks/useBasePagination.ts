@@ -4,8 +4,9 @@ import { useDebouncedCallback } from "use-debounce";
 /**
  * Hook base para manejar estados de paginación, búsqueda y filtros
  * Este hook maneja la lógica común sin depender de APIs específicas
+ * Soporta tanto filtros de array como filtros de valor único
  */
-export function useBasePagination<TFilters extends Record<string, Array<unknown>>>(
+export function useBasePagination<TFilters extends Record<string, Array<unknown> | unknown>>(
     initialFilters: TFilters = {} as TFilters
 ) {
     // Estados internos para mantener los filtros (para UI inmediata)
@@ -60,11 +61,17 @@ export function useBasePagination<TFilters extends Record<string, Array<unknown>
         pageSize,
         search,
         ...Object.entries(filters).reduce((acc, [key, value]) => {
-            if (value.length > 0) {
+            // Manejar arrays (filtros múltiples)
+            if (Array.isArray(value)) {
+                if (value.length > 0) {
+                    acc[key] = value;
+                }
+            } else if (value !== null && value !== undefined) {
+                // Manejar valores únicos (incluyendo null/undefined)
                 acc[key] = value;
             }
             return acc;
-        }, {} as Record<string, Array<unknown>>),
+        }, {} as Record<string, unknown>),
         orderBy: orderBy ? `${orderBy} ${orderDirection}` : undefined,
     }), [search, filters, orderBy, orderDirection]);
 

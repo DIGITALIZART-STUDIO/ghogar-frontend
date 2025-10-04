@@ -15,6 +15,8 @@ export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
         status: [] as Array<string>,
         captureSource: [] as Array<string>,
         completionReason: [] as Array<string>,
+        clientId: null as string | null,
+        userId: null as string | null,
     };
 
     // Usar el hook base para la lógica común
@@ -48,6 +50,14 @@ export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
         basePagination.setFilter("completionReason", values);
     }, [basePagination]);
 
+    const setClientId = useCallback((value: string | null) => {
+        basePagination.setFilter("clientId", value);
+    }, [basePagination]);
+
+    const setUserId = useCallback((value: string | null) => {
+        basePagination.setFilter("userId", value);
+    }, [basePagination]);
+
     return {
         ...query,
         // Estados del hook base
@@ -55,6 +65,8 @@ export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
         status: basePagination.filters.status,
         captureSource: basePagination.filters.captureSource,
         completionReason: basePagination.filters.completionReason,
+        clientId: basePagination.filters.clientId,
+        userId: basePagination.filters.userId,
         orderBy: basePagination.orderBy,
         orderDirection: basePagination.orderDirection,
         // Handlers específicos
@@ -62,6 +74,8 @@ export function useLeadsPagination(page: number = 1, pageSize: number = 10) {
         setStatus,
         setCaptureSource,
         setCompletionReason,
+        setClientId,
+        setUserId,
         handleOrderChange: basePagination.handleOrderChange,
         resetFilters: basePagination.resetFilters,
         // Información de paginación

@@ -20,6 +20,8 @@ export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
         status: leadsPagination.status,
         captureSource: leadsPagination.captureSource,
         completionReason: leadsPagination.completionReason,
+        clientId: leadsPagination.clientId,
+        userId: leadsPagination.userId,
         orderBy: leadsPagination.orderBy,
         orderDirection: leadsPagination.orderDirection,
         // Handlers
@@ -27,6 +29,8 @@ export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
         setStatus: leadsPagination.setStatus,
         setCaptureSource: leadsPagination.setCaptureSource,
         setCompletionReason: leadsPagination.setCompletionReason,
+        setClientId: leadsPagination.setClientId,
+        setUserId: leadsPagination.setUserId,
         handleOrderChange: leadsPagination.handleOrderChange,
         resetFilters: leadsPagination.resetFilters,
     };
@@ -47,6 +51,7 @@ export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, 
         status: leadsPagination.status,
         captureSource: leadsPagination.captureSource,
         completionReason: leadsPagination.completionReason,
+        clientId: leadsPagination.clientId,
         orderBy: leadsPagination.orderBy,
         orderDirection: leadsPagination.orderDirection,
         // Handlers
@@ -54,6 +59,7 @@ export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, 
         setStatus: leadsPagination.setStatus,
         setCaptureSource: leadsPagination.setCaptureSource,
         setCompletionReason: leadsPagination.setCompletionReason,
+        setClientId: leadsPagination.setClientId,
         handleOrderChange: leadsPagination.handleOrderChange,
         resetFilters: leadsPagination.resetFilters,
     };
@@ -69,6 +75,7 @@ export function useUpdateLeadStatus() {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -88,6 +95,24 @@ export function useUsersSummary() {
     });
 }
 
+// Hook para obtener usuarios con leads asignados (nuevo endpoint)
+export function useUsersWithLeadsSummary(projectId?: string) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Leads/users/with-leads/summary", {
+        params: {
+            query: {
+                projectId: projectId ?? undefined,
+            },
+        },
+    }, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
 export function useCreateLead() {
     const queryClient = useQueryClient();
     const { handleAuthError } = useAuthContext();
@@ -97,6 +122,7 @@ export function useCreateLead() {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -114,6 +140,7 @@ export function useUpdateLead() {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -131,6 +158,7 @@ export function useDeleteLeads() {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -148,6 +176,7 @@ export function useActivateLeads() {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -165,6 +194,7 @@ export function useCheckAndUpdateExpiredLeads() {
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
             queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
+            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

@@ -1,15 +1,18 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
 import { usePaginatedLeads } from "./_hooks/useLeads";
 import { LeadsTable } from "./_components/table/LeadsTable";
+import { useLeadsStore } from "./_store/useLeadsStore";
 
 export default function LeadsPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+
+    const { selectedUserId, selectedClientId } = useLeadsStore();
 
     const {
         data: paginatedLeads,
@@ -23,9 +26,26 @@ export default function LeadsPage() {
         setCaptureSource,
         completionReason,
         setCompletionReason,
+        userId,
+        setUserId,
+        clientId,
+        setClientId,
         handleOrderChange,
         resetFilters
     } = usePaginatedLeads(page, pageSize);
+
+    // Sincronizar los filtros del store con los filtros de leads
+    useEffect(() => {
+        if (selectedUserId !== userId) {
+            setUserId(selectedUserId);
+        }
+    }, [selectedUserId, userId, setUserId]);
+
+    useEffect(() => {
+        if (selectedClientId !== clientId) {
+            setClientId(selectedClientId);
+        }
+    }, [selectedClientId, clientId, setClientId]);
 
     const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
         setPage(newPage);

@@ -38,6 +38,7 @@ export function useDeleteClients() {
     return api.useMutation("delete", "/api/Clients/batch", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -53,6 +54,7 @@ export function useActivateClients() {
     return api.useMutation("post", "/api/Clients/batch/activate", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -68,6 +70,7 @@ export function useCreateClient() {
     return api.useMutation("post", "/api/Clients", {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -84,6 +87,7 @@ export function useUpdateClient() {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -96,6 +100,25 @@ export function useClientsSummary() {
     const { handleAuthError } = useAuthContext();
 
     return api.useQuery("get", "/api/Clients/summary", undefined, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para obtener clientes del usuario actual con leads asignados (nuevo endpoint)
+export function useClientsByCurrentUserSummary(projectId?: string, useCurrentUser: boolean = true) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Clients/current-user/summary", {
+        params: {
+            query: {
+                projectId: projectId ?? undefined,
+                useCurrentUser: useCurrentUser,
+            },
+        },
+    }, {
         retry: false,
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -117,6 +140,7 @@ export function useImportClients() {
             queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
             queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

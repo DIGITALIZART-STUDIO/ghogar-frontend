@@ -53,3 +53,15 @@ export function useDashboardSupervisor(year?: number) {
         }
     );
 }
+
+// Hook para obtener los datos del dashboard manager
+export function useDashboardManager(year?: number) {
+    return backend.useQuery(
+        "get",
+        "/api/Dashboard/manager",
+        { year },
+        {
+            enabled: year !== undefined, // Solo ejecuta si year está definido
+        }
+    );
+}

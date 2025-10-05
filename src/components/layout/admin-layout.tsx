@@ -4,7 +4,6 @@ import { SearchProvider } from "@/context/search-context";
 import { ThemeProvider } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
 import { SidebarProvider } from "../ui/sidebar";
-import SkipToMain from "../ui/skip-to-main";
 import { AppSidebar } from "./app-sidebar";
 
 export default function AdminLayout({ name, email, initials, children, roles }: { children: React.ReactNode } & {
@@ -18,7 +17,6 @@ export default function AdminLayout({ name, email, initials, children, roles }: 
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <SearchProvider roles={roles}>
                 <SidebarProvider defaultOpen={defaultOpen}>
-                    <SkipToMain />
                     <AppSidebar name={name} email={email} initials={initials} roles={roles} />
                     <div
                         id="content"

@@ -45,14 +45,14 @@ export function useCreateUser() {
 
     return api.useMutation("post", "/api/Users", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
-            toast.success("Usuario creado exitosamente");
+            // Invalidar todas las queries de usuarios con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users/all"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users"] });
+            queryClient.invalidateQueries({ queryKey: ["supervisorSalesAdvisorAssignments"] });
+            queryClient.invalidateQueries({ queryKey: ["salesAdvisorsBySupervisor"] });
         },
         onError: async (error: unknown) => {
-            const handled = await handleAuthError(error);
-            if (!handled) {
-                toast.error("Error al crear usuario");
-            }
+            await handleAuthError(error);
         },
     });
 }
@@ -64,14 +64,14 @@ export function useUpdateUser() {
 
     return api.useMutation("put", "/api/Users/{userId}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
-            toast.success("Usuario actualizado exitosamente");
+            // Invalidar todas las queries de usuarios con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users/all"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users"] });
+            queryClient.invalidateQueries({ queryKey: ["supervisorSalesAdvisorAssignments"] });
+            queryClient.invalidateQueries({ queryKey: ["salesAdvisorsBySupervisor"] });
         },
         onError: async (error: unknown) => {
-            const handled = await handleAuthError(error);
-            if (!handled) {
-                toast.error("Error al actualizar usuario");
-            }
+            await handleAuthError(error);
         },
     });
 }
@@ -102,14 +102,14 @@ export function useDeactivateUser() {
 
     return api.useMutation("delete", "/api/Users/{userId}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
-            toast.success("Usuario desactivado exitosamente");
+            // Invalidar todas las queries de usuarios con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users/all"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users"] });
+            queryClient.invalidateQueries({ queryKey: ["supervisorSalesAdvisorAssignments"] });
+            queryClient.invalidateQueries({ queryKey: ["salesAdvisorsBySupervisor"] });
         },
         onError: async (error: unknown) => {
-            const handled = await handleAuthError(error);
-            if (!handled) {
-                toast.error("Error al desactivar usuario");
-            }
+            await handleAuthError(error);
         },
     });
 }
@@ -121,14 +121,14 @@ export function useReactivateUser() {
 
     return api.useMutation("patch", "/api/Users/{userId}/reactivate", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedUsers"] });
-            toast.success("Usuario reactivado exitosamente");
+            // Invalidar todas las queries de usuarios con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users/all"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Users"] });
+            queryClient.invalidateQueries({ queryKey: ["supervisorSalesAdvisorAssignments"] });
+            queryClient.invalidateQueries({ queryKey: ["salesAdvisorsBySupervisor"] });
         },
         onError: async (error: unknown) => {
-            const handled = await handleAuthError(error);
-            if (!handled) {
-                toast.error("Error al reactivar usuario");
-            }
+            await handleAuthError(error);
         },
     });
 }
@@ -242,5 +242,92 @@ export function usePaginatedUsersWithHigherRankWithSearch(pageSize: number = 10,
         totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
         currentPage: query.data?.pages[0]?.meta?.page ?? 1,
     };
+}
+
+// Hook para asignar SalesAdvisor a Supervisor
+export function useAssignSalesAdvisorToSupervisor() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Users/assign-sales-advisor", {
+        onSuccess: () => {
+            // Invalidar queries relacionadas con asignaciones
+            queryClient.invalidateQueries({ queryKey: ["supervisorSalesAdvisorAssignments"] });
+            queryClient.invalidateQueries({ queryKey: ["salesAdvisorsBySupervisor"] });
+            toast.success("SalesAdvisor asignado exitosamente");
+        },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al asignar SalesAdvisor");
+            }
+        },
+    });
+}
+
+// Hook para obtener SalesAdvisors asignados a un Supervisor
+export function useSalesAdvisorsBySupervisor(supervisorId: string) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Users/supervisor/{supervisorId}/sales-advisors", {
+        params: {
+            path: {
+                supervisorId,
+            },
+        },
+    }, {
+        retry: false,
+        enabled: !!supervisorId,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para remover SalesAdvisor de un Supervisor
+export function useRemoveSalesAdvisorFromSupervisor() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Users/supervisor/{supervisorId}/sales-advisor/{salesAdvisorId}", {
+        onSuccess: () => {
+            // Invalidar queries relacionadas con asignaciones
+            queryClient.invalidateQueries({ queryKey: ["supervisorSalesAdvisorAssignments"] });
+            queryClient.invalidateQueries({ queryKey: ["salesAdvisorsBySupervisor"] });
+            toast.success("SalesAdvisor removido exitosamente");
+        },
+        onError: async (error: unknown) => {
+            const handled = await handleAuthError(error);
+            if (!handled) {
+                toast.error("Error al remover SalesAdvisor");
+            }
+        },
+    });
+}
+
+// Hook para obtener todas las asignaciones Supervisor-SalesAdvisor con paginación
+export function useSupervisorSalesAdvisorAssignments(
+    page: number = 1,
+    pageSize: number = 10,
+    search?: string,
+    orderBy: string = "CreatedAt desc"
+) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Users/supervisor-sales-advisor-assignments", {
+        params: {
+            query: {
+                page,
+                pageSize,
+                ...(search && { search }),
+                orderBy,
+            },
+        },
+    }, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
 }
 

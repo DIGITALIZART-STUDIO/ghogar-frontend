@@ -144,12 +144,13 @@ export function useCreateReservation() {
 
     return api.useMutation("post", "/api/Reservations", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
+            // Invalidar queries de reservaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -164,13 +165,14 @@ export function useUpdateReservation() {
 
     return api.useMutation("patch", "/api/Reservations/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
+            // Invalidar queries de reservaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -185,13 +187,14 @@ export function useDeleteReservation() {
 
     return api.useMutation("delete", "/api/Reservations/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
+            // Invalidar queries de reservaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -206,13 +209,14 @@ export function useChangeReservationStatus() {
 
     return api.useMutation("put", "/api/Reservations/{id}/status", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
+            // Invalidar queries de reservaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -227,13 +231,14 @@ export function useToggleContractValidationStatus() {
 
     return api.useMutation("put", "/api/Reservations/{id}/toggle-validation-status", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledPendingValidationReservationsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsWithPendingPaymentsPaginated"] });
-            queryClient.invalidateQueries({ queryKey: ["reservationsByAdvisorPaginated"] });
+            // Invalidar queries de reservaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

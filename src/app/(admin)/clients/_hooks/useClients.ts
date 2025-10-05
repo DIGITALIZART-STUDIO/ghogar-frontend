@@ -37,8 +37,10 @@ export function useDeleteClients() {
 
     return api.useMutation("delete", "/api/Clients/batch", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
+            // Invalidar queries de clientes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -53,8 +55,10 @@ export function useActivateClients() {
 
     return api.useMutation("post", "/api/Clients/batch/activate", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
+            // Invalidar queries de clientes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -69,8 +73,10 @@ export function useCreateClient() {
 
     return api.useMutation("post", "/api/Clients", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
+            // Invalidar queries de clientes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -84,10 +90,12 @@ export function useUpdateClient() {
 
     return api.useMutation("put", "/api/Clients/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
+            // Invalidar queries de clientes y leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -137,10 +145,12 @@ export function useImportClients() {
             return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["clientsByCurrentUserSummary"] });
+            // Invalidar queries de clientes y leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

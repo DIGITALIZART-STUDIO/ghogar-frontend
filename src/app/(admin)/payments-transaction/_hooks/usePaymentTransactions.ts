@@ -70,16 +70,18 @@ export function useCreatePaymentTransaction() {
         onError: async (error: unknown) => {
             await handleAuthError(error);
         },
-        onSuccess: (_: unknown, variables: unknown) => {
-            queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
-            // Invalidar queries relacionadas con la reserva
-            if (variables && typeof variables === "object" && "reservationId" in variables) {
-                const reservationId = (variables as { reservationId: string }).reservationId;
-                queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", reservationId] });
-                queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", reservationId] });
-                queryClient.invalidateQueries({ queryKey: ["paymentSchedule", reservationId] });
-            }
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+        onSuccess: () => {
+            // Invalidar queries de transacciones de pago con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
     });
 }
@@ -93,14 +95,18 @@ export function useUpdatePaymentTransaction() {
         onError: async (error: unknown) => {
             await handleAuthError(error);
         },
-        onSuccess: (_: unknown, variables: unknown) => {
-            queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
-            if (variables && typeof variables === "object" && "id" in variables) {
-                const id = (variables as { id: string }).id;
-                queryClient.invalidateQueries({ queryKey: ["paymentTransaction", id] });
-            }
-            // Invalidar queries relacionadas con la reserva si tenemos el reservationId
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+        onSuccess: () => {
+            // Invalidar queries de transacciones de pago con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
     });
 }
@@ -115,12 +121,17 @@ export function useDeletePaymentTransaction() {
             await handleAuthError(error);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
-            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
-            // Invalidar todas las queries relacionadas con transacciones de pago
-            queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation"] });
-            queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation"] });
-            queryClient.invalidateQueries({ queryKey: ["paymentSchedule"] });
+            // Invalidar queries de transacciones de pago con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
         },
     });
 }

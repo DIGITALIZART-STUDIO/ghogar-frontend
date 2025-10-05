@@ -35,10 +35,11 @@ export function useCreateTask() {
 
     return api.useMutation("post", "/api/LeadTasks", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["leadTasksWithFilters"] });
-            queryClient.invalidateQueries({ queryKey: ["leadTasksByLead"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            // Invalidar queries de tareas con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["post", "/api/LeadTasks/filter"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/lead"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -53,10 +54,12 @@ export function useUpdateTask() {
 
     return api.useMutation("put", "/api/LeadTasks/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["leadTasksWithFilters"] });
-            queryClient.invalidateQueries({ queryKey: ["leadTasksByLead"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            // Invalidar queries de tareas con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["post", "/api/LeadTasks/filter"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/lead"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -71,10 +74,12 @@ export function useDeleteTask() {
 
     return api.useMutation("delete", "/api/LeadTasks/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["leadTasksWithFilters"] });
-            queryClient.invalidateQueries({ queryKey: ["leadTasksByLead"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            // Invalidar queries de tareas con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["post", "/api/LeadTasks/filter"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/lead"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -89,10 +94,12 @@ export function useCompleteTask() {
 
     return api.useMutation("post", "/api/LeadTasks/{id}/complete", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["leadTasksWithFilters"] });
-            queryClient.invalidateQueries({ queryKey: ["leadTasksByLead"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            // Invalidar queries de tareas con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["post", "/api/LeadTasks/filter"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/lead"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/LeadTasks/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

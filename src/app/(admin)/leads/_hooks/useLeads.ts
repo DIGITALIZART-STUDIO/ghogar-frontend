@@ -72,10 +72,11 @@ export function useUpdateLeadStatus() {
 
     return api.useMutation("put", "/api/Leads/{id}/status", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
-            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
+            // Invalidar queries de leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -119,10 +120,11 @@ export function useCreateLead() {
 
     return api.useMutation("post", "/api/Leads", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
-            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
+            // Invalidar queries de leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -137,10 +139,11 @@ export function useUpdateLead() {
 
     return api.useMutation("put", "/api/Leads/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
-            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
+            // Invalidar queries de leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -155,10 +158,11 @@ export function useDeleteLeads() {
 
     return api.useMutation("delete", "/api/Leads/batch", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
-            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
+            // Invalidar queries de leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -173,10 +177,11 @@ export function useActivateLeads() {
 
     return api.useMutation("post", "/api/Leads/batch/activate", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
-            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
+            // Invalidar queries de leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -191,10 +196,11 @@ export function useCheckAndUpdateExpiredLeads() {
 
     return api.useMutation("post", "/api/Leads/check-expired", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
-            queryClient.invalidateQueries({ queryKey: ["getAvailableLeadsForQuotation"] });
-            queryClient.invalidateQueries({ queryKey: ["usersWithLeadsSummary"] });
+            // Invalidar queries de leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

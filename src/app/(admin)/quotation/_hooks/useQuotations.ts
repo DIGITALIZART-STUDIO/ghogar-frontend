@@ -67,8 +67,9 @@ export function useCreateQuotation() {
 
     return api.useMutation("post", "/api/Quotations", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+            // Invalidar queries de cotizaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -82,10 +83,11 @@ export function useUpdateQuotation() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Quotations/{id}", {
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            queryClient.invalidateQueries({ queryKey: ["quotation", variables.params.path.id] });
-            queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+        onSuccess: () => {
+            // Invalidar queries de cotizaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -100,8 +102,9 @@ export function useDeleteQuotation() {
 
     return api.useMutation("delete", "/api/Quotations/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+            // Invalidar queries de cotizaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -115,10 +118,11 @@ export function useChangeQuotationStatus() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Quotations/{id}/status", {
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ["quotations"] });
-            queryClient.invalidateQueries({ queryKey: ["quotation", variables.params.path.id] });
-            queryClient.invalidateQueries({ queryKey: ["quotationsByAdvisorPaginated"] });
+        onSuccess: () => {
+            // Invalidar queries de cotizaciones con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

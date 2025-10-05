@@ -36,15 +36,10 @@ export function useCreateProject() {
 
     return api.useMutation("post", "/api/Projects", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
-            // Invalidar queries paginadas de proyectos activos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects/active/paginated"]
-            });
-            // Invalidar queries paginadas de todos los proyectos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects"]
-            });
+            // Invalidar queries de proyectos con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -58,18 +53,12 @@ export function useUpdateProject() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Projects/{id}", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["project", id] });
-            // Invalidar queries paginadas de proyectos activos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects/active/paginated"]
-            });
-            // Invalidar queries paginadas de todos los proyectos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects"]
-            });
+        onSuccess: () => {
+            // Invalidar queries de proyectos con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -84,15 +73,10 @@ export function useDeleteProject() {
 
     return api.useMutation("delete", "/api/Projects/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
-            // Invalidar queries paginadas de proyectos activos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects/active/paginated"]
-            });
-            // Invalidar queries paginadas de todos los proyectos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects"]
-            });
+            // Invalidar queries de proyectos con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -106,19 +90,12 @@ export function useActivateProject() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Projects/{id}/activate", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["project", id] });
-            // Invalidar queries paginadas de proyectos activos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects/active/paginated"]
-            });
-            // Invalidar queries paginadas de todos los proyectos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects"]
-            });
+        onSuccess: () => {
+            // Invalidar queries de proyectos con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -132,19 +109,12 @@ export function useDeactivateProject() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Projects/{id}/deactivate", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["project", id] });
-            // Invalidar queries paginadas de proyectos activos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects/active/paginated"]
-            });
-            // Invalidar queries paginadas de todos los proyectos
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Projects"]
-            });
+        onSuccess: () => {
+            // Invalidar queries de proyectos con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

@@ -150,20 +150,13 @@ export function useCreateBlock() {
 
     return api.useMutation("post", "/api/Blocks", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            // Invalidar queries paginadas de bloques
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project"],
-                exact: false
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project/active/paginated"],
-                exact: false
-            });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+            // Invalidar queries de bloques con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -177,23 +170,15 @@ export function useUpdateBlock() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Blocks/{id}", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["block", id] });
-            // Invalidar queries paginadas de bloques
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project"],
-                exact: false
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project/active/paginated"],
-                exact: false
-            });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de bloques con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -208,20 +193,13 @@ export function useDeleteBlock() {
 
     return api.useMutation("delete", "/api/Blocks/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            // Invalidar queries paginadas de bloques
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project"],
-                exact: false
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project/active/paginated"],
-                exact: false
-            });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+            // Invalidar queries de bloques con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -235,23 +213,15 @@ export function useActivateBlock() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Blocks/{id}/activate", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["block", id] });
-            // Invalidar queries paginadas de bloques
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project"],
-                exact: false
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project/active/paginated"],
-                exact: false
-            });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de bloques con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -265,23 +235,15 @@ export function useDeactivateBlock() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Blocks/{id}/deactivate", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["block", id] });
-            // Invalidar queries paginadas de bloques
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project"],
-                exact: false
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["get", "/api/Blocks/project/active/paginated"],
-                exact: false
-            });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de bloques con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

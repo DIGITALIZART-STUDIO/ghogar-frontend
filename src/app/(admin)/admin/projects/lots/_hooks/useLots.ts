@@ -173,17 +173,16 @@ export function useCreateLot() {
 
     return api.useMutation("post", "/api/Lots", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["allLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lots"] });
-            queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
-            queryClient.invalidateQueries({ queryKey: ["availableLots"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"], exact: false });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"], exact: false });
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+            // Invalidar queries de lotes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/available"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -197,18 +196,18 @@ export function useUpdateLot() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Lots/{id}", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lots"] });
-            queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
-            queryClient.invalidateQueries({ queryKey: ["availableLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lot", id] });
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de lotes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/available"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -222,18 +221,18 @@ export function useUpdateLotStatus() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Lots/{id}/status", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lots"] });
-            queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
-            queryClient.invalidateQueries({ queryKey: ["availableLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lot", id] });
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de lotes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/available"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -248,17 +247,16 @@ export function useDeleteLot() {
 
     return api.useMutation("delete", "/api/Lots/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["allLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lots"] });
-            queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
-            queryClient.invalidateQueries({ queryKey: ["availableLots"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"], exact: false });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"], exact: false });
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+            // Invalidar queries de lotes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/available"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -272,18 +270,18 @@ export function useActivateLot() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Lots/{id}/activate", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lots"] });
-            queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
-            queryClient.invalidateQueries({ queryKey: ["availableLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lot", id] });
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de lotes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/available"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);
@@ -297,18 +295,18 @@ export function useDeactivateLot() {
     const { handleAuthError } = useAuthContext();
 
     return api.useMutation("put", "/api/Lots/{id}/deactivate", {
-        onSuccess: (_, variables) => {
-            const id = variables.params.path.id;
-            queryClient.invalidateQueries({ queryKey: ["allLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lots"] });
-            queryClient.invalidateQueries({ queryKey: ["lotsByProject"] });
-            queryClient.invalidateQueries({ queryKey: ["availableLots"] });
-            queryClient.invalidateQueries({ queryKey: ["lot", id] });
-            queryClient.invalidateQueries({ queryKey: ["allBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["blocks"] });
-            queryClient.invalidateQueries({ queryKey: ["activeBlocks"] });
-            queryClient.invalidateQueries({ queryKey: ["allProjects"] });
-            queryClient.invalidateQueries({ queryKey: ["activeProjects"] });
+        onSuccess: () => {
+            // Invalidar queries de lotes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/block"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/available"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Lots/{id}"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Blocks/project/active"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
         },
         onError: async (error: unknown) => {
             await handleAuthError(error);

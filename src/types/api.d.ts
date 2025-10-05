@@ -680,6 +680,10 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    isActive?: Array<boolean>;
+                    type?: Array<components["schemas"]["ClientType"]>;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -909,6 +913,46 @@ export interface paths {
         get: {
             parameters: {
                 query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Clients/current-user/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    projectId?: string;
+                    useCurrentUser?: boolean;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -2200,6 +2244,13 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["LeadStatus"]>;
+                    captureSource?: Array<components["schemas"]["LeadCaptureSource"]>;
+                    completionReason?: Array<components["schemas"]["LeadCompletionReason"]>;
+                    clientId?: string;
+                    userId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -2487,6 +2538,12 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["LeadStatus"]>;
+                    captureSource?: Array<components["schemas"]["LeadCaptureSource"]>;
+                    completionReason?: Array<components["schemas"]["LeadCompletionReason"]>;
+                    clientId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
                 path: {
@@ -2796,6 +2853,45 @@ export interface paths {
         get: {
             parameters: {
                 query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Leads/users/with-leads/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    projectId?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -5045,7 +5141,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Quotations/advisor/{advisorId}/paginated": {
+    "/api/Quotations/advisor/paginated": {
         parameters: {
             query?: never;
             header?: never;
@@ -5057,11 +5153,14 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["QuotationStatus"]>;
+                    clientId?: Array<string>;
+                    projectId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
-                path: {
-                    advisorId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -5415,6 +5514,96 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["ReservationStatus"]>;
+                    paymentMethod?: Array<components["schemas"]["PaymentMethod"]>;
+                    projectId?: string;
+                    orderBy?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/advisor/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["ReservationStatus"]>;
+                    paymentMethod?: Array<components["schemas"]["PaymentMethod"]>;
+                    projectId?: string;
+                    orderBy?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6113,13 +6302,17 @@ export interface paths {
         };
         /**
          * Get all users
-         * @description Gets information about all users
+         * @description Gets information about all users with search and filtering capabilities
          */
         get: {
             parameters: {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    isActive?: Array<boolean>;
+                    roleName?: Array<string>;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -7107,6 +7300,8 @@ export interface components {
         };
         /** @enum {unknown} */
         LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
+        /** @enum {unknown} */
+        LeadCompletionReason: "NotInterested" | "InFollowUp" | "Sale";
         LeadCreateDto: {
             /** Format: uuid */
             clientId?: string | null;

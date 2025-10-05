@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ACCESS_TOKEN_KEY } from "@/variables";
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Función para refrescar el token
-    const refreshAccessToken = async (): Promise<boolean> => {
+    const refreshAccessToken = useCallback(async (): Promise<boolean> => {
         // Evitar múltiples refreshes simultáneos
         if (isRefreshing) {
             return false;
@@ -92,10 +92,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsRefreshing(false);
             return false;
         }
-    };
+    }, [isRefreshing, queryClient]);
 
     // Función para hacer logout
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         // Marcar que estamos haciendo logout para evitar handleAuthError
         setAuthState((prev) => ({
             ...prev,
@@ -128,10 +128,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Redirigir inmediatamente sin delay
             router.push("/login");
         }
-    };
+    }, [queryClient, router]);
 
     // Función para interceptar errores 401 y intentar refresh
-    const handleAuthError = async (error: unknown) => {
+    const handleAuthError = useCallback(async (error: unknown) => {
         // Si estamos haciendo logout, no procesar errores de autenticación
         if (authState.isLoggingOut) {
             return false;
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         return false;
-    };
+    }, [authState.isLoggingOut, isRefreshing, refreshAccessToken, handleLogout]);
 
     // Verificar autenticación al montar
     useEffect(() => {

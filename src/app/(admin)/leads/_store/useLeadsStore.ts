@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import { ClientSummaryDto } from "../../clients/_types/client";
-
-interface UserSummaryDto {
-    id: string;
-    userName: string | null;
-}
+import { UserSummaryDto } from "../_types/lead";
 
 interface LeadsStore {
     // Clientes

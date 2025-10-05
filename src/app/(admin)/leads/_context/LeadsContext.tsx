@@ -6,12 +6,7 @@ import { useUsersWithLeadsSummary } from "../_hooks/useLeads";
 import { useSelectedProject } from "@/hooks/use-selected-project";
 import { useLeadsStore } from "../_store/useLeadsStore";
 import { ClientSummaryDto } from "../../clients/_types/client";
-
-interface UserSummaryDto {
-    id: string;
-    userName: string | null;
-}
-
+import { UserSummaryDto } from "../_types/lead";
 interface LeadsContextType {
     // Clientes
     clientsData: Array<ClientSummaryDto> | undefined;

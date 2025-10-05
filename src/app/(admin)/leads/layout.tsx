@@ -67,7 +67,7 @@ function UsersWithLeadsTree() {
                                     <TreeNodeTrigger
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setSelectedUserId(user.id);
+                                            setSelectedUserId(user.id ?? "");
                                         }}
                                         className={selectedUserId === user.id ? "bg-accent" : ""}
                                     >

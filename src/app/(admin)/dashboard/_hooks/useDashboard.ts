@@ -41,3 +41,15 @@ export function useDashboardFinanceManager(year?: number, projectId?: string | n
         }
     );
 }
+
+// Hook para obtener los datos del dashboard supervisor
+export function useDashboardSupervisor(year?: number) {
+    return backend.useQuery(
+        "get",
+        "/api/Dashboard/supervisor",
+        { year },
+        {
+            enabled: year !== undefined, // Solo ejecuta si year está definido
+        }
+    );
+}

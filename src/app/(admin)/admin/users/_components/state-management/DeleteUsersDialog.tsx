@@ -28,9 +28,9 @@ export function DeleteUsersDialog({ user, onSuccess, open, onOpenChange }: Delet
         });
 
         toast.promise(promise, {
-            loading: "Eliminando usuario...",
-            success: "Usuario eliminado correctamente",
-            error: (e) => `Error al eliminar: ${e.message ?? e}`,
+            loading: "Desactivando usuario...",
+            success: "Usuario desactivado correctamente",
+            error: (e) => `Error al desactivar: ${e.message ?? e}`,
         });
 
         promise.then(() => {

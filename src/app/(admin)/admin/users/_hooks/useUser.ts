@@ -265,6 +265,34 @@ export function useAssignSalesAdvisorToSupervisor() {
     });
 }
 
+// Hook para asignar múltiples SalesAdvisors a Supervisor
+export function useAssignMultipleSalesAdvisorsToSupervisor() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation(
+        "post",
+        "/api/Users/supervisor/assign-multiple",
+        {
+            onSuccess: () => {
+                // Invalidar queries relacionadas
+                queryClient.invalidateQueries({
+                    queryKey: ["get", "/api/Users/supervisor"]
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["get", "/api/Users/all"]
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["get", "/api/Users"]
+                });
+            },
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
+        }
+    );
+}
+
 // Hook para obtener SalesAdvisors asignados a un Supervisor
 export function useSalesAdvisorsBySupervisor(supervisorId: string) {
     const { handleAuthError } = useAuthContext();
@@ -329,5 +357,103 @@ export function useSupervisorSalesAdvisorAssignments(
             await handleAuthError(error);
         },
     });
+}
+
+// Hook para paginación infinita de consultores (SalesAdvisors) con búsqueda
+export function usePaginatedConsultorsWithSearch(pageSize: number = 20, preselectedId?: string) {
+    const [search, setSearch] = useState<string | undefined>(undefined);
+    const [orderBy, setOrderBy] = useState<string | undefined>("name");
+    const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+    const { handleAuthError } = useAuthContext();
+
+    const query = api.useInfiniteQuery(
+        "get",
+        "/api/Users/all",
+        {
+            params: {
+                query: {
+                    search,
+                    page: 1, // Este valor será reemplazado automáticamente por pageParam
+                    pageSize,
+                    orderBy,
+                    orderDirection,
+                    preselectedId,
+                    // Filtrar solo usuarios con rol SalesAdvisor
+                    roleName: ["SalesAdvisor"],
+                },
+            },
+        },
+        {
+            getNextPageParam: (lastPage) => {
+                // Si hay más páginas disponibles, devolver el siguiente número de página
+                if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+                    return lastPage.meta.page + 1;
+                }
+                return undefined; // No hay más páginas
+            },
+            getPreviousPageParam: (firstPage) => {
+                // Si no estamos en la primera página, devolver la página anterior
+                if (firstPage.meta?.page && firstPage.meta.page > 1) {
+                    return firstPage.meta.page - 1;
+                }
+                return undefined; // No hay páginas anteriores
+            },
+            initialPageParam: 1,
+            pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+            onError: async (error: unknown) => {
+                await handleAuthError(error);
+            },
+        }
+    );
+
+    // Obtener todos los consultores de todas las páginas de forma plana
+    const allConsultors = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+    const handleScrollEnd = useCallback(() => {
+        if (query.hasNextPage && !query.isFetchingNextPage) {
+            query.fetchNextPage();
+        }
+    }, [query]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        if (value !== "None" && value !== null && value !== undefined) {
+            setSearch(value.trim());
+        } else {
+            setSearch(undefined);
+        }
+    }, []);
+
+    const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+        setOrderBy(field);
+        setOrderDirection(direction);
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        setSearch(undefined);
+        setOrderBy("name");
+        setOrderDirection("asc");
+    }, []);
+
+    return {
+        query,
+        allConsultors, // Todos los consultores acumulados
+        fetchNextPage: query.fetchNextPage,
+        hasNextPage: query.hasNextPage,
+        isFetchingNextPage: query.isFetchingNextPage,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        search,
+        setSearch,
+        orderBy,
+        orderDirection,
+        handleScrollEnd,
+        handleSearchChange,
+        handleOrderChange,
+        resetSearch,
+        // Información de paginación
+        totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+        totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+        currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+    };
 }
 

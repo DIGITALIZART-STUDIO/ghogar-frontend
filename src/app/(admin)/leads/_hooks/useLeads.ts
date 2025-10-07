@@ -37,8 +37,8 @@ export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
 }
 
 // Para leads asignados a un usuario, paginados (wrapper del nuevo hook)
-export function usePaginatedLeadsByAssignedTo(userId: string, page: number = 1, pageSize: number = 10) {
-    const leadsPagination = useLeadsByAssignedToPagination(userId, page, pageSize);
+export function usePaginatedLeadsByAssignedTo(page: number = 1, pageSize: number = 10) {
+    const leadsPagination = useLeadsByAssignedToPagination(page, pageSize);
 
     return {
         data: leadsPagination.data,
@@ -75,6 +75,8 @@ export function useUpdateLeadStatus() {
             // Invalidar queries de leads con las query keys correctas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
@@ -123,6 +125,8 @@ export function useCreateLead() {
             // Invalidar queries de leads con las query keys correctas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
@@ -142,6 +146,8 @@ export function useUpdateLead() {
             // Invalidar queries de leads con las query keys correctas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
@@ -161,6 +167,8 @@ export function useDeleteLeads() {
             // Invalidar queries de leads con las query keys correctas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
@@ -180,6 +188,8 @@ export function useActivateLeads() {
             // Invalidar queries de leads con las query keys correctas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
@@ -199,6 +209,8 @@ export function useCheckAndUpdateExpiredLeads() {
             // Invalidar queries de leads con las query keys correctas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
         },
@@ -230,17 +242,11 @@ export function useAvailableLeadsForQuotation(
     });
 }
 
-export function useAssignedLeadsSummary(assignedToId: string, enabled = true) {
+export function useAssignedLeadsSummary(enabled = true) {
     const { handleAuthError } = useAuthContext();
 
-    return api.useQuery("get", "/api/Leads/assigned/{assignedToId}/summary", {
-        params: {
-            path: {
-                assignedToId,
-            },
-        },
-    }, {
-        enabled: !!assignedToId && enabled,
+    return api.useQuery("get", "/api/Leads/assigned/summary", undefined, {
+        enabled: enabled,
         retry: false,
         onError: async (error: unknown) => {
             await handleAuthError(error);

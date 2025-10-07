@@ -8,7 +8,6 @@ import { useBasePagination } from "../../../../hooks/useBasePagination";
  * Combina el hook base con la lógica específica de la API de leads asignados
  */
 export function useLeadsByAssignedToPagination(
-    userId: string,
     page: number = 1,
     pageSize: number = 10
 ) {
@@ -28,16 +27,13 @@ export function useLeadsByAssignedToPagination(
     // Construir parámetros de query
     const queryParams = basePagination.buildQueryParams(page, pageSize);
 
-    // Query específica para leads asignados
-    const query = api.useQuery("get", "/api/Leads/assignedto/{userId}/paginated", {
+    // Query específica para leads asignados (ahora sin userId en la URL)
+    const query = api.useQuery("get", "/api/Leads/assignedto/paginated", {
         params: {
-            path: {
-                userId,
-            },
             query: queryParams,
         },
     }, {
-        enabled: !!userId, // solo consulta si hay userId
+        enabled: true, // Ya no necesita userId como parámetro
         retry: false,
         onError: async (error: unknown) => {
             await handleAuthError(error);

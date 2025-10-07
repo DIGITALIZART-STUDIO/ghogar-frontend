@@ -2565,7 +2565,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assignedto/{userId}": {
+    "/api/Leads/assignedto": {
         parameters: {
             query?: never;
             header?: never;
@@ -2576,9 +2576,7 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    userId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -2604,7 +2602,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assignedto/{userId}/paginated": {
+    "/api/Leads/assignedto/paginated": {
         parameters: {
             query?: never;
             header?: never;
@@ -2624,9 +2622,7 @@ export interface paths {
                     orderBy?: string;
                 };
                 header?: never;
-                path: {
-                    userId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -3041,7 +3037,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assigned/{assignedToId}/summary": {
+    "/api/Leads/assigned/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -3052,9 +3048,7 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    assignedToId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -6749,6 +6743,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Users/supervisor/assign-multiple": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Multiple SalesAdvisors to Supervisor
+         * @description Assigns multiple SalesAdvisors to a specific Supervisor
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssignMultipleSalesAdvisorsToSupervisorDTO"];
+                    "text/json": components["schemas"]["AssignMultipleSalesAdvisorsToSupervisorDTO"];
+                    "application/*+json": components["schemas"]["AssignMultipleSalesAdvisorsToSupervisorDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Users/supervisor/{supervisorId}/sales-advisors": {
         parameters: {
             query?: never;
@@ -6961,6 +6998,11 @@ export interface components {
             lastContact?: string | null;
             nextTask?: string;
             priority?: string;
+        };
+        AssignMultipleSalesAdvisorsToSupervisorDTO: {
+            /** Format: uuid */
+            supervisorId: string;
+            salesAdvisorIds: Array<string>;
         };
         AssignSalesAdvisorToSupervisorDTO: {
             /** Format: uuid */

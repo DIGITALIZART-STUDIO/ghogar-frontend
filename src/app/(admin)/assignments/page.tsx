@@ -38,7 +38,7 @@ export default function AssignmentsPage() {
         setClientId,
         handleOrderChange,
         resetFilters
-    } = usePaginatedLeadsByAssignedTo(userId, page, pageSize);
+    } = usePaginatedLeadsByAssignedTo(page, pageSize);
 
     // Sincronizar el cliente seleccionado con el filtro de leads
     useEffect(() => {

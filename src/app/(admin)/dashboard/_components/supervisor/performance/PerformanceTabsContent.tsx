@@ -14,6 +14,23 @@ import {
     Line,
 } from "recharts";
 import type { SupervisorDashboard } from "@/app/(admin)/dashboard/_types/dashboard";
+import { TaskTypesConfig } from "@/app/(admin)/assignments/[id]/tasks/_utils/tasks.utils";
+
+// Colores hex para Recharts (consistentes con LeadCaptureSourceLabels)
+const CHART_COLORS = {
+    slate400: "#94a3b8",
+    slate600: "#475569",
+    slate700: "#334155",
+    slate800: "#1e293b",
+    primary: "#17949B",
+    green600: "#16a34a",
+    red600: "#dc2626",
+    indigo600: "#4f46e5",    // Para Company
+    blue600: "#2563eb",      // Para PersonalFacebook
+    orange600: "#ea580c",    // Para RealEstateFair
+    teal600: "#0d9488",      // Para Institutional
+    pink600: "#db2777",      // Para Loyalty
+};
 
 interface PerformanceTabsContentProps {
     data: SupervisorDashboard;
@@ -30,6 +47,12 @@ export function PerformanceTabsContent({ data, isLoading }: PerformanceTabsConte
             </TabsContent>
         );
     }
+
+    // Función para obtener el label correcto del tipo de tarea
+    const getTaskLabel = (type: string) => {
+        const taskConfig = TaskTypesConfig[type as keyof typeof TaskTypesConfig];
+        return taskConfig?.label || type;
+    };
 
     return (
         <TabsContent value="performance" className="space-y-6">
@@ -56,14 +79,14 @@ export function PerformanceTabsContent({ data, isLoading }: PerformanceTabsConte
                                     borderRadius: "0.5rem",
                                 }}
                             />
-                            <Bar yAxisId="left" dataKey="leadsReceived" fill="hsl(var(--slate-400))" name="Recibidos" />
-                            <Bar yAxisId="left" dataKey="leadsAssigned" fill="hsl(var(--primary))" name="Asignados" />
-                            <Bar yAxisId="left" dataKey="leadsCompleted" fill="hsl(var(--green-600))" name="Completados" />
+                            <Bar yAxisId="left" dataKey="leadsReceived" fill={CHART_COLORS.slate400} name="Recibidos" />
+                            <Bar yAxisId="left" dataKey="leadsAssigned" fill={CHART_COLORS.primary} name="Asignados" />
+                            <Bar yAxisId="left" dataKey="leadsCompleted" fill={CHART_COLORS.green600} name="Completados" />
                             <Line
                                 yAxisId="right"
                                 type="monotone"
                                 dataKey="conversionRate"
-                                stroke="hsl(var(--slate-800))"
+                                stroke={CHART_COLORS.slate800}
                                 strokeWidth={2}
                                 name="Conversión %"
                             />
@@ -85,7 +108,11 @@ export function PerformanceTabsContent({ data, isLoading }: PerformanceTabsConte
                     <ResponsiveContainer width="100%" height={350}>
                         <ComposedChart data={data.taskAnalysis}>
                             <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
-                            <XAxis dataKey="type" className="text-slate-600 dark:text-slate-400" />
+                            <XAxis
+                                dataKey="type"
+                                className="text-slate-600 dark:text-slate-400"
+                                tickFormatter={(value) => getTaskLabel(value)}
+                            />
                             <YAxis className="text-slate-600 dark:text-slate-400" />
                             <Tooltip
                                 contentStyle={{
@@ -94,9 +121,9 @@ export function PerformanceTabsContent({ data, isLoading }: PerformanceTabsConte
                                     borderRadius: "0.5rem",
                                 }}
                             />
-                            <Bar dataKey="completed" fill="hsl(var(--green-600))" name="Completadas" />
-                            <Bar dataKey="pending" fill="hsl(var(--primary))" name="Pendientes" />
-                            <Bar dataKey="overdue" fill="hsl(var(--red-600))" name="Vencidas" />
+                            <Bar dataKey="completed" fill={CHART_COLORS.green600} name="Completadas" />
+                            <Bar dataKey="pending" fill={CHART_COLORS.primary} name="Pendientes" />
+                            <Bar dataKey="overdue" fill={CHART_COLORS.red600} name="Vencidas" />
                         </ComposedChart>
                     </ResponsiveContainer>
                 </CardContent>
@@ -174,48 +201,53 @@ export function PerformanceTabsContent({ data, isLoading }: PerformanceTabsConte
 
             {/* Detalles de tareas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(data.taskAnalysis ?? []).map((task, index) => (
-                    <Card key={index} className="border-l-4 border-l-slate-600">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                <BarChart3 className="w-4 h-4" />
-                                {task.type}
-                            </CardTitle>
-                            <CardDescription>Tareas de tipo {task.type}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="text-center p-2 bg-slate-50 dark:bg-slate-900/30 rounded">
-                                    <p className="font-bold text-slate-800 dark:text-slate-100">{task.scheduled}</p>
-                                    <p className="text-slate-600 dark:text-slate-400">Programadas</p>
+                {(data.taskAnalysis ?? []).map((task, index) => {
+                    const taskConfig = TaskTypesConfig[task.type as keyof typeof TaskTypesConfig];
+                    const TaskIcon = taskConfig?.icon || BarChart3;
+
+                    return (
+                        <Card key={index} className={`border-l-4 ${taskConfig?.borderColor || "border-l-slate-600"}`}>
+                            <CardHeader className="pb-3">
+                                <CardTitle className={`text-sm font-medium flex items-center gap-2 ${taskConfig?.textColor || "text-slate-800 dark:text-slate-100"}`}>
+                                    <TaskIcon className="w-4 h-4" />
+                                    {taskConfig?.label || "Desconocido"}
+                                </CardTitle>
+                                <CardDescription>Tareas de tipo {taskConfig?.label || "Desconocido"}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="text-center p-2 bg-slate-50 dark:bg-slate-900/30 rounded">
+                                        <p className="font-bold text-slate-800 dark:text-slate-100">{task.scheduled}</p>
+                                        <p className="text-slate-600 dark:text-slate-400">Programadas</p>
+                                    </div>
+                                    <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                                        <p className="font-bold text-slate-800 dark:text-slate-100">{task.completed}</p>
+                                        <p className="text-slate-600 dark:text-slate-400">Completadas</p>
+                                    </div>
                                 </div>
-                                <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                                    <p className="font-bold text-slate-800 dark:text-slate-100">{task.completed}</p>
-                                    <p className="text-slate-600 dark:text-slate-400">Completadas</p>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="text-center p-2 bg-primary/10 dark:bg-primary/20 rounded">
+                                        <p className="font-bold text-slate-800 dark:text-slate-100">{task.pending}</p>
+                                        <p className="text-slate-600 dark:text-slate-400">Pendientes</p>
+                                    </div>
+                                    <div className="text-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
+                                        <p className="font-bold text-red-600 dark:text-red-400">{task.overdue}</p>
+                                        <p className="text-red-600 dark:text-red-400">Vencidas</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="text-center p-2 bg-primary/10 dark:bg-primary/20 rounded">
-                                    <p className="font-bold text-slate-800 dark:text-slate-100">{task.pending}</p>
-                                    <p className="text-slate-600 dark:text-slate-400">Pendientes</p>
+                                <div>
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="text-slate-600 dark:text-slate-400">Completadas</span>
+                                        <span className="font-semibold text-slate-800 dark:text-slate-100">
+                                            {Math.round(((task.completed ?? 0) / (task.scheduled ?? 1)) * 100)}%
+                                        </span>
+                                    </div>
+                                    <Progress value={((task.completed ?? 0) / (task.scheduled ?? 1)) * 100} className="h-2" />
                                 </div>
-                                <div className="text-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
-                                    <p className="font-bold text-red-600 dark:text-red-400">{task.overdue}</p>
-                                    <p className="text-red-600 dark:text-red-400">Vencidas</p>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex justify-between text-xs mb-1">
-                                    <span className="text-slate-600 dark:text-slate-400">Completadas</span>
-                                    <span className="font-semibold text-slate-800 dark:text-slate-100">
-                                        {Math.round(((task.completed ?? 0) / (task.scheduled ?? 1)) * 100)}%
-                                    </span>
-                                </div>
-                                <Progress value={((task.completed ?? 0) / (task.scheduled ?? 1)) * 100} className="h-2" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
         </TabsContent>
     );

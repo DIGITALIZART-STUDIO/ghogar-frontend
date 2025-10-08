@@ -1,8 +1,9 @@
 import { TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, AlertTriangle, CheckCircle, Clock, Phone, MapPin } from "lucide-react";
+import { AlertTriangle, Phone, MapPin, Clock, CheckCircle, Activity } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { SupervisorDashboard } from "@/app/(admin)/dashboard/_types/dashboard";
+import { LeadStatusLabels } from "@/app/(admin)/leads/_utils/leads.utils";
 
 interface LeadsTabsContentProps {
     data: SupervisorDashboard;
@@ -33,19 +34,20 @@ export function LeadsTabsContent({ data, isLoading }: LeadsTabsContentProps) {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-        case "Registered":
-            return "bg-primary hover:bg-primary/90";
-        case "Attended":
-            return "bg-green-600 hover:bg-green-700";
-        case "InFollowUp":
-            return "bg-orange-500 hover:bg-orange-600";
-        case "Completed":
-            return "bg-slate-800 hover:bg-slate-900";
-        default:
-            return "bg-slate-600 hover:bg-slate-700";
+    const getStatusBadge = (status: string) => {
+        const statusKey = status as keyof typeof LeadStatusLabels;
+        const statusConfig = LeadStatusLabels[statusKey];
+        if (!statusConfig) {
+            return null;
         }
+
+        const Icon = statusConfig.icon;
+        return (
+            <Badge className={statusConfig.className}>
+                <Icon className="w-3 h-3 mr-1" />
+                {statusConfig.label}
+            </Badge>
+        );
     };
 
     return (
@@ -138,9 +140,7 @@ export function LeadsTabsContent({ data, isLoading }: LeadsTabsContentProps) {
                                         </div>
                                         <div className="flex items-center gap-4">
                                             <div className="text-right">
-                                                <Badge className={`${getStatusColor(lead.status ?? "")} text-white mb-1`}>
-                                                    {lead.status}
-                                                </Badge>
+                                                {getStatusBadge(lead.status ?? "")}
                                                 <p className="text-xs text-slate-600 dark:text-slate-400">
                                                     {lead.captureSource}
                                                 </p>

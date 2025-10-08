@@ -15,6 +15,20 @@ import {
 } from "recharts";
 import type { SupervisorDashboard } from "@/app/(admin)/dashboard/_types/dashboard";
 
+// Colores hex para Recharts (consistentes con LeadCaptureSourceLabels)
+const CHART_COLORS = {
+    slate400: "#94a3b8",
+    slate600: "#475569",
+    slate800: "#1e293b",
+    primary: "#17949B",
+    green600: "#16a34a",
+    indigo600: "#4f46e5",    // Para Company
+    blue600: "#2563eb",      // Para PersonalFacebook
+    orange600: "#ea580c",    // Para RealEstateFair
+    teal600: "#0d9488",      // Para Institutional
+    pink600: "#db2777",      // Para Loyalty
+};
+
 interface TeamTabsContentProps {
     data: SupervisorDashboard;
     isLoading: boolean;
@@ -56,14 +70,14 @@ export function TeamTabsContent({ data, isLoading }: TeamTabsContentProps) {
                                     borderRadius: "0.5rem",
                                 }}
                             />
-                            <Bar yAxisId="left" dataKey="leadsAssigned" fill="hsl(var(--slate-400))" name="Asignados" />
-                            <Bar yAxisId="left" dataKey="leadsCompleted" fill="hsl(var(--green-600))" name="Completados" />
-                            <Bar yAxisId="left" dataKey="quotationsIssued" fill="hsl(var(--primary))" name="Cotizaciones" />
+                            <Bar yAxisId="left" dataKey="leadsAssigned" fill={CHART_COLORS.slate400} name="Asignados" />
+                            <Bar yAxisId="left" dataKey="leadsCompleted" fill={CHART_COLORS.green600} name="Completados" />
+                            <Bar yAxisId="left" dataKey="quotationsIssued" fill={CHART_COLORS.primary} name="Cotizaciones" />
                             <Line
                                 yAxisId="right"
                                 type="monotone"
                                 dataKey="efficiency"
-                                stroke="hsl(var(--slate-800))"
+                                stroke={CHART_COLORS.slate800}
                                 strokeWidth={3}
                                 name="Eficiencia %"
                             />

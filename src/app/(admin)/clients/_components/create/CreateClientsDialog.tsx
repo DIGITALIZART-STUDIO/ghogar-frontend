@@ -40,7 +40,11 @@ const dataForm = {
     description: "Complete los detalles a continuación para crear nuevos clientes.",
 };
 
-export function CreateClientsDialog() {
+interface CreateClientsDialogProps {
+    trigger?: React.ReactNode;
+}
+
+export function CreateClientsDialog({ trigger }: CreateClientsDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 800px)");
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -117,14 +121,22 @@ export function CreateClientsDialog() {
         }
     }, [isSuccess, form]);
 
+    // Trigger por defecto
+    const defaultTrigger = (
+        <Button variant="outline" size="sm">
+            <Plus className="mr-2 size-4" aria-hidden="true" />
+            {dataForm.button}
+        </Button>
+    );
+
+    // Usar el trigger personalizado o el por defecto
+    const dialogTrigger = trigger ?? defaultTrigger;
+
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                        <Plus className="mr-2 size-4" aria-hidden="true" />
-                        {dataForm.button}
-                    </Button>
+                    {dialogTrigger}
                 </DialogTrigger>
                 <DialogContent tabIndex={undefined} className="sm:max-w-[900px] px-0">
                     <DialogHeader className="px-4">
@@ -158,10 +170,7 @@ export function CreateClientsDialog() {
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="outline" size="sm">
-                    <Plus className="mr-2 size-4" aria-hidden="true" />
-                    {dataForm.button}
-                </Button>
+                {dialogTrigger}
             </DrawerTrigger>
 
             <DrawerContent className="h-[80vh]">

@@ -376,7 +376,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                                     <div className="space-y-1 leading-none">
                                         <FormLabel>¿El cliente tiene separación de bienes?</FormLabel>
                                         <p className="text-sm text-muted-foreground">
-                                            Marque esta opción si el cliente está casado con separación de bienes
+                                            Marque esta opción si el cliente está casado sin separación de bienes
                                         </p>
                                     </div>
                                 </FormItem>

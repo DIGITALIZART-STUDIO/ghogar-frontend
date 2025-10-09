@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend as api } from "@/types/backend";
+import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import { useLeadsPagination } from "@/app/(admin)/leads/_hooks/useLeadsPagination";
 import { useLeadsByAssignedToPagination } from "@/app/(admin)/leads/_hooks/useLeadsByAssignedToPagination";
@@ -257,11 +257,17 @@ export function useAssignedLeadsSummary(enabled = true) {
 export function useDownloadLeadsExcel() {
     const { handleAuthError } = useAuthContext();
 
-    return api.useMutation("get", "/api/Leads/export", {
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
+    return {
+        mutateAsync: async (): Promise<Blob> => {
+            try {
+                return await downloadFileWithClient("/api/Leads/export", { path: {} });
+            } catch (error: unknown) {
+                await handleAuthError(error);
+                throw error;
+            }
         },
-    });
+        isPending: false, // Para compatibilidad con el componente
+    };
 }
 
 // Hook para paginación infinita de usuarios con búsqueda (usando backend2)

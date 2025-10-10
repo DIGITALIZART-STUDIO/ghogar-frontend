@@ -137,16 +137,16 @@ export function AssignConsultorsDialog({
     const assignMultipleMutation = useAssignMultipleSalesAdvisorsToSupervisor();
     const removeMutation = useRemoveSalesAdvisorFromSupervisor();
 
-    // Consultores asignados actualmente
+    // Asesores asignados actualmente
     const assignedConsultors = useMemo(() => assignedConsultorsData ?? [], [assignedConsultorsData]);
 
-    // Consultores disponibles (no asignados)
+    // Asesores disponibles (no asignados)
     const availableConsultors = useMemo(() => {
         const assignedIds = assignedConsultors.map((c: AssignedConsultorType) => c.id);
         return allConsultors.filter((c: ConsultorType) => !assignedIds.includes(c.user.id));
     }, [allConsultors, assignedConsultors]);
 
-    // Consultores filtrados por búsqueda
+    // Asesores filtrados por búsqueda
     const filteredAvailableConsultors = useMemo(() => {
         if (!searchTerm.trim()) {
             return availableConsultors;
@@ -156,10 +156,10 @@ export function AssignConsultorsDialog({
         );
     }, [availableConsultors, searchTerm]);
 
-    // Los consultores asignados no se filtran por búsqueda
+    // Los asesores asignados no se filtran por búsqueda
     const filteredAssignedConsultors = useMemo(() => assignedConsultors, [assignedConsultors]);
 
-    // Inicializar consultores asignados cuando se abre el diálogo
+    // Inicializar asesores asignados cuando se abre el diálogo
     useEffect(() => {
         if (open) {
             setSelectedConsultors([]);
@@ -192,7 +192,7 @@ export function AssignConsultorsDialog({
         });
     }, []);
 
-    // Asignar consultores seleccionados
+    // Asignar asesores seleccionados
     const handleAssignConsultors = useCallback(async () => {
         if (selectedConsultors.length === 0) {
             return;
@@ -213,9 +213,9 @@ export function AssignConsultorsDialog({
             refetchAssigned();
 
             // Mostrar mensaje de éxito
-            toast.success(`${selectedConsultors.length} consultor(es) asignado(s) exitosamente`);
+            toast.success(`${selectedConsultors.length} asesor(es) asignado(s) exitosamente`);
         } catch {
-            toast.error("Error al asignar consultores");
+            toast.error("Error al asignar asesores");
         } finally {
             setIsLoading(false);
         }
@@ -255,8 +255,8 @@ export function AssignConsultorsDialog({
             open={open}
             onOpenChange={onOpenChange}
             isDesktop={isDesktop}
-            title="Asignar Consultores"
-            description={`Gestionar consultores asignados a ${supervisor.user.name}`}
+            title="Asignar Asesores"
+            description={`Gestionar asesores asignados a ${supervisor.user.name}`}
             dialogContentClassName="sm:max-w-6xl px-0"
             dialogScrollAreaClassName="h-[70vh] px-0"
             drawerScrollAreaClassName="h-[60vh] px-0 pb-4"
@@ -286,7 +286,7 @@ export function AssignConsultorsDialog({
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
-                        placeholder="Buscar consultores..."
+                        placeholder="Buscar asesores..."
                         value={searchTerm}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="pl-10"
@@ -295,12 +295,12 @@ export function AssignConsultorsDialog({
 
                 {/* Contenido principal - layout vertical */}
                 <div className="space-y-6">
-                    {/* Sección de consultores disponibles */}
+                    {/* Sección de asesores disponibles */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h4 className="font-medium text-slate-900 flex items-center gap-2">
                                 <Users className="w-4 h-4" />
-                                Consultores Disponibles
+                                Asesores Disponibles
                             </h4>
                             <Badge variant="secondary" className="bg-amber-50 text-amber-600 border-amber-200">
                                 {filteredAvailableConsultors.length}
@@ -334,7 +334,7 @@ export function AssignConsultorsDialog({
                                     ) : (
                                         <div className="text-center py-8 text-muted-foreground">
                                             <Users className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-                                            <p>No hay consultores disponibles</p>
+                                            <p>No hay asesores disponibles</p>
                                         </div>
                                     )}
 
@@ -342,7 +342,7 @@ export function AssignConsultorsDialog({
                                     {isFetchingNextPage && (
                                         <div className="flex items-center justify-center py-4">
                                             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground mr-2" />
-                                            <span className="text-sm text-muted-foreground">Cargando más consultores...</span>
+                                            <span className="text-sm text-muted-foreground">Cargando más asesores...</span>
                                         </div>
                                     )}
                                 </div>
@@ -353,12 +353,12 @@ export function AssignConsultorsDialog({
                     {/* Separador */}
                     <Separator />
 
-                    {/* Sección de consultores asignados */}
+                    {/* Sección de asesores asignados */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h4 className="font-medium text-slate-900 flex items-center gap-2">
                                 <UserCheck className="w-4 h-4" />
-                                Consultores Asignados
+                                Asesores Asignados
                             </h4>
                             <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-emerald-200">
                                 {filteredAssignedConsultors.length}
@@ -413,7 +413,7 @@ export function AssignConsultorsDialog({
                                     ) : (
                                         <div className="text-center py-8 text-muted-foreground">
                                             <UserCheck className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-                                            <p>No hay consultores asignados</p>
+                                            <p>No hay asesores asignados</p>
                                         </div>
                                     )}
                                 </div>

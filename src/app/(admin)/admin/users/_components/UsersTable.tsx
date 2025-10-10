@@ -314,7 +314,7 @@ export const usersColumns = (): Array<ColumnDef<UserGetDTO>> => [
                             <DropdownMenuSeparator />
                             {isSupervisor && (
                                 <DropdownMenuItem onSelect={() => setShowAssignDialog(true)}>
-                                    Asignar Consultores
+                                    Asignar Asesores
                                     <DropdownMenuShortcut>
                                         <Users className="size-4" aria-hidden="true" />
                                     </DropdownMenuShortcut>

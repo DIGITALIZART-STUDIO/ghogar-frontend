@@ -27,6 +27,17 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
     const [selectedBlockId, setSelectedBlockId] = useState<string>(data.blockId ?? "");
     const [selectedLotId, setSelectedLotId] = useState<string>(data.lotId ?? "");
 
+    // Estados para los nombres visuales que se mostrarán en el resumen
+    const [projectName, setProjectName] = useState(data.projectName ?? "");
+    const [blockName, setBlockName] = useState(data.blockName ?? "");
+    const [lotNumber, setLotNumber] = useState(data.lotNumber?.toString() ?? "");
+
+    // Estado para almacenar información del lead seleccionado
+    const [selectedLead, setSelectedLead] = useState<{ name: string; code: string } | null>({
+        name: data.leadClientName ?? "",
+        code: data.code ?? ""
+    });
+
     // Hook para actualizar cotización
     const updateQuotationMutation = useUpdateQuotation();
 
@@ -56,6 +67,17 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
         setSelectedProjectId(data.projectId ?? "");
         setSelectedBlockId(data.blockId ?? "");
         setSelectedLotId(data.lotId ?? "");
+
+        // Establecer los nombres visuales para el resumen
+        setProjectName(data.projectName ?? "");
+        setBlockName(data.blockName ?? "");
+        setLotNumber(data.lotNumber?.toString() ?? "");
+
+        // Establecer el lead seleccionado
+        setSelectedLead({
+            name: data.leadClientName ?? "",
+            code: data.code ?? ""
+        });
         form.reset({
             leadId: data.leadId,
             lotId: data.lotId,
@@ -129,6 +151,15 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
                 lotId: selectedLotId,
             }}
             userData={userData}
+            // Pasar los estados para el resumen
+            projectName={projectName}
+            blockName={blockName}
+            lotNumber={lotNumber}
+            selectedLead={selectedLead}
+            setProjectName={setProjectName}
+            setBlockName={setBlockName}
+            setLotNumber={setLotNumber}
+            setSelectedLead={setSelectedLead}
         />
     );
 }

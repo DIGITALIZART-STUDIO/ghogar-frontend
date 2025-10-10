@@ -36,11 +36,21 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
     // Función para manejar el clic del botón
     const handleGetExchangeRate = () => {
-        if (exchangeRateQuery.data) {
-            form.setValue("exchangeRate", String(exchangeRateQuery.data));
-            toast.success("Tipo de cambio obtenido correctamente de SUNAT");
+        if (exchangeRateQuery.isLoading) {
+            toast.info("Obteniendo tipo de cambio...");
+            return;
+        }
+
+        if (exchangeRateQuery.data?.exchangeRate) {
+            const exchangeRateValue = exchangeRateQuery.data.exchangeRate;
+            form.setValue("exchangeRate", String(exchangeRateValue));
+            toast.success(`Tipo de cambio obtenido: ${exchangeRateValue} (${exchangeRateQuery.data.source})`);
+        } else if (exchangeRateQuery.error) {
+            toast.error("Error al obtener el tipo de cambio de SUNAT");
         } else {
+            // Si no hay datos, intentar obtenerlos
             exchangeRateQuery.refetch();
+            toast.info("Obteniendo tipo de cambio de SUNAT...");
         }
     };
     return (
@@ -135,8 +145,8 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                 <div className="p-6">
                     {/* Sección Cliente - Diseño de tarjeta horizontal */}
-                    <div className="mb-8 bg-card rounded-xl border-blue-100 border">
-                        <div className="flex items-center bg-blue-500 text-white p-4 rounded-t-xl">
+                    <div className="mb-8 bg-card rounded-xl border-slate-100 border">
+                        <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 p-4 rounded-t-xl">
                             <User className="h-6 w-6 mr-3" />
                             <h3 className="text-lg font-semibold">Información del Cliente</h3>
                         </div>
@@ -148,7 +158,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="leadId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-blue-700">Nombre del Cliente</FormLabel>
+                                            <FormLabel className="text-slate-700 dark:text-slate-300">Nombre del Cliente</FormLabel>
                                             <FormControl>
                                                 <LeadSearch
                                                     value={field.value ?? ""}
@@ -179,7 +189,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="projectId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-blue-700">Proyecto</FormLabel>
+                                            <FormLabel className="text-slate-700 dark:text-slate-300">Proyecto</FormLabel>
                                             <FormControl>
                                                 <ProjectSearch
                                                     value={field.value ?? ""}
@@ -222,7 +232,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                     {/* Sección Lote - Diseño de tarjeta horizontal */}
                     <div className="mb-8 bg-card border-amber-100 border rounded-xl">
-                        <div className="flex items-center bg-amber-500 text-white p-4 rounded-t-xl">
+                        <div className="flex items-center bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 p-4 rounded-t-xl">
                             <MapPin className="h-6 w-6 mr-3" />
                             <h3 className="text-lg font-semibold">Información del Lote</h3>
                         </div>
@@ -236,7 +246,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="blockId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700">Manzana</FormLabel>
+                                            <FormLabel className="text-amber-700 dark:text-amber-300">Manzana</FormLabel>
                                             <FormControl>
                                                 <BlockSearch
                                                     projectId={form.watch("projectId") ?? ""}
@@ -273,7 +283,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="lotId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700">Lote</FormLabel>
+                                            <FormLabel className="text-amber-700 dark:text-amber-300">Lote</FormLabel>
                                             <FormControl>
                                                 <LotSearch
                                                     blockId={form.watch("blockId") ?? ""}
@@ -306,7 +316,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="area"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700">Área (m²)</FormLabel>
+                                            <FormLabel className="text-amber-700 dark:text-amber-300">Área (m²)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Ingrese el área"
@@ -325,7 +335,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="pricePerM2"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700">Precio por m²</FormLabel>
+                                            <FormLabel className="text-amber-700 dark:text-amber-300">Precio por m²</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Ingrese el precio por m²"
@@ -344,7 +354,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                     {/* Sección Financiamiento - Diseño de tarjeta horizontal */}
                     <div className="mb-6 bg-card border border-emerald-100 rounded-xl">
-                        <div className="flex items-center bg-emerald-500 text-white p-4 rounded-t-xl">
+                        <div className="flex items-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 p-4 rounded-t-xl">
                             <DollarSign className="h-6 w-6 mr-3" />
                             <h3 className="text-lg font-semibold">Información de Financiamiento</h3>
                         </div>
@@ -370,15 +380,15 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                                                 return (
                                                     <FormItem>
-                                                        <FormLabel className="text-emerald-700">
+                                                        <FormLabel className="text-emerald-700 dark:text-emerald-300">
                                                             Descuento {shouldApplyLimit ? `(Máx: ${maxDiscount}%)` : "(Máx: 100%)"}
                                                             {userData?.roles?.[0] === "SalesAdvisor" && !isDiscountApproved && (
-                                                                <span className="ml-2 text-xs text-orange-600 font-normal">
+                                                                <span className="ml-2 text-xs text-orange-600 dark:text-orange-400 font-normal">
                                                                     (Requiere aprobación)
                                                                 </span>
                                                             )}
                                                             {userData?.roles?.[0] === "SalesAdvisor" && isDiscountApproved && (
-                                                                <span className="ml-2 text-xs text-green-600 font-normal">
+                                                                <span className="ml-2 text-xs text-green-600 dark:text-green-400 font-normal">
                                                                     ✓ Aprobado
                                                                 </span>
                                                             )}
@@ -444,7 +454,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="downPayment"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-emerald-700">Inicial (%)</FormLabel>
+                                            <FormLabel className="text-emerald-700 dark:text-emerald-300">Inicial (%)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Ingrese el porcentaje inicial"
@@ -463,7 +473,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="monthsFinanced"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-emerald-700">Meses a Financiar</FormLabel>
+                                            <FormLabel className="text-emerald-700 dark:text-emerald-300">Meses a Financiar</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="36"

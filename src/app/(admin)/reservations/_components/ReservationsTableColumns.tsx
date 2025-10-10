@@ -230,7 +230,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                         {symbol}{formattedAmount}
                                     </span>
                                     <span className="text-xs text-muted-foreground">
-                                        Pago Inicial
+                                        Separación
                                     </span>
                                 </div>
                             </div>
@@ -241,11 +241,11 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                     <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
                                         <DollarSign className="h-4 w-4 text-green-600 dark:text-green-300" />
                                     </div>
-                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Detalles de Pago</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Detalles de Separación</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">Monto Pagado</p>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">Monto de Separación</p>
                                         <p className="font-bold text-2xl text-gray-900 dark:text-gray-100">{symbol}{formattedAmount}</p>
                                     </div>
                                     <div className="pt-2 border-t border-gray-200 dark:border-gray-600">

@@ -120,13 +120,13 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
         },
     },
     {
-        id: "lead",
+        id: "cliente",
         accessorKey: "clientName",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Cliente" />
         ),
         cell: ({ row }) => {
-            const clientName = row.getValue("lead") as string;
+            const clientName = row.getValue("cliente") as string;
             const type = row.original?.clientIdentificationType;
             const clientIdentification = row.original?.clientIdentification;
 
@@ -161,7 +161,7 @@ export const quotationsColumns = (handleEditInterface: (id: string) => void): Ar
                                     <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                                         <User className="h-4 w-4 text-blue-600 dark:text-blue-300" />
                                     </div>
-                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Información del Cliente</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Cliente de la Cotización</span>
                                 </div>
                                 <div className="space-y-2">
                                     <div>

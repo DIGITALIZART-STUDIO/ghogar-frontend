@@ -1646,7 +1646,33 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["ExchangeRateDto"];
+                        "application/json": components["schemas"]["ExchangeRateDto"];
+                        "text/json": components["schemas"]["ExchangeRateDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
                 };
             };
         };
@@ -7366,6 +7392,15 @@ export interface components {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
         } | null;
+        ExchangeRateDto: {
+            /** Format: double */
+            exchangeRate: number;
+            /** Format: date-time */
+            retrievedAt?: string;
+            source?: string;
+            isSuccess?: boolean;
+            message?: string;
+        };
         FileResult: {
             contentType?: string | null;
             fileDownloadName?: string | null;
@@ -8947,6 +8982,8 @@ export interface components {
             code?: string;
             /** Format: uuid */
             leadId?: string;
+            /** Format: uuid */
+            clientId?: string;
             leadClientName?: string;
             /** Format: uuid */
             lotId?: string;
@@ -9011,6 +9048,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             code: string;
+            clientId: string;
             clientName: string;
             clientIdentification?: string | null;
             clientIdentificationType?: string | null;
@@ -9019,6 +9057,8 @@ export interface components {
             totalPrice: number;
             /** Format: double */
             finalPrice: number;
+            /** Format: double */
+            amountFinanced: number;
             blockName: string;
             lotNumber: string;
             /** Format: double */
@@ -9231,6 +9271,7 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
             schedule?: string | null;
+            coOwners?: string | null;
         };
         ReservationDto: {
             /** Format: uuid */
@@ -9256,6 +9297,7 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+            coOwners?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -9295,6 +9337,7 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+            coOwners?: string | null;
         };
         ReservationWithPaymentsDto: {
             /** Format: int32 */
@@ -9324,6 +9367,7 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+            coOwners?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */

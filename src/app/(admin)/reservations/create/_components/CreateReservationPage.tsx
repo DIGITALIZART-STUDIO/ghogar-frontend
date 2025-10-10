@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
 import { useCreateReservation } from "../../_hooks/useReservations";
 import { ReservationForm } from "./ReservationForm";
 import type { components } from "@/types/api";
+import { CreateReservationSchema, reservationSchema } from "../_schemas/createReservationSchema";
 
 type QuotationSummary = components["schemas"]["QuotationSummaryDTO"];
 
@@ -25,15 +25,14 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
         defaultValues: {
             quotationId: "",
             reservationDate: "",
-            amountPaid: "",
-            // @ts-expect-error those damn uncontrolled inputs
-            currency: "",
-            // @ts-expect-error those damn uncontrolled inputs
-            paymentMethod: "",
+            amountPaid: "", // Se calculará automáticamente cuando se seleccione una cotización
+            currency: undefined,
+            paymentMethod: undefined,
             bankName: "",
             exchangeRate: "",
             expiresAt: "",
             schedule: "",
+            coOwners: [],
         },
     });
 
@@ -50,6 +49,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
                 exchangeRate: parseFloat(data.exchangeRate),
                 expiresAt: data.expiresAt,
                 schedule: data.schedule ?? undefined,
+                coOwners: data.coOwners && data.coOwners.length > 0 ? JSON.stringify(data.coOwners) : undefined,
             };
 
             await toast.promise(
@@ -72,7 +72,6 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
     return (
         <ReservationForm
             quotationsData={quotationsData}
-            // @ts-expect-error those damn uncontrolled inputs
             form={form}
             onSubmit={onSubmit}
             isPending={createReservation.isPending}

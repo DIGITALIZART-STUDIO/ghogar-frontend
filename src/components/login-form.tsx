@@ -85,11 +85,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             // Obtener información del usuario para determinar la redirección
             try {
                 const userData = await getUserMutation({});
-                console.log("Datos del usuario obtenidos:", userData);
-                console.log("Roles del usuario:", userData.roles);
 
                 const redirectPath = getRedirectPath(userData.roles);
-                console.log("Ruta de redirección determinada:", redirectPath);
 
                 router.push(redirectPath);
             } catch (userError) {

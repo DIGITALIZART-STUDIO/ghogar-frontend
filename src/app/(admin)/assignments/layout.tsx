@@ -88,7 +88,6 @@ function ClientsByCurrentUserTree() {
                                             e.stopPropagation();
                                             // Actualizar el cliente seleccionado en el store
                                             setSelectedClientId(client.id ?? null);
-                                            console.log("Cliente seleccionado:", client);
                                         }}
                                     >
                                         <TreeExpander hasChildren={false} />

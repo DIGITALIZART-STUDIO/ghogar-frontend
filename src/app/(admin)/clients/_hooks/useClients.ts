@@ -115,6 +115,25 @@ export function useClientsSummary() {
     });
 }
 
+// Hook para obtener un cliente por ID
+export function useClientById(clientId: string | undefined) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Clients/{id}", {
+        params: {
+            path: {
+                id: clientId ?? "",
+            },
+        },
+    }, {
+        enabled: !!clientId,
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
 // Hook para obtener clientes del usuario actual con leads asignados (nuevo endpoint)
 export function useClientsByCurrentUserSummary(projectId?: string, useCurrentUser: boolean = true) {
     const { handleAuthError } = useAuthContext();

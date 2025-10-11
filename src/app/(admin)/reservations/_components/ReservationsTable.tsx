@@ -4,17 +4,41 @@ import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
 
-import { DataTable } from "@/components/datatable/data-table";
+import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { ReservationDto } from "../_types/reservation";
+import { createFacetedFilters } from "../_utils/reservations.filter.utils";
 import { reservationsColumns } from "./ReservationsTableColumns";
-import { facetedFilters } from "../_utils/reservations.filter.utils";
 import { ReservationsTableToolbarActions } from "./ReservationsTableToolbarActions";
+import {
+    CustomPaginationTableParams,
+    ServerPaginationChangeEventCallback,
+} from "@/types/tanstack-table/CustomPagination";
 
 interface ReservationsTableProps {
     data: Array<ReservationDto>;
+    pagination: CustomPaginationTableParams;
+    onPaginationChange: ServerPaginationChangeEventCallback;
+    search?: string;
+    onSearchChange: (search: string) => void;
+    status?: Array<string>;
+    onStatusChange: (status: Array<string>) => void;
+    paymentMethod?: Array<string>;
+    onPaymentMethodChange: (paymentMethod: Array<string>) => void;
+    isLoading?: boolean;
 }
 
-export function ReservationsTable({ data }: ReservationsTableProps) {
+export function ReservationsTable({
+    data,
+    pagination,
+    onPaginationChange,
+    search,
+    onSearchChange,
+    status,
+    onStatusChange,
+    paymentMethod,
+    onPaymentMethodChange,
+    isLoading = false,
+}: ReservationsTableProps) {
     const router = useRouter();
 
     const handleEditInterface = useCallback(
@@ -26,13 +50,36 @@ export function ReservationsTable({ data }: ReservationsTableProps) {
 
     const columns = useMemo(() => reservationsColumns(handleEditInterface), [handleEditInterface]);
 
+    // Crear filtros personalizados con callbacks del servidor
+    const customFacetedFilters = useMemo(
+        () => createFacetedFilters(onStatusChange, onPaymentMethodChange, status, paymentMethod),
+        [onStatusChange, onPaymentMethodChange, status, paymentMethod]
+    );
+
     return (
-        <DataTable
+        <DataTableExpanded
+            isLoading={isLoading}
             data={data}
             columns={columns}
-            toolbarActions={(table: TableInstance<ReservationDto>) => <ReservationsTableToolbarActions table={table} />}
+            toolbarActions={(table: TableInstance<ReservationDto>) => (
+                <ReservationsTableToolbarActions table={table} />
+            )}
             filterPlaceholder="Buscar separaciones..."
-            facetedFilters={facetedFilters}
+            facetedFilters={customFacetedFilters}
+            serverConfig={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
+                search: {
+                    search: search ?? "",
+                    onSearchChange: onSearchChange,
+                    searchPlaceholder: "Buscar separaciones...",
+                },
+            }}
         />
     );
 }

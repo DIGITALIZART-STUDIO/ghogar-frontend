@@ -77,7 +77,20 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
                 return;
             }
 
-            const promise = updateProject.mutateAsync({ id: project.id, project: input });
+            const promise = updateProject.mutateAsync({
+                params: {
+                    path: { id: project.id },
+                },
+                body: {
+                    Name: input.name,
+                    Location: input.location,
+                    Currency: input.currency,
+                    DefaultDownPayment: input.defaultDownPayment,
+                    DefaultFinancingMonths: input.defaultFinancingMonths,
+                    MaxDiscountPercentage: input.maxDiscountPercentage,
+                    ...(input.projectImage && { projectImage: input.projectImage }),
+                },
+            });
 
             toast.promise(promise, {
                 loading: "Actualizando proyecto...",

@@ -24,6 +24,37 @@ const LeadCaptureSourceIcons = Object.fromEntries(
     })
 );
 
+// Función para crear faceted filters con callbacks del servidor
+export const createFacetedFilters = (
+    onStatusChange: (values: Array<string>) => void,
+    onCaptureSourceChange: (values: Array<string>) => void,
+    currentStatus: Array<string> = [],
+    currentCaptureSource: Array<string> = []
+) => [
+    {
+        column: "seguimiento",
+        title: "Estado del Lead",
+        options: Object.entries(LeadStatusLabels).map(([leadStatus, config]) => ({
+            label: config.label,
+            value: leadStatus,
+            icon: LeadStatusIcons[leadStatus],
+        })),
+        onFilterChange: onStatusChange,
+        currentValue: currentStatus,
+    },
+    {
+        column: "Medio de captación",
+        title: "Medio de Captación",
+        options: Object.entries(LeadCaptureSourceLabels).map(([source, config]) => ({
+            label: config.label,
+            value: source,
+            icon: LeadCaptureSourceIcons[source],
+        })),
+        onFilterChange: onCaptureSourceChange,
+        currentValue: currentCaptureSource,
+    },
+];
+
 export const facetedFilters = [
     {
         column: "seguimiento",

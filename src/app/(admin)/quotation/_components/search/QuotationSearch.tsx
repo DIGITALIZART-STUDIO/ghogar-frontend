@@ -7,14 +7,11 @@ import { Building2, MapPin, DollarSign } from "lucide-react";
 import { usePaginatedAcceptedQuotationsWithSearch } from "../../_hooks/useQuotations";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
-import type { components } from "@/types/api";
-
-type QuotationSummary = components["schemas"]["QuotationSummaryDTO"];
-
+import { SummaryQuotation } from "../../_types/quotation";
 interface QuotationSearchProps {
     disabled?: boolean;
     value: string;
-    onSelect: (quotationId: string, quotation: QuotationSummary) => void;
+    onSelect: (quotationId: string, quotation: SummaryQuotation) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -32,7 +29,7 @@ export function QuotationSearch({
 }: QuotationSearchProps) {
     const { allQuotations, query, handleScrollEnd, handleSearchChange, search } = usePaginatedAcceptedQuotationsWithSearch(10, preselectedId);
 
-    const quotationOptions: Array<Option<QuotationSummary>> = useMemo(() => allQuotations.map((quotation) => ({
+    const quotationOptions: Array<Option<SummaryQuotation>> = useMemo(() => allQuotations.map((quotation) => ({
         value: quotation.id ?? "",
         label: `${quotation.code} - ${quotation.clientName}`,
         entity: quotation,
@@ -82,7 +79,7 @@ export function QuotationSearch({
 
     const selectedQuotation = quotationOptions.find((quotation) => quotation.value === value);
 
-    const handleSelect = ({ value, entity }: Option<QuotationSummary>) => {
+    const handleSelect = ({ value, entity }: Option<SummaryQuotation>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar la cotización. Por favor, inténtalo de nuevo.");
             return;
@@ -91,7 +88,7 @@ export function QuotationSearch({
     };
 
     return (
-        <AutoComplete<QuotationSummary>
+        <AutoComplete<SummaryQuotation>
             queryState={query}
             options={quotationOptions}
             value={selectedQuotation}

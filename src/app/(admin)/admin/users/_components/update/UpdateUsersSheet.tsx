@@ -79,8 +79,10 @@ export function UpdateUsersSheet({ user, open, onOpenChange }: UpdateUserSheetPr
             return;
         }
         const promise = updateUserMutation.mutateAsync({
-            userId: user.user.id,
-            user: {
+            params: {
+                path: { userId: user.user.id },
+            },
+            body: {
                 name: input.name,
                 phone: input.phone,
                 email: input.email,
@@ -107,8 +109,10 @@ export function UpdateUsersSheet({ user, open, onOpenChange }: UpdateUserSheetPr
             return;
         }
         const promise = updateUserPasswordMutation.mutateAsync({
-            userId: user.user.id,
-            passwordDto: input,
+            params: {
+                path: { userId: user.user.id },
+            },
+            body: input,
         });
 
         toast.promise(promise, {

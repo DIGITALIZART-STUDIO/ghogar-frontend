@@ -32,7 +32,20 @@ export default function BlocksServerComponent({ id }: { id: string }) {
                         Error al cargar proyecto
                     </h3>
                     <p className="text-gray-500">
-                        {error?.message ?? "Ha ocurrido un error al cargar el proyecto. Inténtalo de nuevo."}
+                        {(() => {
+                            // Normalizar el error para extraer el mensaje
+                            const e = error as {
+                                message?: string;
+                                detail?: string;
+                                error?: string | { message?: string; detail?: string; rawText?: string }
+                            };
+
+                            return e?.message ??
+                                   e?.detail ??
+                                   (typeof e?.error === "string" ? e.error : undefined) ??
+                                   (typeof e?.error === "object" ? e.error?.message ?? e.error?.detail : undefined) ??
+                                   "Ha ocurrido un error al cargar el proyecto. Inténtalo de nuevo.";
+                        })()}
                     </p>
                 </div>
             </div>

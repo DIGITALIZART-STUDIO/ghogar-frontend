@@ -41,12 +41,12 @@ export default function CreditManagementPage() {
             <HeaderPage title="Manejo de Creditos" description="Listado de separaciones con pagos pendientes." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <CreditManagementTable
-                    data={paginatedReservationsWithPendingPayments.data}
+                    data={paginatedReservationsWithPendingPayments.data ?? []}
                     pagination={{
-                        page: paginatedReservationsWithPendingPayments.meta.page ?? 1,
-                        pageSize: paginatedReservationsWithPendingPayments.meta.pageSize ?? 10,
-                        total: paginatedReservationsWithPendingPayments.meta.total ?? 0,
-                        totalPages: paginatedReservationsWithPendingPayments.meta.totalPages ?? 1,
+                        page: paginatedReservationsWithPendingPayments.meta?.page ?? 1,
+                        pageSize: paginatedReservationsWithPendingPayments.meta?.pageSize ?? 10,
+                        total: paginatedReservationsWithPendingPayments.meta?.total ?? 0,
+                        totalPages: paginatedReservationsWithPendingPayments.meta?.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
                 />

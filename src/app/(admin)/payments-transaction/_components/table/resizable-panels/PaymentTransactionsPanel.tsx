@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeletePaymentTransactionDialog } from "../../delete/DeletePaymentTransactionDialog";
 import { DocumentDownloadDialog } from "@/components/common/DocumentDownloadDialog";
-import { DownloadReceiptPDF } from "../../../_actions/PaymentTransactionActions";
+import { useDownloadReceiptPDF } from "../../../_hooks/usePaymentTransactions";
 import { ComprobanteViewerDialog } from "./ComprobanteViewerDialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -33,6 +33,7 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
     const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
     const [comprobanteViewerOpen, setComprobanteViewerOpen] = useState(false);
     const [selectedComprobanteUrl, setSelectedComprobanteUrl] = useState<string | null>(null);
+    const downloadReceiptPDF = useDownloadReceiptPDF();
 
     const totalTransacted = transactions.reduce((sum, transaction) => sum + (transaction.amountPaid ?? 0), 0);
     const totalPaymentsCovered = transactions.reduce((sum, transaction) => sum + (transaction.payments?.length ?? 0), 0);
@@ -416,7 +417,6 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
             {deleteDialogOpen && (
                 <DeletePaymentTransactionDialog
                     paymentTransactionId={selectedTransactionId ?? ""}
-                    reservationId={selectedReservationId ?? ""}
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onSuccess={() => {
@@ -433,7 +433,7 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
                     isOpen={receiptDialogOpen}
                     onOpenChange={setReceiptDialogOpen}
                     title="Recibo Digital"
-                    pdfAction={DownloadReceiptPDF}
+                    pdfAction={downloadReceiptPDF}
                     pdfFileName={`recibo-${selectedReservationId}.pdf`}
                 />
             )}

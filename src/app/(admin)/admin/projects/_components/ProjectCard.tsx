@@ -61,7 +61,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
         try {
             if (safeProject.isActive) {
                 // Desactivar proyecto
-                const promise = deactivateProject.mutateAsync(safeProject.id);
+                const promise = deactivateProject.mutateAsync({
+                    params: {
+                        path: { id: safeProject.id },
+                    },
+                });
 
                 toast.promise(promise, {
                     loading: "Desactivando proyecto...",
@@ -74,7 +78,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 project.isActive = false;
             } else {
                 // Activar proyecto
-                const promise = activateProject.mutateAsync(safeProject.id);
+                const promise = activateProject.mutateAsync({
+                    params: {
+                        path: { id: safeProject.id },
+                    },
+                });
 
                 toast.promise(promise, {
                     loading: "Activando proyecto...",

@@ -2,10 +2,13 @@ import { UseFormReturn } from "react-hook-form";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { CreateLeadSchema } from "../../_schemas/createLeadsSchema";
 import { LeadCaptureSource } from "../../_types/lead";
 import { LeadCaptureSourceLabels } from "../../_utils/leads.utils";
 import { ClientSearch } from "@/app/(admin)/clients/_components/search/ClientSearch";
+import { CreateClientsDialog } from "@/app/(admin)/clients/_components/create/CreateClientsDialog";
 import { UserSearch } from "../search/UserSearch";
 import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
 
@@ -63,15 +66,26 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                         <FormItem>
                             <FormLabel>Cliente</FormLabel>
                             <FormControl>
-                                <ClientSearch
-                                    value={field.value ?? ""}
-                                    onSelect={(clientId) => {
-                                        field.onChange(clientId);
-                                    }}
-                                    placeholder="Seleccione un cliente"
-                                    searchPlaceholder="Buscar por nombre, DNI, RUC, teléfono..."
-                                    emptyMessage="No se encontraron clientes"
-                                />
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <ClientSearch
+                                            value={field.value ?? ""}
+                                            onSelect={(clientId) => {
+                                                field.onChange(clientId);
+                                            }}
+                                            placeholder="Seleccione un cliente"
+                                            searchPlaceholder="Buscar por nombre, DNI, RUC, teléfono..."
+                                            emptyMessage="No se encontraron clientes"
+                                        />
+                                    </div>
+                                    <CreateClientsDialog
+                                        trigger={
+                                            <Button variant="outline">
+                                                <Plus className="size-4" />
+                                            </Button>
+                                        }
+                                    />
+                                </div>
                             </FormControl>
                             <FormMessage />
                         </FormItem>

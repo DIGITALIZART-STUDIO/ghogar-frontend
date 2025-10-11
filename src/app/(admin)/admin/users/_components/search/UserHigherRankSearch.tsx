@@ -8,15 +8,13 @@ import { usePaginatedUsersWithHigherRankWithSearch } from "../../_hooks/useUser"
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { components } from "@/types/api";
 import { getUserRoleLabel } from "../../_utils/user.utils";
-
-type UserHigherRank = components["schemas"]["UserHigherRankDTO"];
+import { UserHigherRankDTO } from "../../_types/user";
 
 interface UserHigherRankSearchProps {
     disabled?: boolean;
     value: string;
-    onSelect: (userId: string, user: UserHigherRank) => void;
+    onSelect: (userId: string, user: UserHigherRankDTO) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -34,7 +32,7 @@ export function UserHigherRankSearch({
 }: UserHigherRankSearchProps) {
     const { allUsers, query, handleScrollEnd, handleSearchChange, search } = usePaginatedUsersWithHigherRankWithSearch(10, preselectedId);
 
-    const userOptions: Array<Option<UserHigherRank>> = useMemo(() => allUsers.map((user) => {
+    const userOptions: Array<Option<UserHigherRankDTO>> = useMemo(() => allUsers.map((user) => {
         const primaryRole = user.roles?.[0];
         const roleInfo = primaryRole ? getUserRoleLabel(primaryRole) : getUserRoleLabel("Other");
 
@@ -85,7 +83,7 @@ export function UserHigherRankSearch({
 
     const selectedUser = userOptions.find((user) => user.value === value);
 
-    const handleSelect = ({ value, entity }: Option<UserHigherRank>) => {
+    const handleSelect = ({ value, entity }: Option<UserHigherRankDTO>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar el supervisor. Por favor, inténtalo de nuevo.");
             return;
@@ -94,7 +92,7 @@ export function UserHigherRankSearch({
     };
 
     return (
-        <AutoComplete<UserHigherRank>
+        <AutoComplete<UserHigherRankDTO>
             queryState={query}
             options={userOptions}
             value={selectedUser}

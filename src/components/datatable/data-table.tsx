@@ -18,7 +18,7 @@ import {
 } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ServerPaginationTanstackTableConfig } from "@/types/tanstack-table/CustomPagination";
+import { ServerPaginationTanstackTableConfig, ServerPaginationWithSearchConfig } from "@/types/tanstack-table/CustomPagination";
 import { Empty } from "../common/Empty";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -37,8 +37,10 @@ interface DataTableProps<TData, TValue> {
   toolbarActions?: React.ReactNode | ((table: TableInstance<TData>) => React.ReactNode);
   filterPlaceholder?: string;
   facetedFilters?: Array<FacetedFilter<TValue>>;
-  // Nuevas props para paginación del servidor
+  // Configuración para paginación del servidor (básica)
   serverPagination?: ServerPaginationTanstackTableConfig;
+  // Configuración extendida para paginación del servidor con búsqueda y filtros
+  serverConfig?: ServerPaginationWithSearchConfig;
 }
 
 export function DataTable<TData, TValue>({
@@ -48,6 +50,7 @@ export function DataTable<TData, TValue>({
     filterPlaceholder,
     facetedFilters,
     serverPagination,
+    serverConfig,
 }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -55,24 +58,26 @@ export function DataTable<TData, TValue>({
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [sorting, setSorting] = React.useState<SortingState>([]);
 
+    // Determinar qué configuración usar (prioridad: serverConfig > serverPagination)
+    const activeServerConfig = serverConfig ?? serverPagination;
     // Estado de paginación local o del servidor
     const [pagination, setPagination] = React.useState<PaginationState>({
-        pageIndex: serverPagination?.pageIndex ?? 0,
-        pageSize: serverPagination?.pageSize ?? 10,
+        pageIndex: activeServerConfig?.pageIndex ?? 0,
+        pageSize: activeServerConfig?.pageSize ?? 10,
     });
 
     // Estado para carga de paginación
     const [isLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {
-    // Solo activar carga y llamar al servidor si serverPagination está definido
-        if (serverPagination?.onPaginationChange) {
+        // Solo activar carga y llamar al servidor si hay configuración del servidor
+        if (activeServerConfig?.onPaginationChange) {
             setIsLoading(true);
-            serverPagination.onPaginationChange(pagination.pageIndex, pagination.pageSize).finally(() => {
+            activeServerConfig.onPaginationChange(pagination.pageIndex, pagination.pageSize).finally(() => {
                 setIsLoading(false);
             });
         }
-    }, [pagination.pageIndex, pagination.pageSize, serverPagination]);
+    }, [pagination.pageIndex, pagination.pageSize, activeServerConfig]);
 
     // Manejar cambios de paginación
     const handlePaginationChange = React.useCallback(
@@ -111,9 +116,9 @@ export function DataTable<TData, TValue>({
         filterFns: {
             global: globalFilterFn,
         },
-        ...(serverPagination
+        ...(activeServerConfig
             ? {
-                pageCount: serverPagination.pageCount,
+                pageCount: activeServerConfig.pageCount,
                 manualPagination: true,
             }
             : {
@@ -128,6 +133,7 @@ export function DataTable<TData, TValue>({
                 toolbarActions={toolbarActions}
                 filterPlaceholder={filterPlaceholder}
                 facetedFilters={facetedFilters}
+                serverConfig={serverConfig}
             />
             <div className="rounded-md border">
                 <Table>
@@ -143,15 +149,19 @@ export function DataTable<TData, TValue>({
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {isLoading && serverPagination ? (
-                        // Mostrar indicador de carga solo cuando se está cargando y hay paginación del servidor
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    <div className="flex justify-center">
-                                        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
+                        {isLoading && activeServerConfig ? (
+                            // Show skeleton rows while fetching data - solo el contenido de la tabla
+                            Array(5)
+                                .fill(0)
+                                .map((_, index) => (
+                                    <TableRow key={`skeleton-${index}`}>
+                                        {columns.map((_, colIndex) => (
+                                            <TableCell key={`skeleton-${index}-${colIndex}`} className="h-12">
+                                                <div className="h-4 bg-muted animate-pulse rounded" />
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
@@ -172,7 +182,7 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} serverPagination={serverPagination} />
+            <DataTablePagination table={table} serverPagination={activeServerConfig} />
         </div>
     );
 }

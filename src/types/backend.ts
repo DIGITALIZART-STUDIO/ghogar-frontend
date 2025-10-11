@@ -1,191 +1,150 @@
-import { cookies } from "next/headers";
-import createClient from "openapi-fetch";
+import createFetchClient from "openapi-fetch";
+import createClient from "openapi-react-query";
 
-import { err, ok, Result } from "@/utils/result";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/variables";
 import type { paths } from "./api";
-import { BACKEND_URL } from "./backend2";
+
+export type FetchError = {
+    statusCode: number;
+    message: string;
+    error: unknown;
+};
+
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+if (!BACKEND_URL) {
+    throw new Error("NEXT_PUBLIC_BACKEND_URL environment variable is not set");
+}
+
+export const backendUrl = (baseUrl: string, version?: string) => (version ? `${baseUrl}/${version}` : baseUrl);
+
+/**
+ * Custom fetch implementation that includes credentials and handles errors
+ * Automatically handles FormData for file uploads
+ */
+export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    let response: Response;
+    try {
+        // Preparar la configuración de fetch
+        const fetchInit: RequestInit = {
+            ...init,
+            credentials: "include",
+        };
+
+        // Detectar si el body contiene archivos y crear FormData si es necesario
+        if (init?.body && typeof init.body === "object" && !(init.body instanceof FormData)) {
+            const bodyObj = init.body as unknown as Record<string, unknown>;
+
+            // Verificar si hay archivos en el body
+            const hasFiles = Object.values(bodyObj).some((value) => value instanceof File ||
+                (Array.isArray(value) && value.some((item) => item instanceof File)));
+
+            if (hasFiles) {
+                // Crear FormData para archivos
+                const formData = new FormData();
+
+                Object.entries(bodyObj).forEach(([key, value]) => {
+                    if (value instanceof File) {
+                        formData.append(key, value);
+                    } else if (Array.isArray(value)) {
+                        value.forEach((item, index) => {
+                            if (item instanceof File) {
+                                formData.append(`${key}[${index}]`, item);
+                            } else {
+                                formData.append(`${key}[${index}]`, String(item));
+                            }
+                        });
+                    } else if (value !== null && value !== undefined) {
+                        formData.append(key, String(value));
+                    }
+                });
+
+                fetchInit.body = formData;
+                // No establecer Content-Type para FormData, el navegador lo hará automáticamente
+            } else {
+                // Para objetos JSON sin archivos, establecer Content-Type
+                fetchInit.headers = {
+                    "Content-Type": "application/json",
+                    ...init.headers,
+                };
+                fetchInit.body = JSON.stringify(bodyObj);
+            }
+        }
+
+        response = await fetch(input, fetchInit);
+    } catch (e) {
+        // No loggear AbortError (cancelaciones normales de React Query)
+        throw e;
+    }
+
+    // Si la respuesta no es exitosa, lanzar un error para que React Query lo maneje
+    if (!response.ok) {
+        const error = {
+            statusCode: response.status,
+            message: response.statusText,
+            error: response.statusText,
+        };
+
+        throw error;
+    }
+
+    return response;
+};
 
 /**
  * Client for connecting with the backend
  */
-export const backend = createClient<paths>({ baseUrl: BACKEND_URL });
+export const fetchClient = createFetchClient<paths>({
+    baseUrl: backendUrl(BACKEND_URL),
+    fetch: enhancedFetch,
+});
 
-type AuthHeader = {
-    headers: {
-        Authorization: string;
-    };
-};
+export const backend = createClient(fetchClient);
 
-type FetchResult<A, B> = {
-    data?: A;
-    error?: B;
-    response: Response;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FetchError<T = any> = {
-    statusCode: number;
-    message: string;
-    error: T;
+/**
+ * Helper function to create FormData for file uploads
+ */
+export const createFormDataForFile = (file: File, fieldName: string = "file"): FormData => {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+    return formData;
 };
 
 /**
- * Wraps a backend call, ensuring it never throws, and can be safely
- * used in server components/server actions without disrupting control flow.
- *
- * The parameter `auth` to `fn` is an object that contains the Authorization: Bearer
- * header for requests with the backend.
- *
- * This wrapper assumes that the caller is running on the server and has access
- * to cookies.
+ * Helper function to upload files using enhanced fetch
  */
-export async function wrapper<Data, Error>(fn: (auth: AuthHeader) => Promise<FetchResult<Data, Error>>): Promise<Result<Data, FetchError<Error>>> {
-    // get auth
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-    const refreshToken = c.get(REFRESH_TOKEN_KEY);
+export const uploadFile = async (url: string, file: File, fieldName: string = "file"): Promise<Response> => {
+    const formData = createFormDataForFile(file, fieldName);
 
-    try {
-        const data = await fn({ headers: { Authorization: `Bearer ${jwt?.value ?? "---"}` } });
-        if (data.response.ok) {
-            return ok(data.data!);
-        }
+    return enhancedFetch(url, {
+        method: "POST",
+        body: formData,
+    });
+};
 
-        // Si es error 401 y tenemos refresh token, intentar refresh
-        if (data.response.status === 401 && refreshToken?.value) {
-            try {
-                const refreshResponse = await backend.POST("/api/Auth/refresh", {});
+/**
+ * Helper function to download files as Blob using enhanced fetch
+ * This is specifically for binary responses like PDFs, DOCX, etc.
+ * Uses the same base URL and authentication as the openapi-fetch client
+ */
+export const downloadFileWithClient = async (
+    path: string,
+    params: { path: Record<string, string> }
+): Promise<Blob> => {
+    // Construir la URL completa usando la misma base URL que el cliente
+    const baseUrl = backendUrl(BACKEND_URL);
+    const url = `${baseUrl}${path}`.replace(/\{(\w+)\}/g, (match, key) => params.path[key] || match);
 
-                if (refreshResponse.data) {
-                    // Reintentar la petición original con el nuevo token
-                    const newJwt = await cookies();
-                    const newToken = newJwt.get(ACCESS_TOKEN_KEY);
-                    const retryData = await fn({ headers: { Authorization: `Bearer ${newToken?.value ?? "---"}` } });
+    const response = await enhancedFetch(url, {
+        method: "GET",
+    });
 
-                    if (retryData.response.ok) {
-                        return ok(retryData.data!);
-                    }
-                }
-            } catch (refreshError) {
-                // Si falla el refresh, continuar con el error original
-                console.error("Error refreshing token:", refreshError);
-            }
-        }
-
-        let defaultError = "Error del servidor";
-        if (data.response.status === 401) {
-            defaultError = "Sesión expirada, vuelve a iniciar sesión";
-        } else if (data.response.status === 403) {
-            defaultError = "No autorizado";
-        }
-
-        if (data.error) {
-            // attempt to extract error messages from validation errors
-            if (data.response.status === 400) {
-                const e = data.error as Error;
-                if (typeof e === "object" && e !== null && "errors" in e) {
-                    const errors = e.errors as Record<string, string>;
-                    const errorsStr = Object.entries(errors)
-                        .map(([, v]) => `${v}`)
-                        .join(", ");
-
-                    return err({
-                        statusCode: data.response.status,
-                        message: `${errorsStr}`,
-                        error: data.error,
-                    });
-                }
-            }
-
-            const e = data.error as Error;
-            if (typeof e === "object" && e !== null && "title" in e) {
-                return err({
-                    statusCode: data.response.status,
-                    message: `${e.title}`,
-                    error: data.error,
-                });
-            }
-
-            if (typeof e === "string") {
-                return err({
-                    statusCode: data.response.status,
-                    message: e,
-                    error: data.error,
-                });
-            }
-
-            return err({
-                statusCode: data.response.status,
-                message: defaultError,
-                error: data.error,
-            });
-        } else {
-            return err({
-                statusCode: data.response.status,
-                message: defaultError,
-                error: data.error!,
-            });
-        }
-    } catch (e) {
-        if (process.env.NODE_ENV === "development") {
-            console.error(e);
-        }
-        return err({
-            statusCode: 503,
-            message: "Servidor no disponible",
-            error: null as Error,
-        });
-    }
-}
-
-/// File downloader
-export async function DownloadFile(
-    url: string,
-    method: RequestInit["method"],
-    body: RequestInit["body"],
-): Promise<Result<Blob, FetchError>> {
-    const c = await cookies();
-    const jwt = c.get(ACCESS_TOKEN_KEY);
-    if (!jwt) {
-        return err({
-            statusCode: 401,
-            message: "No autorizado",
-            error: null,
-        });
+    if (!response.ok) {
+        const error = {
+            statusCode: response.status,
+            message: response.statusText,
+            error: response.statusText,
+        };
+        throw error;
     }
 
-    try {
-        const response = await fetch(`${BACKEND_URL}${url}`, {
-            method,
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt.value}`,
-            },
-            body,
-        });
-
-        if (!response.ok) {
-            // attempt to get data
-            const body = await response.text();
-            console.error("Error generando documento:");
-            console.error(body);
-
-            return err({
-                statusCode: response.status,
-                message: "Error generando documento",
-                error: null,
-            });
-        }
-
-        const blob = await response.blob();
-        return ok(blob);
-    } catch (e) {
-        console.error(e);
-        return err({
-            statusCode: 503,
-            message: "Error conectando al servidor",
-            error: null,
-        });
-    }
-}
+    return response.blob();
+};

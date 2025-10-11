@@ -25,7 +25,11 @@ export function ToggleValidationStatusDialog({
     const actionText = isValidated ? "marcar como pendiente" : "marcar como validado";
 
     const handleToggle = async () => {
-        const promise = toggleStatus.mutateAsync(reservation.id ?? "");
+        const promise = toggleStatus.mutateAsync({
+            params: {
+                path: { id: reservation.id ?? "" }
+            }
+        });
 
         toast.promise(promise, {
             loading: "Cambiando estado de validación...",

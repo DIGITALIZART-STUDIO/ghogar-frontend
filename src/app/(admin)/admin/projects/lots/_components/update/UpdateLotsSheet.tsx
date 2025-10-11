@@ -83,7 +83,12 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
                 blockId: input.blockId,
             };
 
-            const promise = updateLot.mutateAsync({ id: lot.id, lot: lotData });
+            const promise = updateLot.mutateAsync({
+                params: {
+                    path: { id: lot.id },
+                },
+                body: lotData,
+            });
 
             toast.promise(promise, {
                 loading: "Actualizando lote...",
@@ -133,7 +138,7 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
                             </span>
                         </div>
                     ) : (
-                        <UpdateLotsForm form={form} onSubmit={onSubmit} blocks={blocks}>
+                        <UpdateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} projectId={projectId}>
                             <SheetFooter className="gap-2 pt-2 sm:space-x-0">
                                 <div className="flex flex-row-reverse gap-2">
                                     <Button type="submit" disabled={isPending}>

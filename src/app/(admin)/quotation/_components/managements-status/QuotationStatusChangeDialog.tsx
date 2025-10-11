@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toastWrapper } from "@/types/toasts";
+import { toast } from "sonner";
 import { useChangeQuotationStatus } from "../../_hooks/useQuotations";
 import { QuotationStatus } from "../../_types/quotation";
 import QuotationStatusChangeContent from "./QuotationStatusChangeContent";
@@ -51,17 +51,20 @@ export function QuotationStatusChangeDialog({
 
             // Usa el hook en vez de la acción directa
             const promise = changeStatusMutation.mutateAsync({
-                id: quotationId,
-                statusDto,
+                params: {
+                    path: { id: quotationId },
+                },
+                body: statusDto,
             });
 
-            const [, error] = await toastWrapper(promise, {
+            toast.promise(promise, {
                 loading: "Actualizando estado de cotización...",
                 success: "Estado actualizado exitosamente",
-                error: (e) => `Error al cambiar el estado: ${e.message || "Error desconocido"}`,
+                error: (e) => `Error al cambiar el estado: ${e.message ?? "Error desconocido"}`,
             });
 
-            if (!error) {
+            try {
+                await promise;
                 setShowSuccess(true);
                 setTimeout(() => {
                     onClose();
@@ -70,6 +73,8 @@ export function QuotationStatusChangeDialog({
                         setShowSuccess(false);
                     }, 300);
                 }, 2000);
+            } catch {
+                // Error ya manejado por toast.promise
             }
         });
     };

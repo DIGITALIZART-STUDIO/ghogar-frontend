@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { toastWrapper } from "@/types/toasts";
+import { toast } from "sonner";
 import { CreateQuotationSchema, quotationSchema } from "../_schemas/createQuotationsSchema";
 import { QuotationForm } from "./QuotationForm";
 import { useCreateQuotation } from "../../_hooks/useQuotations";
@@ -54,16 +54,21 @@ export default function CreateClientQuotationPage({ userData }: CreateClientQuot
         };
 
         // Usa el mutation del hook
-        const promise = createQuotationMutation.mutateAsync(quotationData);
+        const promise = createQuotationMutation.mutateAsync({
+            body: quotationData,
+        });
 
-        const [, error] = await toastWrapper(promise, {
+        toast.promise(promise, {
             loading: "Creando cotización...",
             success: "Cotización creada exitosamente",
             error: (e) => `Error al crear cotización: ${e.message}`,
         });
 
-        if (!error) {
+        try {
+            await promise;
             setIsSuccess(true);
+        } catch {
+            // Error ya manejado por toast.promise
         }
     };
 

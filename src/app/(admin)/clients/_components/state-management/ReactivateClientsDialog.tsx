@@ -33,7 +33,9 @@ export function ReactivateClientsDialog({
             return;
         }
 
-        const promise = activateClients.mutateAsync(clientIds);
+        const promise = activateClients.mutateAsync({
+            body: clientIds,
+        });
 
         toast.promise(promise, {
             loading: `Reactivando ${clients.length === 1 ? "cliente" : "clientes"}...`,

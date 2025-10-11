@@ -33,7 +33,9 @@ export function DeleteClientsDialog({
             return;
         }
 
-        const promise = deleteClients.mutateAsync(clientIds);
+        const promise = deleteClients.mutateAsync({
+            body: clientIds,
+        });
 
         toast.promise(promise, {
             loading: `Eliminando ${clients.length === 1 ? "cliente" : "clientes"}...`,

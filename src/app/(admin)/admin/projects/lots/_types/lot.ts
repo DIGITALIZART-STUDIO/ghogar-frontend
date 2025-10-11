@@ -1,22 +1,6 @@
-export interface LotData {
-  id: string;
-  lotNumber: string;
-  area: number;
-  price: number;
-  status: LotStatus;
-  statusText: string;
-  blockId: string;
-  blockName: string;
-  projectId: string;
-  projectName: string;
-  isActive: boolean;
-  createdAt: string; // ISO date string
-  modifiedAt: string; // ISO date string
+import { components } from "@/types/api";
 
-  // Calculados
-  pricePerSquareMeter: number;
-}
-
+export type LotData = components["schemas"]["LotDTO"];
 export enum LotStatus {
   Available = "Available",
   Quoted = "Quoted",

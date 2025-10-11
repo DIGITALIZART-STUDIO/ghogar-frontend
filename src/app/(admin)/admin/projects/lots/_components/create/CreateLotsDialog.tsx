@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useCreateLot } from "../../_hooks/useLots";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
 import { useActiveBlocks } from "../../../[id]/blocks/_hooks/useBlocks";
+import { BlockData } from "../../../[id]/blocks/_types/block";
 import CreateLotsForm from "./CreateLotsForm";
 
 const dataForm = {
@@ -67,7 +68,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
 
     // Si hay un blockId preseleccionado, establecerlo en el form cuando los bloques se cargan
     useEffect(() => {
-        if (blockId && blocks.length > 0 && blocks.some((block) => block.id === blockId)) {
+        if (blockId && blocks.length > 0 && blocks.some((block: BlockData) => block.id === blockId)) {
             form.setValue("blockId", blockId);
         }
     }, [blockId, blocks, form]);
@@ -84,7 +85,9 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                 // No incluir projectId aquí si el backend lo obtiene del bloque
             };
 
-            const promise = createLot.mutateAsync(lotData);
+            const promise = createLot.mutateAsync({
+                body: lotData,
+            });
 
             toast.promise(promise, {
                 loading: "Creando lote...",
@@ -134,7 +137,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                                     <span>Cargando manzanas activas...</span>
                                 </div>
                             ) : (
-                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId}>
+                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId} projectId={projectId}>
                                     <DialogFooter>
                                         <div className="grid grid-cols-2 gap-2 w-full">
                                             <DialogClose asChild>
@@ -181,7 +184,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                                     <span>Cargando manzanas activas...</span>
                                 </div>
                             ) : (
-                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId}>
+                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId} projectId={projectId}>
                                     <DrawerFooter className="px-0 pt-2 flex flex-col-reverse">
                                         <Button disabled={isPending || blocks.length === 0} className="w-full">
                                             {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}

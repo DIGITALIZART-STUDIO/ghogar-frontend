@@ -54,9 +54,14 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
 
             // Para asignación automática, solo necesitamos el monto y reservationId
             const promise = createPaymentTransaction.mutateAsync({
-                ...data,
-                paymentIds: undefined, // El backend asignará automáticamente
-                reservationId: id, // Necesario para asignación automática
+                body: {
+                    PaymentDate: data.paymentDate,
+                    AmountPaid: data.amountPaid,
+                    PaymentMethod: data.paymentMethod,
+                    ReferenceNumber: data.referenceNumber,
+                    PaymentIds: undefined, // El backend asignará automáticamente
+                    ReservationId: id, // Necesario para asignación automática
+                }
             });
 
             toast.promise(promise, {
@@ -82,9 +87,14 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
         }
 
         const promise = createPaymentTransaction.mutateAsync({
-            ...data,
-            paymentIds: selectedPayments,
-            reservationId: id,
+            body: {
+                PaymentDate: data.paymentDate,
+                AmountPaid: data.amountPaid,
+                PaymentMethod: data.paymentMethod,
+                ReferenceNumber: data.referenceNumber,
+                PaymentIds: selectedPayments,
+                ReservationId: id,
+            }
         });
 
         toast.promise(promise, {

@@ -5,7 +5,7 @@ import { rolePermissions } from "@/components/layout/types";
 import { usePathname } from "next/navigation";
 import UnauthorizedPage from "../unauthorized";
 
-export type Role = "SuperAdmin" | "Admin" | "Supervisor" | "SalesAdvisor" | "Manager" | "FinanceManager";
+export type Role = "SuperAdmin" | "Admin" | "Supervisor" | "SalesAdvisor" | "Manager" | "FinanceManager" | "CommercialManager";
 export type Module = "Users"
 export type Claim = "CREATE" | "READ" | "UPDATE" | "DELETE"
 
@@ -22,6 +22,7 @@ export const roles: RolesTypes = {
     SalesAdvisor: "Asesor",
     Manager: "Gerente",
     FinanceManager: "Gerente de Finanzas",
+    CommercialManager: "Gerente Comercial",
 };
 
 const AuthContext = createContext<Array<Role> | null>(null);

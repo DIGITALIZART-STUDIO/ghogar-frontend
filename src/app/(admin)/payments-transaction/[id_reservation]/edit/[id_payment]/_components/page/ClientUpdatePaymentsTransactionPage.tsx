@@ -60,11 +60,16 @@ export default function ClientUpdatePaymentsTransactionPage({ availablePayments,
         }
 
         const promise = updatePaymentTransaction.mutateAsync({
-            id: paymentTransactionId,
-            transactionData: {
-                ...data,
-                // reservationId se envía desde el formulario si existe
-                // comprobanteFile se envía desde el ModernImageCropper si existe
+            params: {
+                path: { id: paymentTransactionId }
+            },
+            body: {
+                PaymentDate: data.paymentDate,
+                AmountPaid: data.amountPaid,
+                PaymentMethod: data.paymentMethod,
+                ReferenceNumber: data.referenceNumber,
+                PaymentIds: selectedPayments,
+                ReservationId: id,
             }
         });
 

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ThemeProvider } from "@/context/theme-context";
 import { AuthProvider } from "@/context/auth-provider";
 import { ProjectProvider } from "@/context/project-context";
+import { GlobalErrorHandler } from "@/components/GlobalErrorHandler";
 
 export default function ClientProviders({
     children
@@ -14,7 +15,34 @@ export default function ClientProviders({
     children: React.ReactNode
 }) {
     // Crear una nueva instancia de QueryClient para cada sesión de usuario
-    const [queryClient] = useState(() => new QueryClient());
+    const [queryClient] = useState(() => new QueryClient({
+        defaultOptions: {
+            queries: {
+                retry: (failureCount, error: unknown) => {
+                    // No retry en errores de autenticación
+                    const e = error as { statusCode?: number };
+                    if (e?.statusCode === 401 || e?.statusCode === 403) {
+                        return false;
+                    }
+                    // Retry máximo 1 vez para otros errores (reducir para evitar bucles)
+                    return failureCount < 1;
+                },
+                staleTime: 5 * 60 * 1000, // 5 minutos
+                refetchOnWindowFocus: false, // Evitar refetch automático
+            },
+            mutations: {
+                retry: (failureCount, error: unknown) => {
+                    // No retry en errores de autenticación
+                    const e = error as { statusCode?: number };
+                    if (e?.statusCode === 401 || e?.statusCode === 403) {
+                        return false;
+                    }
+                    // Retry máximo 1 vez para mutations
+                    return failureCount < 1;
+                },
+            },
+        },
+    }));
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -25,6 +53,7 @@ export default function ClientProviders({
                 disableTransitionOnChange
             >
                 <AuthProvider>
+                    <GlobalErrorHandler />
                     <ProjectProvider>
                         {children}
                         <ReactQueryDevtools initialIsOpen={false} />

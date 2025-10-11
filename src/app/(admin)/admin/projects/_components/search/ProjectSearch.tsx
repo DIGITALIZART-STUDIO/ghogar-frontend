@@ -7,14 +7,12 @@ import { MapPin, Building2 } from "lucide-react";
 import { usePaginatedActiveProjectsWithSearch } from "../../_hooks/useProjects";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
-import type { components } from "@/types/api";
-
-type Project = components["schemas"]["ProjectDTO"];
+import { ProjectData } from "../../_types/project";
 
 interface ProjectSearchProps {
     disabled?: boolean;
     value: string;
-    onSelect: (projectId: string, project: Project) => void;
+    onSelect: (projectId: string, project: ProjectData) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -32,7 +30,7 @@ export function ProjectSearch({
 }: ProjectSearchProps) {
     const { allProjects, query, handleScrollEnd, handleSearchChange, search } = usePaginatedActiveProjectsWithSearch(10, preselectedId);
 
-    const projectOptions: Array<Option<Project>> = useMemo(() => allProjects.map((project) => ({
+    const projectOptions: Array<Option<ProjectData>> = useMemo(() => allProjects.map((project) => ({
         value: project.id ?? "",
         label: project.name ?? "Sin nombre",
         entity: project,
@@ -68,7 +66,7 @@ export function ProjectSearch({
 
     const selectedProject = projectOptions.find((project) => project.value === value);
 
-    const handleSelect = ({ value, entity }: Option<Project>) => {
+    const handleSelect = ({ value, entity }: Option<ProjectData>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar el proyecto. Por favor, inténtalo de nuevo.");
             return;
@@ -77,7 +75,7 @@ export function ProjectSearch({
     };
 
     return (
-        <AutoComplete<Project>
+        <AutoComplete<ProjectData>
             queryState={query}
             options={projectOptions}
             value={selectedProject}

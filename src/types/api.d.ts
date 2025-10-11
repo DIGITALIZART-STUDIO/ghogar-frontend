@@ -319,9 +319,20 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get blocks by project with pagination
+         * @description Retrieves blocks by project with pagination, search and ordering capabilities
+         */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                };
                 header?: never;
                 path: {
                     projectId: string;
@@ -336,9 +347,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["BlockDTO"]>;
-                        "application/json": Array<components["schemas"]["BlockDTO"]>;
-                        "text/json": Array<components["schemas"]["BlockDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfBlockDTO"];
                     };
                 };
             };
@@ -669,6 +680,10 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    isActive?: Array<boolean>;
+                    type?: Array<components["schemas"]["ClientType"]>;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -925,6 +940,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Clients/current-user/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    projectId?: string;
+                    useCurrentUser?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["ClientSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Clients/paginated-search": {
         parameters: {
             query?: never;
@@ -1021,7 +1076,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        file?: components["schemas"]["IFormFile"];
+                        /** Format: binary */
+                        file?: string;
                     };
                 };
             };
@@ -1195,6 +1251,84 @@ export interface paths {
                         "text/plain": components["schemas"]["FinanceManagerDashboardDto"];
                         "application/json": components["schemas"]["FinanceManagerDashboardDto"];
                         "text/json": components["schemas"]["FinanceManagerDashboardDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Dashboard/supervisor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SupervisorDashboardDto"];
+                        "application/json": components["schemas"]["SupervisorDashboardDto"];
+                        "text/json": components["schemas"]["SupervisorDashboardDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Dashboard/manager": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ManagerDashboardDto"];
+                        "application/json": components["schemas"]["ManagerDashboardDto"];
+                        "text/json": components["schemas"]["ManagerDashboardDto"];
                     };
                 };
             };
@@ -1512,7 +1646,33 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["ExchangeRateDto"];
+                        "application/json": components["schemas"]["ExchangeRateDto"];
+                        "text/json": components["schemas"]["ExchangeRateDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
                 };
             };
         };
@@ -2188,6 +2348,13 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["LeadStatus"]>;
+                    captureSource?: Array<components["schemas"]["LeadCaptureSource"]>;
+                    completionReason?: Array<components["schemas"]["LeadCompletionReason"]>;
+                    clientId?: string;
+                    userId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -2424,7 +2591,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assignedto/{userId}": {
+    "/api/Leads/assignedto": {
         parameters: {
             query?: never;
             header?: never;
@@ -2435,9 +2602,7 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    userId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -2463,7 +2628,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assignedto/{userId}/paginated": {
+    "/api/Leads/assignedto/paginated": {
         parameters: {
             query?: never;
             header?: never;
@@ -2475,11 +2640,15 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["LeadStatus"]>;
+                    captureSource?: Array<components["schemas"]["LeadCaptureSource"]>;
+                    completionReason?: Array<components["schemas"]["LeadCompletionReason"]>;
+                    clientId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
-                path: {
-                    userId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -2811,6 +2980,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/users/with-leads/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    projectId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["UserSummaryDto"]>;
+                        "application/json": Array<components["schemas"]["UserSummaryDto"]>;
+                        "text/json": Array<components["schemas"]["UserSummaryDto"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Leads/users/summary/paginated": {
         parameters: {
             query?: never;
@@ -2855,7 +3063,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Leads/assigned/{assignedToId}/summary": {
+    "/api/Leads/assigned/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -2866,9 +3074,7 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    assignedToId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -3168,7 +3374,16 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    blockId?: string;
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                    status?: string;
+                };
                 header?: never;
                 path: {
                     projectId: string;
@@ -3183,9 +3398,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["LotDTO"]>;
-                        "application/json": Array<components["schemas"]["LotDTO"]>;
-                        "text/json": Array<components["schemas"]["LotDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfLotDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfLotDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfLotDTO"];
                     };
                 };
             };
@@ -4057,11 +4272,8 @@ export interface paths {
                         AmountPaid?: number;
                         /** Format: uuid */
                         ReservationId?: string;
-                        /** @default null */
                         PaymentMethod?: string;
-                        /** @default null */
                         ReferenceNumber?: string;
-                        /** @default null */
                         ComprobanteUrl?: string;
                         PaymentIds?: Array<string>;
                         StartFromLastCuota?: boolean;
@@ -4310,12 +4522,19 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all projects
-         * @description Retrieves all projects in the system
+         * Get all projects with pagination
+         * @description Retrieves all projects with pagination, search and ordering capabilities
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                    orderDirection?: string;
+                    preselectedId?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -4328,9 +4547,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": Array<components["schemas"]["ProjectDTO"]>;
-                        "application/json": Array<components["schemas"]["ProjectDTO"]>;
-                        "text/json": Array<components["schemas"]["ProjectDTO"]>;
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfProjectDTO"];
                     };
                 };
             };
@@ -5020,7 +5239,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Quotations/advisor/{advisorId}/paginated": {
+    "/api/Quotations/advisor/paginated": {
         parameters: {
             query?: never;
             header?: never;
@@ -5032,11 +5251,14 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["QuotationStatus"]>;
+                    clientId?: Array<string>;
+                    projectId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
-                path: {
-                    advisorId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -5390,6 +5612,96 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["ReservationStatus"]>;
+                    paymentMethod?: Array<components["schemas"]["PaymentMethod"]>;
+                    projectId?: string;
+                    orderBy?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/advisor/paginated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["ReservationStatus"]>;
+                    paymentMethod?: Array<components["schemas"]["PaymentMethod"]>;
+                    projectId?: string;
+                    orderBy?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6088,13 +6400,17 @@ export interface paths {
         };
         /**
          * Get all users
-         * @description Gets information about all users
+         * @description Gets information about all users with search and filtering capabilities
          */
         get: {
             parameters: {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    isActive?: Array<boolean>;
+                    roleName?: Array<string>;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -6410,6 +6726,221 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Users/assign-sales-advisor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign SalesAdvisor to Supervisor
+         * @description Assigns a SalesAdvisor to a Supervisor
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssignSalesAdvisorToSupervisorDTO"];
+                    "text/json": components["schemas"]["AssignSalesAdvisorToSupervisorDTO"];
+                    "application/*+json": components["schemas"]["AssignSalesAdvisorToSupervisorDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/supervisor/assign-multiple": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Multiple SalesAdvisors to Supervisor
+         * @description Assigns multiple SalesAdvisors to a specific Supervisor
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssignMultipleSalesAdvisorsToSupervisorDTO"];
+                    "text/json": components["schemas"]["AssignMultipleSalesAdvisorsToSupervisorDTO"];
+                    "application/*+json": components["schemas"]["AssignMultipleSalesAdvisorsToSupervisorDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/supervisor/{supervisorId}/sales-advisors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get SalesAdvisors assigned to Supervisor
+         * @description Gets all SalesAdvisors assigned to a specific Supervisor
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    supervisorId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["SalesAdvisorAssignmentDTO"]>;
+                        "application/json": Array<components["schemas"]["SalesAdvisorAssignmentDTO"]>;
+                        "text/json": Array<components["schemas"]["SalesAdvisorAssignmentDTO"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/supervisor/{supervisorId}/sales-advisor/{salesAdvisorId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove SalesAdvisor from Supervisor
+         * @description Removes a SalesAdvisor assignment from a Supervisor
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    supervisorId: string;
+                    salesAdvisorId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Users/supervisor-sales-advisor-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all Supervisor-SalesAdvisor assignments
+         * @description Gets all active Supervisor-SalesAdvisor assignments with pagination
+         */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    search?: string;
+                    orderBy?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfSupervisorSalesAdvisorDTO"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfSupervisorSalesAdvisorDTO"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfSupervisorSalesAdvisorDTO"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6451,6 +6982,31 @@ export interface components {
             /** Format: int32 */
             reservations?: number;
         };
+        AdvisorPerformanceDto: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            /** Format: int32 */
+            leadsAssigned?: number;
+            /** Format: int32 */
+            leadsInFollowUp?: number;
+            /** Format: int32 */
+            leadsCompleted?: number;
+            /** Format: int32 */
+            quotationsIssued?: number;
+            /** Format: int32 */
+            reservationsGenerated?: number;
+            /** Format: int32 */
+            tasksCompleted?: number;
+            /** Format: int32 */
+            tasksPending?: number;
+            /** Format: double */
+            avgResponseTime?: number;
+            /** Format: date-time */
+            lastActivity?: string | null;
+            /** Format: double */
+            efficiency?: number;
+        };
         AssignedLeadDto: {
             /** Format: uuid */
             id?: string;
@@ -6468,6 +7024,17 @@ export interface components {
             lastContact?: string | null;
             nextTask?: string;
             priority?: string;
+        };
+        AssignMultipleSalesAdvisorsToSupervisorDTO: {
+            /** Format: uuid */
+            supervisorId: string;
+            salesAdvisorIds: Array<string>;
+        };
+        AssignSalesAdvisorToSupervisorDTO: {
+            /** Format: uuid */
+            supervisorId: string;
+            /** Format: uuid */
+            salesAdvisorId: string;
         };
         BatchOperationResult: {
             successIds?: Array<string>;
@@ -6742,6 +7309,13 @@ export interface components {
         };
         /** @enum {unknown} */
         ContractValidationStatus: "None" | "PendingValidation" | "Validated";
+        ConversionFunnelDto: {
+            stage?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            percentage?: number;
+        };
         /** @enum {unknown} */
         Currency: "SOLES" | "DOLARES";
         DashboardAdminDto: {
@@ -6818,6 +7392,15 @@ export interface components {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
         } | null;
+        ExchangeRateDto: {
+            /** Format: double */
+            exchangeRate: number;
+            /** Format: date-time */
+            retrievedAt?: string;
+            source?: string;
+            isSuccess?: boolean;
+            message?: string;
+        };
         FileResult: {
             contentType?: string | null;
             fileDownloadName?: string | null;
@@ -6860,8 +7443,6 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
-        /** Format: binary */
-        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -7084,6 +7665,8 @@ export interface components {
         };
         /** @enum {unknown} */
         LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
+        /** @enum {unknown} */
+        LeadCompletionReason: "NotInterested" | "InFollowUp" | "Sale";
         LeadCreateDto: {
             /** Format: uuid */
             clientId?: string | null;
@@ -7118,6 +7701,27 @@ export interface components {
             status?: string;
             isActive?: boolean;
         } | null;
+        LeadSourceAnalysisDto: {
+            source?: string;
+            /** Format: int32 */
+            totalLeads?: number;
+            /** Format: int32 */
+            convertedLeads?: number;
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: double */
+            costPerLead?: number;
+            /** Format: double */
+            roi?: number;
+        };
+        LeadSourceDistributionDto: {
+            source?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            percentage?: number;
+            color?: string;
+        };
         LeadSourceDto: {
             source?: string;
             /** Format: int32 */
@@ -7414,6 +8018,45 @@ export interface components {
             status?: components["schemas"]["NullableOfLotStatus"];
             isActive?: boolean | null;
         };
+        ManagerAlertDto: {
+            type?: string;
+            title?: string;
+            message?: string;
+            /** Format: int32 */
+            count?: number;
+            priority?: string;
+        };
+        ManagerDashboardDto: {
+            kpis?: components["schemas"]["ManagerKpisDto"];
+            projectPerformance?: Array<components["schemas"]["ProjectPerformanceDto"]>;
+            salesTeamPerformance?: Array<components["schemas"]["SalesTeamPerformanceDto"]>;
+            leadSourceAnalysis?: Array<components["schemas"]["LeadSourceAnalysisDto"]>;
+            monthlyTrends?: Array<components["schemas"]["MonthlyTrendDto"]>;
+            salesPipeline?: components["schemas"]["SalesPipelineDto"];
+            quotationAnalysis?: components["schemas"]["QuotationAnalysisDto"];
+            reservationAnalysis?: components["schemas"]["ReservationAnalysisDto"];
+            timeMetrics?: components["schemas"]["TimeMetricsDto"];
+            alerts?: Array<components["schemas"]["ManagerAlertDto"]>;
+            topPerformers?: Array<components["schemas"]["TopPerformerDto"]>;
+        };
+        ManagerKpisDto: {
+            /** Format: int32 */
+            totalProjects?: number;
+            /** Format: int32 */
+            activeProjects?: number;
+            /** Format: int32 */
+            totalLeads?: number;
+            /** Format: int32 */
+            totalQuotations?: number;
+            /** Format: int32 */
+            totalReservations?: number;
+            /** Format: double */
+            totalReservationAmount?: number;
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: int32 */
+            activeAdvisors?: number;
+        };
         MonthlyIncomeDto: {
             month?: string;
             /** Format: double */
@@ -7435,6 +8078,21 @@ export interface components {
             sales?: number;
             /** Format: double */
             revenue?: number;
+        };
+        MonthlyTrendDto: {
+            month?: string;
+            /** Format: int32 */
+            year?: number;
+            /** Format: int32 */
+            leadsReceived?: number;
+            /** Format: int32 */
+            quotationsIssued?: number;
+            /** Format: int32 */
+            reservationsMade?: number;
+            /** Format: double */
+            reservationAmount?: number;
+            /** Format: double */
+            conversionRate?: number;
         };
         MyLeadsDto: {
             /** Format: int32 */
@@ -7680,6 +8338,14 @@ export interface components {
         };
         PaginatedResponseV2OfReservationWithPendingPaymentsDto: {
             data?: Array<components["schemas"]["ReservationWithPendingPaymentsDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginatedResponseV2OfSupervisorSalesAdvisorDTO: {
+            data?: Array<components["schemas"]["SupervisorSalesAdvisorDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
             hasData?: boolean;
             isEmpty?: boolean;
@@ -8208,6 +8874,19 @@ export interface components {
             /** Format: int32 */
             soldLots?: number;
         };
+        ProjectLeadsAnalysisDto: {
+            project?: string;
+            /** Format: int32 */
+            leadsReceived?: number;
+            /** Format: int32 */
+            leadsAssigned?: number;
+            /** Format: int32 */
+            leadsCompleted?: number;
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: double */
+            avgDaysToComplete?: number;
+        };
         ProjectMetricDto: {
             name?: string;
             location?: string;
@@ -8229,6 +8908,45 @@ export interface components {
             avgPrice?: number;
             /** Format: double */
             efficiency?: number;
+        };
+        ProjectPerformanceDto: {
+            /** Format: uuid */
+            projectId?: string;
+            projectName?: string;
+            /** Format: int32 */
+            totalLeads?: number;
+            /** Format: int32 */
+            completedLeads?: number;
+            /** Format: int32 */
+            quotations?: number;
+            /** Format: int32 */
+            reservations?: number;
+            /** Format: double */
+            reservationAmount?: number;
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: int32 */
+            availableUnits?: number;
+            /** Format: int32 */
+            reservedUnits?: number;
+            /** Format: double */
+            occupancyRate?: number;
+        };
+        QuotationAnalysisDto: {
+            /** Format: int32 */
+            totalIssued?: number;
+            /** Format: int32 */
+            accepted?: number;
+            /** Format: int32 */
+            pending?: number;
+            /** Format: int32 */
+            rejected?: number;
+            /** Format: double */
+            acceptanceRate?: number;
+            /** Format: double */
+            avgQuotationAmount?: number;
+            /** Format: double */
+            totalQuotationValue?: number;
         };
         QuotationCreateDTO: {
             /** Format: uuid */
@@ -8264,6 +8982,8 @@ export interface components {
             code?: string;
             /** Format: uuid */
             leadId?: string;
+            /** Format: uuid */
+            clientId?: string;
             leadClientName?: string;
             /** Format: uuid */
             lotId?: string;
@@ -8328,6 +9048,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             code: string;
+            clientId: string;
             clientName: string;
             clientIdentification?: string | null;
             clientIdentificationType?: string | null;
@@ -8336,6 +9057,8 @@ export interface components {
             totalPrice: number;
             /** Format: double */
             finalPrice: number;
+            /** Format: double */
+            amountFinanced: number;
             blockName: string;
             lotNumber: string;
             /** Format: double */
@@ -8379,6 +9102,21 @@ export interface components {
             daysAgo?: number;
             hasCoOwners?: boolean;
             separateProperty?: boolean;
+        };
+        RecentLeadDto: {
+            /** Format: uuid */
+            id?: string;
+            clientName?: string;
+            clientPhone?: string;
+            captureSource?: string;
+            status?: string;
+            /** Format: int32 */
+            daysUntilExpiration?: number;
+            assignedTo?: string | null;
+            projectName?: string;
+            /** Format: date-time */
+            entryDate?: string;
+            priority?: string;
         };
         Referral: {
             /** Format: uuid */
@@ -8502,6 +9240,22 @@ export interface components {
             telefono: string;
             email: string;
         };
+        ReservationAnalysisDto: {
+            /** Format: int32 */
+            totalReservations?: number;
+            /** Format: int32 */
+            activeReservations?: number;
+            /** Format: int32 */
+            canceledReservations?: number;
+            /** Format: int32 */
+            anulatedReservations?: number;
+            /** Format: double */
+            totalReservationAmount?: number;
+            /** Format: double */
+            avgReservationAmount?: number;
+            /** Format: double */
+            cancellationRate?: number;
+        };
         ReservationCreateDto: {
             /** Format: uuid */
             quotationId: string;
@@ -8517,6 +9271,7 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
             schedule?: string | null;
+            coOwners?: string | null;
         };
         ReservationDto: {
             /** Format: uuid */
@@ -8542,6 +9297,7 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+            coOwners?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -8581,6 +9337,7 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+            coOwners?: string | null;
         };
         ReservationWithPaymentsDto: {
             /** Format: int32 */
@@ -8610,6 +9367,7 @@ export interface components {
             expiresAt?: string;
             notified?: boolean;
             schedule?: string | null;
+            coOwners?: string | null;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -8676,6 +9434,53 @@ export interface components {
             cargo?: string;
             fechaDesde?: string;
         };
+        SalesAdvisorAssignmentDTO: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            email?: string;
+            phoneNumber?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            assignedAt?: string;
+        };
+        SalesPipelineDto: {
+            /** Format: int32 */
+            newLeads?: number;
+            /** Format: int32 */
+            inContact?: number;
+            /** Format: int32 */
+            quotationStage?: number;
+            /** Format: int32 */
+            negotiationStage?: number;
+            /** Format: int32 */
+            reservationStage?: number;
+            /** Format: int32 */
+            closedWon?: number;
+            /** Format: int32 */
+            closedLost?: number;
+        };
+        SalesTeamPerformanceDto: {
+            /** Format: uuid */
+            advisorId?: string;
+            advisorName?: string;
+            /** Format: int32 */
+            leadsAssigned?: number;
+            /** Format: int32 */
+            leadsCompleted?: number;
+            /** Format: int32 */
+            quotationsIssued?: number;
+            /** Format: int32 */
+            reservationsGenerated?: number;
+            /** Format: double */
+            reservationAmount?: number;
+            /** Format: double */
+            conversionRate?: number;
+            /** Format: double */
+            avgResponseTime?: number;
+        };
         SendEmailRequest: {
             to?: string;
             subject?: string;
@@ -8690,6 +9495,63 @@ export interface components {
             length?: number;
             value?: string | null;
             hasValue?: boolean;
+        };
+        SupervisorDashboardDto: {
+            leadsKpi?: components["schemas"]["SupervisorLeadsKpiDto"];
+            teamMetrics?: components["schemas"]["TeamMetricsDto"];
+            advisors?: Array<components["schemas"]["AdvisorPerformanceDto"]>;
+            recentLeads?: Array<components["schemas"]["RecentLeadDto"]>;
+            conversionFunnel?: Array<components["schemas"]["ConversionFunnelDto"]>;
+            leadSources?: Array<components["schemas"]["LeadSourceDistributionDto"]>;
+            weeklyActivity?: Array<components["schemas"]["WeeklyActivityDto"]>;
+            taskAnalysis?: Array<components["schemas"]["TaskAnalysisDto"]>;
+            projectLeads?: Array<components["schemas"]["ProjectLeadsAnalysisDto"]>;
+        };
+        SupervisorLeadsKpiDto: {
+            /** Format: int32 */
+            totalLeads?: number;
+            /** Format: int32 */
+            registeredLeads?: number;
+            /** Format: int32 */
+            attendedLeads?: number;
+            /** Format: int32 */
+            inFollowUpLeads?: number;
+            /** Format: int32 */
+            completedLeads?: number;
+            /** Format: int32 */
+            canceledLeads?: number;
+            /** Format: int32 */
+            expiredLeads?: number;
+            /** Format: int32 */
+            unassignedLeads?: number;
+        };
+        SupervisorSalesAdvisorDTO: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            supervisorId?: string;
+            /** Format: uuid */
+            salesAdvisorId?: string;
+            supervisorName?: string;
+            supervisorEmail?: string;
+            salesAdvisorName?: string;
+            salesAdvisorEmail?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        TaskAnalysisDto: {
+            type?: string;
+            /** Format: int32 */
+            scheduled?: number;
+            /** Format: int32 */
+            completed?: number;
+            /** Format: int32 */
+            pending?: number;
+            /** Format: int32 */
+            overdue?: number;
         };
         TaskFilterRequest: {
             /** Format: date-time */
@@ -8724,9 +9586,38 @@ export interface components {
             /** Format: double */
             efficiency?: number;
         };
+        TeamMetricsDto: {
+            /** Format: int32 */
+            quotationsGenerated?: number;
+            /** Format: int32 */
+            reservationsActive?: number;
+            /** Format: int32 */
+            tasksToday?: number;
+            /** Format: double */
+            avgConversionRate?: number;
+            /** Format: double */
+            avgResponseTime?: number;
+        };
         TestEmailRequest: {
             name?: string;
             email?: string;
+        };
+        TimeMetricsDto: {
+            /** Format: double */
+            avgLeadToQuotation?: number;
+            /** Format: double */
+            avgQuotationToReservation?: number;
+            /** Format: double */
+            avgLeadToReservation?: number;
+            /** Format: double */
+            avgResponseTime?: number;
+        };
+        TopPerformerDto: {
+            name?: string;
+            category?: string;
+            /** Format: double */
+            value?: number;
+            metric?: string;
         };
         UpcomingPaymentDto: {
             /** Format: uuid */
@@ -8867,6 +9758,19 @@ export interface components {
         };
         VerifyOtpRequestDto: {
             otpCode: string;
+        };
+        WeeklyActivityDto: {
+            day?: string;
+            /** Format: int32 */
+            newLeads?: number;
+            /** Format: int32 */
+            assigned?: number;
+            /** Format: int32 */
+            attended?: number;
+            /** Format: int32 */
+            completed?: number;
+            /** Format: int32 */
+            expired?: number;
         };
         WelcomeEmailRequest: {
             name?: string;

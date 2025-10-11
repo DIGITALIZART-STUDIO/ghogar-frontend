@@ -8,15 +8,13 @@ import { usePaginatedUsersWithSearch } from "../../_hooks/useLeads";
 import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { components } from "@/types/api";
 import { getUserRoleLabel } from "@/app/(admin)/admin/users/_utils/user.utils";
-
-type UserSummary = components["schemas"]["UserSummaryDto"];
+import { UserSummaryDto } from "../../_types/lead";
 
 interface UserSearchProps {
     disabled?: boolean;
     value: string;
-    onSelect: (userId: string, user: UserSummary) => void;
+    onSelect: (userId: string, user: UserSummaryDto) => void;
     placeholder?: string;
     searchPlaceholder?: string;
     emptyMessage?: string;
@@ -34,7 +32,7 @@ export function UserSearch({
 }: UserSearchProps) {
     const { allUsers, query, handleScrollEnd, handleSearchChange, search } = usePaginatedUsersWithSearch(10, preselectedId);
 
-    const userOptions: Array<Option<UserSummary>> = useMemo(() => allUsers.map((user) => {
+    const userOptions: Array<Option<UserSummaryDto>> = useMemo(() => allUsers.map((user) => {
         const primaryRole = user.roles?.[0] ?? "Other";
         const roleConfig = getUserRoleLabel(primaryRole);
         const RoleIcon = roleConfig.icon;
@@ -76,7 +74,7 @@ export function UserSearch({
 
     const selectedUser = userOptions.find((user) => user.value === value);
 
-    const handleSelect = ({ value, entity }: Option<UserSummary>) => {
+    const handleSelect = ({ value, entity }: Option<UserSummaryDto>) => {
         if (!entity) {
             toast.error("No se pudo seleccionar el usuario. Por favor, inténtalo de nuevo.");
             return;
@@ -85,7 +83,7 @@ export function UserSearch({
     };
 
     return (
-        <AutoComplete<UserSummary>
+        <AutoComplete<UserSummaryDto>
             queryState={query}
             options={userOptions}
             value={selectedUser}

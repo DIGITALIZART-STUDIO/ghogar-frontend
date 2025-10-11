@@ -1,46 +1,49 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import {
-    GetPaginatedClients,
-    DeleteClients,
-    ActivateClients,
-    CreateClient,
-    UpdateClient,
-    GetClientsSummary,
-    ImportClients,
-    DownloadClientsExcel,
-    DownloadImportTemplate,
-} from "../_actions/ClientActions";
-import { backend } from "@/types/backend2";
+import { backend as api, uploadFile } from "@/types/backend";
+import { useAuthContext } from "@/context/auth-provider";
 import type { components } from "@/types/api";
+import { useClientsPagination } from "@/app/(admin)/clients/_hooks/useClientsPagination";
 
-// Hook para paginación de clientes
+// Hook para paginación de clientes (wrapper del nuevo hook)
 export function usePaginatedClients(page: number = 1, pageSize: number = 10) {
-    return useQuery({
-        queryKey: ["paginatedClients", page, pageSize],
-        queryFn: async () => {
-            const [data, error] = await GetPaginatedClients(page, pageSize);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
-    });
+    const clientsPagination = useClientsPagination(page, pageSize);
+
+    return {
+        data: clientsPagination.data,
+        isLoading: clientsPagination.isLoading,
+        isError: clientsPagination.isError,
+        error: clientsPagination.error,
+        refetch: clientsPagination.refetch,
+        // Estados de búsqueda y filtros
+        search: clientsPagination.search,
+        isActive: clientsPagination.isActive,
+        type: clientsPagination.type,
+        orderBy: clientsPagination.orderBy,
+        orderDirection: clientsPagination.orderDirection,
+        // Handlers
+        setSearch: clientsPagination.setSearch,
+        setIsActive: clientsPagination.setIsActive,
+        setType: clientsPagination.setType,
+        handleOrderChange: clientsPagination.handleOrderChange,
+        resetFilters: clientsPagination.resetFilters,
+    };
 }
 
 // Hook para eliminar múltiples clientes
 export function useDeleteClients() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (ids: Array<string>) => {
-            const [data, error] = await DeleteClients(ids);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("delete", "/api/Clients/batch", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            // Invalidar queries de clientes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -48,16 +51,17 @@ export function useDeleteClients() {
 // Hook para activar múltiples clientes
 export function useActivateClients() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (ids: Array<string>) => {
-            const [data, error] = await ActivateClients(ids);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Clients/batch/activate", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            // Invalidar queries de clientes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -65,48 +69,86 @@ export function useActivateClients() {
 // Hook para crear un cliente
 export function useCreateClient() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (client: components["schemas"]["ClientCreateDto"]) => {
-            const [data, error] = await CreateClient(client);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Clients", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
+            // Invalidar queries de clientes con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 export function useUpdateClient() {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, client }: { id: string; client: components["schemas"]["ClientUpdateDto"] }) => {
-            const [data, error] = await UpdateClient(id, client);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
-        },
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("put", "/api/Clients/{id}", {
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            // Invalidar queries de clientes y leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para obtener resumen de clientes
 export function useClientsSummary() {
-    return useQuery({
-        queryKey: ["clientsSummary"],
-        queryFn: async () => {
-            const [data, error] = await GetClientsSummary();
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data ?? [];
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Clients/summary", undefined, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para obtener un cliente por ID
+export function useClientById(clientId: string | undefined) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Clients/{id}", {
+        params: {
+            path: {
+                id: clientId ?? "",
+            },
+        },
+    }, {
+        enabled: !!clientId,
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
+}
+
+// Hook para obtener clientes del usuario actual con leads asignados (nuevo endpoint)
+export function useClientsByCurrentUserSummary(projectId?: string, useCurrentUser: boolean = true) {
+    const { handleAuthError } = useAuthContext();
+
+    return api.useQuery("get", "/api/Clients/current-user/summary", {
+        params: {
+            query: {
+                projectId: projectId ?? undefined,
+                useCurrentUser: useCurrentUser,
+            },
+        },
+    }, {
+        retry: false,
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -114,44 +156,69 @@ export function useClientsSummary() {
 // Hook para importar clientes desde archivo
 export function useImportClients() {
     const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async (file: File) => {
-            const [data, error] = await ImportClients(file);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data!;
+            const response = await uploadFile(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Clients/import`, file);
+            return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginatedClients"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeads"] });
-            queryClient.invalidateQueries({ queryKey: ["paginatedLeadsByAssignedTo"] });
+            // Invalidar queries de clientes y leads con las query keys correctas
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients/current-user/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated-by-assigned-to"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para descargar el Excel de clientes
 export function useDownloadClientsExcel() {
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async () => {
-            const [blob, error] = await DownloadClientsExcel();
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Clients/excel`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return blob!;
+
+            return await response.blob();
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
 
 // Hook para descargar la plantilla de importación de clientes
 export function useDownloadImportTemplate() {
+    const { handleAuthError } = useAuthContext();
+
     return useMutation({
         mutationFn: async () => {
-            const [blob, error] = await DownloadImportTemplate();
-            if (error) {
-                throw new Error(error.message);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Clients/template`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return blob!;
+
+            return await response.blob();
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
         },
     });
 }
@@ -162,7 +229,7 @@ export function usePaginatedClientsWithSearch(pageSize: number = 10, preselected
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
 
-    const query = backend.useInfiniteQuery(
+    const query = api.useInfiniteQuery(
         "get",
         "/api/Clients/paginated-search",
         {
@@ -178,14 +245,14 @@ export function usePaginatedClientsWithSearch(pageSize: number = 10, preselected
             },
         },
         {
-            getNextPageParam: (lastPage) => {
+            getNextPageParam: (lastPage: { meta?: { page?: number; totalPages?: number } }) => {
                 // Si hay más páginas disponibles, devolver el siguiente número de página
                 if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
                     return lastPage.meta.page + 1;
                 }
                 return undefined; // No hay más páginas
             },
-            getPreviousPageParam: (firstPage) => {
+            getPreviousPageParam: (firstPage: { meta?: { page?: number } }) => {
                 // Si no estamos en la primera página, devolver la página anterior
                 if (firstPage.meta?.page && firstPage.meta.page > 1) {
                     return firstPage.meta.page - 1;
@@ -198,7 +265,7 @@ export function usePaginatedClientsWithSearch(pageSize: number = 10, preselected
     );
 
     // Obtener todos los clientes de todas las páginas de forma plana
-    const allClients = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+    const allClients = query.data?.pages.flatMap((page: { data?: Array<components["schemas"]["Client"]> }) => page.data ?? []) ?? [];
 
     const handleScrollEnd = useCallback(() => {
         if (query.hasNextPage && !query.isFetchingNextPage) {

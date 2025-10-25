@@ -11,6 +11,7 @@ import { ProfileDropdown } from "@/components/ui/profile-dropdown";
 import { Search } from "@/components/ui/search";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { ProjectSelector } from "@/components/ui/project-selector";
+import NotificationBell from "@/components/ui/notification-bell";
 import { AuthorizationContext, ProtectedRoute, Role } from "./_authorization_context";
 import { useUsers } from "./admin/users/_hooks/useUser";
 import { useAuthContext } from "@/context/auth-provider";
@@ -96,13 +97,32 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
                 <ProtectedRoute>
                     {/* ===== Top Heading ===== */}
                     <Header>
-                        <Search />
-                        <div className="ml-auto flex items-center space-x-4">
-                            <ProjectSelector />
-                            <ThemeSwitch />
-                            <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
+                        <div className="flex items-center w-full gap-4">
+                            {/* Left Section - Search */}
+                            <div className="flex-1 max-w-sm">
+                                <Search />
+                            </div>
+
+                            {/* Right Section - Actions */}
+                            <div className="flex items-center space-x-3 ml-auto">
+                                {/* ProjectSelector - visible on lg and above */}
+                                <div className="hidden lg:block">
+                                    <ProjectSelector />
+                                </div>
+                                {/* Notification Bell */}
+                                <NotificationBell />
+                                <ThemeSwitch />
+                                <ProfileDropdown name={username} email={data.user.email!} initials={initials} />
+                            </div>
                         </div>
                     </Header>
+
+                    {/* Mobile ProjectSelector */}
+                    <div className="lg:hidden sticky top-16 z-30 border-b pb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
+                        <div className="flex h-12 items-center w-full px-4 justify-center">
+                            <ProjectSelector />
+                        </div>
+                    </div>
                     {/* ===== Main Content ===== */}
                     <Main>{children}</Main>
                 </ProtectedRoute>

@@ -15,8 +15,11 @@ export function ProjectSelector() {
     } = useProjectContext();
 
     // Usar el hook con paginación infinita y búsqueda
+    // Solo pasar preselectedId cuando no hay proyecto seleccionado o cuando se está seleccionando "Todos los proyectos"
+    const preselectedId = isAllProjectsSelected ? undefined : selectedProject?.id;
+
     const { allProjects, query, handleScrollEnd, handleSearchChange } =
-        usePaginatedActiveProjectsWithSearch(10, selectedProject?.id);
+        usePaginatedActiveProjectsWithSearch(10, preselectedId);
 
     // Crear opciones para el AutoComplete
     const projectOptions: Array<Option<ProjectData>> = useMemo(() => {
@@ -34,7 +37,9 @@ export function ProjectSelector() {
             entity: project,
         }));
 
-        return [allProjectsOption, ...individualProjectOptions];
+        const options = [allProjectsOption, ...individualProjectOptions];
+
+        return options;
     }, [allProjects]);
 
     // Determinar el valor seleccionado

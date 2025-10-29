@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type {
     NotificationDto,
     UseNotificationsReturn,
@@ -6,6 +6,7 @@ import type {
 } from "@/types/notification";
 import {
     useNotifications as useNotificationsQuery,
+    useInfiniteNotifications,
     useNotificationStats,
     useMarkAsRead,
     useMarkAllAsRead,
@@ -21,7 +22,8 @@ import { useEventSource } from "./useEventSource";
  */
 export const useNotifications = (options: UseNotificationsOptions = {}): UseNotificationsReturn => {
     const {
-        queryParams = { page: 1, pageSize: 20 },
+        queryParams = { pageSize: 4 },
+        useInfinite = true,
     } = options;
 
     const [notifications, setNotifications] = useState<Array<NotificationDto>>([]);
@@ -29,13 +31,37 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Usar los hooks del notificationService
-    const {
-        data: notificationsData,
-        isLoading: isLoadingNotifications,
-        error: notificationsError,
-        refetch: refetchNotifications,
-    } = useNotificationsQuery(queryParams);
+    // Usar infinite query o query normal según la opción
+    const infiniteQuery = useInfiniteNotifications({
+        pageSize: queryParams.pageSize ?? 10,
+        isRead: queryParams.isRead,
+        type: queryParams.type,
+        priority: queryParams.priority,
+    });
+
+    const regularQuery = useNotificationsQuery({
+        page: 1,
+        pageSize: queryParams.pageSize ?? 20,
+        isRead: queryParams.isRead,
+        type: queryParams.type,
+        priority: queryParams.priority,
+    });
+
+    // Usar infinite query por defecto, fallback a regular query
+    // const query = useInfinite ? infiniteQuery : regularQuery; // No se usa directamente
+
+    // Refs para evitar reconexiones SSE constantes
+    const infiniteQueryRef = useRef(infiniteQuery);
+    const regularQueryRef = useRef(regularQuery);
+
+    // Actualizar refs cuando cambien las queries
+    useEffect(() => {
+        infiniteQueryRef.current = infiniteQuery;
+    }, [infiniteQuery]);
+
+    useEffect(() => {
+        regularQueryRef.current = regularQuery;
+    }, [regularQuery]);
 
     const {
         data: statsData,
@@ -50,11 +76,13 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
     // Callback para manejar mensajes SSE
     const handleSSEMessage = useCallback((event: MessageEvent) => {
+
         const parsedMessage = sseUtils.parseSSEMessage(event);
 
         if (parsedMessage) {
             switch (parsedMessage.event) {
             case "notification": {
+
                 // Agregar nueva notificación al estado
                 const rawNotification = parsedMessage.data as Record<string, unknown>;
 
@@ -79,24 +107,32 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
                     modifiedAt: (rawNotification.ModifiedAt as string) ?? (rawNotification.modifiedAt as string) ?? new Date().toISOString(),
                 };
 
-                setNotifications((prev) => [newNotification, ...prev]);
-                setUnreadCount((prev) => prev + 1);
+                setNotifications((prev) => {
+                    const newState = [newNotification, ...prev];
+                    return newState;
+                });
+                setUnreadCount((prev) => {
+                    const newCount = prev + 1;
+                    return newCount;
+                });
 
                 // Refrescar datos
-                refetchNotifications();
+                if (useInfinite) {
+                    infiniteQueryRef.current.refetch();
+                } else {
+                    regularQueryRef.current.refetch();
+                }
                 break;
             }
 
             case "connection":
-                // Conexión SSE establecida
                 break;
 
             case "heartbeat":
-                // Mantener conexión viva
                 break;
             }
         }
-    }, [refetchNotifications]);
+    }, [useInfinite]);
 
     // Callback para manejar errores SSE
     const handleSSEError = useCallback(() => {
@@ -107,7 +143,16 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
     const handleSSEOpen = useCallback(() => {
         setIsConnected(true);
         setError(null);
-    }, []);
+        try {
+            if (useInfinite) {
+                infiniteQueryRef.current.refetch();
+            } else {
+                regularQueryRef.current.refetch();
+            }
+        } catch (e) {
+            console.warn("⚠️ [useNotifications] Error en refetch tras open:", e);
+        }
+    }, [useInfinite]);
 
     // Callback para manejar cierre de conexión SSE
     const handleSSEClose = useCallback(() => {
@@ -127,10 +172,28 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
     // Actualizar estado local cuando cambian los datos
     useEffect(() => {
-        if (notificationsData) {
-            setNotifications(notificationsData.items);
+
+        if (useInfinite && infiniteQuery.data?.pages) {
+            // Para infinite query, usar allNotifications con protecciones adicionales
+            const newNotifications = infiniteQuery.data.pages
+                .filter((page: { items?: Array<NotificationDto> }) => page && page.items && Array.isArray(page.items)) // Filtrar páginas válidas
+                .flatMap((page: { items?: Array<NotificationDto> }) => page.items ?? []);
+
+            // Solo actualizar si no tenemos notificaciones locales o si las del servidor son más recientes
+            if (notifications.length === 0 || newNotifications.length > notifications.length) {
+                setNotifications(newNotifications);
+            } else {
+            }
+        } else if (!useInfinite && regularQuery.data?.items && Array.isArray(regularQuery.data.items)) {
+            // Para query regular, usar los datos directamente con protecciones
+
+            // Solo actualizar si no tenemos notificaciones locales o si las del servidor son más recientes
+            if (notifications.length === 0 || regularQuery.data.items.length > notifications.length) {
+                setNotifications(regularQuery.data.items);
+            } else {
+            }
         }
-    }, [notificationsData]);
+    }, [useInfinite, infiniteQuery.data, regularQuery.data, notifications.length]);
 
     useEffect(() => {
         if (statsData) {
@@ -209,18 +272,31 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
     const refreshNotifications = useCallback(async () => {
         try {
-            await refetchNotifications();
+            if (useInfinite) {
+                await infiniteQuery.refetch();
+            } else {
+                await regularQuery.refetch();
+            }
         } catch (error) {
             console.error("Error refreshing notifications:", error);
             throw error;
         }
-    }, [refetchNotifications]);
+    }, [useInfinite, infiniteQuery, regularQuery]);
+
+    // Funciones para scroll infinito
+    const handleScrollEnd = useCallback(() => {
+        if (useInfinite && infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage) {
+            infiniteQuery.fetchNextPage();
+        }
+    }, [useInfinite, infiniteQuery]);
 
     // Determinar si está cargando
-    const isLoading = isLoadingNotifications || isLoadingStats;
+    const isLoading = useInfinite
+        ? (infiniteQuery.isLoading ?? isLoadingStats)
+        : (regularQuery.isLoading ?? isLoadingStats);
 
     // Determinar error
-    const currentError = error ?? (notificationsError as unknown as Error)?.message ?? null;
+    const currentError = error ?? ((useInfinite ? infiniteQuery.error : regularQuery.error) as unknown as Error)?.message ?? null;
 
     return {
         notifications,
@@ -233,5 +309,12 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         markMultipleAsRead,
         deleteNotification,
         refreshNotifications,
+        // Funciones para scroll infinito (solo disponibles si useInfinite es true)
+        ...(useInfinite && {
+            fetchNextPage: infiniteQuery.fetchNextPage,
+            hasNextPage: infiniteQuery.hasNextPage,
+            isFetchingNextPage: infiniteQuery.isFetchingNextPage,
+            handleScrollEnd,
+        }),
     };
 };

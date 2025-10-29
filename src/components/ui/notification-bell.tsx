@@ -4,22 +4,23 @@ import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import {
+    AlertCircle,
     AlertTriangle,
     Bell,
     Calendar,
     Check,
     CheckCircle,
     Clock,
-    FileText,
     DollarSign,
+    FileText,
+    Loader2,
+    MessageSquare,
     UserCheck,
-    AlertCircle,
     Zap,
-    MessageSquare
 } from "lucide-react";
 
 import { useNotifications } from "@/hooks/useNotifications";
-import type { NotificationType, NotificationPriority } from "@/types/notification";
+import type { NotificationPriority, NotificationType } from "@/types/notification";
 import { Badge } from "./badge";
 import { Button } from "./button";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -118,29 +119,35 @@ export default function NotificationBell() {
         markAsRead,
         markAllAsRead,
         refreshNotifications,
-    } = useNotifications();
+        // Funciones para scroll infinito
+        hasNextPage,
+        isFetchingNextPage,
+        handleScrollEnd,
+    } = useNotifications({ useInfinite: true, queryParams: { pageSize: 10 } });
 
-    const notificationsToDisplay = useMemo(() => notifications.map((n) => {
-        // Manejar tanto createdAt como CreatedAt (case insensitive)
-        const createdAtValue = n.createdAt ?? (n as Record<string, unknown>).CreatedAt;
-        let timeAgo = "hace un momento";
+    const notificationsToDisplay = useMemo(
+        () => notifications.map((n) => {
+            // Manejar tanto createdAt como CreatedAt (case insensitive)
+            const createdAtValue = n.createdAt ?? (n as Record<string, unknown>).CreatedAt;
+            let timeAgo = "hace un momento";
 
-        try {
-            if (createdAtValue) {
-                const date = new Date(createdAtValue as string);
-                if (!isNaN(date.getTime())) {
-                    timeAgo = formatDistanceToNow(date, { addSuffix: true, locale: es });
+            try {
+                if (createdAtValue) {
+                    const date = new Date(createdAtValue as string);
+                    if (!isNaN(date.getTime())) {
+                        timeAgo = formatDistanceToNow(date, { addSuffix: true, locale: es });
+                    }
                 }
+            } catch {
             }
-        } catch (error) {
-            console.warn("Error formateando fecha:", error, "createdAt:", createdAtValue);
-        }
 
-        return {
-            ...n,
-            timeAgo,
-        };
-    }), [notifications]);
+            return {
+                ...n,
+                timeAgo,
+            };
+        }),
+        [notifications]
+    );
 
     const handleMarkAsRead = (id: string) => {
         markAsRead(id);
@@ -189,28 +196,18 @@ export default function NotificationBell() {
                         )}
                     </div>
                     {unreadCount > 0 && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            type="button"
-                            onClick={handleMarkAllAsRead}
-                            className="text-xs"
-                        >
+                        <Button variant="ghost" size="sm" type="button" onClick={handleMarkAllAsRead} className="text-xs">
                             Marcar todas como leídas
                         </Button>
                     )}
                 </div>
 
-                <ScrollArea className="h-96 space-y-4">
+                <ScrollArea className="h-96 space-y-4" onScrollEnd={handleScrollEnd}>
                     {error ? (
                         <div className="p-6 text-center">
                             <AlertCircle className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
                             <p className="text-sm text-muted-foreground mb-4">Error al cargar notificaciones</p>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={refreshNotifications}
-                            >
+                            <Button variant="outline" size="sm" onClick={refreshNotifications}>
                                 Reintentar
                             </Button>
                         </div>
@@ -255,15 +252,14 @@ export default function NotificationBell() {
                                                                 {getPriorityText(notification.priority ?? "Normal")}
                                                             </Badge>
                                                         </div>
-                                                        <p className={`text-xs mb-2 ${
-                                                            isUnread ? "text-foreground/80" : "text-muted-foreground"
-                                                        }`}
-                                                        >
+                                                        <p className={`text-xs mb-2 ${isUnread ? "text-foreground/80" : "text-muted-foreground"}`}>
                                                             {notification.message}
                                                         </p>
                                                         <div className="flex items-center gap-2 mt-2">
                                                             <Clock className="h-3 w-3 text-muted-foreground" />
-                                                            <p className="text-xs text-muted-foreground">{notification.timeAgo ?? "hace un momento"}</p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {notification.timeAgo ?? "hace un momento"}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -285,12 +281,25 @@ export default function NotificationBell() {
                                             </div>
                                         </div>
                                         {/* Separador solo entre notificaciones, no después de la última */}
-                                        {index < notificationsToDisplay.length - 1 && (
-                                            <Separator className="my-1" />
-                                        )}
+                                        {index < notificationsToDisplay.length - 1 && <Separator className="my-1" />}
                                     </div>
                                 );
                             })}
+
+                            {/* Indicador de carga para más notificaciones */}
+                            {isFetchingNextPage && (
+                                <div className="flex items-center justify-center p-4">
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    <span className="text-sm text-muted-foreground">Cargando más notificaciones...</span>
+                                </div>
+                            )}
+
+                            {/* Indicador de que no hay más notificaciones */}
+                            {!hasNextPage && notificationsToDisplay.length > 0 && (
+                                <div className="flex items-center justify-center p-4">
+                                    <span className="text-xs text-muted-foreground">No hay más notificaciones</span>
+                                </div>
+                            )}
                         </div>
                     )}
                 </ScrollArea>

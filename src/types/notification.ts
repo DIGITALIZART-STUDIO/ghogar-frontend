@@ -61,12 +61,18 @@ export interface UseNotificationsReturn {
   markMultipleAsRead: (ids: Array<string>) => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
   refreshNotifications: () => Promise<void>;
+  // Funciones para scroll infinito
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  handleScrollEnd?: () => void;
 }
 
 export interface UseNotificationsOptions {
   autoConnect?: boolean;
   queryParams?: NotificationQueryParams;
   enableSSE?: boolean;
+  useInfinite?: boolean;
 }
 
 export interface UseEventSourceOptions {

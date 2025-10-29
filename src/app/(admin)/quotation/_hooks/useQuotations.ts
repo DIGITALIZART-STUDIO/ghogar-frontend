@@ -2,8 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
 import { backend as api, downloadFileWithClient } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
-import { useQuotationsByAdvisorPagination } from "@/app/(admin)/quotation/_hooks/useQuotationsByAdvisorPagination";
-
 // Todas las cotizaciones
 export function useAllQuotations() {
     const { handleAuthError } = useAuthContext();
@@ -280,9 +278,4 @@ export function useDownloadSeparationPDF() {
             throw error;
         }
     };
-}
-
-// Hook para paginación de cotizaciones por asesor con filtros
-export function usePaginatedQuotationsByAdvisor(page: number = 1, pageSize: number = 10) {
-    return useQuotationsByAdvisorPagination(page, pageSize);
 }

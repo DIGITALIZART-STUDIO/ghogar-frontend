@@ -3,14 +3,15 @@ import { backend as api } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 import { useBasePagination } from "../../../../hooks/useBasePagination";
 import { useSelectedProject } from "../../../../hooks/use-selected-project";
-import { QuotationStatus } from "@/app/(admin)/quotation/_types/quotation";
+import { ReservationStatus, PaymentMethod, ContractValidationStatus } from "@/app/(admin)/reservations/_types/reservation";
 
-interface QuotationsFilters extends Record<string, Array<unknown>> {
+interface PendingValidationFilters extends Record<string, Array<unknown>> {
     status: Array<string>;
-    clientId: Array<string>;
+    paymentMethod: Array<string>;
+    contractValidationStatus: Array<string>;
 }
 
-export function useQuotationsByAdvisorPagination(page: number = 1, pageSize: number = 10) {
+export function usePaginatedCanceledPendingValidationReservations(page: number = 1, pageSize: number = 10) {
     const { handleAuthError } = useAuthContext();
     const { getSelectedProjectId } = useSelectedProject();
 
@@ -23,32 +24,39 @@ export function useQuotationsByAdvisorPagination(page: number = 1, pageSize: num
         setFilter,
         handleOrderChange,
         resetFilters,
-    } = useBasePagination<QuotationsFilters>({
+    } = useBasePagination<PendingValidationFilters>({
         status: [],
-        clientId: [],
+        paymentMethod: [],
+        contractValidationStatus: [],
     }, { disableDebounce: true }); // Debounce manejado en data-table-toolbar
 
-    // Convertir status strings a QuotationStatus enum
+    // Convertir status strings a ReservationStatus enum
     const statusEnums = filters.status?.length > 0
-        ? filters.status.map((s) => s as QuotationStatus)
+        ? filters.status.map((s) => s as ReservationStatus)
         : undefined;
 
-    // Convertir clientId strings a Guid
-    const clientIdGuids = filters.clientId?.length > 0
-        ? filters.clientId.map((id) => id as string)
+    // Convertir paymentMethod strings a PaymentMethod enum
+    const paymentMethodEnums = filters.paymentMethod?.length > 0
+        ? filters.paymentMethod.map((p) => p as PaymentMethod)
+        : undefined;
+
+    // Convertir contractValidationStatus strings a ContractValidationStatus enum
+    const contractValidationStatusEnums = filters.contractValidationStatus?.length > 0
+        ? filters.contractValidationStatus.map((c) => c as ContractValidationStatus)
         : undefined;
 
     // Obtener el ID del proyecto seleccionado
     const selectedProjectId = getSelectedProjectId();
 
-    const query = api.useQuery("get", "/api/Quotations/advisor/paginated", {
+    const query = api.useQuery("get", "/api/Reservations/canceled/pending-validation/paginated", {
         params: {
             query: {
                 page,
                 pageSize,
                 search,
                 status: statusEnums,
-                clientId: clientIdGuids,
+                paymentMethod: paymentMethodEnums,
+                contractValidationStatus: contractValidationStatusEnums,
                 projectId: selectedProjectId ?? undefined,
                 orderBy,
             },
@@ -62,8 +70,12 @@ export function useQuotationsByAdvisorPagination(page: number = 1, pageSize: num
         setFilter("status", values);
     }, [setFilter]);
 
-    const handleClientIdChange = useCallback((values: Array<string>) => {
-        setFilter("clientId", values);
+    const handlePaymentMethodChange = useCallback((values: Array<string>) => {
+        setFilter("paymentMethod", values);
+    }, [setFilter]);
+
+    const handleContractValidationStatusChange = useCallback((values: Array<string>) => {
+        setFilter("contractValidationStatus", values);
     }, [setFilter]);
 
     return {
@@ -83,7 +95,8 @@ export function useQuotationsByAdvisorPagination(page: number = 1, pageSize: num
         // Handlers
         setSearch,
         handleStatusChange,
-        handleClientIdChange,
+        handlePaymentMethodChange,
+        handleContractValidationStatusChange,
         handleOrderChange,
         resetFilters,
     };

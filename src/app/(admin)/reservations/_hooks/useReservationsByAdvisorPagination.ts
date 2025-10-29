@@ -26,7 +26,7 @@ export function useReservationsByAdvisorPagination(page: number = 1, pageSize: n
     } = useBasePagination<ReservationsFilters>({
         status: [],
         paymentMethod: [],
-    });
+    }, { disableDebounce: true }); // Debounce manejado en data-table-toolbar
 
     // Convertir status strings a ReservationStatus enum
     const statusEnums = filters.status?.length > 0

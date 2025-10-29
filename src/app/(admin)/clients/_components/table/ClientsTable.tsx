@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { Table as TableInstance } from "@tanstack/react-table";
 
-import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { Client } from "../../_types/client";
 import { createFacetedFilters } from "../../_utils/clients.filter.utils";
 import { ClientDescription } from "./ClientDescription";
@@ -12,8 +11,8 @@ import { ClientsTableToolbarActions } from "./ClientsTableToolbarActions";
 import {
     CustomPaginationTableParams,
     ServerPaginationChangeEventCallback,
-    ServerPaginationWithSearchConfig,
 } from "@/types/tanstack-table/CustomPagination";
+import { DataTable } from "@/components/datatable/data-table";
 
 interface ClientsTableProps {
     data: Array<Client>;
@@ -57,36 +56,8 @@ export function ClientsTable({
         return [];
     }, [setIsActive, setType, isActive, type]);
 
-    // Configuración del servidor para búsqueda y filtros
-    const serverConfig: ServerPaginationWithSearchConfig = useMemo(() => ({
-        pageIndex: pagination.page - 1,
-        pageSize: pagination.pageSize,
-        pageCount: pagination.totalPages,
-        total: pagination.total,
-        onPaginationChange: async (pageIndex, pageSize) => {
-            onPaginationChange(pageIndex + 1, pageSize);
-        },
-        search: search !== undefined && setSearch ? {
-            search,
-            onSearchChange: setSearch,
-            searchPlaceholder: "Buscar clientes...",
-        } : undefined,
-        filters: {
-            filters: {
-                estado: isActive ?? [],
-                tipo: type ?? [],
-            },
-            onFiltersChange: (filters) => {
-                if (setIsActive && setType) {
-                    setIsActive(filters.estado as Array<boolean> ?? []);
-                    setType(filters.tipo as Array<string> ?? []);
-                }
-            },
-        },
-    }), [pagination, onPaginationChange, search, setSearch, isActive, setIsActive, type, setType]);
-
     return (
-        <DataTableExpanded
+        <DataTable
             isLoading={isLoading}
             data={data}
             columns={columns}
@@ -94,7 +65,15 @@ export function ClientsTable({
             filterPlaceholder="Buscar clientes..."
             facetedFilters={customFacetedFilters}
             renderExpandedRow={(row) => <ClientDescription row={row} />}
-            serverConfig={serverConfig}
+            externalFilterValue={search}
+            onGlobalFilterChange={setSearch}
+            serverPagination={{
+                pageIndex: pagination.page - 1,
+                pageSize: pagination.pageSize,
+                pageCount: pagination.totalPages,
+                total: pagination.total,
+                onPaginationChange: onPaginationChange,
+            }}
         />
     );
 }

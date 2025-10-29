@@ -201,6 +201,33 @@ export const creditManagementColumns = (): Array<ColumnDef<ReservationWithPendin
         },
     },
     {
+        id: "estado",
+        accessorKey: "status",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
+        cell: ({ row }) => {
+            const status = row.getValue("estado") as string;
+            // Aquí puedes agregar la lógica para mostrar el estado con colores/iconos
+            return (
+                <div className="min-w-24 text-sm">
+                    <span className="capitalize">{status?.toLowerCase() ?? "—"}</span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(rowValue);
+            }
+
+            return rowValue === value;
+        },
+        enableColumnFilter: true,
+    },
+    {
         id: "método pago",
         accessorKey: "paymentMethod",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Método Pago" />,
@@ -218,6 +245,33 @@ export const creditManagementColumns = (): Array<ColumnDef<ReservationWithPendin
                 <div className="min-w-32 text-sm flex items-center gap-2">
                     <Icon className={`${config.className} w-4 h-4`} />
                     <span className={config.className}>{config.label}</span>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(rowValue);
+            }
+
+            return rowValue === value;
+        },
+        enableColumnFilter: true,
+    },
+    {
+        id: "validación contrato",
+        accessorKey: "contractValidationStatus",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Validación Contrato" />,
+        cell: ({ row }) => {
+            const contractValidationStatus = row.getValue("validación contrato") as string;
+            // Aquí puedes agregar la lógica para mostrar el estado de validación con colores/iconos
+            return (
+                <div className="min-w-32 text-sm">
+                    <span className="capitalize">{contractValidationStatus?.toLowerCase() ?? "—"}</span>
                 </div>
             );
         },

@@ -82,6 +82,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/apiperu/consultations/{documentType}/{documentNumber}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    documentType: string;
+                    documentNumber: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["ApiPeruConsultation"]>;
+                        "application/json": Array<components["schemas"]["ApiPeruConsultation"]>;
+                        "text/json": Array<components["schemas"]["ApiPeruConsultation"]>;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/apiperu/consultations/cleanup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: {
+                    daysOld?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": number;
+                        "application/json": number;
+                        "text/json": number;
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Auth/login": {
         parameters: {
             query?: never;
@@ -1076,8 +1155,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** Format: binary */
-                        file?: string;
+                        file?: components["schemas"]["IFormFile"];
                     };
                 };
             };
@@ -3216,6 +3294,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Leads/{leadId}/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    leadId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Lots": {
         parameters: {
             query?: never;
@@ -3685,6 +3798,558 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    isRead?: boolean;
+                    type?: string;
+                    priority?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedResponseOfNotificationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseOfNotificationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseOfNotificationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["NotificationCreateDto"];
+                    "text/json": components["schemas"]["NotificationCreateDto"];
+                    "application/*+json": components["schemas"]["NotificationCreateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotificationDto"];
+                        "application/json": components["schemas"]["NotificationDto"];
+                        "text/json": components["schemas"]["NotificationDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotificationDto"];
+                        "application/json": components["schemas"]["NotificationDto"];
+                        "text/json": components["schemas"]["NotificationDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotificationStatsDto"];
+                        "application/json": components["schemas"]["NotificationStatsDto"];
+                        "text/json": components["schemas"]["NotificationStatsDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/{id}/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/mark-all-read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/mark-multiple-read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["NotificationBulkUpdateDto"];
+                    "text/json": components["schemas"]["NotificationBulkUpdateDto"];
+                    "application/*+json": components["schemas"]["NotificationBulkUpdateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/send-pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Notification/clean-expired": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/NotificationStream/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/NotificationStream/send-to-user/{targetUserId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    targetUserId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["NotificationCreateDto"];
+                    "text/json": components["schemas"]["NotificationCreateDto"];
+                    "application/*+json": components["schemas"]["NotificationCreateDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/NotificationStream/send-to-multiple": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendToMultipleRequest"];
+                    "text/json": components["schemas"]["SendToMultipleRequest"];
+                    "application/*+json": components["schemas"]["SendToMultipleRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/NotificationStream/connection-stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/NotificationStream/test-notification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -4272,8 +4937,11 @@ export interface paths {
                         AmountPaid?: number;
                         /** Format: uuid */
                         ReservationId?: string;
+                        /** @default null */
                         PaymentMethod?: string;
+                        /** @default null */
                         ReferenceNumber?: string;
+                        /** @default null */
                         ComprobanteUrl?: string;
                         PaymentIds?: Array<string>;
                         StartFromLastCuota?: boolean;
@@ -5757,7 +6425,12 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["ReservationStatus"]>;
+                    paymentMethod?: Array<components["schemas"]["PaymentMethod"]>;
+                    contractValidationStatus?: Array<components["schemas"]["ContractValidationStatus"]>;
                     projectId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -5771,9 +6444,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationDto"];
-                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
-                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationDto"];
+                        "text/plain": components["schemas"]["PaginatedResponseV2OfReservationPendingValidationDto"];
+                        "application/json": components["schemas"]["PaginatedResponseV2OfReservationPendingValidationDto"];
+                        "text/json": components["schemas"]["PaginatedResponseV2OfReservationPendingValidationDto"];
                     };
                 };
             };
@@ -5839,7 +6512,12 @@ export interface paths {
                 query?: {
                     page?: number;
                     pageSize?: number;
+                    search?: string;
+                    status?: Array<components["schemas"]["ReservationStatus"]>;
+                    paymentMethod?: Array<components["schemas"]["PaymentMethod"]>;
+                    contractValidationStatus?: Array<components["schemas"]["ContractValidationStatus"]>;
                     projectId?: string;
+                    orderBy?: string;
                 };
                 header?: never;
                 path?: never;
@@ -6318,6 +6996,139 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/{id}/payment-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": Array<components["schemas"]["PaymentHistoryDto"]>;
+                        "application/json": Array<components["schemas"]["PaymentHistoryDto"]>;
+                        "text/json": Array<components["schemas"]["PaymentHistoryDto"]>;
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdatePaymentHistoryDto"];
+                    "text/json": components["schemas"]["UpdatePaymentHistoryDto"];
+                    "application/*+json": components["schemas"]["UpdatePaymentHistoryDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaymentHistoryDto"];
+                        "application/json": components["schemas"]["PaymentHistoryDto"];
+                        "text/json": components["schemas"]["PaymentHistoryDto"];
+                    };
+                };
+            };
+        };
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddPaymentHistoryDto"];
+                    "text/json": components["schemas"]["AddPaymentHistoryDto"];
+                    "application/*+json": components["schemas"]["AddPaymentHistoryDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaymentHistoryDto"];
+                        "application/json": components["schemas"]["PaymentHistoryDto"];
+                        "text/json": components["schemas"]["PaymentHistoryDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Reservations/{id}/payment-history/{paymentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -6959,6 +7770,17 @@ export interface components {
             nextDue?: number;
             nextPaymentDate?: string;
         };
+        AddPaymentHistoryDto: {
+            /** Format: date-time */
+            date?: string;
+            /** Format: double */
+            amount?: number;
+            method?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            reference?: string | null;
+            status?: components["schemas"]["PaymentStatus"];
+            notes?: string | null;
+        };
         AdvisorDashboardDto: {
             myLeads?: components["schemas"]["MyLeadsDto"];
             performance?: components["schemas"]["PerformanceDto"];
@@ -7006,6 +7828,25 @@ export interface components {
             lastActivity?: string | null;
             /** Format: double */
             efficiency?: number;
+        };
+        ApiPeruConsultation: {
+            /** Format: uuid */
+            id?: string;
+            documentNumber: string;
+            documentType: string;
+            responseData: string;
+            companyName?: string | null;
+            personName?: string | null;
+            address?: string | null;
+            status?: string | null;
+            condition?: string | null;
+            /** Format: date-time */
+            consultedAt?: string;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
         };
         AssignedLeadDto: {
             /** Format: uuid */
@@ -7359,10 +8200,19 @@ export interface components {
             geographicData?: Array<components["schemas"]["GeographicClientDto"]>;
             recentClients?: Array<components["schemas"]["RecentClientDto"]>;
             paymentPipeline?: Array<components["schemas"]["PaymentPipelineStageDto"]>;
-            reservationStatusData?: Array<components["schemas"]["ReservationStatusDto"]>;
+            reservationStatusData?: Array<components["schemas"]["DashboardReservationStatusDto"]>;
             paymentMethodsData?: Array<components["schemas"]["PaymentMethodDto"]>;
             upcomingPayments?: Array<components["schemas"]["UpcomingPaymentDto"]>;
             cashFlowData?: Array<components["schemas"]["CashFlowDto"]>;
+        };
+        DashboardReservationStatusDto: {
+            status?: string;
+            /** Format: int32 */
+            count?: number;
+            /** Format: double */
+            amount?: number;
+            /** Format: double */
+            percentage?: number;
         };
         DelinquencyAnalysisDto: {
             range?: string;
@@ -7443,6 +8293,8 @@ export interface components {
             /** Format: double */
             percentage?: number;
         };
+        /** Format: binary */
+        IFormFile: string;
         ImportResult: {
             /** Format: int32 */
             successCount?: number;
@@ -8178,6 +9030,72 @@ export interface components {
             isCompleted?: boolean;
             priority?: string;
         };
+        NotificationBulkUpdateDto: {
+            notificationIds?: Array<string>;
+            markAsRead?: boolean;
+        };
+        /** @enum {unknown} */
+        NotificationChannel: "InApp" | "Email" | "Both" | "Push";
+        NotificationCreateDto: {
+            /** Format: uuid */
+            userId?: string;
+            type?: components["schemas"]["NotificationType"];
+            priority?: components["schemas"]["NotificationPriority"];
+            channel?: components["schemas"]["NotificationChannel"];
+            title?: string;
+            message?: string;
+            data?: string | null;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: uuid */
+            relatedEntityId?: string | null;
+            relatedEntityType?: string | null;
+        };
+        NotificationDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            userId?: string;
+            userName?: string;
+            type?: components["schemas"]["NotificationType"];
+            priority?: components["schemas"]["NotificationPriority"];
+            channel?: components["schemas"]["NotificationChannel"];
+            title?: string;
+            message?: string;
+            data?: string | null;
+            isRead?: boolean;
+            /** Format: date-time */
+            readAt?: string | null;
+            /** Format: date-time */
+            sentAt?: string | null;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: uuid */
+            relatedEntityId?: string | null;
+            relatedEntityType?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
+        /** @enum {unknown} */
+        NotificationPriority: "Low" | "Normal" | "High" | "Urgent";
+        NotificationStatsDto: {
+            /** Format: int32 */
+            total?: number;
+            /** Format: int32 */
+            unread?: number;
+            /** Format: int32 */
+            read?: number;
+            /** Format: int32 */
+            expired?: number;
+            /** Format: int32 */
+            byPriority?: number;
+            /** Format: int32 */
+            byType?: number;
+        };
+        /** @enum {unknown} */
+        NotificationType: "LeadAssigned" | "LeadExpired" | "LeadCompleted" | "PaymentReceived" | "QuotationCreated" | "ReservationCreated" | "SystemAlert" | "Custom";
         /** @enum {unknown|null} */
         NullableOfClientType: "Natural" | "Juridico" | null;
         /** @enum {unknown|null} */
@@ -8188,6 +9106,8 @@ export interface components {
         NullableOfLeadStatus: "Registered" | "Attended" | "InFollowUp" | "Completed" | "Canceled" | "Expired" | null;
         /** @enum {unknown|null} */
         NullableOfLotStatus: "Available" | "Quoted" | "Reserved" | "Sold" | null;
+        /** @enum {unknown|null} */
+        NullableOfPaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER" | null;
         /** @enum {unknown|null} */
         NullableOfQuotationStatus: "ISSUED" | "ACCEPTED" | "CANCELED" | null;
         /** @enum {unknown|null} */
@@ -8264,6 +9184,17 @@ export interface components {
             /** Format: int32 */
             cacheTTLMinutes?: number;
         };
+        PaginatedResponseOfNotificationDto: {
+            items: Array<components["schemas"]["NotificationDto"]>;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages: number;
+        };
         PaginatedResponseV2OfBlockDTO: {
             data?: Array<components["schemas"]["BlockDTO"]>;
             meta?: components["schemas"]["PaginationMetadata"];
@@ -8322,6 +9253,14 @@ export interface components {
         };
         PaginatedResponseV2OfReservationDto: {
             data?: Array<components["schemas"]["ReservationDto"]>;
+            meta?: components["schemas"]["PaginationMetadata"];
+            hasData?: boolean;
+            isEmpty?: boolean;
+            /** Format: int32 */
+            count?: number;
+        };
+        PaginatedResponseV2OfReservationPendingValidationDto: {
+            data?: Array<components["schemas"]["ReservationPendingValidationDto"]>;
             meta?: components["schemas"]["PaginationMetadata"];
             hasData?: boolean;
             isEmpty?: boolean;
@@ -8503,6 +9442,18 @@ export interface components {
             dueDate?: string;
             paid?: boolean;
         };
+        PaymentHistoryDto: {
+            id?: string;
+            /** Format: date-time */
+            date?: string;
+            /** Format: double */
+            amount?: number;
+            method?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            reference?: string | null;
+            status?: components["schemas"]["PaymentStatus"];
+            notes?: string | null;
+        };
         /** @enum {unknown} */
         PaymentMethod: "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER";
         PaymentMethodDto: {
@@ -8582,6 +9533,8 @@ export interface components {
             installment?: string;
             lot?: string;
         };
+        /** @enum {unknown} */
+        PaymentStatus: "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED";
         PaymentTransactionDTO: {
             /** Format: uuid */
             id?: string;
@@ -9286,6 +10239,11 @@ export interface components {
             reservationDate?: string;
             /** Format: double */
             amountPaid?: number;
+            /** Format: double */
+            totalAmountRequired?: number;
+            /** Format: double */
+            remainingAmount?: number;
+            paymentHistory?: string | null;
             currency?: components["schemas"]["Currency"];
             status?: components["schemas"]["ReservationStatus"];
             contractValidationStatus?: components["schemas"]["ContractValidationStatus"];
@@ -9311,16 +10269,54 @@ export interface components {
             /** Format: double */
             amount?: number;
         };
+        ReservationPendingValidationDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            clientId?: string;
+            clientName?: string;
+            /** Format: uuid */
+            quotationId?: string;
+            quotationCode?: string;
+            /** Format: date */
+            reservationDate?: string;
+            /** Format: double */
+            amountPaid?: number;
+            /** Format: double */
+            totalAmountRequired?: number;
+            /** Format: double */
+            remainingAmount?: number;
+            paymentHistory?: string | null;
+            currency?: components["schemas"]["Currency"];
+            status?: components["schemas"]["ReservationStatus"];
+            contractValidationStatus?: components["schemas"]["ContractValidationStatus"];
+            paymentMethod?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            /** Format: double */
+            exchangeRate?: number;
+            /** Format: date-time */
+            expiresAt?: string;
+            notified?: boolean;
+            schedule?: string | null;
+            coOwners?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            modifiedAt?: string;
+        };
         /** @enum {unknown} */
         ReservationStatus: "ISSUED" | "CANCELED" | "ANULATED";
         ReservationStatusDto: {
             status?: string;
-            /** Format: int32 */
-            count?: number;
+            isFullPayment?: boolean | null;
             /** Format: double */
-            amount?: number;
-            /** Format: double */
-            percentage?: number;
+            paymentAmount?: number | null;
+            /** Format: date-time */
+            paymentDate?: string | null;
+            paymentMethod?: components["schemas"]["NullableOfPaymentMethod"];
+            bankName?: string | null;
+            paymentReference?: string | null;
+            paymentNotes?: string | null;
         };
         ReservationUpdateDto: {
             /** Format: date */
@@ -9356,6 +10352,11 @@ export interface components {
             reservationDate?: string;
             /** Format: double */
             amountPaid?: number;
+            /** Format: double */
+            totalAmountRequired?: number;
+            /** Format: double */
+            remainingAmount?: number;
+            paymentHistory?: string | null;
             currency?: components["schemas"]["Currency"];
             status?: components["schemas"]["ReservationStatus"];
             contractValidationStatus?: components["schemas"]["ContractValidationStatus"];
@@ -9382,6 +10383,7 @@ export interface components {
             amountPaid?: number;
             paymentMethod?: components["schemas"]["PaymentMethod"];
             status?: components["schemas"]["ReservationStatus"];
+            contractValidationStatus?: components["schemas"]["ContractValidationStatus"];
             currency?: components["schemas"]["Currency"];
             /** Format: double */
             exchangeRate?: number;
@@ -9486,6 +10488,20 @@ export interface components {
             subject?: string;
             content?: string;
             context?: Record<string, never> | null;
+        };
+        SendToMultipleRequest: {
+            userIds?: Array<string>;
+            type?: components["schemas"]["NotificationType"];
+            priority?: components["schemas"]["NotificationPriority"];
+            channel?: components["schemas"]["NotificationChannel"];
+            title?: string;
+            message?: string;
+            data?: string | null;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: uuid */
+            relatedEntityId?: string | null;
+            relatedEntityType?: string | null;
         };
         StringSegment: {
             buffer?: string | null;
@@ -9630,6 +10646,18 @@ export interface components {
             /** Format: int32 */
             daysLeft?: number;
             status?: string;
+        };
+        UpdatePaymentHistoryDto: {
+            id?: string;
+            /** Format: date-time */
+            date?: string;
+            /** Format: double */
+            amount?: number;
+            method?: components["schemas"]["PaymentMethod"];
+            bankName?: string | null;
+            reference?: string | null;
+            status?: components["schemas"]["PaymentStatus"];
+            notes?: string | null;
         };
         UpdateProfilePasswordDTO: {
             currentPassword?: string;

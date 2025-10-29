@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
-import { ContractValidationStatus, ReservationDto } from "../../reservations/_types/reservation";
-import { ContractValidationStatusLabels, PaymentMethodLabels } from "../../reservations/_utils/reservations.utils";
+import { ContractValidationStatus, ReservationStatus, ReservationPendingValidationDto } from "../../reservations/_types/reservation";
+import { ContractValidationStatusLabels, PaymentMethodLabels, ReservationStatusLabels } from "../../reservations/_utils/reservations.utils";
 import { useDownloadReservationPDF, useDownloadReservationContractPDF, useDownloadReservationContractDOCX } from "../../reservations/_hooks/useReservations";
 import { ToggleValidationStatusDialog } from "./ToggleValidationStatusDialog";
 
@@ -30,7 +30,7 @@ import { ToggleValidationStatusDialog } from "./ToggleValidationStatusDialog";
  * @param handleEditInterface Función para editar una reserva
  * @returns Columnas de la tabla de reservas
  */
-export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
+export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingValidationDto>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -61,13 +61,14 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
         id: "cliente",
         accessorKey: "clientName",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
-        cell: ({ row }) => (
-            <div className="min-w-32">
-                <div className="truncate capitalize">
-                    {row.getValue("cliente")}
+        cell: ({ row }) => {
+            const clientName = row.getValue("cliente") as string;
+            return (
+                <div className="min-w-32">
+                    <div className="truncate capitalize">{clientName}</div>
                 </div>
-            </div>
-        ),
+            );
+        },
     },
     {
         id: "cotización",
@@ -168,17 +169,52 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
         },
     },
     {
-        id: "estado",
-        accessorKey: "contractValidationStatus",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
+        id: "estado_reserva",
+        accessorKey: "status",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado Reserva" />,
         cell: ({ row }) => {
-            const contractValidationStatus = row.getValue("estado") as ContractValidationStatus;
+            const status = row.getValue("estado_reserva") as ReservationStatus;
+            const statusConfig = ReservationStatusLabels[status];
+
+            if (!statusConfig) {
+                return <div className="min-w-24 text-sm">No especificado</div>;
+            }
+
+            const Icon = statusConfig.icon;
+
+            return (
+                <div className="text-xs min-w-24">
+                    <Badge variant="outline" className={statusConfig.className}>
+                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
+                        {statusConfig.label}
+                    </Badge>
+                </div>
+            );
+        },
+        filterFn: (row, id, value) => {
+            const rowValue = row.getValue(id);
+
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return true;
+                }
+                return value.includes(rowValue);
+            }
+
+            return rowValue === value;
+        },
+        enableColumnFilter: true,
+    },
+    {
+        id: "estado_validacion",
+        accessorKey: "contractValidationStatus",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado Validación" />,
+        cell: ({ row }) => {
+            const contractValidationStatus = row.getValue("estado_validacion") as ContractValidationStatus;
             const contractValidationStatusConfig = ContractValidationStatusLabels[contractValidationStatus];
 
             if (!contractValidationStatusConfig) {
-                return <div>
-                    No registrado
-                </div>;
+                return <div className="min-w-24 text-sm">No registrado</div>;
             }
 
             const Icon = contractValidationStatusConfig.icon;

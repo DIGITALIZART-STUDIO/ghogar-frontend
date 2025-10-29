@@ -29,6 +29,7 @@ export default function EditReservationPage({ reservationData, quotationData }: 
     const form = useForm<CreateReservationSchema>({
         resolver: zodResolver(reservationSchema),
         defaultValues: {
+            quotationId: quotationData.id, // Agregar el quotationId que falta
             reservationDate: format(new Date(reservationData.reservationDate ?? ""), "yyyy-MM-dd"),
             amountPaid: correctSeparationAmount.toString(), // Usar el monto correcto calculado
             currency: reservationData.currency ?? "SOLES",

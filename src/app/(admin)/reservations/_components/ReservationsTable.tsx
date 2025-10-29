@@ -4,7 +4,6 @@ import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
 
-import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { ReservationDto } from "../_types/reservation";
 import { createFacetedFilters } from "../_utils/reservations.filter.utils";
 import { reservationsColumns } from "./ReservationsTableColumns";
@@ -13,6 +12,7 @@ import {
     CustomPaginationTableParams,
     ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
+import { DataTable } from "@/components/datatable/data-table";
 
 interface ReservationsTableProps {
     data: Array<ReservationDto>;
@@ -57,7 +57,7 @@ export function ReservationsTable({
     );
 
     return (
-        <DataTableExpanded
+        <DataTable
             isLoading={isLoading}
             data={data}
             columns={columns}
@@ -66,19 +66,14 @@ export function ReservationsTable({
             )}
             filterPlaceholder="Buscar separaciones..."
             facetedFilters={customFacetedFilters}
-            serverConfig={{
+            externalFilterValue={search}
+            onGlobalFilterChange={onSearchChange}
+            serverPagination={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
                 pageCount: pagination.totalPages,
                 total: pagination.total,
-                onPaginationChange: async (pageIndex, pageSize) => {
-                    onPaginationChange(pageIndex + 1, pageSize);
-                },
-                search: {
-                    search: search ?? "",
-                    onSearchChange: onSearchChange,
-                    searchPlaceholder: "Buscar separaciones...",
-                },
+                onPaginationChange: onPaginationChange,
             }}
         />
     );

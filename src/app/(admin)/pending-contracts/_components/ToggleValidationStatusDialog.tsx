@@ -2,11 +2,11 @@
 
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
-import { ReservationDto } from "../../reservations/_types/reservation";
+import {  ReservationPendingValidationDto } from "../../reservations/_types/reservation";
 import { useToggleContractValidationStatus } from "../../reservations/_hooks/useReservations";
 
 interface ToggleValidationStatusDialogProps {
-    reservation: ReservationDto;
+    reservation: ReservationPendingValidationDto;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
     onSuccess?: () => void;

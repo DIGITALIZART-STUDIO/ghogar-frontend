@@ -149,7 +149,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
         <div className="w-full bg-card border border-border rounded-xl overflow-hidden shadow-sm">
             {/* BALANCED HEADER */}
             <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-4 border-b border-border">
-                <div className="flex items-center justify-between">
+                <div className="flex  flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="relative">
                             <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
@@ -192,7 +192,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                         </div>
                     </div>
 
-                    <div className="text-right">
+                    <div className="md:text-right text-center">
                         <div
                             className={cn(
                                 "text-2xl font-bold",
@@ -214,11 +214,11 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* CLIENT INFORMATION */}
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b border-border">
-                            <User className="w-4 h-4 text-blue-600" />
+                        <div className="flex flex-col md:flex-row items-center md:justify-start justify-center gap-2 pb-2 border-b border-border">
+                            <User className="w-4 h-4 text-blue-600 shrink-0" />
                             <h4 className="font-semibold text-foreground">Información del Cliente</h4>
                             <Badge className={cn("text-xs font-medium", clientTypeConfig.className)}>
-                                <TypeIcon className="w-3 h-3 mr-1" />
+                                <TypeIcon className="w-3 h-3 mr-1 shrink-0" />
                                 {clientTypeConfig.label}
                             </Badge>
                         </div>
@@ -382,7 +382,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                 </div>
 
                                 {/* Financial Terms Grid */}
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     <div className="text-center p-3 rounded-lg border border-border bg-emerald-50/50 dark:bg-emerald-950/20">
                                         <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                                             <Percent className="w-4 h-4 text-emerald-600" />
@@ -438,7 +438,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                         <div className="flex-1 min-w-0">
                                             <div className="font-medium text-sm text-foreground">{coOwner.name}</div>
                                             <div className="text-xs text-muted-foreground">DNI: {coOwner.dni}</div>
-                                            <div className="flex gap-3 mt-2">
+                                            <div className="flex flex-col md:flex-row gap-3 mt-2">
                                                 {coOwner.email && (
                                                     <a
                                                         href={`mailto:${coOwner.email}`}
@@ -512,20 +512,20 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                 )}
 
                 {/* TIMELINE & ACTIONS */}
-                <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between pt-4 border-t border-border">
+                    <div className="flex flex-col md:flex-row items-center md:justify-start justify-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-4 h-4 shrink-0" />
                             <span>Ingreso: {formatDate(row.entryDate)}</span>
                         </div>
-                        <span>•</span>
+                        <span className="hidden md:block">•</span>
                         <div
                             className={cn(
                                 "flex items-center gap-1",
                                 isExpired ? "text-red-600" : isExpiringSoon ? "text-orange-600" : "",
                             )}
                         >
-                            <Clock className="w-4 h-4" />
+                            <Clock className="w-4 h-4 shrink-0" />
                             <span>Vence: {formatDate(row.expirationDate)}</span>
                         </div>
                         {(row.recycleCount ?? 0) > 0 && (

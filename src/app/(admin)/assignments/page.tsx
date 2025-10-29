@@ -32,8 +32,6 @@ export default function AssignmentsPage() {
         setStatus,
         captureSource,
         setCaptureSource,
-        completionReason,
-        setCompletionReason,
         clientId,
         setClientId,
         handleOrderChange,
@@ -102,7 +100,7 @@ export default function AssignmentsPage() {
                 }
             />
 
-            <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
+            <div className="-mx-4 flex-1 px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <AssignmentsTable
                     data={paginatedLeads.data ?? []}
                     pagination={{
@@ -118,8 +116,6 @@ export default function AssignmentsPage() {
                     setStatus={setStatus}
                     captureSource={captureSource}
                     setCaptureSource={setCaptureSource}
-                    completionReason={completionReason}
-                    setCompletionReason={setCompletionReason}
                     handleOrderChange={handleOrderChange}
                     resetFilters={resetFilters}
                     isLoading={isLoading}

@@ -88,7 +88,7 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_50%)]" />
 
                 <div className="relative p-6">
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-col md:flex-row gap-4 items-center md:items-start md:justify-between">
                         <div className="flex items-start gap-4">
                             {/* Enhanced Avatar with client type colors */}
                             <div className="relative">

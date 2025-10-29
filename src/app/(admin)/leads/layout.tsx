@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users, Loader2, PanelLeftClose, PanelLeftOpen, User, X } from "lucide-react";
 import {
     TreeExpander,
@@ -183,11 +183,42 @@ function FilterClearButton() {
 
 export default function LeadsLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
+
+    // Detectar si es móvil
+    useEffect(() => {
+        const checkIsMobile = () => {
+            const nowMobile = window.innerWidth < 768; // md breakpoint
+            setIsMobile(nowMobile);
+        };
+
+        checkIsMobile();
+        window.addEventListener("resize", checkIsMobile);
+        return () => window.removeEventListener("resize", checkIsMobile);
+    }, []);
 
     return (
         <LeadsProvider>
             <div className="flex h-full min-h-[calc(100vh-4rem)] relative">
-                <aside className={`${sidebarOpen ? "block" : "hidden"} w-80 shrink-0 border-r bg-background`}>
+                {/* Overlay para móviles */}
+                {isMobile && sidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                        onClick={() => setSidebarOpen(false)}
+                    />
+                )}
+
+                {/* Sidebar responsive */}
+                <aside className={`
+                    ${isMobile
+            ? `fixed inset-y-0 left-0 z-50 w-80 transform transition-transform duration-300 ease-in-out ${
+                sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`
+            : `${sidebarOpen ? "block" : "hidden"} w-80 shrink-0`
+        } 
+                    border-r bg-background
+                `}
+                >
                     <div className="h-full flex flex-col">
                         {/* Header minimalista */}
                         <div className="px-4 py-4 border-b">
@@ -196,7 +227,18 @@ export default function LeadsLayout({ children }: { children: React.ReactNode })
                                     <div className="w-1.5 h-1.5 rounded-full bg-foreground/60" />
                                     <span className="text-sm font-medium">Filtros</span>
                                 </div>
-                                <FilterClearButton />
+                                <div className="flex items-center gap-2">
+                                    <FilterClearButton />
+                                    {isMobile && (
+                                        <button
+                                            onClick={() => setSidebarOpen(false)}
+                                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent transition-colors"
+                                            aria-label="Cerrar filtros"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

@@ -252,10 +252,9 @@ export function useDownloadQuotationPDF() {
 
     return async (quotationId: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Quotations/{id}/pdf",
-                { path: { id: quotationId } }
-            );
+            return await downloadFileWithClient("get", "/api/Quotations/{id}/pdf", {
+                path: { id: quotationId },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -269,10 +268,9 @@ export function useDownloadSeparationPDF() {
 
     return async (quotationId: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Quotations/{id}/separation/pdf",
-                { path: { id: quotationId } }
-            );
+            return await downloadFileWithClient("get", "/api/Quotations/{id}/separation/pdf", {
+                path: { id: quotationId },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;

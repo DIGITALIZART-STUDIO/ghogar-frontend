@@ -26,6 +26,7 @@ export const useEventSource = (options: UseEventSourceOptions): UseEventSourceRe
 
     // Función para crear la conexión SSE
     const createConnection = useCallback(() => {
+
         if (eventSourceRef.current) {
             eventSourceRef.current.close();
         }
@@ -60,7 +61,6 @@ export const useEventSource = (options: UseEventSourceOptions): UseEventSourceRe
                 if (!isManualDisconnectRef.current && reconnectAttemptsRef.current < maxReconnectAttempts) {
                     reconnectAttemptsRef.current += 1;
                     const delay = reconnectInterval * Math.pow(2, reconnectAttemptsRef.current - 1); // Backoff exponencial
-
                     reconnectTimeoutRef.current = setTimeout(() => {
                         createConnection();
                     }, delay);
@@ -81,6 +81,10 @@ export const useEventSource = (options: UseEventSourceOptions): UseEventSourceRe
             });
 
         } catch (err) {
+            console.error("❌ [useEventSource] Error creating connection", {
+                error: err instanceof Error ? err.message : "Unknown error",
+                url
+            });
             setError(err instanceof Error ? err.message : "Failed to create connection");
             setIsConnected(false);
         }

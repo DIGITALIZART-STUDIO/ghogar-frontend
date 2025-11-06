@@ -59,32 +59,51 @@ export default function ClientUpdatePaymentsTransactionPage({ availablePayments,
             return;
         }
 
-        const promise = updatePaymentTransaction.mutateAsync({
-            params: {
-                path: { id: paymentTransactionId }
-            },
-            body: {
-                PaymentDate: data.paymentDate,
-                AmountPaid: data.amountPaid,
-                PaymentMethod: data.paymentMethod,
-                ReferenceNumber: data.referenceNumber,
-                PaymentIds: selectedPayments,
-                ReservationId: id,
-            }
-        });
+        const body: Record<string, unknown> = {
+            paymentDate: data.paymentDate,
+            amountPaid: data.amountPaid,
+            paymentMethod: data.paymentMethod,
+            referenceNumber: data.referenceNumber,
+            paymentIds: selectedPayments,
+            reservationId: id,
+        };
 
-        toast.promise(promise, {
-            loading: "Actualizando transacción...",
-            success: "Transacción actualizada correctamente.",
-            error: (e) => `Error al actualizar transacción: ${e.message ?? e}`,
-        });
+        // Agregar comprobanteFile solo si es un File real
+        if (data.comprobanteFile && data.comprobanteFile instanceof File) {
+            body.comprobanteFile = data.comprobanteFile;
+        }
 
-        promise.then(() => {
+        try {
+            const promise = updatePaymentTransaction.mutateAsync({
+                params: {
+                    path: { id: paymentTransactionId },
+                },
+                body,
+            });
+
+            toast.promise(promise, {
+                loading: "Actualizando transacción...",
+                success: "Transacción actualizada correctamente.",
+                error: (e: unknown) => {
+                    const error = e as { message?: string; error?: string };
+                    return error?.message ?? error?.error ?? "Error desconocido al actualizar transacción";
+                },
+            });
+
+            await promise;
+
             form.reset();
             setSelectedPayments([]);
             router.push("/payments-transaction");
-        });
+        } catch (error) {
+            console.error("Error updating payment transaction:", error);
+        }
     };
+
+    const handleCancel = () => {
+        router.push("/payments-transaction");
+    };
+
     return (
         <CreatePaymentsTransactionForm
             form={form}
@@ -94,6 +113,7 @@ export default function ClientUpdatePaymentsTransactionPage({ availablePayments,
             setSelectedPayments={setSelectedPayments}
             totalSelectedAmount={totalSelectedAmount ?? 0}
             initialImageUrl={transaction?.comprobanteUrl ?? undefined}
+            onCancel={handleCancel}
         />
     );
 }

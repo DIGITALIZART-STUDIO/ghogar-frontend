@@ -160,7 +160,7 @@ export function useImportClients() {
 
     return useMutation({
         mutationFn: async (file: File) => {
-            const response = await uploadFile(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Clients/import`, file);
+            const response = await uploadFile("post", "/api/Clients/import", file);
             return response.json();
         },
         onSuccess: () => {

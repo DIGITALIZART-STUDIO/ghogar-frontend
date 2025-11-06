@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Table as TableInstance } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/datatable/data-table";
@@ -40,8 +40,18 @@ export function PendingContractsTable({
     onContractValidationStatusChange,
     isLoading = false,
 }: PendingContractsTableProps) {
-    const [, setSelectedReservation] = useState<ReservationPendingValidationDto | null>(null);
-    const [, setIsLateralOpen] = useState(false);
+    const [selectedReservation, setSelectedReservation] = useState<ReservationPendingValidationDto | null>(null);
+    const [isLateralOpen, setIsLateralOpen] = useState(false);
+
+    // Actualizar selectedReservation cuando los datos cambien y el panel esté abierto
+    useEffect(() => {
+        if (selectedReservation && isLateralOpen) {
+            const updatedReservation = data.find((r) => r.id === selectedReservation.id);
+            if (updatedReservation) {
+                setSelectedReservation(updatedReservation);
+            }
+        }
+    }, [data, selectedReservation, isLateralOpen]);
 
     const columns = useMemo(() => pendingContractsColumns(), []);
 
@@ -59,15 +69,22 @@ export function PendingContractsTable({
     );
 
     // Función para renderizar el contenido lateral
-    const renderLateralContent = (reservation: ReservationPendingValidationDto) => {
+    const renderLateralContent = () => {
+        if (!selectedReservation) {
+            return null;
+        }
+
+        // Buscar la reserva actualizada en los datos actuales
+        const currentReservation = data.find((r) => r.id === selectedReservation.id) ?? selectedReservation;
+
         // Deserializar PaymentHistory si es string
         let paymentHistory = [];
-        if (reservation.paymentHistory) {
+        if (currentReservation.paymentHistory) {
             try {
-                if (typeof reservation.paymentHistory === "string") {
-                    paymentHistory = JSON.parse(reservation.paymentHistory);
+                if (typeof currentReservation.paymentHistory === "string") {
+                    paymentHistory = JSON.parse(currentReservation.paymentHistory);
                 } else {
-                    paymentHistory = reservation.paymentHistory;
+                    paymentHistory = currentReservation.paymentHistory;
                 }
             } catch (error) {
                 console.error("Error al deserializar PaymentHistory:", error);
@@ -78,9 +95,9 @@ export function PendingContractsTable({
         return (
             <PaymentHistoryList
                 paymentHistory={paymentHistory}
-                reservationId={reservation.id ?? ""}
-                currency={reservation.currency ?? "PEN"}
-                reservationData={reservation}
+                reservationId={currentReservation.id ?? ""}
+                currency={currentReservation.currency ?? "PEN"}
+                reservationData={currentReservation}
             />
         );
     };

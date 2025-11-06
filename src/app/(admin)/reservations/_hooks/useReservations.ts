@@ -207,10 +207,9 @@ export function useDownloadReservationPDF() {
 
     return async (id: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{id}/pdf",
-                { path: { id } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{id}/pdf", {
+                path: { id },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -224,10 +223,9 @@ export function useDownloadReservationContractPDF() {
 
     return async (id: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{id}/contract/pdf",
-                { path: { id } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{id}/contract/pdf", {
+                path: { id },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -241,10 +239,9 @@ export function useDownloadReservationContractDOCX() {
 
     return async (id: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{id}/contract/docx",
-                { path: { id } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{id}/contract/docx", {
+                path: { id },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -258,10 +255,9 @@ export function useDownloadReservationSchedulePDF() {
 
     return async (id: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{id}/schedule/pdf",
-                { path: { id } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{id}/schedule/pdf", {
+                path: { id },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -275,10 +271,9 @@ export function useDownloadContractPDF() {
 
     return async (contractId: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Documents/{contractId}/pdf",
-                { path: { contractId } }
-            );
+            return await downloadFileWithClient("get", "/api/Documents/{contractId}/pdf", {
+                path: { contractId },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;

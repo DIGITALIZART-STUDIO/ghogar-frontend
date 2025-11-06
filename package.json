@@ -83,6 +83,7 @@
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.2",
     "@types/react-dropzone": "^5.1.0",
+    "@types/react-query": "^1.2.9",
     "commitlint": "^19.8.1",
     "eslint": "^9.24.0",
     "eslint-config-next": "^15.3.0",

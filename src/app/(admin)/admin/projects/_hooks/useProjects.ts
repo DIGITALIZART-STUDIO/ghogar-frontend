@@ -1,7 +1,25 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { backend as api } from "@/types/backend";
+import { backend as api, uploadWithFormData } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
+
+// Query keys constants for better maintainability
+const PROJECT_QUERY_KEYS = {
+    all: ["get", "/api/Projects"] as const,
+    active: ["get", "/api/Projects/active"] as const,
+    activePaginated: ["get", "/api/Projects/active/paginated"] as const,
+    byId: (id: string) => ["get", "/api/Projects/{id}", { path: { id } }] as const,
+} as const;
+
+// Helper function to invalidate all project-related queries
+const invalidateProjectQueries = (queryClient: ReturnType<typeof useQueryClient>, includeId?: string) => {
+    queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEYS.all });
+    queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEYS.active });
+    queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEYS.activePaginated });
+    if (includeId) {
+        queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEYS.byId(includeId) });
+    }
+};
 
 // Hook para obtener proyectos activos
 export function useActiveProjects() {
@@ -30,41 +48,24 @@ export function useProject(id: string) {
 }
 
 // Hook para crear un proyecto
-export function useCreateProject() {
-    const queryClient = useQueryClient();
-    const { handleAuthError } = useAuthContext();
-
-    return api.useMutation("post", "/api/Projects", {
-        onSuccess: () => {
-            // Invalidar queries de proyectos con las query keys correctas
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
-        },
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
-}
+export const useCreateProject = uploadWithFormData("post", "/api/Projects", {
+    useAuthContext,
+    invalidateQueries: (queryClient) => {
+        invalidateProjectQueries(queryClient);
+    },
+});
 
 // Hook para actualizar un proyecto
-export function useUpdateProject() {
-    const queryClient = useQueryClient();
-    const { handleAuthError } = useAuthContext();
-
-    return api.useMutation("put", "/api/Projects/{id}", {
-        onSuccess: () => {
-            // Invalidar queries de proyectos con las query keys correctas
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/{id}"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects/active/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Projects"] });
-        },
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-    });
-}
+export const useUpdateProject = uploadWithFormData("put", "/api/Projects/{id}", {
+    useAuthContext,
+    invalidateQueries: (queryClient, variables) => {
+        if (variables && "params" in variables && "id" in variables.params.path) {
+            invalidateProjectQueries(queryClient, variables.params.path.id);
+        } else {
+            invalidateProjectQueries(queryClient);
+        }
+    },
+});
 
 // Hook para eliminar un proyecto
 export function useDeleteProject() {

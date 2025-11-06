@@ -26,7 +26,9 @@ export function useAddPaymentToHistory() {
         onSuccess: () => {
             // Invalidar queries relacionadas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}/payment-history"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({
+                predicate: (query) => query.queryKey[0] === "get" && query.queryKey[1] === "/api/Reservations/canceled/pending-validation/paginated"
+            });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
@@ -49,7 +51,9 @@ export function useUpdatePaymentInHistory() {
         onSuccess: () => {
             // Invalidar queries relacionadas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}/payment-history"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({
+                predicate: (query) => query.queryKey[0] === "get" && query.queryKey[1] === "/api/Reservations/canceled/pending-validation/paginated"
+            });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
@@ -72,7 +76,9 @@ export function useRemovePaymentFromHistory() {
         onSuccess: () => {
             // Invalidar queries relacionadas
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}/payment-history"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+            queryClient.invalidateQueries({
+                predicate: (query) => query.queryKey[0] === "get" && query.queryKey[1] === "/api/Reservations/canceled/pending-validation/paginated"
+            });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/{id}"] });
             queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });

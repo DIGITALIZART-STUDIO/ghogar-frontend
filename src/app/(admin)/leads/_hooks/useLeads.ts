@@ -260,7 +260,7 @@ export function useDownloadLeadsExcel() {
     return {
         mutateAsync: async (): Promise<Blob> => {
             try {
-                return await downloadFileWithClient("/api/Leads/export", { path: {} });
+                return await downloadFileWithClient("get", "/api/Leads/export", { path: {} });
             } catch (error: unknown) {
                 await handleAuthError(error);
                 throw error;

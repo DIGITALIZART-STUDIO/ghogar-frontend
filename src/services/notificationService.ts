@@ -233,11 +233,13 @@ export function useSendToMultiple() {
 export const sseUtils = {
     // Crear URL para SSE (sin token, usa cookies)
     createSSEUrl(): string {
-        return API_ENDPOINTS.stream;
+        const url = API_ENDPOINTS.stream;
+        return url;
     },
 
     // Parsear mensaje SSE
     parseSSEMessage(event: MessageEvent): { event: string; data: unknown; timestamp: string } | null {
+
         try {
             const timestamp = new Date().toISOString();
 
@@ -246,9 +248,16 @@ export const sseUtils = {
             // event.data contiene directamente el JSON
             if (event.type && event.type !== "message") {
                 // Evento nombrado (notification, heartbeat, connection)
+                let parsedData;
+                try {
+                    parsedData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+                } catch {
+                    return null;
+                }
+
                 return {
                     event: event.type,
-                    data: typeof event.data === "string" ? JSON.parse(event.data) : event.data,
+                    data: parsedData,
                     timestamp,
                 };
             }
@@ -269,14 +278,20 @@ export const sseUtils = {
             }
 
             if (eventType && data) {
-                return {
-                    event: eventType,
-                    data: JSON.parse(data),
-                    timestamp,
-                };
+                try {
+                    const parsedData = JSON.parse(data);
+                    return {
+                        event: eventType,
+                        data: parsedData,
+                        timestamp,
+                    };
+                } catch {
+                    return null;
+                }
             }
+            return null;
         } catch {
+            return null;
         }
-        return null;
     },
 };

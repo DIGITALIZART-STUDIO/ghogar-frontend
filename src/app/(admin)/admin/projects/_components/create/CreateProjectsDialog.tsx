@@ -62,28 +62,43 @@ export function CreateProjectsDialog() {
 
     const onSubmit = async (input: CreateProjectSchema) => {
         startTransition(async () => {
-            const promise = createProject.mutateAsync({
-                body: {
-                    Name: input.name,
-                    Location: input.location,
-                    Currency: input.currency,
-                    DefaultDownPayment: input.defaultDownPayment,
-                    DefaultFinancingMonths: input.defaultFinancingMonths,
-                    MaxDiscountPercentage: input.maxDiscountPercentage,
-                    ...(input.projectImage && { projectImage: input.projectImage }),
-                },
-            });
+            try {
+                // Construir el body asegurando que projectImage esté incluido solo si es un File real
+                const body: Record<string, unknown> = {
+                    name: input.name,
+                    location: input.location,
+                    currency: input.currency,
+                    defaultDownPayment: input.defaultDownPayment,
+                    defaultFinancingMonths: input.defaultFinancingMonths,
+                    maxDiscountPercentage: input.maxDiscountPercentage,
+                };
 
-            toast.promise(promise, {
-                loading: "Creando proyecto...",
-                success: "Proyecto creado exitosamente",
-                error: (e) => `Error al crear proyecto: ${e.message}`,
-            });
+                // Incluir projectImage solo si es un File real (no objetos con path/relativePath)
+                if (input.projectImage && input.projectImage instanceof File) {
+                    body.projectImage = input.projectImage;
+                }
 
-            const result = await promise;
+                const promise = createProject.mutateAsync({
+                    body,
+                });
 
-            if (result) {
-                setIsSuccess(true);
+                toast.promise(promise, {
+                    loading: "Creando proyecto...",
+                    success: "Proyecto creado exitosamente",
+                    error: (e: unknown) => {
+                        // Intentar obtener el mensaje de error del servidor
+                        const error = e as { message?: string; error?: string };
+                        const errorMessage = error?.message ?? error?.error ?? "Error desconocido al crear el proyecto";
+                        return errorMessage;
+                    },
+                });
+
+                const result = await promise;
+
+                if (result) {
+                    setIsSuccess(true);
+                }
+            } catch {
             }
         });
     };

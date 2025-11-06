@@ -260,7 +260,7 @@ export function useDownloadLeadsExcel() {
     return {
         mutateAsync: async (): Promise<Blob> => {
             try {
-                return await downloadFileWithClient("/api/Leads/export", { path: {} });
+                return await downloadFileWithClient("get", "/api/Leads/export", { path: {} });
             } catch (error: unknown) {
                 await handleAuthError(error);
                 throw error;
@@ -463,4 +463,25 @@ export function usePaginatedAvailableLeadsForQuotationWithSearch(
         totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
         currentPage: query.data?.pages[0]?.meta?.page ?? 1,
     };
+}
+
+// Hook para enviar notificación personalizada de lead
+export function useSendPersonalizedLeadNotification() {
+    const queryClient = useQueryClient();
+    const { handleAuthError } = useAuthContext();
+
+    return api.useMutation("post", "/api/Leads/{leadId}/notify", {
+        onSuccess: () => {
+            // Invalidar queries de leads para refrescar datos
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+            queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
+        },
+        onError: async (error: unknown) => {
+            await handleAuthError(error);
+        },
+    });
 }

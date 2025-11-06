@@ -39,3 +39,36 @@ export const reservationSchema = z.object({
 });
 
 export type CreateReservationSchema = z.infer<typeof reservationSchema>;
+
+// Schema para cambio de estado de reserva
+export const reservationStatusChangeSchema = z.object({
+    status: z.enum(["ISSUED", "CANCELED", "ANULATED"], {
+        required_error: "El estado es requerido",
+    }),
+    isFullPayment: z.boolean().optional(),
+    paymentAmount: z.number().optional()
+        .refine((val) => {
+            if (!val) {
+                return true;
+            } // Opcional
+            return val > 0;
+        }, "El monto debe ser un número válido mayor a 0"),
+
+    // Campos para PaymentHistory
+    paymentDate: z.string().optional(),
+    paymentMethod: z.enum(["CASH", "BANK_DEPOSIT", "BANK_TRANSFER"]).optional(),
+    bankName: z.string().optional(),
+    paymentReference: z.string().optional(),
+    paymentNotes: z.string().optional(),
+}).refine((data) => {
+    // Solo validar paymentAmount cuando el estado es CANCELED (Completado)
+    if (data.status === "CANCELED" && data.isFullPayment === false && !data.paymentAmount) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Si no es pago completo, debe especificar el monto del pago",
+    path: ["paymentAmount"],
+});
+
+export type ReservationStatusChangeSchema = z.infer<typeof reservationStatusChangeSchema>;

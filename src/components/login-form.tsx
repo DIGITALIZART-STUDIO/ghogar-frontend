@@ -94,9 +94,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 console.warn("No se pudieron obtener los roles del usuario, redirigiendo a select-project:", userError);
                 router.push("/select-project");
             }
-        } catch (error) {
+        } catch {
             // El error ya se maneja en el toast.promise
-            console.error("Error during login:", error);
         }
     }
 

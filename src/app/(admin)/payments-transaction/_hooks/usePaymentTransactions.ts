@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { backend as api, downloadFileWithClient } from "@/types/backend";
+import { backend as api, downloadFileWithClient, uploadWithFormData } from "@/types/backend";
 import { useAuthContext } from "@/context/auth-provider";
 
 // Obtener todas las transacciones
@@ -61,55 +61,51 @@ export function useQuotaStatusByReservation(reservationId: string, excludeTransa
     });
 }
 
-// Crear una transacción con soporte para archivos
-export function useCreatePaymentTransaction() {
-    const queryClient = useQueryClient();
-    const { handleAuthError } = useAuthContext();
+// Query keys constants for better maintainability - matching openapi-react-query format
+const PAYMENT_TRANSACTION_QUERY_KEYS = {
+    all: ["get", "/api/PaymentTransaction"] as const,
+    byId: (id: string) => ["get", "/api/PaymentTransaction/{id}", { path: { id } }] as const,
+    byReservation: (reservationId: string) => ["get", "/api/PaymentTransaction/by-reservation/{reservationId}", { path: { reservationId } }] as const,
+    quotaStatusByReservation: (reservationId: string, excludeTransactionId?: string) => ["get", "/api/PaymentTransaction/quota-status/by-reservation/{reservationId}/{excludeTransactionId}", {
+        path: {
+            reservationId,
+            excludeTransactionId: excludeTransactionId ?? "",
+        },
+    }] as const,
+} as const;
 
-    return api.useMutation("post", "/api/PaymentTransaction", {
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-        onSuccess: () => {
-            // Invalidar queries de transacciones de pago con las query keys correctas
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
-        },
-    });
-}
+// Helper function to invalidate all payment transaction-related queries
+const invalidatePaymentTransactionQueries = (queryClient: ReturnType<typeof useQueryClient>) => {
+    queryClient.invalidateQueries({ queryKey: PAYMENT_TRANSACTION_QUERY_KEYS.all });
+    // Invalidar todas las queries de PaymentTransaction (incluye variaciones con parámetros)
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
+    // Invalidar queries relacionadas de Reservations
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
+};
+
+// Crear una transacción con soporte para archivos
+export const useCreatePaymentTransaction = uploadWithFormData("post", "/api/PaymentTransaction", {
+    useAuthContext,
+    invalidateQueries: (queryClient) => {
+        invalidatePaymentTransactionQueries(queryClient);
+    },
+});
 
 // Actualizar una transacción con soporte para archivos
-export function useUpdatePaymentTransaction() {
-    const queryClient = useQueryClient();
-    const { handleAuthError } = useAuthContext();
-
-    return api.useMutation("put", "/api/PaymentTransaction/{id}", {
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
-        onSuccess: () => {
-            // Invalidar queries de transacciones de pago con las query keys correctas
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
-        },
-    });
-}
+export const useUpdatePaymentTransaction = uploadWithFormData("put", "/api/PaymentTransaction/{id}", {
+    useAuthContext,
+    invalidateQueries: (queryClient) => {
+        invalidatePaymentTransactionQueries(queryClient);
+    },
+});
 
 // Eliminar una transacción
 export function useDeletePaymentTransaction() {
@@ -142,10 +138,9 @@ export function useDownloadSchedulePDF() {
 
     return async (reservationId: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{reservationId}/schedule/pdf",
-                { path: { reservationId } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{reservationId}/schedule/pdf", {
+                path: { reservationId },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -159,10 +154,9 @@ export function useDownloadProcessedPaymentsPDF() {
 
     return async (reservationId: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{reservationId}/processed-payments/pdf",
-                { path: { reservationId } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{reservationId}/processed-payments/pdf", {
+                path: { reservationId },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;
@@ -176,10 +170,9 @@ export function useDownloadReceiptPDF() {
 
     return async (reservationId: string) => {
         try {
-            return await downloadFileWithClient(
-                "/api/Reservations/{reservationId}/receipt/pdf",
-                { path: { reservationId } }
-            );
+            return await downloadFileWithClient("get", "/api/Reservations/{reservationId}/receipt/pdf", {
+                path: { reservationId },
+            });
         } catch (error) {
             await handleAuthError(error);
             throw error;

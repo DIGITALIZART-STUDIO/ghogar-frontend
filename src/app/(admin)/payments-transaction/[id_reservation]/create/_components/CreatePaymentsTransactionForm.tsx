@@ -15,16 +15,26 @@ import CreatePaymentsTransactionSelector from "./CreatePaymentsTransactionSelect
 import CropperReceiptForm from "./CropperReceiptForm";
 
 interface CreatePaymentsTransactionFormProps {
-      form: UseFormReturn<PaymentTransactionCreateFormData>;
-      onSubmit: (data: PaymentTransactionCreateFormData) => void;
-      availablePayments: PaymentQuotaStatus;
-      selectedPayments: Array<string>;
-      setSelectedPayments: React.Dispatch<React.SetStateAction<Array<string>>>;
-      totalSelectedAmount: number;
-      initialImageUrl?: string; // URL de imagen existente para edición
+    form: UseFormReturn<PaymentTransactionCreateFormData>;
+    onSubmit: (data: PaymentTransactionCreateFormData) => void;
+    availablePayments: PaymentQuotaStatus;
+    selectedPayments: Array<string>;
+    setSelectedPayments: React.Dispatch<React.SetStateAction<Array<string>>>;
+    totalSelectedAmount: number;
+    initialImageUrl?: string; // URL de imagen existente para edición
+    onCancel?: () => void; // Función opcional para manejar la cancelación
 }
 
-export default function CreatePaymentsTransactionForm({ form, onSubmit, availablePayments, selectedPayments, setSelectedPayments, totalSelectedAmount, initialImageUrl }: CreatePaymentsTransactionFormProps) {
+export default function CreatePaymentsTransactionForm({
+    form,
+    onSubmit,
+    availablePayments,
+    selectedPayments,
+    setSelectedPayments,
+    totalSelectedAmount,
+    initialImageUrl,
+    onCancel,
+}: CreatePaymentsTransactionFormProps) {
 
     // Usar el totalAmountRemaining de la BD si está disponible, sino calcularlo
     const totalAvailableAmount = useMemo(
@@ -98,6 +108,7 @@ export default function CreatePaymentsTransactionForm({ form, onSubmit, availabl
                         type="button"
                         variant="outline"
                         className="px-6 py-2 border-slate-300 text-slate-700 hover:bg-slate-50"
+                        onClick={onCancel}
                     >
                         Cancelar
                     </Button>

@@ -77,25 +77,35 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
                 return;
             }
 
+            // Construir el body asegurando que projectImage esté incluido solo si es un File real
+            const body: Record<string, unknown> = {
+                name: input.name,
+                location: input.location,
+                currency: input.currency,
+                defaultDownPayment: input.defaultDownPayment,
+                defaultFinancingMonths: input.defaultFinancingMonths,
+                maxDiscountPercentage: input.maxDiscountPercentage,
+            };
+
+            // Incluir projectImage solo si es un File real (no objetos con path/relativePath)
+            if (input.projectImage && input.projectImage instanceof File) {
+                body.projectImage = input.projectImage;
+            }
+
             const promise = updateProject.mutateAsync({
                 params: {
                     path: { id: project.id },
                 },
-                body: {
-                    Name: input.name,
-                    Location: input.location,
-                    Currency: input.currency,
-                    DefaultDownPayment: input.defaultDownPayment,
-                    DefaultFinancingMonths: input.defaultFinancingMonths,
-                    MaxDiscountPercentage: input.maxDiscountPercentage,
-                    ...(input.projectImage && { projectImage: input.projectImage }),
-                },
+                body,
             });
 
             toast.promise(promise, {
                 loading: "Actualizando proyecto...",
                 success: "Proyecto actualizado exitosamente",
-                error: (e) => `Error al actualizar proyecto: ${e.message}`,
+                error: (e) => {
+                    const errorMessage = e?.message ?? "Error desconocido";
+                    return `Error: ${errorMessage}`;
+                },
             });
 
             try {

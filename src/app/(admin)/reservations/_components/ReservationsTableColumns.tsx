@@ -95,7 +95,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                     <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                                         <User className="h-4 w-4 text-blue-600 dark:text-blue-300" />
                                     </div>
-                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Información del Cliente</span>
+                                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Cliente de la Reserva</span>
                                 </div>
                                 <div className="space-y-2">
                                     <div>
@@ -155,11 +155,11 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
         },
     },
     {
-        id: "fecha_reserva",
+        id: "fecha de reserva",
         accessorKey: "reservationDate",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Fecha Reserva" />,
         cell: ({ row }) => {
-            const date = row.getValue("fecha_reserva") as string;
+            const date = row.getValue("fecha de reserva") as string;
             const formattedDate = date ? format(parseISO(date), "dd/MM/yyyy", { locale: es }) : "—";
             const fullDate = date ? format(parseISO(date), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es }) : "—";
 
@@ -209,13 +209,18 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
     {
         id: "monto",
         accessorKey: "amountPaid",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Inicial" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Separación" />,
         cell: ({ row }) => {
             const amount = row.getValue("monto") as number;
             const currency = row.original?.currency;
             const symbol = currency === "SOLES" ? "S/" : "$";
             const formattedAmount = amount?.toLocaleString("es-PE", { minimumFractionDigits: 2 }) || "0.00";
             const exchangeRate = row.original?.exchangeRate;
+
+            // Para el hover card, usar totalAmountRequired si está disponible
+            const totalAmountRequired = row.original?.totalAmountRequired;
+            const remainingAmount = row.original?.remainingAmount;
+            const amountPaid = row.original?.amountPaid;
 
             return (
                 <TooltipProvider>
@@ -246,8 +251,28 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                                 <div className="space-y-3">
                                     <div>
                                         <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">Monto de Separación</p>
-                                        <p className="font-bold text-2xl text-gray-900 dark:text-gray-100">{symbol}{formattedAmount}</p>
+                                        <p className="font-bold text-2xl text-gray-900 dark:text-gray-100">
+                                            {symbol}{totalAmountRequired?.toLocaleString("es-PE", { minimumFractionDigits: 2 }) ?? formattedAmount}
+                                        </p>
                                     </div>
+
+                                    {totalAmountRequired && amountPaid !== undefined && remainingAmount !== undefined && (
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-gray-600 dark:text-gray-400">Pagado:</span>
+                                                <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                                                    {symbol}{amountPaid.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-gray-600 dark:text-gray-400">Pendiente:</span>
+                                                <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                                                    {symbol}{remainingAmount.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
                                         <div className="flex justify-between items-center">
                                             <span className="text-xs text-gray-600 dark:text-gray-400">Moneda:</span>
@@ -589,6 +614,7 @@ export const reservationsColumns = (handleEditInterface: (id: string) => void): 
                             onClose={() => setOpenStatusChangeDialog(false)}
                             currentStatus={status! as ReservationStatus}
                             reservationId={id!}
+                            reservationData={row.original}
                         />
                     )}
 

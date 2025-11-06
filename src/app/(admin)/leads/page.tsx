@@ -24,8 +24,6 @@ export default function LeadsPage() {
         setStatus,
         captureSource,
         setCaptureSource,
-        completionReason,
-        setCompletionReason,
         userId,
         setUserId,
         clientId,
@@ -89,8 +87,6 @@ export default function LeadsPage() {
                     setStatus={setStatus}
                     captureSource={captureSource}
                     setCaptureSource={setCaptureSource}
-                    completionReason={completionReason}
-                    setCompletionReason={setCompletionReason}
                     handleOrderChange={handleOrderChange}
                     resetFilters={resetFilters}
                     isLoading={isLoading}

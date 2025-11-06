@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
-import { usePaginatedReservationsByAdvisor } from "../_hooks/useReservations";
 import { ReservationsTable } from "./ReservationsTable";
+import { useReservationsByAdvisorPagination } from "../_hooks/useReservationsByAdvisorPagination";
 
 export default function ReservationsClient() {
     const [page, setPage] = useState(1);
@@ -22,7 +22,7 @@ export default function ReservationsClient() {
         setSearch,
         handleStatusChange,
         handlePaymentMethodChange,
-    } = usePaginatedReservationsByAdvisor(page, pageSize);
+    } = useReservationsByAdvisorPagination(page, pageSize);
 
     const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
         setPage(newPage);

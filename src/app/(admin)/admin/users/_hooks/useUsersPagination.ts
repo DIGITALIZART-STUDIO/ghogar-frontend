@@ -16,8 +16,8 @@ export function useUsersPagination(page: number = 1, pageSize: number = 10) {
         roleName: [] as Array<string>,
     };
 
-    // Usar el hook base para la lógica común
-    const basePagination = useBasePagination(initialFilters);
+    // Usar el hook base con debounce deshabilitado (se maneja en data-table-toolbar)
+    const basePagination = useBasePagination(initialFilters, { disableDebounce: true });
 
     // Construir parámetros de query
     const queryParams = basePagination.buildQueryParams(page, pageSize);

@@ -4,8 +4,7 @@ import { useAuthContext } from "@/context/auth-provider";
 import { useBasePagination } from "../../../../hooks/useBasePagination";
 
 /**
- * Hook específico para paginación de clientes
- * Combina el hook base con la lógica específica de la API de clientes
+ * Hook específico para paginación de clientes con búsqueda debounced
  */
 export function useClientsPagination(page: number = 1, pageSize: number = 10) {
     const { handleAuthError } = useAuthContext();
@@ -16,10 +15,22 @@ export function useClientsPagination(page: number = 1, pageSize: number = 10) {
         type: [] as Array<string>,
     };
 
-    // Usar el hook base para la lógica común
-    const basePagination = useBasePagination(initialFilters);
+    // Usar el hook base con debounce deshabilitado (se maneja en data-table-toolbar)
+    const basePagination = useBasePagination(initialFilters, { disableDebounce: true });
 
-    // Construir parámetros de query
+    // Extraer las propiedades que necesitamos
+    const { search, filters, orderBy, orderDirection, setSearch, setFilter, handleOrderChange, resetFilters } = basePagination;
+
+    // Handlers específicos para clientes
+    const setIsActive = useCallback((values: Array<boolean>) => {
+        setFilter("isActive", values);
+    }, [setFilter]);
+
+    const setType = useCallback((values: Array<string>) => {
+        setFilter("type", values);
+    }, [setFilter]);
+
+    // Construir parámetros de query usando buildQueryParams del hook base
     const queryParams = basePagination.buildQueryParams(page, pageSize);
 
     // Query específica para clientes
@@ -34,29 +45,20 @@ export function useClientsPagination(page: number = 1, pageSize: number = 10) {
         },
     });
 
-    // Handlers específicos para clientes
-    const setIsActive = useCallback((values: Array<boolean>) => {
-        basePagination.setFilter("isActive", values);
-    }, [basePagination]);
-
-    const setType = useCallback((values: Array<string>) => {
-        basePagination.setFilter("type", values);
-    }, [basePagination]);
-
     return {
         ...query,
-        // Estados del hook base
-        search: basePagination.search,
-        isActive: basePagination.filters.isActive,
-        type: basePagination.filters.type,
-        orderBy: basePagination.orderBy,
-        orderDirection: basePagination.orderDirection,
-        // Handlers específicos
-        setSearch: basePagination.setSearch,
+        // Estados de búsqueda y filtros
+        search,
+        isActive: filters.isActive,
+        type: filters.type,
+        orderBy,
+        orderDirection,
+        // Handlers
+        setSearch,
         setIsActive,
         setType,
-        handleOrderChange: basePagination.handleOrderChange,
-        resetFilters: basePagination.resetFilters,
+        handleOrderChange,
+        resetFilters,
         // Información de paginación
         totalCount: query.data?.meta?.total ?? 0,
         totalPages: query.data?.meta?.totalPages ?? 0,

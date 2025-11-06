@@ -7,7 +7,6 @@ import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
-import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +26,7 @@ import { AssignConsultorsDialog } from "./assignments/AssignConsultorsDialog";
 import { UsersTableToolbarActions } from "./UserActions";
 import { createFacetedFilters } from "../_utils/user.filter.utils";
 import { UserRoleLabels } from "../_utils/user.utils";
+import { DataTable } from "@/components/datatable/data-table";
 
 export interface UsersTableProps {
     data: Array<UserGetDTO>;
@@ -67,7 +67,7 @@ export function UsersTable({
     );
 
     return (
-        <DataTableExpanded
+        <DataTable
             isLoading={isLoading}
             data={data}
             columns={columns}
@@ -76,18 +76,15 @@ export function UsersTable({
             )}
             filterPlaceholder="Buscar usuarios..."
             facetedFilters={customFacetedFilters}
-            serverConfig={{
+            externalFilterValue={search}
+            onGlobalFilterChange={onSearchChange}
+            serverPagination={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
                 pageCount: pagination.totalPages,
                 total: pagination.total,
                 onPaginationChange: async (pageIndex, pageSize) => {
                     onPaginationChange(pageIndex + 1, pageSize);
-                },
-                search: {
-                    search: search ?? "",
-                    onSearchChange: onSearchChange,
-                    searchPlaceholder: "Buscar usuarios...",
                 },
             }}
         />

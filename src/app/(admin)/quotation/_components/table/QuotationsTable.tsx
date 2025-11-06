@@ -4,7 +4,6 @@ import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
 
-import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { SummaryQuotation } from "../../_types/quotation";
 import { createFacetedFilters } from "../../_utils/quotations.filter.utils";
 import { quotationsColumns } from "./QuotationsTableColumns";
@@ -13,6 +12,7 @@ import {
     CustomPaginationTableParams,
     ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
+import { DataTable } from "@/components/datatable/data-table";
 
 interface QuotationsTableProps {
     data: Array<SummaryQuotation>;
@@ -53,7 +53,7 @@ export function QuotationsTable({
     );
 
     return (
-        <DataTableExpanded
+        <DataTable
             isLoading={isLoading}
             data={data}
             columns={columns}
@@ -62,19 +62,14 @@ export function QuotationsTable({
             )}
             filterPlaceholder="Buscar cotizaciones..."
             facetedFilters={customFacetedFilters}
-            serverConfig={{
+            externalFilterValue={search}
+            onGlobalFilterChange={onSearchChange}
+            serverPagination={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
                 pageCount: pagination.totalPages,
                 total: pagination.total,
-                onPaginationChange: async (pageIndex, pageSize) => {
-                    onPaginationChange(pageIndex + 1, pageSize);
-                },
-                search: {
-                    search: search ?? "",
-                    onSearchChange: onSearchChange,
-                    searchPlaceholder: "Buscar cotizaciones...",
-                },
+                onPaginationChange: onPaginationChange,
             }}
         />
     );

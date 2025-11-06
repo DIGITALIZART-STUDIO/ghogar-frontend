@@ -8,13 +8,13 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import ReservationViewContent from "./ReservationViewContent";
-import { ReservationDto } from "../../reservations/_types/reservation";
+import {  ReservationPendingValidationDto } from "../../reservations/_types/reservation";
 import { useReservationById } from "../../reservations/_hooks/useReservations";
 
 interface ReservationViewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  reservation: ReservationDto;
+  reservation: ReservationPendingValidationDto;
 }
 
 export function ReservationViewDialog({ open, onOpenChange, reservation }: ReservationViewDialogProps) {

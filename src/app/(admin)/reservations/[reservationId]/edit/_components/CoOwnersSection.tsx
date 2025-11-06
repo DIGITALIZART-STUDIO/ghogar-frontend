@@ -94,13 +94,6 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
         setSelectedCoOwners(selectedFromClient);
         setSeparationCoOwners(specificToSeparation);
 
-        // Console log para debug
-        console.log("=== INICIALIZACIÓN COPROPIETARIOS ===");
-        console.log("Copropietarios del cliente:", clientCoOwners);
-        console.log("Copropietarios en el formulario:", currentCoOwners);
-        console.log("Copropietarios seleccionados del cliente:", selectedFromClient);
-        console.log("Copropietarios específicos de la separación:", specificToSeparation);
-        console.log("=====================================");
     }, [form, clientCoOwners]);
 
     // ===== FUNCIONES PARA CRUD DE COPROPIETARIOS DEL CLIENTE =====
@@ -242,14 +235,6 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
 
         setNewSeparationCoOwner({ name: "", dni: "", phone: "", address: "", email: "" });
         toast.success("Copropietario de separación agregado exitosamente");
-
-        // Console log para debug
-        console.log("=== DEBUG COPROPIETARIOS (AGREGAR SEPARACIÓN) ===");
-        console.log("Copropietarios del cliente:", clientCoOwners);
-        console.log("Copropietarios seleccionados del cliente:", selectedCoOwners);
-        console.log("Copropietarios específicos de la separación:", updatedSeparationCoOwners);
-        console.log("Todos los copropietarios en el formulario:", allCoOwners);
-        console.log("================================================");
     };
 
     // Editar copropietario de la separación
@@ -288,14 +273,6 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
         setEditingSeparationCoOwnerIndex(null);
         setNewSeparationCoOwner({ name: "", dni: "", phone: "", address: "", email: "" });
         toast.success("Copropietario de separación actualizado exitosamente");
-
-        // Console log para debug
-        console.log("=== DEBUG COPROPIETARIOS (ACTUALIZAR SEPARACIÓN) ===");
-        console.log("Copropietarios del cliente:", clientCoOwners);
-        console.log("Copropietarios seleccionados del cliente:", selectedCoOwners);
-        console.log("Copropietarios específicos de la separación:", updatedSeparationCoOwners);
-        console.log("Todos los copropietarios en el formulario:", allCoOwners);
-        console.log("==================================================");
     };
 
     // Eliminar copropietario de la separación
@@ -308,14 +285,6 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
         form.setValue("coOwners", allCoOwners);
 
         toast.success("Copropietario de separación eliminado exitosamente");
-
-        // Console log para debug
-        console.log("=== DEBUG COPROPIETARIOS (ELIMINAR SEPARACIÓN) ===");
-        console.log("Copropietarios del cliente:", clientCoOwners);
-        console.log("Copropietarios seleccionados del cliente:", selectedCoOwners);
-        console.log("Copropietarios específicos de la separación:", updatedSeparationCoOwners);
-        console.log("Todos los copropietarios en el formulario:", allCoOwners);
-        console.log("================================================");
     };
 
     // Cancelar edición de copropietario de separación
@@ -346,16 +315,6 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
         // Actualizar el formulario con todos los copropietarios (seleccionados + separación)
         const allCoOwners = [...newSelected, ...separationCoOwners];
         form.setValue("coOwners", allCoOwners);
-
-        // Console log para debug
-        console.log("=== DEBUG COPROPIETARIOS (TOGGLE) ===");
-        console.log("Copropietario a toggle:", coOwner);
-        console.log("IsSelected:", isSelected);
-        console.log("Copropietarios del cliente:", clientCoOwners);
-        console.log("Copropietarios seleccionados del cliente:", newSelected);
-        console.log("Copropietarios específicos de la separación:", separationCoOwners);
-        console.log("Todos los copropietarios en el formulario:", allCoOwners);
-        console.log("=====================================");
     };
 
     const isCoOwnerSelected = (dni: string) => selectedCoOwners.some((co) => co.dni === dni);

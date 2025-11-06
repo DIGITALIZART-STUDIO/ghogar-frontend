@@ -53,28 +53,40 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
             }
 
             // Para asignación automática, solo necesitamos el monto y reservationId
-            const promise = createPaymentTransaction.mutateAsync({
-                body: {
-                    PaymentDate: data.paymentDate,
-                    AmountPaid: data.amountPaid,
-                    PaymentMethod: data.paymentMethod,
-                    ReferenceNumber: data.referenceNumber,
-                    PaymentIds: undefined, // El backend asignará automáticamente
-                    ReservationId: id, // Necesario para asignación automática
-                }
-            });
+            const body: Record<string, unknown> = {
+                paymentDate: data.paymentDate,
+                amountPaid: data.amountPaid,
+                paymentMethod: data.paymentMethod,
+                referenceNumber: data.referenceNumber,
+                paymentIds: undefined, // El backend asignará automáticamente
+                reservationId: id, // Necesario para asignación automática
+            };
 
-            toast.promise(promise, {
-                loading: "Registrando transacción con asignación automática...",
-                success: "Transacción registrada correctamente.",
-                error: (e) => `Error al registrar transacción: ${e.message ?? e}`,
-            });
+            // Agregar comprobanteFile solo si es un File real
+            if (data.comprobanteFile && data.comprobanteFile instanceof File) {
+                body.comprobanteFile = data.comprobanteFile;
+            }
 
-            promise.then(() => {
+            try {
+                const promise = createPaymentTransaction.mutateAsync({ body });
+
+                toast.promise(promise, {
+                    loading: "Registrando transacción con asignación automática...",
+                    success: "Transacción registrada correctamente.",
+                    error: (e: unknown) => {
+                        const error = e as { message?: string; error?: string };
+                        return error?.message ?? error?.error ?? "Error desconocido al registrar transacción";
+                    },
+                });
+
+                await promise;
+
                 form.reset();
                 setSelectedPayments([]);
                 router.push("/payments-transaction");
-            });
+            } catch (error) {
+                console.error("Error creating payment transaction:", error);
+            }
             return;
         }
 
@@ -86,29 +98,45 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
             return;
         }
 
-        const promise = createPaymentTransaction.mutateAsync({
-            body: {
-                PaymentDate: data.paymentDate,
-                AmountPaid: data.amountPaid,
-                PaymentMethod: data.paymentMethod,
-                ReferenceNumber: data.referenceNumber,
-                PaymentIds: selectedPayments,
-                ReservationId: id,
-            }
-        });
+        const body: Record<string, unknown> = {
+            paymentDate: data.paymentDate,
+            amountPaid: data.amountPaid,
+            paymentMethod: data.paymentMethod,
+            referenceNumber: data.referenceNumber,
+            paymentIds: selectedPayments,
+            reservationId: id,
+        };
 
-        toast.promise(promise, {
-            loading: "Registrando transacción...",
-            success: "Transacción registrada correctamente.",
-            error: (e) => `Error al registrar transacción: ${e.message ?? e}`,
-        });
+        // Agregar comprobanteFile solo si es un File real
+        if (data.comprobanteFile && data.comprobanteFile instanceof File) {
+            body.comprobanteFile = data.comprobanteFile;
+        }
 
-        promise.then(() => {
+        try {
+            const promise = createPaymentTransaction.mutateAsync({ body });
+
+            toast.promise(promise, {
+                loading: "Registrando transacción...",
+                success: "Transacción registrada correctamente.",
+                error: (e: unknown) => {
+                    const error = e as { message?: string; error?: string };
+                    return error?.message ?? error?.error ?? "Error desconocido al registrar transacción";
+                },
+            });
+
+            await promise;
+
             form.reset();
             setSelectedPayments([]);
             router.push("/payments-transaction");
-        });
+        } catch (error) {
+            console.error("Error creating payment transaction:", error);
+        }
     };
+    const handleCancel = () => {
+        router.push("/payments-transaction");
+    };
+
     return (
         <CreatePaymentsTransactionForm
             form={form}
@@ -117,6 +145,7 @@ export default function ClientCreatePaymentsTransactionPage({ availablePayments,
             selectedPayments={selectedPayments}
             setSelectedPayments={setSelectedPayments}
             totalSelectedAmount={totalSelectedAmount ?? 0}
+            onCancel={handleCancel}
         />
     );
 }

@@ -7,35 +7,40 @@ import { useDebouncedCallback } from "use-debounce";
  * Soporta tanto filtros de array como filtros de valor único
  */
 export function useBasePagination<TFilters extends Record<string, Array<unknown> | unknown>>(
-    initialFilters: TFilters = {} as TFilters
+    initialFilters: TFilters = {} as TFilters,
+    options: { disableDebounce?: boolean } = {}
 ) {
-    // Estados internos para mantener los filtros (para UI inmediata)
-    const [internalSearch, setInternalSearch] = useState<string>("");
-    const [internalFilters, setInternalFilters] = useState<TFilters>(initialFilters);
-
-    // Estados para la consulta (con debounce para search)
-    const [search, setSearch] = useState<string | undefined>(undefined);
+    // Estados para la consulta
+    const [search, setSearch] = useState<string>("");
+    const [debouncedSearch, setDebouncedSearch] = useState<string | undefined>(undefined);
     const [filters, setFilters] = useState<TFilters>(initialFilters);
     const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
     const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("desc");
 
-    // Debounce para la búsqueda (500ms de delay)
-    const debouncedSearch = useDebouncedCallback((value: string) => {
-        setSearch(value.trim() || undefined);
+    // Debounce para la búsqueda (500ms de delay) - opcional
+    const debouncedSearchUpdate = useDebouncedCallback((value: string) => {
+        const trimmedValue = value.trim();
+        setDebouncedSearch(trimmedValue || undefined);
     }, 500);
 
-    // Handler para búsqueda con debounce
+    // Handler para búsqueda
     const handleSearchChange = useCallback((value: string) => {
-        setInternalSearch(value);
-        debouncedSearch(value);
-    }, [debouncedSearch]);
+        // Actualizar inmediatamente para la UI
+        setSearch(value);
+        // Aplicar debounce solo si está habilitado
+        if (!options.disableDebounce) {
+            debouncedSearchUpdate(value);
+        } else {
+            // Si el debounce está deshabilitado, actualizar inmediatamente
+            setDebouncedSearch(value.trim() || undefined);
+        }
+    }, [options.disableDebounce, debouncedSearchUpdate]);
 
     // Handler genérico para filtros
     const handleFilterChange = useCallback(<K extends keyof TFilters>(
         filterKey: K,
         values: TFilters[K]
     ) => {
-        setInternalFilters((prev) => ({ ...prev, [filterKey]: values }));
         setFilters((prev) => ({ ...prev, [filterKey]: values }));
     }, []);
 
@@ -47,43 +52,42 @@ export function useBasePagination<TFilters extends Record<string, Array<unknown>
 
     // Reset de todos los filtros
     const resetFilters = useCallback(() => {
-        setInternalSearch("");
-        setInternalFilters(initialFilters);
-        setSearch(undefined);
+        setSearch("");
+        setDebouncedSearch(undefined);
         setFilters(initialFilters);
         setOrderBy(undefined);
         setOrderDirection("desc");
     }, [initialFilters]);
 
-    // Construir parámetros de query
-    const buildQueryParams = useCallback((page: number, pageSize: number) => ({
-        page,
-        pageSize,
-        search,
-        ...Object.entries(filters).reduce((acc, [key, value]) => {
-            // Manejar arrays (filtros múltiples)
-            if (Array.isArray(value)) {
-                if (value.length > 0) {
+    // Construir parámetros de query con memoización para evitar re-renders
+    const buildQueryParams = useCallback((page: number, pageSize: number) => {
+        const params = {
+            page,
+            pageSize,
+            search: debouncedSearch,
+            ...Object.entries(filters).reduce((acc, [key, value]) => {
+                // Manejar arrays (filtros múltiples)
+                if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                        acc[key] = value;
+                    }
+                } else if (value !== null && value !== undefined) {
+                    // Manejar valores únicos (incluyendo null/undefined)
                     acc[key] = value;
                 }
-            } else if (value !== null && value !== undefined) {
-                // Manejar valores únicos (incluyendo null/undefined)
-                acc[key] = value;
-            }
-            return acc;
-        }, {} as Record<string, unknown>),
-        orderBy: orderBy ? `${orderBy} ${orderDirection}` : undefined,
-    }), [search, filters, orderBy, orderDirection]);
+                return acc;
+            }, {} as Record<string, unknown>),
+            orderBy: orderBy ? `${orderBy} ${orderDirection}` : undefined,
+        };
+        return params;
+    }, [debouncedSearch, filters, orderBy, orderDirection]);
 
     return {
-        // Estados internos para la UI (sin debounce)
-        search: internalSearch,
-        filters: internalFilters,
+        // Estados para la UI y query
+        search,
+        filters,
         orderBy,
         orderDirection,
-        // Estados para la query
-        querySearch: search,
-        queryFilters: filters,
         // Handlers
         setSearch: handleSearchChange,
         setFilter: handleFilterChange,

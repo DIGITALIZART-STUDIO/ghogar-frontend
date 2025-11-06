@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
-import { usePaginatedQuotationsByAdvisor } from "./_hooks/useQuotations";
 import { QuotationsTable } from "./_components/table/QuotationsTable";
+import { useQuotationsByAdvisorPagination } from "./_hooks/useQuotationsByAdvisorPagination";
 
 export default function QuotationPage() {
     const [page, setPage] = useState(1);
@@ -21,7 +21,7 @@ export default function QuotationPage() {
         filters,
         setSearch,
         handleStatusChange,
-    } = usePaginatedQuotationsByAdvisor(page, pageSize);
+    } = useQuotationsByAdvisorPagination(page, pageSize);
 
     const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
         setPage(newPage);

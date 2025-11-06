@@ -26,7 +26,7 @@ export function useQuotationsByAdvisorPagination(page: number = 1, pageSize: num
     } = useBasePagination<QuotationsFilters>({
         status: [],
         clientId: [],
-    });
+    }, { disableDebounce: true }); // Debounce manejado en data-table-toolbar
 
     // Convertir status strings a QuotationStatus enum
     const statusEnums = filters.status?.length > 0

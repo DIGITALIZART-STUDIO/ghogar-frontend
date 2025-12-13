@@ -314,8 +314,51 @@ export function DataTable<TData, TValue>({
         };
     };
 
+    // Función helper para verificar si un elemento es interactivo o está dentro de uno
+    const isInteractiveElement = (element: HTMLElement | null): boolean => {
+        if (!element) {
+            return false;
+        }
+
+        // Verificar si el elemento o alguno de sus ancestros es interactivo
+        let current: HTMLElement | null = element;
+        while (current) {
+            // Elementos interactivos comunes
+            if (
+                current.tagName === "BUTTON" ||
+                current.tagName === "A" ||
+                current.tagName === "INPUT" ||
+                current.tagName === "SELECT" ||
+                current.tagName === "TEXTAREA" ||
+                current.getAttribute("role") === "button" ||
+                current.getAttribute("role") === "menuitem" ||
+                current.getAttribute("role") === "link" ||
+                current.closest("button") !== null ||
+                current.closest("a") !== null ||
+                current.closest("[role=\"button\"]") !== null ||
+                current.closest("[role=\"menuitem\"]") !== null ||
+                current.closest("[role=\"link\"]") !== null ||
+                current.closest("[data-radix-collection-item]") !== null || // Radix UI items
+                current.closest("[data-radix-dropdown-menu-trigger]") !== null || // Radix UI dropdown
+                current.closest("[data-radix-popover-trigger]") !== null || // Radix UI popover
+                current.closest("[data-radix-dialog-trigger]") !== null || // Radix UI dialog
+                current.closest("[data-radix-select-trigger]") !== null || // Radix UI select
+                current.closest("[data-state]") !== null && current.closest("[role=\"menu\"]") !== null // Menús abiertos
+            ) {
+                return true;
+            }
+            current = current.parentElement;
+        }
+        return false;
+    };
+
     // Manejar clic en fila para expansión lateral
-    const handleRowClick = React.useCallback((row: TData) => {
+    const handleRowClick = React.useCallback((row: TData, event?: React.MouseEvent<HTMLTableRowElement>) => {
+        // Si el clic viene de un elemento interactivo, no hacer nada
+        if (event && isInteractiveElement(event.target as HTMLElement)) {
+            return;
+        }
+
         if (expansionMode === "lateral" && renderLateralContent) {
             const isCurrentlySelected = selectedRow === row;
             if (isCurrentlySelected) {
@@ -428,7 +471,7 @@ export function DataTable<TData, TValue>({
                                                 ? "bg-muted/30"
                                                 : ""
                                         }`}
-                                        onClick={() => handleRowClick(row.original)}
+                                        onClick={(e) => handleRowClick(row.original, e)}
                                     >
                                         {row.getVisibleCells().map((cell) => {
                                             const { column } = cell;

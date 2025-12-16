@@ -1,0 +1,204 @@
+"use client";
+
+import { useEffect, useState, useTransition } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus, RefreshCcw } from "lucide-react";
+import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { toast } from "sonner";
+import { useCreateClient } from "../../_hooks/useClients";
+import { clientSchema, type CreateClientsSchema } from "../../_schemas/createClientsSchema";
+import { ClientTypes } from "../../_types/client";
+import CreateClientsForm from "./CreateClientsForm";
+
+const dataForm = {
+    button: "Crear cliente",
+    title: "Crear Cliente",
+    description: "Complete los detalles a continuación para crear nuevos clientes.",
+};
+
+interface CreateClientsDialogProps {
+    trigger?: React.ReactNode;
+}
+
+export function CreateClientsDialog({ trigger }: CreateClientsDialogProps) {
+    const isDesktop = useMediaQuery("(min-width: 800px)");
+    const [open, setOpen] = useState(false);
+    const [isPending, startTransition] = useTransition();
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const createClient = useCreateClient();
+
+    const form = useForm<CreateClientsSchema>({
+        resolver: zodResolver(clientSchema),
+        defaultValues: {
+            name: "",
+            dni: "",
+            ruc: "",
+            companyName: "",
+            phoneNumber: "",
+            email: "",
+            address: "",
+            type: undefined,
+            coOwners: [],
+            separateProperty: false,
+            separatePropertyData: undefined,
+        },
+    });
+
+    const onSubmit = async (input: CreateClientsSchema) => {
+        startTransition(async () => {
+            // Preparar los datos para el formato esperado por el backend
+            const clientData = {
+                name: input.name,
+                phoneNumber: input.phoneNumber,
+                email: input.email,
+                address: input.address,
+                type: input.type,
+                coOwners: JSON.stringify(input.coOwners),
+                country: input.country,
+                separateProperty: input.separateProperty,
+                separatePropertyData: JSON.stringify(input.separatePropertyData),
+                ...(input.type === ClientTypes.Natural && {
+                    dni: input.dni,
+                }),
+                ...(input.type === ClientTypes.Juridico && {
+                    ruc: input.ruc,
+                    companyName: input.companyName,
+                }),
+            };
+
+            const promise = createClient.mutateAsync({
+                body: clientData,
+            });
+
+            toast.promise(promise, {
+                loading: "Creando cliente...",
+                success: "Cliente creado exitosamente",
+                error: (e) => `Error al crear cliente: ${e.message}`,
+            });
+
+            const result = await promise;
+
+            if (result) {
+                setIsSuccess(true);
+            }
+        });
+    };
+
+    const handleClose = () => {
+        form.reset();
+    };
+
+    useEffect(() => {
+        if (isSuccess) {
+            form.reset();
+            setOpen(false);
+            setIsSuccess(false);
+        }
+    }, [isSuccess, form]);
+
+    // Trigger por defecto
+    const defaultTrigger = (
+        <Button variant="outline" size="sm">
+            <Plus className="mr-2 size-4" aria-hidden="true" />
+            {dataForm.button}
+        </Button>
+    );
+
+    // Usar el trigger personalizado o el por defecto
+    const dialogTrigger = trigger ?? defaultTrigger;
+
+    if (isDesktop) {
+        return (
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                    {dialogTrigger}
+                </DialogTrigger>
+                <DialogContent tabIndex={undefined} className="sm:max-w-[900px] px-0">
+                    <DialogHeader className="px-4">
+                        <DialogTitle>{dataForm.title}</DialogTitle>
+                        <DialogDescription>{dataForm.description}</DialogDescription>
+                    </DialogHeader>
+                    <ScrollArea className="h-full max-h-[80vh] px-0">
+                        <div className="px-6">
+                            <CreateClientsForm form={form} onSubmit={onSubmit}>
+                                <DialogFooter className="w-full">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                        <DialogClose asChild>
+                                            <Button onClick={handleClose} type="button" variant="outline" className="w-full">
+                                                Cancelar
+                                            </Button>
+                                        </DialogClose>
+                                        <Button disabled={isPending} className="w-full">
+                                            {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
+                                            Registrar
+                                        </Button>
+                                    </div>
+                                </DialogFooter>
+                            </CreateClientsForm>
+                        </div>
+                    </ScrollArea>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
+    return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
+                {dialogTrigger}
+            </DrawerTrigger>
+
+            <DrawerContent className="h-[80vh]">
+                <DrawerHeader className="pb-2">
+                    <DrawerTitle>{dataForm.title}</DrawerTitle>
+                    <DrawerDescription>{dataForm.description}</DrawerDescription>
+                </DrawerHeader>
+
+                <div className="flex-1 overflow-hidden">
+                    <ScrollArea className="h-full px-0">
+                        <div className="px-4">
+                            <CreateClientsForm form={form} onSubmit={onSubmit}>
+                                <DrawerFooter className="px-0 pt-2">
+                                    <Button disabled={isPending} className="w-full">
+                                        {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}
+                                        Registrar
+                                    </Button>
+                                    <DrawerClose asChild>
+                                        <Button variant="outline" className="w-full" onClick={handleClose}>
+                                            Cancelar
+                                        </Button>
+                                    </DrawerClose>
+                                </DrawerFooter>
+                            </CreateClientsForm>
+                        </div>
+                    </ScrollArea>
+                </div>
+            </DrawerContent>
+        </Drawer>
+    );
+}

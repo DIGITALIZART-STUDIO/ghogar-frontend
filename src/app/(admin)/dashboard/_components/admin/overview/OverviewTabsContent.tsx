@@ -70,9 +70,9 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                 description="No hay información disponible sobre el estado de los lotes"
               />
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="relative">
-                  <ResponsiveContainer height={"100%"}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <div className="relative min-h-[300px]">
+                  <ResponsiveContainer width="100%" height={300}>
                     <RechartsPieChart>
                       <Pie
                         data={data.lotsByStatus}
@@ -80,7 +80,7 @@ export default function OverviewTabsContent({ data, isLoading }: OverviewTabsCon
                         cy="50%"
                         innerRadius={65}
                         outerRadius={110}
-                        paddingAngle={2}
+                        paddingAngle={(data.lotsByStatus ?? []).length > 1 ? 2 : 0}
                         dataKey="count"
                         stroke="none"
                       >

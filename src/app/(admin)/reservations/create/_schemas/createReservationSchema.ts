@@ -44,7 +44,7 @@ export const reservationSchema = z.object({
     .union([z.string(), z.literal("")])
     .transform((val) => (val === "" ? undefined : val))
     .optional(),
-  notified: z.boolean().default(false),
+  notified: z.boolean(),
   coOwners: z.array(coOwnersSchema).max(6, "Máximo 6 copropietarios permitidos").optional(),
 });
 

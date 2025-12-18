@@ -13,10 +13,10 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { CreateReservationSchema } from "../../../create/_schemas/createReservationSchema";
 
 interface CoOwner {
-  name?: string;
-  dni?: string;
+  name: string;
+  dni: string;
   phone?: string;
-  address?: string;
+  address: string;
   email?: string;
 }
 
@@ -75,13 +75,13 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
     const currentCoOwners = form.getValues("coOwners") ?? [];
 
     // Separar copropietarios del cliente de los de la separación
-    const clientDnis = clientCoOwners.map((co) => co.dni).filter((dni): dni is string => dni !== undefined);
+    const clientDnis = clientCoOwners.map((co) => co.dni);
 
     // Los copropietarios seleccionados del cliente son los que están en currentCoOwners Y también en clientCoOwners
-    const selectedFromClient = currentCoOwners.filter((co) => co.dni && clientDnis.includes(co.dni));
+    const selectedFromClient = currentCoOwners.filter((co) => clientDnis.includes(co.dni));
 
     // Los copropietarios específicos de la separación son los que están en currentCoOwners pero NO en clientCoOwners
-    const specificToSeparation = currentCoOwners.filter((co) => !co.dni || !clientDnis.includes(co.dni));
+    const specificToSeparation = currentCoOwners.filter((co) => !clientDnis.includes(co.dni));
 
     setSelectedCoOwners(selectedFromClient);
     setSeparationCoOwners(specificToSeparation);
@@ -97,7 +97,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
     }
 
     // Verificar si el DNI ya existe
-    if (newCoOwner.dni && clientCoOwners.some((co) => co.dni === newCoOwner.dni)) {
+    if (clientCoOwners.some((co) => co.dni === newCoOwner.dni)) {
       toast.error("Ya existe un copropietario con este DNI");
       return;
     }
@@ -135,10 +135,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
     }
 
     // Verificar si el DNI ya existe (excluyendo el actual)
-    if (
-      newCoOwner.dni &&
-      clientCoOwners.some((co, index) => co.dni === newCoOwner.dni && index !== editingCoOwnerIndex)
-    ) {
+    if (clientCoOwners.some((co, index) => co.dni === newCoOwner.dni && index !== editingCoOwnerIndex)) {
       toast.error("Ya existe un copropietario con este DNI");
       return;
     }
@@ -184,7 +181,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
       setClientCoOwners(updatedCoOwners);
       // Remover de seleccionados si estaba seleccionado
       const removedCoOwner = clientCoOwners[index];
-      const newSelected = selectedCoOwners.filter((co) => co.dni !== removedCoOwner?.dni);
+      const newSelected = selectedCoOwners.filter((co) => co.dni !== removedCoOwner.dni);
       setSelectedCoOwners(newSelected);
       form.setValue("coOwners", [...newSelected, ...separationCoOwners]);
       toast.success("Copropietario eliminado exitosamente");
@@ -209,13 +206,13 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
     }
 
     // Verificar si el DNI ya existe en copropietarios del cliente
-    if (newSeparationCoOwner.dni && clientCoOwners.some((co) => co.dni === newSeparationCoOwner.dni)) {
+    if (clientCoOwners.some((co) => co.dni === newSeparationCoOwner.dni)) {
       toast.error("Ya existe un copropietario del cliente con este DNI");
       return;
     }
 
     // Verificar si el DNI ya existe en copropietarios de la separación
-    if (newSeparationCoOwner.dni && separationCoOwners.some((co) => co.dni === newSeparationCoOwner.dni)) {
+    if (separationCoOwners.some((co) => co.dni === newSeparationCoOwner.dni)) {
       toast.error("Ya existe un copropietario de la separación con este DNI");
       return;
     }
@@ -250,14 +247,13 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
     }
 
     // Verificar si el DNI ya existe en copropietarios del cliente
-    if (newSeparationCoOwner.dni && clientCoOwners.some((co) => co.dni === newSeparationCoOwner.dni)) {
+    if (clientCoOwners.some((co) => co.dni === newSeparationCoOwner.dni)) {
       toast.error("Ya existe un copropietario del cliente con este DNI");
       return;
     }
 
     // Verificar si el DNI ya existe en otros copropietarios de la separación (excluyendo el actual)
     if (
-      newSeparationCoOwner.dni &&
       separationCoOwners.some(
         (co, index) => co.dni === newSeparationCoOwner.dni && index !== editingSeparationCoOwnerIndex
       )
@@ -304,7 +300,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
 
     if (isSelected) {
       // Add to selected copropietarios (solo si no está ya seleccionado)
-      if (coOwner.dni && !selectedCoOwners.some((co) => co.dni === coOwner.dni)) {
+      if (!selectedCoOwners.some((co) => co.dni === coOwner.dni)) {
         newSelected = [...selectedCoOwners, coOwner];
         setSelectedCoOwners(newSelected);
       } else {
@@ -321,12 +317,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
     form.setValue("coOwners", allCoOwners);
   };
 
-  const isCoOwnerSelected = (dni: string | undefined) => {
-    if (!dni) {
-      return false;
-    }
-    return selectedCoOwners.some((co) => co.dni === dni);
-  };
+  const isCoOwnerSelected = (dni: string) => selectedCoOwners.some((co) => co.dni === dni);
 
   if (!clientData) {
     return null;
@@ -362,13 +353,9 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-slate-500" />
-                          <span className="font-medium text-slate-900 dark:text-slate-100">
-                            {coOwner.name ?? "Sin nombre"}
-                          </span>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">{coOwner.name}</span>
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400">
-                          DNI: {coOwner.dni ?? "Sin DNI"}
-                        </div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400">DNI: {coOwner.dni}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -420,7 +407,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                 <InputWithIcon
                   Icon={User}
                   placeholder="Nombre completo"
-                  value={newCoOwner.name ?? ""}
+                  value={newCoOwner.name}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewCoOwner({ ...newCoOwner, name: e.target.value })
                   }
@@ -433,7 +420,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                   Icon={IdCard}
                   placeholder="12345678"
                   maxLength={8}
-                  value={newCoOwner.dni ?? ""}
+                  value={newCoOwner.dni}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewCoOwner({ ...newCoOwner, dni: e.target.value })
                   }
@@ -455,7 +442,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                 <InputWithIcon
                   Icon={Home}
                   placeholder="Ejm: Jr. Los Pinos 123"
-                  value={newCoOwner.address ?? ""}
+                  value={newCoOwner.address}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewCoOwner({ ...newCoOwner, address: e.target.value })
                   }
@@ -469,7 +456,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                 <InputWithIcon
                   Icon={Mail}
                   placeholder="usuario@ejemplo.com"
-                  value={newCoOwner.email ?? ""}
+                  value={newCoOwner.email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewCoOwner({ ...newCoOwner, email: e.target.value })
                   }
@@ -524,16 +511,12 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                          <span className="font-medium text-slate-900 dark:text-slate-100">
-                            {coOwner.name ?? "Sin nombre"}
-                          </span>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">{coOwner.name}</span>
                           <span className="text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                             Del Cliente
                           </span>
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400">
-                          DNI: {coOwner.dni ?? "Sin DNI"}
-                        </div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400">DNI: {coOwner.dni}</div>
                       </div>
                     </div>
                     <Button
@@ -572,16 +555,12 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-green-600 dark:text-green-400" />
-                          <span className="font-medium text-slate-900 dark:text-slate-100">
-                            {coOwner.name ?? "Sin nombre"}
-                          </span>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">{coOwner.name}</span>
                           <span className="text-xs bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 px-2 py-1 rounded">
                             Específico
                           </span>
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400">
-                          DNI: {coOwner.dni ?? "Sin DNI"}
-                        </div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400">DNI: {coOwner.dni}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -625,7 +604,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                   <InputWithIcon
                     Icon={User}
                     placeholder="Nombre completo"
-                    value={newSeparationCoOwner.name ?? ""}
+                    value={newSeparationCoOwner.name}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewSeparationCoOwner({ ...newSeparationCoOwner, name: e.target.value })
                     }
@@ -638,7 +617,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                     Icon={IdCard}
                     placeholder="12345678"
                     maxLength={8}
-                    value={newSeparationCoOwner.dni ?? ""}
+                    value={newSeparationCoOwner.dni}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewSeparationCoOwner({ ...newSeparationCoOwner, dni: e.target.value })
                     }
@@ -662,7 +641,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                   <InputWithIcon
                     Icon={Home}
                     placeholder="Ejm: Jr. Los Pinos 123"
-                    value={newSeparationCoOwner.address ?? ""}
+                    value={newSeparationCoOwner.address}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewSeparationCoOwner({ ...newSeparationCoOwner, address: e.target.value })
                     }
@@ -676,7 +655,7 @@ export function CoOwnersSection({ clientId, form }: CoOwnersSectionProps) {
                   <InputWithIcon
                     Icon={Mail}
                     placeholder="usuario@ejemplo.com"
-                    value={newSeparationCoOwner.email ?? ""}
+                    value={newSeparationCoOwner.email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewSeparationCoOwner({ ...newSeparationCoOwner, email: e.target.value })
                     }

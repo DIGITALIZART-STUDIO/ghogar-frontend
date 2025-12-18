@@ -1,25 +1,16 @@
 import * as z from "zod";
 
-// Schema para copropietarios (menos estricto)
+// Schema para copropietarios (igual que en createClientsSchema.ts)
 const coOwnersSchema = z.object({
-  name: z
-    .union([z.string(), z.literal("")])
-    .transform((val) => (val === "" ? undefined : val))
-    .optional(),
-  dni: z
-    .union([z.string(), z.literal("")])
-    .transform((val) => (val === "" ? undefined : val))
-    .optional(),
+  name: z.string().min(2, "El nombre es obligatorio"),
+  dni: z.string().length(8, "El DNI debe tener exactamente 8 caracteres"),
   phone: z
     .union([z.string(), z.literal("")])
     .transform((val) => (val === "" ? undefined : val))
     .optional(),
-  address: z
-    .union([z.string(), z.literal("")])
-    .transform((val) => (val === "" ? undefined : val))
-    .optional(),
+  address: z.string().min(2, "La dirección es obligatoria"),
   email: z
-    .union([z.string(), z.literal("")])
+    .union([z.string().email("El correo electrónico debe ser válido"), z.literal("")])
     .transform((val) => (val === "" ? undefined : val))
     .optional(),
 });

@@ -74,6 +74,7 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                       onSelect={(clientId) => {
                         field.onChange(clientId);
                       }}
+                      preselectedId={field.value ?? undefined}
                       placeholder="Seleccione un cliente"
                       searchPlaceholder="Buscar por nombre, DNI, RUC, teléfono..."
                       emptyMessage="No se encontraron clientes"
@@ -85,6 +86,11 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                         <Plus className="size-4" />
                       </Button>
                     }
+                    onClientCreated={(clientId) => {
+                      if (clientId) {
+                        field.onChange(clientId);
+                      }
+                    }}
                   />
                 </div>
               </FormControl>

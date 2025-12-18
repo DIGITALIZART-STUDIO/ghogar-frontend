@@ -8723,7 +8723,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block4"];
+      block?: components["schemas"]["Block2"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8741,7 +8741,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block4"];
+      block?: components["schemas"]["Block2"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8759,7 +8759,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block4"];
+      block?: components["schemas"]["Block2"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8777,7 +8777,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block4"];
+      block?: components["schemas"]["Block2"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8795,7 +8795,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block4"];
+      block?: components["schemas"]["Block2"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10087,7 +10087,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project7"];
+      project?: components["schemas"]["Project3"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10104,7 +10104,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project7"];
+      project?: components["schemas"]["Project3"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10121,7 +10121,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project7"];
+      project?: components["schemas"]["Project3"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10138,7 +10138,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project7"];
+      project?: components["schemas"]["Project3"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10155,7 +10155,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project7"];
+      project?: components["schemas"]["Project3"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10522,6 +10522,7 @@ export interface components {
       leadsKpi?: components["schemas"]["SupervisorLeadsKpiDto"];
       teamMetrics?: components["schemas"]["TeamMetricsDto"];
       advisors?: Array<components["schemas"]["AdvisorPerformanceDto"]>;
+      teamData?: Array<components["schemas"]["SupervisorTeamMemberDto"]>;
       recentLeads?: Array<components["schemas"]["RecentLeadDto"]>;
       conversionFunnel?: Array<components["schemas"]["ConversionFunnelDto"]>;
       leadSources?: Array<components["schemas"]["LeadSourceDistributionDto"]>;
@@ -10563,6 +10564,16 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+    };
+    SupervisorTeamMemberDto: {
+      name?: string;
+      role?: string;
+      /** Format: int32 */
+      quotations?: number;
+      /** Format: int32 */
+      reservations?: number;
+      /** Format: double */
+      efficiency?: number;
     };
     TaskAnalysisDto: {
       type?: string;
@@ -10617,8 +10628,6 @@ export interface components {
       tasksToday?: number;
       /** Format: double */
       avgConversionRate?: number;
-      /** Format: double */
-      avgResponseTime?: number;
     };
     TestEmailRequest: {
       name?: string;

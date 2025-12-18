@@ -28,6 +28,16 @@ const eslintConfig = [
           ignoreMixedLogicalExpressions: true,
         },
       ],
+      // Asegurar que las reglas de variables no usadas estén activas
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "no-unused-vars": "off", // Desactivar la regla base, usar la de TypeScript
     },
   },
   {
@@ -58,6 +68,16 @@ const eslintConfig = [
   {
     rules: {
       "@next/next/no-img-element": "off",
+      // Asegurar que las reglas de variables no usadas estén activas (no sobrescribir)
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "no-unused-vars": "off", // Desactivar la regla base, usar la de TypeScript
       // Desactivar reglas de formato/espacios - Prettier se encarga de esto
       indent: "off",
       "brace-style": "off",

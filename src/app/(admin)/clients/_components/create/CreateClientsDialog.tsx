@@ -40,11 +40,7 @@ const dataForm = {
     description: "Complete los detalles a continuación para crear nuevos clientes.",
 };
 
-interface CreateClientsDialogProps {
-    trigger?: React.ReactNode;
-}
-
-export function CreateClientsDialog({ trigger }: CreateClientsDialogProps) {
+export function CreateClientsDialog() {
     const isDesktop = useMediaQuery("(min-width: 800px)");
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -91,9 +87,7 @@ export function CreateClientsDialog({ trigger }: CreateClientsDialogProps) {
                 }),
             };
 
-            const promise = createClient.mutateAsync({
-                body: clientData,
-            });
+            const promise = createClient.mutateAsync(clientData);
 
             toast.promise(promise, {
                 loading: "Creando cliente...",
@@ -121,22 +115,14 @@ export function CreateClientsDialog({ trigger }: CreateClientsDialogProps) {
         }
     }, [isSuccess, form]);
 
-    // Trigger por defecto
-    const defaultTrigger = (
-        <Button variant="outline" size="sm">
-            <Plus className="mr-2 size-4" aria-hidden="true" />
-            {dataForm.button}
-        </Button>
-    );
-
-    // Usar el trigger personalizado o el por defecto
-    const dialogTrigger = trigger ?? defaultTrigger;
-
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    {dialogTrigger}
+                    <Button variant="outline" size="sm">
+                        <Plus className="mr-2 size-4" aria-hidden="true" />
+                        {dataForm.button}
+                    </Button>
                 </DialogTrigger>
                 <DialogContent tabIndex={undefined} className="sm:max-w-[900px] px-0">
                     <DialogHeader className="px-4">
@@ -170,7 +156,10 @@ export function CreateClientsDialog({ trigger }: CreateClientsDialogProps) {
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                {dialogTrigger}
+                <Button variant="outline" size="sm">
+                    <Plus className="mr-2 size-4" aria-hidden="true" />
+                    {dataForm.button}
+                </Button>
             </DrawerTrigger>
 
             <DrawerContent className="h-[80vh]">

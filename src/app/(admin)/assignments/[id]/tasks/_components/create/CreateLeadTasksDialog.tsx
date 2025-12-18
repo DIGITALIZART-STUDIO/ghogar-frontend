@@ -68,9 +68,7 @@ export function CreateLeadTasksDialog({ open, setOpen, assignedToId, leadId }: C
             leadId,
         };
 
-        const promise = createTask.mutateAsync({
-            body: payload,
-        });
+        const promise = createTask.mutateAsync(payload);
 
         toast.promise(promise, {
             loading: "Creando tarea...",

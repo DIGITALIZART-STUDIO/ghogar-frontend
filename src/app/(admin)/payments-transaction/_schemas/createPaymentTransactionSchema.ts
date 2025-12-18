@@ -19,15 +19,10 @@ export const paymentTransactionCreateSchema = z.object({
             invalid_type_error: "El monto debe ser un número.",
         })
         .min(0.01, "El monto debe ser mayor a 0."),
-    paymentMethod: paymentMethodEnum.refine((val) => val !== undefined, {
-        message: "Por favor selecciona un método de pago.",
-    }),
+    paymentMethod: paymentMethodEnum,
     referenceNumber: z.string().max(100, "La referencia no puede exceder 100 caracteres.")
         .optional(),
-    paymentIds: z.array(z.string().uuid()).optional(),
-    reservationId: z.string().uuid("ID de reserva debe ser un UUID válido.")
-        .optional(),
-    comprobanteFile: z.instanceof(File).optional(),
+    paymentIds: z.array(z.string().uuid()).min(1, "Selecciona al menos una cuota."),
 });
 
 export type PaymentTransactionCreateFormData = z.infer<typeof paymentTransactionCreateSchema>

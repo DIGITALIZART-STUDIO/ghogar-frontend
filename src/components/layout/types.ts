@@ -52,7 +52,6 @@ export const rolePermissions: Record<string, Array<string>> = {
         "/admin/projects",
         "/pending-contracts",
         "/payments-transaction",
-        "/credit-management",
     ],
     Admin: [
         "/",
@@ -69,7 +68,6 @@ export const rolePermissions: Record<string, Array<string>> = {
         "/admin/projects",
         "/pending-contracts",
         "/payments-transaction",
-        "/credit-management",
     ],
     Supervisor: [
         "/",
@@ -81,7 +79,6 @@ export const rolePermissions: Record<string, Array<string>> = {
         "/assignments",
         "/reports",
         "/payments-transaction",
-        "/credit-management",
     ],
     SalesAdvisor: [
         "/",
@@ -101,25 +98,11 @@ export const rolePermissions: Record<string, Array<string>> = {
         "/reports",
         "/pending-contracts",
         "/payments-transaction",
-        "/credit-management",
     ],
     FinanceManager: [
         "/dashboard",
         "/profile",
         "/pending-contracts",
         "/payments-transaction",
-        "/credit-management",
-    ],
-    CommercialManager: [
-        "/",
-        "/dashboard",
-        "/profile",
-        "/clients",
-        "/leads",
-        "/tasks",
-        "/assignments",
-        "/reports",
-        "/payments-transaction",
-        "/credit-management",
     ],
 };

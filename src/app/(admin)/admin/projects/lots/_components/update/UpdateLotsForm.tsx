@@ -9,7 +9,6 @@ import { CreateLotSchema } from "../../_schemas/createLotsSchema";
 import { BlockData } from "../../../[id]/blocks/_types/block";
 import { getAllLotStatuses, getLotStatusConfig } from "../../_utils/lots.filter.utils";
 import { LotStatus } from "../../_types/lot";
-import { BlockSearch } from "../../../[id]/blocks/_components/search/BlockSearch";
 
 interface UpdateLotsFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
@@ -17,10 +16,9 @@ interface UpdateLotsFormProps extends Omit<React.ComponentPropsWithRef<typeof Sh
   onSubmit: (data: CreateLotSchema) => void;
   blocks: Array<BlockData>; // Array de bloques activos
   selectedBlockId?: string; // ID del bloque preseleccionado
-  projectId: string; // ID del proyecto para el BlockSearch
 }
 
-export default function UpdateLotsForm({ children, form, onSubmit, blocks, selectedBlockId, projectId }: UpdateLotsFormProps) {
+export default function UpdateLotsForm({ children, form, onSubmit, blocks, selectedBlockId }: UpdateLotsFormProps) {
     const area = form.watch("area");
     const price = form.watch("price");
     const watchedBlockId = form.watch("blockId");
@@ -63,20 +61,33 @@ export default function UpdateLotsForm({ children, form, onSubmit, blocks, selec
                                         <Building2 className="mr-2 h-4 w-4" />
                                         Manzana
                                     </FormLabel>
-                                    <FormControl>
-                                        <BlockSearch
-                                            projectId={projectId}
-                                            value={field.value}
-                                            onSelect={(blockId) => {
-                                                field.onChange(blockId);
-                                            }}
-                                            placeholder="Selecciona una manzana..."
-                                            searchPlaceholder="Buscar por nombre de manzana..."
-                                            emptyMessage="No se encontraron manzanas activas"
-                                            preselectedId={selectedBlockId}
-                                            disabled={!!selectedBlockId}
-                                        />
-                                    </FormControl>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={selectedBlockId ?? field.value}
+                                        disabled={!!selectedBlockId} // Deshabilitar si hay un bloque preseleccionado
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Selecciona una manzana" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {blocks.length === 0 ? (
+                                                <SelectItem value="" disabled>
+                                                    No hay manzanas activas disponibles
+                                                </SelectItem>
+                                            ) : (
+                                                blocks.map((block) => (
+                                                    <SelectItem key={block.id} value={block.id ?? ""}>
+                                                        {block.name}
+                                                        {" "}
+                                                        -
+                                                        {block.projectName ?? "Sin proyecto"}
+                                                    </SelectItem>
+                                                ))
+                                            )}
+                                        </SelectContent>
+                                    </Select>
                                     <FormDescription>
                                         {selectedBlockId ? "Manzana preseleccionada" : "Solo se muestran manzanas activas"}
                                     </FormDescription>

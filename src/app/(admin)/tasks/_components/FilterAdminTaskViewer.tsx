@@ -1,15 +1,16 @@
 import { CheckCircle2, Clock, Filter, ListFilter, Search, User, Users, X } from "lucide-react";
 
+import { AutoComplete } from "@/components/ui/autocomplete";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserSearch } from "../../leads/_components/search/UserSearch";
-import { ClientSearch } from "../../clients/_components/search/ClientSearch";
 import { TaskFilters, TaskTypes } from "../../assignments/[id]/tasks/_types/leadTask";
 import { getTaskLabel, TaskTypesConfig } from "../../assignments/[id]/tasks/_utils/tasks.utils";
+import { ClientSummaryDto } from "../../clients/_types/client";
+import { UserSummaryDto } from "../../leads/_types/lead";
 
 interface FilterAdminTaskViewerProps {
   dateRange: {
@@ -24,6 +25,8 @@ interface FilterAdminTaskViewerProps {
   clearFilters: () => void;
   filters: TaskFilters;
   setFilters: (filters: TaskFilters) => void;
+  usersSummary: Array<UserSummaryDto>;
+  clientsSummary: Array<ClientSummaryDto>;
   getLeadName: (leadId: string) => string;
   getAdvisorName: (advisorId: string) => string;
 }
@@ -38,10 +41,38 @@ export default function FilterAdminTaskViewer({
     clearFilters,
     filters,
     setFilters,
+    usersSummary,
+    clientsSummary,
     getLeadName,
     getAdvisorName,
 }: FilterAdminTaskViewerProps) {
+    const clientOptions = [
+        { value: "all", label: "Todos los leads" },
+        ...clientsSummary.map((client) => {
+            let label = "";
+            if (client.dni) {
+                label = `${client.dni} - ${client.name ?? "Sin nombre"}`;
+            } else if (client.ruc) {
+                label = `${client.ruc} - ${client.name ?? "Sin nombre"}`;
+            } else if (client.name) {
+                label = client.name;
+            } else {
+                label = client.phoneNumber ?? "Lead sin datos";
+            }
+            return {
+                value: client.id ?? "",
+                label,
+            };
+        }),
+    ];
 
+    const advisorOptions = [
+        { value: "all", label: "Todos los asesores" },
+        ...usersSummary.map((user) => ({
+            value: user.id ?? "",
+            label: user.userName ?? user.userName ?? "Sin nombre",
+        })),
+    ];
     return (
         <Card>
             <CardContent>
@@ -114,14 +145,14 @@ export default function FilterAdminTaskViewer({
                                     <Users className="h-3.5 w-3.5 mr-1" />
                                     Asesor
                                 </div>
-                                <UserSearch
-                                    value={filters.assignedToId ?? ""}
-                                    onSelect={(userId) => {
-                                        setFilters({ ...filters, assignedToId: userId });
-                                    }}
+                                <AutoComplete
+                                    options={advisorOptions}
+                                    emptyMessage="No se encontró el asesor"
                                     placeholder="Seleccione un asesor"
-                                    searchPlaceholder="Buscar por nombre, email, rol..."
-                                    emptyMessage="No se encontraron asesores"
+                                    onValueChange={(selectedOption) => {
+                                        setFilters({ ...filters, assignedToId: selectedOption?.value ?? "" });
+                                    }}
+                                    value={advisorOptions.find((option) => option.value === filters.assignedToId) ?? undefined}
                                 />
                             </div>
 
@@ -131,14 +162,14 @@ export default function FilterAdminTaskViewer({
                                     <User className="h-3.5 w-3.5 mr-1" />
                                     Lead
                                 </div>
-                                <ClientSearch
-                                    value={filters.leadId ?? ""}
-                                    onSelect={(clientId) => {
-                                        setFilters({ ...filters, leadId: clientId });
-                                    }}
+                                <AutoComplete
+                                    options={clientOptions}
+                                    emptyMessage="No se encontró el lead"
                                     placeholder="Seleccione un lead"
-                                    searchPlaceholder="Buscar por nombre, DNI, RUC, teléfono..."
-                                    emptyMessage="No se encontraron leads"
+                                    onValueChange={(selectedOption) => {
+                                        setFilters({ ...filters, leadId: selectedOption?.value ?? "" });
+                                    }}
+                                    value={clientOptions.find((option) => option.value === filters.leadId) ?? undefined}
                                 />
                             </div>
 

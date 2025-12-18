@@ -1,13 +1,14 @@
 import { UseFormReturn } from "react-hook-form";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet } from "@/components/ui/sheet";
+import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { useUsersSummary } from "../../_hooks/useLeads";
 import { CreateLeadSchema } from "../../_schemas/createLeadsSchema";
 import { LeadCaptureSource } from "../../_types/lead";
 import { LeadCaptureSourceLabels } from "../../_utils/leads.utils";
-import { UserSearch } from "../search/UserSearch";
-import { ClientSearch } from "@/app/(admin)/clients/_components/search/ClientSearch";
-import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
+import { useClientsSummary } from "@/app/(admin)/clients/_hooks/useClients";
 
 interface UpdateLeadsFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
@@ -16,6 +17,34 @@ interface UpdateLeadsFormProps extends Omit<React.ComponentPropsWithRef<typeof S
 }
 
 export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLeadsFormProps) {
+    // Hooks para cargar datos
+    const { data: projects = [], isLoading: loadingProjects } = useActiveProjects();
+    const { data: users = [], isLoading: isLoadingUsers } = useUsersSummary();
+    const { data: clients = [], isLoading: isLoadingClients } = useClientsSummary();
+
+    // Opciones para los selects/autocomplete
+    const projectOptions: Array<Option> = projects.map((project) => ({
+        value: project.id ?? "",
+        label: project.name ?? "",
+        location: project.location ?? "",
+        defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
+        defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
+    }));
+
+    const userOptions: Array<Option> = users.map((user) => ({
+        value: user.id ?? "",
+        label: user.userName ?? "Sin nombre",
+    }));
+
+    const clientOptions: Array<Option> = clients.map((client) => ({
+        value: client.id ?? "",
+        label:
+            client.dni
+                ? `${client.dni} - ${client.name ?? "Sin nombre"}`
+                : client.ruc
+                    ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
+                    : client.name ?? `Cliente Sin Datos - ${client.phoneNumber ?? "Sin nombre"}` ?? "Sin datos",
+    }));
 
     return (
         <Form {...form}>
@@ -63,15 +92,15 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                         <FormItem>
                             <FormLabel>Cliente</FormLabel>
                             <FormControl>
-                                <ClientSearch
-                                    value={field.value ?? ""}
-                                    onSelect={(clientId) => {
-                                        field.onChange(clientId);
+                                <AutoComplete
+                                    options={clientOptions}
+                                    emptyMessage="No se encontró el cliente."
+                                    placeholder={isLoadingClients ? "Cargando clientes..." : "Seleccione un cliente"}
+                                    onValueChange={(selectedOption) => {
+                                        field.onChange(selectedOption?.value ?? "");
                                     }}
-                                    preselectedId={field.value ?? ""}
-                                    placeholder="Selecciona un cliente..."
-                                    searchPlaceholder="Buscar por nombre, DNI, RUC..."
-                                    emptyMessage="No se encontraron clientes"
+                                    value={clientOptions.find((option) => option.value === field.value) ?? undefined}
+                                    disabled={isLoadingClients}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -86,15 +115,15 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                         <FormItem>
                             <FormLabel>Asesor</FormLabel>
                             <FormControl>
-                                <UserSearch
-                                    value={field.value ?? ""}
-                                    onSelect={(userId) => {
-                                        field.onChange(userId);
+                                <AutoComplete
+                                    options={userOptions}
+                                    emptyMessage="No se encontró el asesor."
+                                    placeholder={isLoadingUsers ? "Cargando asesores..." : "Seleccione un asesor"}
+                                    onValueChange={(selectedOption) => {
+                                        field.onChange(selectedOption?.value ?? "");
                                     }}
-                                    preselectedId={field.value ?? ""}
-                                    placeholder="Selecciona un asesor..."
-                                    searchPlaceholder="Buscar por nombre, email, rol..."
-                                    emptyMessage="No se encontraron asesores"
+                                    value={userOptions.find((option) => option.value === field.value) ?? undefined}
+                                    disabled={isLoadingUsers}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -108,18 +137,17 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Proyecto</FormLabel>
-                            <FormControl>
-                                <ProjectSearch
-                                    value={field.value ?? ""}
-                                    onSelect={(projectId) => {
-                                        field.onChange(projectId);
-                                    }}
-                                    preselectedId={field.value ?? ""}
-                                    placeholder="Selecciona un proyecto..."
-                                    searchPlaceholder="Buscar por nombre, ubicación..."
-                                    emptyMessage="No se encontraron proyectos"
-                                />
-                            </FormControl>
+                            <AutoComplete
+                                options={projectOptions}
+                                emptyMessage="No hay proyectos disponibles"
+                                placeholder="Seleccione un proyecto"
+                                isLoading={loadingProjects}
+                                value={projectOptions.find((project) => project.value === field.value)}
+                                onValueChange={(selectedOption) => {
+                                    field.onChange(selectedOption?.value ?? "");
+                                }}
+                                disabled={loadingProjects}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}

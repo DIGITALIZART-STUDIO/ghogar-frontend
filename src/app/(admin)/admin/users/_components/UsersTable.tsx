@@ -2,11 +2,12 @@
 
 import React, { useMemo, useState } from "react";
 import { ColumnDef, Table as TableInstance } from "@tanstack/react-table";
-import { Ellipsis, RefreshCcwDot, Trash, Users } from "lucide-react";
+import { Ellipsis, RefreshCcwDot, Trash } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,11 +23,9 @@ import { UserGetDTO } from "../_types/user";
 import { DeleteUsersDialog } from "./state-management/DeleteUsersDialog";
 import { ReactivateUsersDialog } from "./state-management/ReactivateUsersDialog";
 import { UpdateUsersSheet } from "./update/UpdateUsersSheet";
-import { AssignConsultorsDialog } from "./assignments/AssignConsultorsDialog";
 import { UsersTableToolbarActions } from "./UserActions";
-import { createFacetedFilters } from "../_utils/user.filter.utils";
+import { facetedFilters } from "../_utils/user.filter.utils";
 import { UserRoleLabels } from "../_utils/user.utils";
-import { DataTable } from "@/components/datatable/data-table";
 
 export interface UsersTableProps {
     data: Array<UserGetDTO>;
@@ -37,47 +36,25 @@ export interface UsersTableProps {
         totalPages: number;
     };
     onPaginationChange: (page: number, pageSize: number) => void;
-    search?: string;
-    onSearchChange: (search: string) => void;
-    isActive?: Array<boolean>;
-    onIsActiveChange: (isActive: Array<boolean>) => void;
-    roleName?: Array<string>;
-    onRoleNameChange: (roleName: Array<string>) => void;
-    isLoading?: boolean;
 }
 
 export function UsersTable({
     data,
     pagination,
     onPaginationChange,
-    search,
-    onSearchChange,
-    isActive,
-    onIsActiveChange,
-    roleName,
-    onRoleNameChange,
-    isLoading = false,
 }: UsersTableProps) {
     const columns = useMemo(() => usersColumns(), []);
 
-    // Crear filtros personalizados con callbacks del servidor
-    const customFacetedFilters = useMemo(
-        () => createFacetedFilters(onIsActiveChange, onRoleNameChange, isActive, roleName),
-        [onIsActiveChange, onRoleNameChange, isActive, roleName]
-    );
-
     return (
-        <DataTable
-            isLoading={isLoading}
+        <DataTableExpanded
+            isLoading={false}
             data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<UserGetDTO>) => (
                 <UsersTableToolbarActions table={table} />
             )}
             filterPlaceholder="Buscar usuarios..."
-            facetedFilters={customFacetedFilters}
-            externalFilterValue={search}
-            onGlobalFilterChange={onSearchChange}
+            facetedFilters={facetedFilters}
             serverPagination={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
@@ -248,14 +225,9 @@ export const usersColumns = (): Array<ColumnDef<UserGetDTO>> => [
         id: "actions",
         cell: function Cell({ row }) {
             const isActive = row.original.user.isActive;
-            const userRoles = row.original.roles || [];
-            const isSupervisor = userRoles.includes("Supervisor");
-
             const [showEditDialog, setShowEditDialog] = useState(false);
             const [showReactivateDialog, setShowReactivateDialog] = useState(false);
             const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-            const [showAssignDialog, setShowAssignDialog] = useState(false);
-
             return (
                 <div>
                     <div>
@@ -289,14 +261,6 @@ export const usersColumns = (): Array<ColumnDef<UserGetDTO>> => [
                                 }}
                             />
                         )}
-
-                        {showAssignDialog && (
-                            <AssignConsultorsDialog
-                                open={showAssignDialog}
-                                onOpenChange={setShowAssignDialog}
-                                supervisor={row?.original}
-                            />
-                        )}
                     </div>
                     <div />
                     <DropdownMenu>
@@ -305,18 +269,10 @@ export const usersColumns = (): Array<ColumnDef<UserGetDTO>> => [
                                 <Ellipsis className="size-4" aria-hidden="true" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuContent align="end" className="w-40">
                             <DropdownMenuItem onSelect={() => setShowEditDialog(true)}>Editar</DropdownMenuItem>
-
                             <DropdownMenuSeparator />
-                            {isSupervisor && (
-                                <DropdownMenuItem onSelect={() => setShowAssignDialog(true)}>
-                                    Asignar Asesores
-                                    <DropdownMenuShortcut>
-                                        <Users className="size-4" aria-hidden="true" />
-                                    </DropdownMenuShortcut>
-                                </DropdownMenuItem>
-                            )}
+                            {/*             {isSuperAdmin && ( */}
                             <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive}>
                                 Reactivar
                                 <DropdownMenuShortcut>

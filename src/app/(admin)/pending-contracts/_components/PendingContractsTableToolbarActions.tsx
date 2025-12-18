@@ -1,10 +1,10 @@
 "use client";
 
 import { type Table } from "@tanstack/react-table";
-import {  ReservationPendingValidationDto } from "../../reservations/_types/reservation";
+import { ReservationDto } from "../../reservations/_types/reservation";
 
 export interface ReservationsTableToolbarActionsProps {
-  table?: Table<ReservationPendingValidationDto>;
+  table?: Table<ReservationDto>;
 }
 
 export function ReservationsTableToolbarActions({  }: ReservationsTableToolbarActionsProps) {

@@ -4,6 +4,7 @@ export const quotationSchema = z.object({
     // Claves primarias requeridas (IDs para relaciones en la base de datos)
     leadId: z.string().min(1, { message: "El cliente es requerido" }),
     lotId: z.string().min(1, { message: "El lote es requerido" }),
+    advisorId: z.string().min(1, { message: "El asesor es requerido" }),
     projectId: z.string().min(1, { message: "El proyecto es requerido" }),
     blockId: z.string().min(1, { message: "La manzana es requerida" }),
 

@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
-import { useAuthContext } from "@/context/auth-provider";
+import { LogoutAction } from "@/app/(auth)/login/actions";
 
 type NavUserProps = {
     name: string
@@ -24,7 +24,6 @@ type NavUserProps = {
 
 export function NavUser({ name, email, initials }: NavUserProps) {
     const { isMobile } = useSidebar();
-    const { handleLogout } = useAuthContext();
 
     return (
         <SidebarMenu>
@@ -86,7 +85,7 @@ export function NavUser({ name, email, initials }: NavUserProps) {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             className="flex items-center gap-2"
-                            onClick={handleLogout}
+                            onClick={LogoutAction}
                         >
                             <LogOut />
                             Cerrar Sesión

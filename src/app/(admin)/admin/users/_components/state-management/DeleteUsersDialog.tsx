@@ -21,16 +21,12 @@ export function DeleteUsersDialog({ user, onSuccess, open, onOpenChange }: Delet
             return;
         }
 
-        const promise = deactivateUserMutation.mutateAsync({
-            params: {
-                path: { userId: user.user.id },
-            },
-        });
+        const promise = deactivateUserMutation.mutateAsync(user.user.id);
 
         toast.promise(promise, {
-            loading: "Desactivando usuario...",
-            success: "Usuario desactivado correctamente",
-            error: (e) => `Error al desactivar: ${e.message ?? e}`,
+            loading: "Eliminando usuario...",
+            success: "Usuario eliminado correctamente",
+            error: (e) => `Error al eliminar: ${e.message ?? e}`,
         });
 
         promise.then(() => {

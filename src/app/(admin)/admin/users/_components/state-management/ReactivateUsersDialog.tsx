@@ -21,11 +21,7 @@ export function ReactivateUsersDialog({ user, onSuccess, open, onOpenChange }: R
             return;
         }
 
-        const promise = reactivateUserMutation.mutateAsync({
-            params: {
-                path: { userId: user.user.id },
-            },
-        });
+        const promise = reactivateUserMutation.mutateAsync(user.user.id);
 
         toast.promise(promise, {
             loading: "Reactivando usuario...",

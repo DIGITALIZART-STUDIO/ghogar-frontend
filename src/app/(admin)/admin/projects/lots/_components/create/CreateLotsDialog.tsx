@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toast } from "sonner";
-import { useCreateLot } from "../../_hooks/useLots";
+import { toastWrapper } from "@/types/toasts";
+import { CreateLot } from "../../_actions/LotActions";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
-import { useActiveBlocks } from "../../../[id]/blocks/_hooks/useBlocks";
+import { GetActiveBlocksByProject } from "../../../[id]/blocks/_actions/BlockActions";
 import { BlockData } from "../../../[id]/blocks/_types/block";
 import CreateLotsForm from "./CreateLotsForm";
 
@@ -51,9 +51,8 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
     const [open, setOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
-
-    const createLot = useCreateLot();
-    const { data: blocks = [], isLoading: isLoadingBlocks } = useActiveBlocks(projectId);
+    const [blocks, setBlocks] = useState<Array<BlockData>>([]);
+    const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
 
     const form = useForm<CreateLotSchema>({
         resolver: zodResolver(lotSchema),
@@ -66,12 +65,38 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
         },
     });
 
-    // Si hay un blockId preseleccionado, establecerlo en el form cuando los bloques se cargan
-    useEffect(() => {
-        if (blockId && blocks.length > 0 && blocks.some((block: BlockData) => block.id === blockId)) {
-            form.setValue("blockId", blockId);
+    const loadActiveBlocks = async () => {
+        setIsLoadingBlocks(true);
+        try {
+            const [result, error] = await GetActiveBlocksByProject(projectId);
+
+            if (error) {
+                console.error("Error loading active blocks:", error);
+                setBlocks([]);
+                return;
+            }
+
+            setBlocks(result || []);
+
+            // Si hay un blockId preseleccionado, establecerlo en el form
+            if (blockId && result?.some((block) => block.id === blockId)) {
+                form.setValue("blockId", blockId);
+            }
+        } catch (error) {
+            console.error("Error loading active blocks:", error);
+            setBlocks([]);
+        } finally {
+            setIsLoadingBlocks(false);
         }
-    }, [blockId, blocks, form]);
+    };
+
+    // Cargar bloques activos cuando se abre el dialog
+    useEffect(() => {
+        if (open && projectId) {
+            loadActiveBlocks();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, projectId]);
 
     const onSubmit = async (input: CreateLotSchema) => {
         startTransition(async () => {
@@ -85,19 +110,13 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                 // No incluir projectId aquí si el backend lo obtiene del bloque
             };
 
-            const promise = createLot.mutateAsync({
-                body: lotData,
-            });
-
-            toast.promise(promise, {
+            const [, error] = await toastWrapper(CreateLot(lotData), {
                 loading: "Creando lote...",
                 success: "Lote creado exitosamente",
                 error: (e) => `Error al crear lote: ${e.message}`,
             });
 
-            const result = await promise;
-
-            if (result) {
+            if (!error) {
                 setIsSuccess(true);
             }
         });
@@ -105,6 +124,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
 
     const handleClose = () => {
         form.reset();
+        setBlocks([]); // Limpiar bloques al cerrar
     };
 
     useEffect(() => {
@@ -112,6 +132,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
             form.reset();
             setOpen(false);
             setIsSuccess(false);
+            setBlocks([]);
         }
     }, [isSuccess, form]);
 
@@ -137,7 +158,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                                     <span>Cargando manzanas activas...</span>
                                 </div>
                             ) : (
-                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId} projectId={projectId}>
+                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId}>
                                     <DialogFooter>
                                         <div className="grid grid-cols-2 gap-2 w-full">
                                             <DialogClose asChild>
@@ -184,7 +205,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                                     <span>Cargando manzanas activas...</span>
                                 </div>
                             ) : (
-                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId} projectId={projectId}>
+                                <CreateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} selectedBlockId={blockId}>
                                     <DrawerFooter className="px-0 pt-2 flex flex-col-reverse">
                                         <Button disabled={isPending || blocks.length === 0} className="w-full">
                                             {isPending && <RefreshCcw className="mr-2 size-4 animate-spin" aria-hidden="true" />}

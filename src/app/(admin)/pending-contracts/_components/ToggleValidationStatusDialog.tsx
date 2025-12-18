@@ -2,11 +2,11 @@
 
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
-import {  ReservationPendingValidationDto } from "../../reservations/_types/reservation";
+import { ReservationDto } from "../../reservations/_types/reservation";
 import { useToggleContractValidationStatus } from "../../reservations/_hooks/useReservations";
 
 interface ToggleValidationStatusDialogProps {
-    reservation: ReservationPendingValidationDto;
+    reservation: ReservationDto;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
     onSuccess?: () => void;
@@ -25,11 +25,7 @@ export function ToggleValidationStatusDialog({
     const actionText = isValidated ? "marcar como pendiente" : "marcar como validado";
 
     const handleToggle = async () => {
-        const promise = toggleStatus.mutateAsync({
-            params: {
-                path: { id: reservation.id ?? "" }
-            }
-        });
+        const promise = toggleStatus.mutateAsync(reservation.id ?? "");
 
         toast.promise(promise, {
             loading: "Cambiando estado de validación...",

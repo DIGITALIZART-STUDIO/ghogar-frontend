@@ -17,8 +17,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toast } from "sonner";
-import { useUpdateProject } from "../../_hooks/useProjects";
+import { toastWrapper } from "@/types/toasts";
+import { UpdateProject } from "../../_actions/ProjectActions";
 import { CreateProjectSchema, projectSchema } from "../../_schemas/createProjectsSchema";
 import { ProjectData } from "../../_types/project";
 import UpdateProjectsForm from "./UpdateProjectsForm";
@@ -38,8 +38,6 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const updateProject = useUpdateProject();
-
     const form = useForm<CreateProjectSchema>({
         resolver: zodResolver(projectSchema),
         defaultValues: {
@@ -49,8 +47,6 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
             defaultDownPayment: project.defaultDownPayment ?? 0,
             defaultFinancingMonths: project.defaultFinancingMonths ?? 0,
             maxDiscountPercentage: project.maxDiscountPercentage ?? 0,
-            projectImage: undefined,
-            projectUrlImage: project.projectUrlImage ?? null,
         },
     });
 
@@ -63,8 +59,6 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
                 defaultDownPayment: project.defaultDownPayment ?? 0,
                 defaultFinancingMonths: project.defaultFinancingMonths ?? 0,
                 maxDiscountPercentage: project.maxDiscountPercentage ?? 0,
-                projectImage: undefined,
-                projectUrlImage: project.projectUrlImage ?? null,
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,48 +66,27 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
 
     const onSubmit = async (input: CreateProjectSchema) => {
         startTransition(async () => {
-            if (!project?.id) {
-                throw new Error("Project ID is required");
-                return;
-            }
-
-            // Construir el body asegurando que projectImage esté incluido solo si es un File real
-            const body: Record<string, unknown> = {
+            // Preparar los datos según el tipo de cliente
+            const projectData = {
                 name: input.name,
                 location: input.location,
+
                 currency: input.currency,
                 defaultDownPayment: input.defaultDownPayment,
                 defaultFinancingMonths: input.defaultFinancingMonths,
-                maxDiscountPercentage: input.maxDiscountPercentage,
             };
 
-            // Incluir projectImage solo si es un File real (no objetos con path/relativePath)
-            if (input.projectImage && input.projectImage instanceof File) {
-                body.projectImage = input.projectImage;
+            if (!project?.id) {
+                throw new Error("Block ID is required");
             }
-
-            const promise = updateProject.mutateAsync({
-                params: {
-                    path: { id: project.id },
-                },
-                body,
-            });
-
-            toast.promise(promise, {
+            const [, error] = await toastWrapper(UpdateProject(project.id, projectData), {
                 loading: "Actualizando proyecto...",
                 success: "Proyecto actualizado exitosamente",
-                error: (e) => {
-                    const errorMessage = e?.message ?? "Error desconocido";
-                    return `Error: ${errorMessage}`;
-                },
+                error: (e) => `Error al actualizar proyecto: ${e.message}`,
             });
 
-            try {
-                await promise;
+            if (!error) {
                 setIsSuccess(true);
-            } catch (error) {
-                // Manejar errores específicos si es necesario
-                console.error("Error updating project:", error);
             }
         });
     };
@@ -140,7 +113,7 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
                     <SheetDescription>{infoSheet.description}</SheetDescription>
                 </SheetHeader>
                 <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
-                    <UpdateProjectsForm form={form} onSubmit={onSubmit} initialImageUrl={project.projectUrlImage ?? ""}>
+                    <UpdateProjectsForm form={form} onSubmit={onSubmit}>
                         <SheetFooter className="gap-2 pt-2 sm:space-x-0">
                             <div className="flex flex-row-reverse gap-2">
                                 <Button type="submit" disabled={isPending}>

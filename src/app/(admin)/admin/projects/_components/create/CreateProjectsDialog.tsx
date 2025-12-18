@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toast } from "sonner";
-import { useCreateProject } from "../../_hooks/useProjects";
-import CreateProjectsForm from "./CreateProjectsForm";
+import { toastWrapper } from "@/types/toasts";
+import { CreateProject } from "../../_actions/ProjectActions";
 import { CreateProjectSchema, projectSchema } from "../../_schemas/createProjectsSchema";
+import CreateProjectsForm from "./CreateProjectsForm";
 
 const dataForm = {
     button: "Crear proyecto",
@@ -45,8 +45,6 @@ export function CreateProjectsDialog() {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const createProject = useCreateProject();
-
     const form = useForm<CreateProjectSchema>({
         resolver: zodResolver(projectSchema),
         defaultValues: {
@@ -56,49 +54,29 @@ export function CreateProjectsDialog() {
             currency: "",
             defaultDownPayment: 0,
             defaultFinancingMonths: 0,
-            projectImage: undefined,
         },
     });
 
     const onSubmit = async (input: CreateProjectSchema) => {
         startTransition(async () => {
-            try {
-                // Construir el body asegurando que projectImage esté incluido solo si es un File real
-                const body: Record<string, unknown> = {
-                    name: input.name,
-                    location: input.location,
-                    currency: input.currency,
-                    defaultDownPayment: input.defaultDownPayment,
-                    defaultFinancingMonths: input.defaultFinancingMonths,
-                    maxDiscountPercentage: input.maxDiscountPercentage,
-                };
+            // Preparar los datos para el formato esperado por el backend
+            const leadData = {
+                name: input.name,
+                location: input.location,
+                maxDiscountPercentage: input.maxDiscountPercentage,
+                currency: input.currency,
+                defaultDownPayment: input.defaultDownPayment,
+                defaultFinancingMonths: input.defaultFinancingMonths,
+            };
 
-                // Incluir projectImage solo si es un File real (no objetos con path/relativePath)
-                if (input.projectImage && input.projectImage instanceof File) {
-                    body.projectImage = input.projectImage;
-                }
+            const [, error] = await toastWrapper(CreateProject(leadData), {
+                loading: "Creando proyecto...",
+                success: "Proyecto creado exitosamente",
+                error: (e) => `Error al crear proyecto: ${e.message}`,
+            });
 
-                const promise = createProject.mutateAsync({
-                    body,
-                });
-
-                toast.promise(promise, {
-                    loading: "Creando proyecto...",
-                    success: "Proyecto creado exitosamente",
-                    error: (e: unknown) => {
-                        // Intentar obtener el mensaje de error del servidor
-                        const error = e as { message?: string; error?: string };
-                        const errorMessage = error?.message ?? error?.error ?? "Error desconocido al crear el proyecto";
-                        return errorMessage;
-                    },
-                });
-
-                const result = await promise;
-
-                if (result) {
-                    setIsSuccess(true);
-                }
-            } catch {
+            if (!error) {
+                setIsSuccess(true);
             }
         });
     };
@@ -135,7 +113,7 @@ export function CreateProjectsDialog() {
                                 <DialogFooter>
                                     <div className="grid grid-cols-2 gap-2 w-full">
                                         <DialogClose asChild>
-                                            <Button onClick={handleClose} type="button" variant="outline" className="w-full bg-transparent">
+                                            <Button onClick={handleClose} type="button" variant="outline" className="w-full">
                                                 Cancelar
                                             </Button>
                                         </DialogClose>
@@ -179,7 +157,7 @@ export function CreateProjectsDialog() {
                                         Registrar
                                     </Button>
                                     <DrawerClose asChild>
-                                        <Button variant="outline" className="w-full bg-transparent" onClick={handleClose}>
+                                        <Button variant="outline" className="w-full" onClick={handleClose}>
                                             Cancelar
                                         </Button>
                                     </DrawerClose>

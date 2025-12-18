@@ -33,9 +33,7 @@ export function ReactivateLeadsDialog({
             return;
         }
 
-        const promise = activateLeads.mutateAsync({
-            body: leadIds,
-        });
+        const promise = activateLeads.mutateAsync(leadIds);
 
         toast.promise(promise, {
             loading: `Reactivando ${leads.length === 1 ? "lead" : "leads"}...`,

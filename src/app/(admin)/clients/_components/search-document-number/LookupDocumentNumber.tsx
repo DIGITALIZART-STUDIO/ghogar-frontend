@@ -31,8 +31,8 @@ export default function DocumentNumberLookup({ form, type, initialValue, isUpdat
         }
     }, [initialValue]);
 
-    const dniQuery = useDniInfo(type === "dni" && toSearch ? toSearch : "");
-    const rucQuery = useRucFullInfo(type === "ruc" && toSearch ? toSearch : "");
+    const dniQuery = useDniInfo(type === "dni" ? toSearch : "");
+    const rucQuery = useRucFullInfo(type === "ruc" ? toSearch : "");
 
     const isDni = type === "dni";
     const data = isDni ? (dniQuery.data as responseDNI | undefined) : (rucQuery.data as responseRUC | undefined);
@@ -47,7 +47,7 @@ export default function DocumentNumberLookup({ form, type, initialValue, isUpdat
             : input.length === 11 && /^\d{11}$/.test(input);
 
     // Determinar si el botón debe estar deshabilitado
-    const isButtonDisabled = isLoading || input === lastSearched || !isValid;
+    const isButtonDisabled = isLoading ?? input === lastSearched ?? !isValid;
 
     // Manejar la búsqueda del DNI - Solo cuando se presiona el botón
     const handleSearch = () => {
@@ -218,9 +218,11 @@ export default function DocumentNumberLookup({ form, type, initialValue, isUpdat
                     <div className="flex-1">
                         <div className="font-medium text-sm text-destructive">Error en la consulta</div>
                         <div className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                            {error && typeof error === "object" && "message" in error
-                                ? String((error as { message?: unknown }).message)
-                                : `No se pudo obtener los datos del ${type.toUpperCase()}. Verifique el número e intente nuevamente.`}
+                            {error instanceof Error
+                                ? error.message
+                                : typeof error === "object" && error !== null && "message" in error
+                                    ? String((error as { message?: unknown }).message)
+                                    : `No se pudo obtener los datos del ${type.toUpperCase()}. Verifique el número e intente nuevamente.`}
                         </div>
                     </div>
                 </div>

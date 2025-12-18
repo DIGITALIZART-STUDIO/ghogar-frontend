@@ -13,32 +13,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { backend } from "@/types/backend";
+import { backend } from "@/types/backend2";
 import loginImage from "../assets/images/ImageLogin.webp";
 import { PasswordInput } from "./ui/password-input";
-import { Role } from "@/app/(admin)/_authorization_context";
-
-// Roles que van directamente al dashboard sin pasar por la página de selección de proyecto
-const DIRECT_DASHBOARD_ROLES: Array<Role> = ["Supervisor", "SalesAdvisor"];
-
-/**
- * Determina la ruta de redirección basada en los roles del usuario
- * @param roles - Array de roles del usuario
- * @returns La ruta a la que debe redirigir después del login
- */
-function getRedirectPath(roles: Array<string>): string {
-
-    // Verificar si el usuario tiene alguno de los roles que van directo al dashboard
-    const hasDirectDashboardRole = roles.some((role) => {
-        const isDirectRole = DIRECT_DASHBOARD_ROLES.includes(role as Role);
-        return isDirectRole;
-    });
-
-    // Si tiene un rol que va directo al dashboard, redirigir a "/"
-    // Si no, ir a la página de selección de proyecto
-    const result = hasDirectDashboardRole ? "/" : "/select-project";
-    return result;
-}
 
 const loginSchema = z.object({
     email: z
@@ -55,11 +32,10 @@ type LoginSchema = z.infer<typeof loginSchema>;
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
     const router = useRouter();
-    const { mutateAsync: loginMutation } = backend.useMutation("post", "/api/Auth/login");
-    const { mutateAsync: getUserMutation } = backend.useMutation("get", "/api/Users");
+    const { mutateAsync } = backend.useMutation("post", "/api/Auth/login");
 
     async function login(values: LoginSchema) {
-        const loginPromise = loginMutation({
+        const loginPromise = mutateAsync({
             body: values,
         });
 
@@ -78,25 +54,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             success: "Sesión iniciada, redirigiendo...",
         });
 
-        try {
-            await loginPromise;
-            // Los tokens se establecen automáticamente en las cookies por el backend
-
-            // Obtener información del usuario para determinar la redirección
-            try {
-                const userData = await getUserMutation({});
-
-                const redirectPath = getRedirectPath(userData.roles);
-
-                router.push(redirectPath);
-            } catch (userError) {
-                // Si falla obtener datos del usuario, redirigir por defecto a select-project
-                console.warn("No se pudieron obtener los roles del usuario, redirigiendo a select-project:", userError);
-                router.push("/select-project");
-            }
-        } catch {
-            // El error ya se maneja en el toast.promise
-        }
+        loginPromise.then(() => router.push("/"));
     }
 
     const form = useForm<LoginSchema>({

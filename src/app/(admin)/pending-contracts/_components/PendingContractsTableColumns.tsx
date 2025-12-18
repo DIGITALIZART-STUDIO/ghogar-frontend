@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DocumentDownloadDialog } from "./DocumentDownloadDialog";
 import { ReservationViewDialog } from "./ReservationViewDialog";
-import { ContractValidationStatus, ReservationStatus, ReservationPendingValidationDto } from "../../reservations/_types/reservation";
-import { ContractValidationStatusLabels, PaymentMethodLabels, ReservationStatusLabels } from "../../reservations/_utils/reservations.utils";
-import { useDownloadReservationPDF, useDownloadReservationContractPDF, useDownloadReservationContractDOCX } from "../../reservations/_hooks/useReservations";
+import { ContractValidationStatus, ReservationDto } from "../../reservations/_types/reservation";
+import { ContractValidationStatusLabels, PaymentMethodLabels } from "../../reservations/_utils/reservations.utils";
+import { DownloadReservationContractDOCX, DownloadReservationContractPDF, DownloadReservationPDF } from "../../reservations/_actions/ReservationActions";
 import { ToggleValidationStatusDialog } from "./ToggleValidationStatusDialog";
 
 /**
@@ -30,7 +30,7 @@ import { ToggleValidationStatusDialog } from "./ToggleValidationStatusDialog";
  * @param handleEditInterface Función para editar una reserva
  * @returns Columnas de la tabla de reservas
  */
-export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingValidationDto>> => [
+export const pendingContractsColumns = (): Array<ColumnDef<ReservationDto>> => [
     {
         id: "select",
         header: ({ table }) => (
@@ -61,14 +61,13 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingVal
         id: "cliente",
         accessorKey: "clientName",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
-        cell: ({ row }) => {
-            const clientName = row.getValue("cliente") as string;
-            return (
-                <div className="min-w-32">
-                    <div className="truncate capitalize">{clientName}</div>
+        cell: ({ row }) => (
+            <div className="min-w-32">
+                <div className="truncate capitalize">
+                    {row.getValue("cliente")}
                 </div>
-            );
-        },
+            </div>
+        ),
     },
     {
         id: "cotización",
@@ -169,52 +168,17 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingVal
         },
     },
     {
-        id: "estado_reserva",
-        accessorKey: "status",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado Reserva" />,
-        cell: ({ row }) => {
-            const status = row.getValue("estado_reserva") as ReservationStatus;
-            const statusConfig = ReservationStatusLabels[status];
-
-            if (!statusConfig) {
-                return <div className="min-w-24 text-sm">No especificado</div>;
-            }
-
-            const Icon = statusConfig.icon;
-
-            return (
-                <div className="text-xs min-w-24">
-                    <Badge variant="outline" className={statusConfig.className}>
-                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
-                        {statusConfig.label}
-                    </Badge>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            const rowValue = row.getValue(id);
-
-            if (Array.isArray(value)) {
-                if (value.length === 0) {
-                    return true;
-                }
-                return value.includes(rowValue);
-            }
-
-            return rowValue === value;
-        },
-        enableColumnFilter: true,
-    },
-    {
-        id: "estado_validacion",
+        id: "estado",
         accessorKey: "contractValidationStatus",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado Validación" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
         cell: ({ row }) => {
-            const contractValidationStatus = row.getValue("estado_validacion") as ContractValidationStatus;
+            const contractValidationStatus = row.getValue("estado") as ContractValidationStatus;
             const contractValidationStatusConfig = ContractValidationStatusLabels[contractValidationStatus];
 
             if (!contractValidationStatusConfig) {
-                return <div className="min-w-24 text-sm">No registrado</div>;
+                return <div>
+                    No registrado
+                </div>;
             }
 
             const Icon = contractValidationStatusConfig.icon;
@@ -252,11 +216,6 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingVal
             // Nuevo estado para el toggle
             const [openToggleValidationDialog, setOpenToggleValidationDialog] = useState(false);
 
-            // Hooks para descargas
-            const downloadReservationPDF = useDownloadReservationPDF();
-            const downloadContractPDF = useDownloadReservationContractPDF();
-            const downloadContractDOCX = useDownloadReservationContractDOCX();
-
             return (
                 <div>
                     {openViewDialog && (
@@ -272,7 +231,7 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingVal
                             isOpen={openReservationDocumentDialog}
                             onOpenChange={setOpenReservationDocumentDialog}
                             title="Documento de Separación"
-                            pdfAction={downloadReservationPDF}
+                            pdfAction={DownloadReservationPDF}
                             pdfFileName={`separacion-${id}.pdf`}
                         />
                     )}
@@ -282,8 +241,8 @@ export const pendingContractsColumns = (): Array<ColumnDef<ReservationPendingVal
                             isOpen={openContractDocumentDialog}
                             onOpenChange={setOpenContractDocumentDialog}
                             title="Contrato"
-                            pdfAction={downloadContractPDF}
-                            wordAction={downloadContractDOCX}
+                            pdfAction={DownloadReservationContractPDF}
+                            wordAction={DownloadReservationContractDOCX}
                             pdfFileName={`contrato-${id}.pdf`}
                             wordFileName={`contrato-${id}.docx`}
                         />

@@ -1,13 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useReservationById } from "../_hooks/useReservations";
+import { GetReservationById } from "../_actions/ReservationActions";
 import { ReservationDto } from "../_types/reservation";
 import ReservationViewContent from "./ReservationViewContent";
 
@@ -19,7 +19,26 @@ interface ReservationViewDialogProps {
 
 export function ReservationViewDialog({ open, onOpenChange, reservation }: ReservationViewDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 900px)");
-    const { data, isLoading } = useReservationById(reservation?.id ?? "", open);
+    const [data, setData] = useState<ReservationDto>();
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        async function fetchReservationData() {
+            if (open && reservation?.id) {
+                setIsLoading(true);
+                try {
+                    const [reservationResult] = await GetReservationById(reservation.id);
+                    setData(reservationResult);
+                } catch (error) {
+                    console.error("Error fetching reservation:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        fetchReservationData();
+    }, [open, reservation?.id]);
 
     // Calcular días restantes hasta vencimiento
     const calculateDaysLeft = () => {

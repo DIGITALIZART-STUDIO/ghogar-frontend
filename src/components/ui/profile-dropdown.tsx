@@ -14,7 +14,7 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogoutButton } from "@/components/logout-button";
+import { LogoutAction } from "@/app/(auth)/login/actions";
 
 export function ProfileDropdown({ name, email, initials }: {
     name: string
@@ -55,13 +55,13 @@ export function ProfileDropdown({ name, email, initials }: {
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <LogoutButton variant="ghost" size="sm" className="w-full justify-start" showIcon={false}>
-                        Cerrar Sesión
-                        <DropdownMenuShortcut>
-                            ⇧⌘Q
-                        </DropdownMenuShortcut>
-                    </LogoutButton>
+                <DropdownMenuItem
+                    onClick={LogoutAction}
+                >
+                    Cerrar Sesión
+                    <DropdownMenuShortcut>
+                        ⇧⌘Q
+                    </DropdownMenuShortcut>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

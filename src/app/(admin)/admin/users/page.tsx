@@ -11,25 +11,14 @@ export default function UsersPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    const {
-        data: paginatedUsers,
-        isLoading,
-        error,
-        search,
-        setSearch,
-        isActive,
-        setIsActive,
-        roleName,
-        setRoleName,
-    } = usePaginatedUsers(page, pageSize);
+    const { data: paginatedUsers, isLoading, error } = usePaginatedUsers(page, pageSize);
 
     const handlePaginationChange = useCallback((newPage: number, newPageSize: number) => {
         setPage(newPage);
         setPageSize(newPageSize);
     }, []);
 
-    // Solo mostrar skeleton completo en la carga inicial (cuando no hay datos)
-    if (isLoading && !paginatedUsers) {
+    if (isLoading) {
         return (
             <div>
                 <HeaderPage title="Usuarios" description="Cargando usuarios..." />
@@ -52,21 +41,14 @@ export default function UsersPage() {
             <HeaderPage title="Usuarios" description="Usuarios registrados en el sistema." />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
                 <UsersTable
-                    data={paginatedUsers.data ?? []}
+                    data={paginatedUsers.data}
                     pagination={{
-                        page: paginatedUsers.meta?.page ?? 1,
-                        pageSize: paginatedUsers.meta?.pageSize ?? 10,
-                        total: paginatedUsers.meta?.total ?? 0,
-                        totalPages: paginatedUsers.meta?.totalPages ?? 1,
+                        page: paginatedUsers.meta.page ?? 1,
+                        pageSize: paginatedUsers.meta.pageSize ?? 10,
+                        total: paginatedUsers.meta.total ?? 0,
+                        totalPages: paginatedUsers.meta.totalPages ?? 1,
                     }}
                     onPaginationChange={handlePaginationChange}
-                    search={search}
-                    onSearchChange={setSearch}
-                    isActive={isActive}
-                    onIsActiveChange={setIsActive}
-                    roleName={roleName}
-                    onRoleNameChange={setRoleName}
-                    isLoading={isLoading}
                 />
             </div>
         </div>

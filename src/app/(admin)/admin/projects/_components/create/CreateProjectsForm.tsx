@@ -1,20 +1,15 @@
-"use client";
-
-import type React from "react";
-
-import { Building2, Calendar, DollarSign, MapPin, Percent, ImageIcon } from "lucide-react";
-import type { UseFormReturn } from "react-hook-form";
+import { Building2, Calendar, DollarSign, MapPin, Percent } from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImageUpload } from "@/components/ui/image-upload";
-import type { CreateProjectSchema } from "../../_schemas/createProjectsSchema";
+import { CreateProjectSchema } from "../../_schemas/createProjectsSchema";
 
 interface CreateProjectsFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
-  children: React.ReactNode
-  form: UseFormReturn<CreateProjectSchema>
-  onSubmit: (data: CreateProjectSchema) => void
+  children: React.ReactNode;
+  form: UseFormReturn<CreateProjectSchema>;
+  onSubmit: (data: CreateProjectSchema) => void;
 }
 
 export default function CreateProjectsForm({ children, form, onSubmit }: CreateProjectsFormProps) {
@@ -24,17 +19,18 @@ export default function CreateProjectsForm({ children, form, onSubmit }: CreateP
                 {/* Basic Information */}
                 <div className="space-y-4">
                     <h3 className=" font-semibold text-gray-900 border-b dark:text-gray-100 pb-2">Información Básica</h3>
+
                     <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="flex items-center">
+                                <FormLabel className="flex items-center ">
                                     <Building2 className="mr-2 h-4 w-4" />
                                     Nombre del Proyecto
                                 </FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Residencial Los Pinos" {...field} />
+                                    <Input placeholder="Villa Sol, Residencial Los Pinos..." {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -57,24 +53,6 @@ export default function CreateProjectsForm({ children, form, onSubmit }: CreateP
                             </FormItem>
                         )}
                     />
-
-                    <FormField
-                        control={form.control}
-                        name="projectImage"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="flex items-center">
-                                    <ImageIcon className="mr-2 h-4 w-4" />
-                                    Imagen del Proyecto
-                                </FormLabel>
-                                <FormControl>
-                                    <ImageUpload value={field.value} onChange={field.onChange} className="w-full" />
-                                </FormControl>
-                                <FormDescription>Sube una imagen representativa del proyecto (máx. 10MB)</FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                 </div>
 
                 {/* Financial Configuration */}
@@ -92,7 +70,7 @@ export default function CreateProjectsForm({ children, form, onSubmit }: CreateP
                                 </FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="w-full">
+                                        <SelectTrigger className="h-12 w-full">
                                             <SelectValue placeholder="Selecciona una moneda" />
                                         </SelectTrigger>
                                     </FormControl>

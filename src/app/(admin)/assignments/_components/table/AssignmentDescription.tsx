@@ -43,9 +43,8 @@ interface AssignmentDescriptionProps {
 export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
     const [showCoOwners, setShowCoOwners] = useState(false);
     const [showSpouseInfo, setShowSpouseInfo] = useState(false);
-
     // Verificación global para row y row.project
-    if (!row) {
+    if (!row || !row.project) {
         return (
             <div className="w-full flex flex-col items-center justify-center bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/60 dark:to-red-800/60 border border-red-200 dark:border-red-700 rounded-xl shadow-md p-10 my-8">
                 <AlertTriangle className="w-10 h-10 text-red-500 mb-4" />
@@ -149,7 +148,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
         <div className="w-full bg-card border border-border rounded-xl overflow-hidden shadow-sm">
             {/* BALANCED HEADER */}
             <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-4 border-b border-border">
-                <div className="flex  flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="relative">
                             <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
@@ -170,9 +169,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
 
                         <div className="min-w-0">
                             <h3 className="font-bold text-base text-foreground truncate">{displayName}</h3>
-                            <p className="text-sm text-muted-foreground">
-                                {row.project ? `Interesado en ${row.project.name}` : "Sin proyecto asignado"}
-                            </p>
+                            <p className="text-sm text-muted-foreground">Interesado en {row.project.name}</p>
                             <div className="flex items-center gap-2 mt-1">
                                 <Badge className={cn("text-xs font-medium", statusInfo.className)} variant={"outline"}>
                                     <StatusIcon className="w-3 h-3 mr-1" />
@@ -192,7 +189,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                         </div>
                     </div>
 
-                    <div className="md:text-right text-center">
+                    <div className="text-right">
                         <div
                             className={cn(
                                 "text-2xl font-bold",
@@ -214,11 +211,11 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* CLIENT INFORMATION */}
                     <div className="space-y-4">
-                        <div className="flex flex-col md:flex-row items-center md:justify-start justify-center gap-2 pb-2 border-b border-border">
-                            <User className="w-4 h-4 text-blue-600 shrink-0" />
+                        <div className="flex items-center gap-2 pb-2 border-b border-border">
+                            <User className="w-4 h-4 text-blue-600" />
                             <h4 className="font-semibold text-foreground">Información del Cliente</h4>
                             <Badge className={cn("text-xs font-medium", clientTypeConfig.className)}>
-                                <TypeIcon className="w-3 h-3 mr-1 shrink-0" />
+                                <TypeIcon className="w-3 h-3 mr-1" />
                                 {clientTypeConfig.label}
                             </Badge>
                         </div>
@@ -341,81 +338,70 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                         <div className="flex items-center gap-2 pb-2 border-b border-border">
                             <Target className="w-4 h-4 text-green-600" />
                             <h4 className="font-semibold text-foreground">Proyecto de Interés</h4>
-                            {row.project?.isActive && (
+                            {row.project.isActive && (
                                 <Badge className="text-xs font-medium text-emerald-800 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-200 dark:border-emerald-700">
                                     Activo
                                 </Badge>
                             )}
                         </div>
 
-                        {row.project ? (
-                            <div className="space-y-3">
-                                {/* Project Basic Info */}
-                                <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
-                                    <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                        <Target className="w-4 h-4 text-emerald-600" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proyecto</div>
-                                        <div className="text-sm font-semibold text-foreground">{row.project.name}</div>
-                                    </div>
+                        <div className="space-y-3">
+                            {/* Project Basic Info */}
+                            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
+                                <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                    <Target className="w-4 h-4 text-emerald-600" />
                                 </div>
-
-                                <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
-                                    <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                                        <MapPin className="w-4 h-4 text-amber-600" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Ubicación</div>
-                                        <div className="text-sm font-semibold text-foreground">{row.project.location}</div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
-                                    <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                                        <DollarSign className="w-4 h-4 text-violet-600" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Moneda</div>
-                                        <div className="text-sm font-semibold text-foreground">{row.project.currency}</div>
-                                    </div>
-                                </div>
-
-                                {/* Financial Terms Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <div className="text-center p-3 rounded-lg border border-border bg-emerald-50/50 dark:bg-emerald-950/20">
-                                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                            <Percent className="w-4 h-4 text-emerald-600" />
-                                        </div>
-                                        <div className="text-lg font-bold text-foreground">{row.project.defaultDownPayment}%</div>
-                                        <div className="text-xs text-muted-foreground">Inicial</div>
-                                    </div>
-                                    <div className="text-center p-3 rounded-lg border border-border bg-amber-50/50 dark:bg-amber-950/20">
-                                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                                            <Calendar className="w-4 h-4 text-amber-600" />
-                                        </div>
-                                        <div className="text-lg font-bold text-foreground">{row.project.defaultFinancingMonths}</div>
-                                        <div className="text-xs text-muted-foreground">Meses</div>
-                                    </div>
-                                    <div className="text-center p-3 rounded-lg border border-border bg-violet-50/50 dark:bg-violet-950/20">
-                                        <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                                            <Percent className="w-4 h-4 text-violet-600" />
-                                        </div>
-                                        <div className="text-lg font-bold text-foreground">{row.project.maxDiscountPercentage}%</div>
-                                        <div className="text-xs text-muted-foreground">Descuento</div>
-                                    </div>
+                                <div className="flex-1">
+                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proyecto</div>
+                                    <div className="text-sm font-semibold text-foreground">{row.project.name}</div>
                                 </div>
                             </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-border rounded-lg bg-muted/20">
-                                <Target className="w-12 h-12 text-muted-foreground mb-3" />
-                                <h5 className="font-medium text-foreground mb-2">Sin proyecto asignado</h5>
-                                <p className="text-sm text-muted-foreground">
-                                    Este lead no tiene un proyecto específico asignado.<br />
-                                    Puedes asignar un proyecto desde la gestión de leads.
-                                </p>
+
+                            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
+                                <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                    <MapPin className="w-4 h-4 text-amber-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Ubicación</div>
+                                    <div className="text-sm font-semibold text-foreground">{row.project.location}</div>
+                                </div>
                             </div>
-                        )}
+
+                            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-border hover:bg-accent/30 transition-all">
+                                <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+                                    <DollarSign className="w-4 h-4 text-violet-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Moneda</div>
+                                    <div className="text-sm font-semibold text-foreground">{row.project.currency}</div>
+                                </div>
+                            </div>
+
+                            {/* Financial Terms Grid */}
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="text-center p-3 rounded-lg border border-border bg-emerald-50/50 dark:bg-emerald-950/20">
+                                    <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                        <Percent className="w-4 h-4 text-emerald-600" />
+                                    </div>
+                                    <div className="text-lg font-bold text-foreground">{row.project.defaultDownPayment}%</div>
+                                    <div className="text-xs text-muted-foreground">Inicial</div>
+                                </div>
+                                <div className="text-center p-3 rounded-lg border border-border bg-amber-50/50 dark:bg-amber-950/20">
+                                    <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                        <Calendar className="w-4 h-4 text-amber-600" />
+                                    </div>
+                                    <div className="text-lg font-bold text-foreground">{row.project.defaultFinancingMonths}</div>
+                                    <div className="text-xs text-muted-foreground">Meses</div>
+                                </div>
+                                <div className="text-center p-3 rounded-lg border border-border bg-violet-50/50 dark:bg-violet-950/20">
+                                    <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+                                        <Percent className="w-4 h-4 text-violet-600" />
+                                    </div>
+                                    <div className="text-lg font-bold text-foreground">{row.project.maxDiscountPercentage}%</div>
+                                    <div className="text-xs text-muted-foreground">Descuento</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -438,7 +424,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                                         <div className="flex-1 min-w-0">
                                             <div className="font-medium text-sm text-foreground">{coOwner.name}</div>
                                             <div className="text-xs text-muted-foreground">DNI: {coOwner.dni}</div>
-                                            <div className="flex flex-col md:flex-row gap-3 mt-2">
+                                            <div className="flex gap-3 mt-2">
                                                 {coOwner.email && (
                                                     <a
                                                         href={`mailto:${coOwner.email}`}
@@ -512,20 +498,20 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                 )}
 
                 {/* TIMELINE & ACTIONS */}
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between pt-4 border-t border-border">
-                    <div className="flex flex-col md:flex-row items-center md:justify-start justify-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4 shrink-0" />
+                            <Calendar className="w-4 h-4" />
                             <span>Ingreso: {formatDate(row.entryDate)}</span>
                         </div>
-                        <span className="hidden md:block">•</span>
+                        <span>•</span>
                         <div
                             className={cn(
                                 "flex items-center gap-1",
                                 isExpired ? "text-red-600" : isExpiringSoon ? "text-orange-600" : "",
                             )}
                         >
-                            <Clock className="w-4 h-4 shrink-0" />
+                            <Clock className="w-4 h-4" />
                             <span>Vence: {formatDate(row.expirationDate)}</span>
                         </div>
                         {(row.recycleCount ?? 0) > 0 && (

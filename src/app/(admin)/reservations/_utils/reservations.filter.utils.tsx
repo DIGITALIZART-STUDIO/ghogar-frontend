@@ -19,14 +19,9 @@ const PaymentMethodIcons = Object.fromEntries(Object.entries(PaymentMethodLabels
     return [paymentMethod, IconComponent];
 }));
 
-// Función para crear filtros faceted con callbacks del servidor
-export const createFacetedFilters = (
-    onStatusChange: (values: Array<string>) => void,
-    onPaymentMethodChange: (values: Array<string>) => void,
-    currentStatus: Array<string> = [],
-    currentPaymentMethod: Array<string> = []
-) => [
+export const facetedFilters = [
     {
+        // Filtro para el estado de la reserva
         column: "estado",
         title: "Estado",
         options: Object.entries(ReservationStatusLabels).map(([reservationStatus, config]) => ({
@@ -34,10 +29,9 @@ export const createFacetedFilters = (
             value: reservationStatus,
             icon: ReservationStatusIcons[reservationStatus],
         })),
-        onFilterChange: onStatusChange,
-        currentValue: currentStatus,
     },
     {
+        // Filtro para el método de pago
         column: "método pago",
         title: "Método de Pago",
         options: Object.entries(PaymentMethodLabels).map(([paymentMethod, config]) => ({
@@ -45,7 +39,5 @@ export const createFacetedFilters = (
             value: paymentMethod,
             icon: PaymentMethodIcons[paymentMethod],
         })),
-        onFilterChange: onPaymentMethodChange,
-        currentValue: currentPaymentMethod,
     },
 ];

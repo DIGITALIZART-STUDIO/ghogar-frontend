@@ -1,7 +1,8 @@
 import { AlertCircle, CheckCircle, FileText, XCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { QuotationStatus } from "../_types/quotation";
+import { QuotationStatus, SummaryQuotation } from "../_types/quotation";
+import { Identifier } from "../../leads/_utils/leads.filter.utils";
 import { QuotationStatusLabels } from "./quotations.utils";
 
 // Generar componentes de icono a partir de CustomerMaritalStatusLabels
@@ -13,12 +14,34 @@ const QuotationStatusIcons = Object.fromEntries(Object.entries(QuotationStatusLa
     return [quotationStatus, IconComponent];
 }));
 
-// Función para crear filtros faceted con callbacks del servidor
-export const createFacetedFilters = (
-    onStatusChange: (values: Array<string>) => void,
-    currentStatus: Array<string> = []
-) => [
+// Función para extraer identificadores únicos (DNI o RUC) de las cotizaciones
+export const getUniqueIdentifiers = (quotations: Array<SummaryQuotation>): Array<Identifier> => {
+    const identifiers: Array<Identifier> = [];
+
+    // Extraer identificadores
+    quotations.forEach((quotation) => {
+        if (quotation?.clientIdentification && quotation?.clientIdentificationType === "DNI") {
+            identifiers.push({
+                value: quotation.clientIdentification,
+                type: "DNI",
+            });
+        }
+
+        if (quotation?.clientIdentification && quotation?.clientIdentificationType === "RUC") {
+            identifiers.push({
+                value: quotation.clientIdentification,
+                type: "RUC",
+            });
+        }
+    });
+
+    // Eliminar duplicados (por valor y tipo)
+    return identifiers.filter((identifier, index, self) => index === self.findIndex((i) => i.value === identifier.value && i.type === identifier.type));
+};
+
+export const facetedFilters = [
     {
+    // Filtro para el estado de la cotización
         column: "estado",
         title: "Estado",
         options: Object.entries(QuotationStatusLabels).map(([quotationStatus, config]) => ({
@@ -26,8 +49,6 @@ export const createFacetedFilters = (
             value: quotationStatus,
             icon: QuotationStatusIcons[quotationStatus],
         })),
-        onFilterChange: onStatusChange,
-        currentValue: currentStatus,
     },
 ];
 

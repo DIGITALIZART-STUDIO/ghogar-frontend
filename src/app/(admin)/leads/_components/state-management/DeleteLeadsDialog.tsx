@@ -35,9 +35,7 @@ export function DeleteLeadsDialog({
             return;
         }
 
-        const promise = deleteLeads.mutateAsync({
-            body: leadIds,
-        });
+        const promise = deleteLeads.mutateAsync(leadIds);
 
         toast.promise(promise, {
             loading: `Eliminando ${leads.length === 1 ? "lead" : "leads"}...`,

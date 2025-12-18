@@ -6,6 +6,7 @@ import { useDeletePaymentTransaction } from "../../_hooks/usePaymentTransactions
 
 interface DeletePaymentTransactionDialogProps {
     paymentTransactionId: string;
+    reservationId: string;
     onSuccess?: () => void;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -13,6 +14,7 @@ interface DeletePaymentTransactionDialogProps {
 
 export function DeletePaymentTransactionDialog({
     paymentTransactionId,
+    reservationId,
     onSuccess,
     open,
     onOpenChange,
@@ -25,11 +27,7 @@ export function DeletePaymentTransactionDialog({
             return;
         }
 
-        const promise = deletePaymentTransaction.mutateAsync({
-            params: {
-                path: { id: paymentTransactionId }
-            }
-        });
+        const promise = deletePaymentTransaction.mutateAsync({ id: paymentTransactionId, reservationId });
 
         toast.promise(promise, {
             loading: "Eliminando transacción de pago...",

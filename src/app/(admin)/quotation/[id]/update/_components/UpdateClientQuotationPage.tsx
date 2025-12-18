@@ -5,19 +5,20 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { toast } from "sonner";
+import { SummaryLead } from "@/app/(admin)/leads/_types/lead";
+import { toastWrapper } from "@/types/toasts";
 import { useUpdateQuotation } from "../../../_hooks/useQuotations";
 import { Quotation } from "../../../_types/quotation";
 import { QuotationForm } from "../../../create/_components/QuotationForm";
 import { CreateQuotationSchema, quotationSchema } from "../../../create/_schemas/createQuotationsSchema";
-import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 
 interface UpdateClientQuotationPageProps {
+  leadsData: Array<SummaryLead>;
+  advisorId: string;
   data: Quotation;
-  userData: UserGetDTO;
 }
 
-export default function UpdateClientQuotationPage({ data, userData }: UpdateClientQuotationPageProps) {
+export default function UpdateClientQuotationPage({ leadsData, advisorId, data }: UpdateClientQuotationPageProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
@@ -26,17 +27,6 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
     const [selectedProjectId, setSelectedProjectId] = useState<string>(data.projectId ?? "");
     const [selectedBlockId, setSelectedBlockId] = useState<string>(data.blockId ?? "");
     const [selectedLotId, setSelectedLotId] = useState<string>(data.lotId ?? "");
-
-    // Estados para los nombres visuales que se mostrarán en el resumen
-    const [projectName, setProjectName] = useState(data.projectName ?? "");
-    const [blockName, setBlockName] = useState(data.blockName ?? "");
-    const [lotNumber, setLotNumber] = useState(data.lotNumber?.toString() ?? "");
-
-    // Estado para almacenar información del lead seleccionado
-    const [selectedLead, setSelectedLead] = useState<{ name: string; code: string } | null>({
-        name: data.leadClientName ?? "",
-        code: data.code ?? ""
-    });
 
     // Hook para actualizar cotización
     const updateQuotationMutation = useUpdateQuotation();
@@ -47,6 +37,7 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
         defaultValues: {
             leadId: data.leadId,
             lotId: data.lotId,
+            advisorId: data.advisorId,
             projectId: data.projectId,
             blockId: data.blockId,
             discount: (data.discount ?? 0).toString(),
@@ -67,20 +58,10 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
         setSelectedProjectId(data.projectId ?? "");
         setSelectedBlockId(data.blockId ?? "");
         setSelectedLotId(data.lotId ?? "");
-
-        // Establecer los nombres visuales para el resumen
-        setProjectName(data.projectName ?? "");
-        setBlockName(data.blockName ?? "");
-        setLotNumber(data.lotNumber?.toString() ?? "");
-
-        // Establecer el lead seleccionado
-        setSelectedLead({
-            name: data.leadClientName ?? "",
-            code: data.code ?? ""
-        });
         form.reset({
             leadId: data.leadId,
             lotId: data.lotId,
+            advisorId: data.advisorId,
             projectId: data.projectId,
             blockId: data.blockId,
             discount: (data.discount ?? 0).toString(),
@@ -102,6 +83,7 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
             const quotationData = {
                 leadId: input.leadId,
                 lotId: selectedLotId || input.lotId,
+                advisorId: advisorId,
                 projectId: selectedProjectId || input.projectId,
                 blockId: selectedBlockId || input.blockId,
                 discount: parseFloat(input.discount),
@@ -112,23 +94,18 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
             };
 
             const promise = updateQuotationMutation.mutateAsync({
-                params: {
-                    path: { id: data?.id ?? "" },
-                },
-                body: quotationData,
+                id: data?.id ?? "",
+                quotation: quotationData,
             });
 
-            toast.promise(promise, {
+            const [, error] = await toastWrapper(promise, {
                 loading: "Actualizando cotización...",
                 success: "Cotización actualizada exitosamente",
                 error: (e) => `Error al actualizar cotización: ${e.message}`,
             });
 
-            try {
-                await promise;
+            if (!error) {
                 setIsSuccess(true);
-            } catch {
-                // Error ya manejado por toast.promise
             }
         });
     };
@@ -142,6 +119,7 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
 
     return (
         <QuotationForm
+            leadsData={leadsData}
             form={form}
             isPending={isPending}
             onSubmit={onSubmit}
@@ -150,16 +128,6 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
                 blockId: selectedBlockId,
                 lotId: selectedLotId,
             }}
-            userData={userData}
-            // Pasar los estados para el resumen
-            projectName={projectName}
-            blockName={blockName}
-            lotNumber={lotNumber}
-            selectedLead={selectedLead}
-            setProjectName={setProjectName}
-            setBlockName={setBlockName}
-            setLotNumber={setLotNumber}
-            setSelectedLead={setSelectedLead}
         />
     );
 }

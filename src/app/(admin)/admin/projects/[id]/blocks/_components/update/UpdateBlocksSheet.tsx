@@ -17,8 +17,8 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toast } from "sonner";
-import { useUpdateBlock } from "../../_hooks/useBlocks";
+import { toastWrapper } from "@/types/toasts";
+import { UpdateBlock } from "../../_actions/BlockActions";
 import { blockSchema, CreateBlockSchema } from "../../_schemas/createBlocksSchema";
 import { BlockData } from "../../_types/block";
 import UpdateBlocksForm from "./UpdateBlocksForm";
@@ -40,8 +40,6 @@ export function UpdateBlocksSheet({ block, projectId, open, onOpenChange, refetc
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const updateBlock = useUpdateBlock();
-
     const form = useForm<CreateBlockSchema>({
         resolver: zodResolver(blockSchema),
         defaultValues: {
@@ -60,36 +58,23 @@ export function UpdateBlocksSheet({ block, projectId, open, onOpenChange, refetc
 
     const onSubmit = async(input: CreateBlockSchema) => {
         startTransition(async() => {
-            if (!block?.id) {
-                toast.error("Block ID is required");
-                return;
-            }
-
             // Preparar los datos según el tipo de cliente
-            const blockData = {
+            const clientData = {
                 name: input.name,
                 projectId: projectId,
             };
 
-            const promise = updateBlock.mutateAsync({
-                params: {
-                    path: { id: block.id },
-                },
-                body: blockData,
-            });
-
-            toast.promise(promise, {
+            if (!block?.id) {
+                throw new Error("Block ID is required");
+            }
+            const [, error] = await toastWrapper(UpdateBlock(block.id, clientData), {
                 loading: "Actualizando manzana...",
                 success: "Manzana actualizada exitosamente",
                 error: (e) => `Error al actualizar manzana: ${e.message}`,
             });
 
-            try {
-                await promise;
+            if (!error) {
                 setIsSuccess(true);
-            } catch (error) {
-                // Manejar errores específicos si es necesario
-                console.error("Error updating block:", error);
             }
         });
     };

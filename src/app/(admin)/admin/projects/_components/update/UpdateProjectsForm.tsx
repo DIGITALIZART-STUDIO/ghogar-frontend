@@ -1,4 +1,4 @@
-import { Building2, Calendar, DollarSign, ImageIcon, MapPin, Percent } from "lucide-react";
+import { Building2, Calendar, DollarSign, MapPin, Percent } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -6,33 +6,32 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet } from "@/components/ui/sheet";
 import { CreateProjectSchema } from "../../_schemas/createProjectsSchema";
-import { ImageUpload } from "@/components/ui/image-upload";
 
 interface UpdateProjectsFormProps extends Omit<React.ComponentPropsWithRef<typeof Sheet>, "open" | "onOpenChange"> {
   children: React.ReactNode;
   form: UseFormReturn<CreateProjectSchema>;
   onSubmit: (data: CreateProjectSchema) => void;
-  initialImageUrl?: string;
 }
 
-export default function UpdateProjectsForm({ children, form, onSubmit, initialImageUrl }: UpdateProjectsFormProps) {
+export default function UpdateProjectsForm({ children, form, onSubmit }: UpdateProjectsFormProps) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
                     <h3 className=" font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Información Básica</h3>
+
                     <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="flex items-center">
+                                <FormLabel className="flex items-center ">
                                     <Building2 className="mr-2 h-4 w-4" />
                                     Nombre del Proyecto
                                 </FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Residencial Los Pinos" {...field} />
+                                    <Input placeholder="Villa Sol, Residencial Los Pinos..." {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -51,29 +50,6 @@ export default function UpdateProjectsForm({ children, form, onSubmit, initialIm
                                 <FormControl>
                                     <Input placeholder="San Martín de Porres, Lima" {...field} />
                                 </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="projectImage"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="flex items-center">
-                                    <ImageIcon className="mr-2 h-4 w-4" />
-                                    Imagen del Proyecto
-                                </FormLabel>
-                                <FormControl>
-                                    <ImageUpload
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        className="w-full"
-                                        initialImageUrl={initialImageUrl}
-                                    />
-                                </FormControl>
-                                <FormDescription>Sube una imagen representativa del proyecto (máx. 10MB)</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}

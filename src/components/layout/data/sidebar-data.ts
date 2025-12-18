@@ -4,11 +4,11 @@ import {
     FileCheck,
     FileText,
     LayoutDashboard,
+    LineChart,
     ListChecks,
     Users,
     DollarSign,
-    FileSignature,
-    Coins
+    FileSignature
 } from "lucide-react";
 
 import { rolePermissions, type SidebarData } from "../types";
@@ -74,11 +74,6 @@ export const sidebarData: SidebarData = {
                     icon: FileSignature,
                 },
                 {
-                    title: "Gestión de Creditos",
-                    url: "/credit-management",
-                    icon: Coins,
-                },
-                {
                     title: "Gestión de Pagos",
                     url: "/payments-transaction",
                     icon: DollarSign,
@@ -92,6 +87,16 @@ export const sidebarData: SidebarData = {
                     title: "Mis Leads",
                     url: "/assignments",
                     icon: ClipboardList,
+                },
+            ],
+        },
+        {
+            title: "Reportes",
+            items: [
+                {
+                    title: "Reportes",
+                    url: "/reports",
+                    icon: LineChart,
                 },
             ],
         },

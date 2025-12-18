@@ -18,7 +18,7 @@ import { PasswordRequirement } from "../_types/password";
 import { PasswordForm, passwordSchema, UserInfoForm, userInfoSchema } from "../_schemas/updateProfileSchema";
 import { useUpdateProfilePassword, useUpdateUser } from "../../admin/users/_hooks/useUser";
 import { toast } from "sonner";
-import { useAuthContext } from "@/context/auth-provider";
+import { LogoutAction } from "@/app/(auth)/login/actions";
 import ProfileInformation from "./ProfileInformation";
 import SecurityForm from "./SecurityForm";
 
@@ -31,7 +31,6 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
     const updateUser = useUpdateUser();
     const updateProfilePassword = useUpdateProfilePassword();
-    const { handleLogout } = useAuthContext();
 
     // Asume que data tiene la estructura adecuada
     const userData = {
@@ -98,10 +97,8 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
     const onUserInfoSubmit = async (formData: UserInfoForm) => {
         const promise = updateUser.mutateAsync({
-            params: {
-                path: { userId: data.user.id ?? "" },
-            },
-            body: {
+            userId: data.user.id ?? "",
+            user: {
                 name: formData.name,
                 email: userData.email ?? "",
                 phone: formData.phone,
@@ -122,11 +119,9 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
     const onPasswordSubmit = async (formData: PasswordForm) => {
         const promise = updateProfilePassword.mutateAsync({
-            body: {
-                currentPassword: formData.current,
-                newPassword: formData.new,
-                confirmPassword: formData.confirm,
-            },
+            currentPassword: formData.current,
+            newPassword: formData.new,
+            confirmPassword: formData.confirm,
         });
 
         toast.promise(promise, {
@@ -137,7 +132,7 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
         promise.then(() => {
             passwordForm.reset();
-            handleLogout();
+            LogoutAction();
         });
     };
     return (

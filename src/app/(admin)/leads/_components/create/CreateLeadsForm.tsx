@@ -1,16 +1,14 @@
 import { UseFormReturn } from "react-hook-form";
 
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { useActiveProjects } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { useUsersSummary } from "../../_hooks/useLeads";
 import { CreateLeadSchema } from "../../_schemas/createLeadsSchema";
 import { LeadCaptureSource } from "../../_types/lead";
 import { LeadCaptureSourceLabels } from "../../_utils/leads.utils";
-import { ClientSearch } from "@/app/(admin)/clients/_components/search/ClientSearch";
-import { CreateClientsDialog } from "@/app/(admin)/clients/_components/create/CreateClientsDialog";
-import { UserSearch } from "../search/UserSearch";
-import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
+import { useClientsSummary } from "@/app/(admin)/clients/_hooks/useClients";
 
 interface CreateLeadsFormProps extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
   children: React.ReactNode;
@@ -19,6 +17,34 @@ interface CreateLeadsFormProps extends Omit<React.ComponentPropsWithRef<"form">,
 }
 
 export default function CreateLeadsForm({ children, form, onSubmit }: CreateLeadsFormProps) {
+    // Hooks para cargar datos
+    const { data: projects = [], isLoading: loadingProjects } = useActiveProjects();
+    const { data: users = [], isLoading: isLoadingUsers } = useUsersSummary();
+    const { data: clients = [], isLoading: isLoadingClients } = useClientsSummary();
+
+    // Opciones para los selects/autocomplete
+    const projectOptions: Array<Option> = projects.map((project) => ({
+        value: project.id ?? "",
+        label: project.name ?? "",
+        location: project.location ?? "",
+        defaultDownPayment: project.defaultDownPayment?.toString() ?? "",
+        defaultFinancingMonths: project.defaultFinancingMonths?.toString() ?? "",
+    }));
+
+    const userOptions: Array<Option> = users.map((user) => ({
+        value: user.id ?? "",
+        label: user.userName ?? "Sin nombre",
+    }));
+
+    const clientOptions: Array<Option> = clients.map((client) => ({
+        value: client.id ?? "",
+        label:
+            client.dni
+                ? `${client.dni} - ${client.name ?? "Sin nombre"}`
+                : client.ruc
+                    ? `${client.ruc} - ${client.name ?? "Sin nombre"}`
+                    : client.name ?? `Cliente Sin Datos - ${client.phoneNumber ?? "Sin nombre"}` ?? "Sin datos",
+    }));
 
     return (
         <Form {...form}>
@@ -66,26 +92,16 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                         <FormItem>
                             <FormLabel>Cliente</FormLabel>
                             <FormControl>
-                                <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <ClientSearch
-                                            value={field.value ?? ""}
-                                            onSelect={(clientId) => {
-                                                field.onChange(clientId);
-                                            }}
-                                            placeholder="Seleccione un cliente"
-                                            searchPlaceholder="Buscar por nombre, DNI, RUC, teléfono..."
-                                            emptyMessage="No se encontraron clientes"
-                                        />
-                                    </div>
-                                    <CreateClientsDialog
-                                        trigger={
-                                            <Button variant="outline">
-                                                <Plus className="size-4" />
-                                            </Button>
-                                        }
-                                    />
-                                </div>
+                                <AutoComplete
+                                    options={clientOptions}
+                                    emptyMessage="No se encontró el cliente."
+                                    placeholder={isLoadingClients ? "Cargando clientes..." : "Seleccione un cliente"}
+                                    onValueChange={(selectedOption) => {
+                                        field.onChange(selectedOption?.value ?? "");
+                                    }}
+                                    value={clientOptions.find((option) => option.value === field.value) ?? undefined}
+                                    disabled={isLoadingClients}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -99,14 +115,15 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                         <FormItem>
                             <FormLabel>Asesor</FormLabel>
                             <FormControl>
-                                <UserSearch
-                                    value={field.value ?? ""}
-                                    onSelect={(userId) => {
-                                        field.onChange(userId);
+                                <AutoComplete
+                                    options={userOptions}
+                                    emptyMessage="No se encontró el asesor."
+                                    placeholder={isLoadingUsers ? "Cargando asesores..." : "Seleccione un asesor"}
+                                    onValueChange={(selectedOption) => {
+                                        field.onChange(selectedOption?.value ?? "");
                                     }}
-                                    placeholder="Seleccione un asesor"
-                                    searchPlaceholder="Buscar por nombre, email, rol..."
-                                    emptyMessage="No se encontraron asesores"
+                                    value={userOptions.find((option) => option.value === field.value) ?? undefined}
+                                    disabled={isLoadingUsers}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -120,17 +137,17 @@ export default function CreateLeadsForm({ children, form, onSubmit }: CreateLead
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Proyecto</FormLabel>
-                            <FormControl>
-                                <ProjectSearch
-                                    value={field.value ?? ""}
-                                    onSelect={(projectId) => {
-                                        field.onChange(projectId);
-                                    }}
-                                    placeholder="Seleccione un proyecto"
-                                    searchPlaceholder="Buscar por nombre, ubicación..."
-                                    emptyMessage="No se encontraron proyectos"
-                                />
-                            </FormControl>
+                            <AutoComplete
+                                options={projectOptions}
+                                emptyMessage="No hay proyectos disponibles"
+                                placeholder="Seleccione un proyecto"
+                                isLoading={loadingProjects}
+                                value={projectOptions.find((project) => project.value === field.value)}
+                                onValueChange={(selectedOption) => {
+                                    field.onChange(selectedOption?.value ?? "");
+                                }}
+                                disabled={loadingProjects}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}

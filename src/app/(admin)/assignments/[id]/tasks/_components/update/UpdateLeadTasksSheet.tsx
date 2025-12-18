@@ -75,12 +75,7 @@ export function UpdateLeadTasksSheet({ task, open, onOpenChange }: UpdateLeadTas
             ...(input.completedDate ? { completedDate: input.completedDate } : {}),
         };
 
-        const promise = updateTask.mutateAsync({
-            params: {
-                path: { id: task.id },
-            },
-            body: payload,
-        });
+        const promise = updateTask.mutateAsync({ id: task.id, task: payload });
 
         toast.promise(promise, {
             loading: "Actualizando tarea...",

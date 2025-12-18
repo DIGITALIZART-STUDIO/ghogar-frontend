@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useTransition } from "react";
 import { format, parse } from "date-fns";
 import {  CreditCard, DollarSign, FileText, MapPin, RefreshCcw, User } from "lucide-react";
 import { toast } from "sonner";
 
 import { LogoSunat } from "@/assets/icons/LogoSunat";
+import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import {  FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,47 +12,39 @@ import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UseFormReturn } from "react-hook-form";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
-import { useCurrentExchangeRate } from "../../_hooks/useExchangeRate";
-import { DiscountApprovalDialog } from "./DiscountApprovalDialog";
-import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
-import { ProjectSearch } from "@/app/(admin)/admin/projects/_components/search/ProjectSearch";
-import { LeadSearch } from "@/app/(admin)/leads/_components/search/LeadSearch";
-import { BlockSearch } from "@/app/(admin)/admin/projects/[id]/blocks/_components/search/BlockSearch";
-import { LotSearch } from "@/app/(admin)/admin/projects/lots/_components/search/LotSearch";
+import { toastWrapper } from "@/types/toasts";
+import { GetCurrentExchangeRate } from "../../_actions/ExchangeRateActions";
+import { renderBlockOption, renderLeadOption, renderLotOption, renderProjectOption } from "../_utils/create-quotation.utils";
 
 interface InformationQuotationFormProps {
     form: UseFormReturn<CreateQuotationSchema>;
+    leadsOptions: Array<Option>;
+    projects: Array<Option>;
+    lots: Array<Option>;
+    blocks: Array<Option>;
+    loadingBlocks: boolean;
+    loadingLots: boolean;
+    loadingProjects: boolean;
     setProjectName: (name: string) => void;
     setBlockName: (name: string) => void;
     setLotNumber: (number: string) => void;
-    userData: UserGetDTO;
-    setSelectedLead: (lead: { name: string; code: string } | null) => void;
 }
 
-export default function InformationQuotationForm({ form, setProjectName, setBlockName, setLotNumber, userData, setSelectedLead }: InformationQuotationFormProps) {
-    const [isDiscountApproved, setIsDiscountApproved] = useState(false);
-
-    // Hook para obtener el tipo de cambio
-    const exchangeRateQuery = useCurrentExchangeRate();
-
-    // Función para manejar el clic del botón
+export default function InformationQuotationForm({ form, leadsOptions, projects, lots, blocks, loadingBlocks, loadingLots, loadingProjects, setProjectName, setBlockName, setLotNumber }: InformationQuotationFormProps) {
+    const [isPendingExchangeRate, startTransitionExchangeRate] = useTransition();
+    // Y luego añade esta función para manejar el clic del botón
     const handleGetExchangeRate = () => {
-        if (exchangeRateQuery.isLoading) {
-            toast.info("Obteniendo tipo de cambio...");
-            return;
-        }
+        startTransitionExchangeRate(async () => {
+            const [exchangeRate, error] = await toastWrapper(GetCurrentExchangeRate(), {
+                loading: "Obteniendo tipo de cambio...",
+                success: "Tipo de cambio obtenido correctamente de SUNAT",
+                error: (e) => `Error al obtener tipo de cambio: ${e.message}`,
+            });
 
-        if (exchangeRateQuery.data?.exchangeRate) {
-            const exchangeRateValue = exchangeRateQuery.data.exchangeRate;
-            form.setValue("exchangeRate", String(exchangeRateValue));
-            toast.success(`Tipo de cambio obtenido: ${exchangeRateValue} (${exchangeRateQuery.data.source})`);
-        } else if (exchangeRateQuery.error) {
-            toast.error("Error al obtener el tipo de cambio de SUNAT");
-        } else {
-            // Si no hay datos, intentar obtenerlos
-            exchangeRateQuery.refetch();
-            toast.info("Obteniendo tipo de cambio de SUNAT...");
-        }
+            if (!error && exchangeRate) {
+                form.setValue("exchangeRate", exchangeRate.toString());
+            }
+        });
     };
     return (
         <div className="lg:col-span-2">
@@ -104,7 +97,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                             min={0}
                                             step={0.01}
                                             className="w-full"
-                                            disabled={exchangeRateQuery.isLoading}
+                                            disabled={isPendingExchangeRate}
                                         />
                                     </FormControl>
                                     <TooltipProvider>
@@ -116,9 +109,9 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                                     size="icon"
                                                     className="h-10 w-10"
                                                     onClick={handleGetExchangeRate}
-                                                    disabled={exchangeRateQuery.isLoading}
+                                                    disabled={isPendingExchangeRate}
                                                 >
-                                                    {exchangeRateQuery.isLoading ? (
+                                                    {isPendingExchangeRate ? (
                                                         <RefreshCcw className="h-4 w-4 animate-spin" />
                                                     ) : (
                                                         <LogoSunat className="h-4 w-4" />
@@ -145,8 +138,8 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                 <div className="p-6">
                     {/* Sección Cliente - Diseño de tarjeta horizontal */}
-                    <div className="mb-8 bg-card rounded-xl border-slate-100 border">
-                        <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 p-4 rounded-t-xl">
+                    <div className="mb-8 bg-card rounded-xl border-blue-100 border">
+                        <div className="flex items-center bg-blue-500 text-white p-4 rounded-t-xl">
                             <User className="h-6 w-6 mr-3" />
                             <h3 className="text-lg font-semibold">Información del Cliente</h3>
                         </div>
@@ -158,70 +151,62 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="leadId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-slate-700 dark:text-slate-300">Nombre del Cliente</FormLabel>
-                                            <FormControl>
-                                                <LeadSearch
-                                                    value={field.value ?? ""}
-                                                    onSelect={(leadId, lead) => {
-                                                        // Actualizar el valor del campo directamente
-                                                        field.onChange(leadId);
-
-                                                        // Actualizar el estado del lead seleccionado para el resumen
-                                                        setSelectedLead({
-                                                            name: lead.client?.name ?? "Cliente sin nombre",
-                                                            code: lead.code ?? "Lead sin código"
-                                                        });
-                                                    }}
-                                                    placeholder="Seleccione un cliente"
-                                                    searchPlaceholder="Buscar por código, cliente, proyecto..."
-                                                    emptyMessage="No se encontró el cliente"
-                                                    preselectedId={field.value}
-                                                />
-                                            </FormControl>
+                                            <FormLabel className="text-blue-700">Nombre del Cliente</FormLabel>
+                                            <AutoComplete
+                                                options={leadsOptions}
+                                                emptyMessage="No se encontró el cliente."
+                                                placeholder="Seleccione un cliente"
+                                                onValueChange={(selectedOption) => {
+                                                    field.onChange(selectedOption?.value ?? "");
+                                                }}
+                                                value={leadsOptions.find((option) => option.value === field.value) ?? undefined}
+                                                renderOption={renderLeadOption}
+                                                renderSelectedValue={renderLeadOption}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                                {/* Proyecto - Usando ProjectSearch */}
+                                {/* Proyecto - Ahora es un autocomplete */}
                                 <FormField
                                     control={form.control}
-                                    name="projectId"
+                                    name="projectId" // Cambio: usar directamente projectId en vez de projectName
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-slate-700 dark:text-slate-300">Proyecto</FormLabel>
-                                            <FormControl>
-                                                <ProjectSearch
-                                                    value={field.value ?? ""}
-                                                    onSelect={(projectId, project) => {
-                                                        // Actualizar el valor del campo directamente
-                                                        field.onChange(projectId);
+                                            <FormLabel className="text-blue-700">Proyecto</FormLabel>
+                                            <AutoComplete
+                                                options={projects}
+                                                emptyMessage="No hay proyectos disponibles"
+                                                placeholder="Seleccione un proyecto"
+                                                isLoading={loadingProjects}
+                                                value={projects.find((project) => project.value === field.value)}
+                                                onValueChange={(selectedOption) => {
+                                                    // Actualizar el valor del campo directamente
+                                                    field.onChange(selectedOption?.value ?? "");
 
-                                                        // Para mostrar el nombre del proyecto en el resumen
-                                                        setProjectName(project.name ?? "");
+                                                    // Para mostrar el nombre del proyecto en el resumen
+                                                    setProjectName(selectedOption?.label ?? "");
 
-                                                        // Resetear valores dependientes
-                                                        form.setValue("blockId", "");
-                                                        form.setValue("lotId", "");
+                                                    // Resetear valores dependientes
 
-                                                        // Establecer valores por defecto del proyecto seleccionado
-                                                        if (project.defaultDownPayment) {
-                                                            form.setValue("downPayment", project.defaultDownPayment.toString());
-                                                        }
-                                                        if (project.defaultFinancingMonths) {
-                                                            form.setValue("monthsFinanced", project.defaultFinancingMonths.toString());
-                                                        }
+                                                    form.setValue("blockId", "");
+                                                    form.setValue("lotId", "");
 
-                                                        // Limpiar campos del lote
-                                                        form.setValue("area", "");
-                                                        form.setValue("pricePerM2", "");
-                                                    }}
-                                                    placeholder="Seleccione un proyecto"
-                                                    searchPlaceholder="Buscar por nombre, ubicación..."
-                                                    emptyMessage="No hay proyectos disponibles"
-                                                    preselectedId={field.value}
-                                                />
-                                            </FormControl>
+                                                    // Establecer valores por defecto del proyecto seleccionado
+                                                    if (selectedOption?.defaultDownPayment) {
+                                                        form.setValue("downPayment", selectedOption.defaultDownPayment);
+                                                    }
+                                                    if (selectedOption?.defaultFinancingMonths) {
+                                                        form.setValue("monthsFinanced", selectedOption.defaultFinancingMonths);
+                                                    }
+
+                                                    // Limpiar campos del lote
+                                                    form.setValue("area", "");
+                                                    form.setValue("pricePerM2", "");
+                                                }}
+                                                renderOption={renderProjectOption}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -232,7 +217,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                     {/* Sección Lote - Diseño de tarjeta horizontal */}
                     <div className="mb-8 bg-card border-amber-100 border rounded-xl">
-                        <div className="flex items-center bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 p-4 rounded-t-xl">
+                        <div className="flex items-center bg-amber-500 text-white p-4 rounded-t-xl">
                             <MapPin className="h-6 w-6 mr-3" />
                             <h3 className="text-lg font-semibold">Información del Lote</h3>
                         </div>
@@ -243,35 +228,38 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                                 <FormField
                                     control={form.control}
-                                    name="blockId"
+                                    name="blockId" // Cambio: usar directamente blockId en vez de block
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700 dark:text-amber-300">Manzana</FormLabel>
-                                            <FormControl>
-                                                <BlockSearch
-                                                    projectId={form.watch("projectId") ?? ""}
-                                                    value={field.value ?? ""}
-                                                    onSelect={(blockId, block) => {
-                                                        // Actualizar el valor del campo directamente
-                                                        field.onChange(blockId);
+                                            <FormLabel className="text-amber-700">Manzana</FormLabel>
+                                            <AutoComplete
+                                                options={blocks}
+                                                emptyMessage={
+                                                    field.value
+                                                        ? "No hay manzanas disponibles en este proyecto"
+                                                        : "Seleccione primero un proyecto"
+                                                }
+                                                placeholder="Seleccione una manzana"
+                                                isLoading={loadingBlocks}
+                                                disabled={!form.watch("projectId")}
+                                                value={blocks.find((block) => block.value === field.value)}
+                                                onValueChange={(selectedOption) => {
+                                                    // Actualizar el valor del campo directamente
+                                                    field.onChange(selectedOption?.value ?? "");
 
-                                                        // Para mostrar el nombre del bloque en el resumen
-                                                        setBlockName(block.name ?? "");
+                                                    // Para mostrar el nombre del bloque en el resumen
+                                                    setBlockName(selectedOption?.label ?? "");
 
-                                                        // Resetear lote
-                                                        form.setValue("lotId", "");
+                                                    // Resetear lote
 
-                                                        // Limpiar campos del lote
-                                                        form.setValue("area", "");
-                                                        form.setValue("pricePerM2", "");
-                                                    }}
-                                                    placeholder="Seleccione una manzana"
-                                                    searchPlaceholder="Buscar por nombre de manzana..."
-                                                    emptyMessage="No hay manzanas disponibles en este proyecto"
-                                                    preselectedId={field.value}
-                                                    disabled={!form.watch("projectId")}
-                                                />
-                                            </FormControl>
+                                                    form.setValue("lotId", "");
+
+                                                    // Limpiar campos del lote
+                                                    form.setValue("area", "");
+                                                    form.setValue("pricePerM2", "");
+                                                }}
+                                                renderOption={renderBlockOption}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -280,32 +268,32 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                 {/* Lote - Ahora es un autocomplete */}
                                 <FormField
                                     control={form.control}
-                                    name="lotId"
+                                    name="lotId" // Cambio: usar directamente lotId
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700 dark:text-amber-300">Lote</FormLabel>
-                                            <FormControl>
-                                                <LotSearch
-                                                    blockId={form.watch("blockId") ?? ""}
-                                                    value={field.value ?? ""}
-                                                    onSelect={(lotId, lot) => {
-                                                        // Actualizar el valor del campo directamente
-                                                        field.onChange(lotId);
+                                            <FormLabel className="text-amber-700">Lote</FormLabel>
+                                            <AutoComplete
+                                                options={lots}
+                                                emptyMessage={
+                                                    form.watch("blockId")
+                                                        ? "No hay lotes disponibles en esta manzana"
+                                                        : "Seleccione primero una manzana"
+                                                }
+                                                placeholder="Seleccione un lote"
+                                                isLoading={loadingLots}
+                                                disabled={!form.watch("blockId")}
+                                                value={lots.find((lot) => lot.value === field.value)}
+                                                onValueChange={(selectedOption) => {
+                                                    // Actualizar el valor del campo directamente
+                                                    field.onChange(selectedOption?.value ?? "");
 
-                                                        // Para mostrar el número del lote en el resumen
-                                                        setLotNumber(lot.lotNumber ?? "");
+                                                    // Para mostrar el número del lote en el resumen
+                                                    setLotNumber(selectedOption?.label ?? "");
 
-                                                        // Actualizar campos del lote
-                                                        form.setValue("area", lot.area?.toString() ?? "");
-                                                        form.setValue("pricePerM2", lot.pricePerSquareMeter?.toString() ?? "");
-                                                    }}
-                                                    placeholder="Seleccione un lote"
-                                                    searchPlaceholder="Buscar por número de lote, área, precio..."
-                                                    emptyMessage="No hay lotes disponibles en esta manzana"
-                                                    preselectedId={field.value}
-                                                    disabled={!form.watch("blockId")}
-                                                />
-                                            </FormControl>
+                                                    // No hay valores dependientes que resetear
+                                                }}
+                                                renderOption={renderLotOption}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -316,7 +304,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="area"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700 dark:text-amber-300">Área (m²)</FormLabel>
+                                            <FormLabel className="text-amber-700">Área (m²)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Ingrese el área"
@@ -335,7 +323,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="pricePerM2"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-amber-700 dark:text-amber-300">Precio por m²</FormLabel>
+                                            <FormLabel className="text-amber-700">Precio por m²</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Ingrese el precio por m²"
@@ -354,107 +342,70 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
 
                     {/* Sección Financiamiento - Diseño de tarjeta horizontal */}
                     <div className="mb-6 bg-card border border-emerald-100 rounded-xl">
-                        <div className="flex items-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 p-4 rounded-t-xl">
+                        <div className="flex items-center bg-emerald-500 text-white p-4 rounded-t-xl">
                             <DollarSign className="h-6 w-6 mr-3" />
                             <h3 className="text-lg font-semibold">Información de Financiamiento</h3>
                         </div>
 
                         <div className="p-5">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="flex items-end gap-2">
-                                    <div className="flex-1">
-                                        <FormField
-                                            control={form.control}
-                                            name="discount"
-                                            render={({ field }) => {
-                                                // Verificar si el usuario es SalesAdvisor
-                                                const isSalesAdvisor = userData?.roles?.[0] === "SalesAdvisor";
+                                <FormField
+                                    control={form.control}
+                                    name="discount"
+                                    render={({ field }) => {
+                                        // Calcular el descuento máximo permitido
+                                        const selectedProject = projects.find((p) => p.value === form.watch("projectId"));
+                                        const maxDiscount = selectedProject?.maxDiscountPercentage
+                                            ? parseFloat(selectedProject.maxDiscountPercentage)
+                                            : 15; // Valor predeterminado del 15% si no hay configuración
 
-                                                // Calcular el descuento máximo permitido solo para SalesAdvisor no aprobado
-                                                // Nota: El maxDiscountPercentage se obtendrá del proyecto seleccionado
-                                                // Por ahora usamos un valor predeterminado del 15%
-                                                const maxDiscount = 15; // Valor predeterminado del 15% si no hay configuración
+                                        return (
+                                            <FormItem>
+                                                <FormLabel className="text-emerald-700">Descuento (Máx: {maxDiscount}%)</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Ingrese el descuento"
+                                                        type="number"
+                                                        className="border-emerald-200 focus:border-emerald-500"
+                                                        {...field}
+                                                        value={field.value || ""}
+                                                        onChange={(e) => {
+                                                            // Permitir campo vacío
+                                                            if (e.target.value === "") {
+                                                                field.onChange("");
+                                                                return;
+                                                            }
 
-                                                // Solo aplicar límite si es SalesAdvisor y no está aprobado
-                                                const shouldApplyLimit = isSalesAdvisor && !isDiscountApproved;
+                                                            const numericValue = parseFloat(e.target.value);
 
-                                                return (
-                                                    <FormItem>
-                                                        <FormLabel className="text-emerald-700 dark:text-emerald-300">
-                                                            Descuento {shouldApplyLimit ? `(Máx: ${maxDiscount}%)` : "(Máx: 100%)"}
-                                                            {userData?.roles?.[0] === "SalesAdvisor" && !isDiscountApproved && (
-                                                                <span className="ml-2 text-xs text-orange-600 dark:text-orange-400 font-normal">
-                                                                    (Requiere aprobación)
-                                                                </span>
-                                                            )}
-                                                            {userData?.roles?.[0] === "SalesAdvisor" && isDiscountApproved && (
-                                                                <span className="ml-2 text-xs text-green-600 dark:text-green-400 font-normal">
-                                                                    ✓ Aprobado
-                                                                </span>
-                                                            )}
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Ingrese el descuento"
-                                                                type="number"
-                                                                className="border-emerald-200 focus:border-emerald-500"
-                                                                {...field}
-                                                                value={field.value || ""}
-                                                                disabled={userData?.roles?.[0] === "SalesAdvisor" && !isDiscountApproved}
-                                                                onChange={(e) => {
-                                                                    // Permitir campo vacío
-                                                                    if (e.target.value === "") {
-                                                                        field.onChange("");
-                                                                        return;
-                                                                    }
-
-                                                                    const numericValue = parseFloat(e.target.value);
-
-                                                                    // Verificar si es un número válido
-                                                                    if (!isNaN(numericValue)) {
-                                                                        // Límite máximo del 100% para todos
-                                                                        if (numericValue > 100) {
-                                                                            field.onChange("100");
-                                                                            toast.warning("El descuento máximo permitido es del 100%");
-                                                                            return;
-                                                                        }
-
-                                                                        // Solo aplicar límite si es SalesAdvisor no aprobado
-                                                                        if (shouldApplyLimit && numericValue > maxDiscount) {
-                                                                            field.onChange(maxDiscount.toString());
-                                                                            toast.warning(
-                                                                                `El descuento ha sido ajustado al máximo permitido: ${maxDiscount}%`
-                                                                            );
-                                                                        } else {
-                                                                            // Caso normal: aceptar el valor ingresado
-                                                                            field.onChange(e.target.value);
-                                                                        }
-                                                                    }
-                                                                }}
-                                                                min="0"
-                                                                max="100"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                );
-                                            }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <DiscountApprovalDialog
-                                            userData={userData}
-                                            isDiscountApproved={isDiscountApproved}
-                                            onDiscountApproved={() => setIsDiscountApproved(true)}
-                                        />
-                                    </div>
-                                </div>
+                                                            // Verificar si es un número válido
+                                                            if (!isNaN(numericValue)) {
+                                                                // Si excede el máximo, establecer al máximo y mostrar advertencia
+                                                                if (numericValue > maxDiscount) {
+                                                                    field.onChange(maxDiscount.toString());
+                                                                    toast.warning(
+                                                                        `El descuento ha sido ajustado al máximo permitido: ${maxDiscount}%`
+                                                                    );
+                                                                } else {
+                                                                    // Caso normal: aceptar el valor ingresado
+                                                                    field.onChange(e.target.value);
+                                                                }
+                                                            }
+                                                        }}
+                                                        min="0"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        );
+                                    }}
+                                />
                                 <FormField
                                     control={form.control}
                                     name="downPayment"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-emerald-700 dark:text-emerald-300">Inicial (%)</FormLabel>
+                                            <FormLabel className="text-emerald-700">Inicial (%)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Ingrese el porcentaje inicial"
@@ -473,7 +424,7 @@ export default function InformationQuotationForm({ form, setProjectName, setBloc
                                     name="monthsFinanced"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-emerald-700 dark:text-emerald-300">Meses a Financiar</FormLabel>
+                                            <FormLabel className="text-emerald-700">Meses a Financiar</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="36"

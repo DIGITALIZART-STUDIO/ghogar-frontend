@@ -8,7 +8,6 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbS
 import ManageLeadTasks from "./_components/ManageLeadTasks";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useTasksByLead } from "./_hooks/useLeadTasks";
-import type { LeadTasksByLeadId } from "./_types/leadTask";
 
 export default function TaskPage() {
     // Obtener el id del lead desde los params de la ruta
@@ -68,7 +67,7 @@ export default function TaskPage() {
                 description={`Lista de tareas programadas asociadas al cliente ${clientName}.`}
             />
             <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <ManageLeadTasks data={data as LeadTasksByLeadId} leadId={leadId} assignedToId={assignedToId} />
+                <ManageLeadTasks data={data} leadId={leadId} assignedToId={assignedToId} />
             </div>
         </div>
     );

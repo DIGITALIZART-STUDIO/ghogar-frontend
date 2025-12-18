@@ -86,11 +86,7 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
         setFilteredTasks(updatedTasks);
 
         startTransition(async () => {
-            const promise = completeTask.mutateAsync({
-                params: {
-                    path: { id: taskId },
-                },
-            });
+            const promise = completeTask.mutateAsync(taskId);
             toast.promise(promise, {
                 loading: "Actualizando estado de la tarea...",
                 success: "Tarea actualizada correctamente",
@@ -107,11 +103,7 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
         setFilteredTasks(updatedTasks);
 
         startTransition(async () => {
-            const promise = deleteTaskMutation.mutateAsync({
-                params: {
-                    path: { id: taskId },
-                },
-            });
+            const promise = deleteTaskMutation.mutateAsync(taskId);
             toast.promise(promise, {
                 loading: "Eliminando tarea...",
                 success: "Tarea eliminada correctamente",
@@ -156,11 +148,7 @@ export default function ManageLeadTasks({ data, leadId, assignedToId }: ManageLe
             setFilteredTasks(updatedTasks);
 
             startTransition(async () => {
-                const promise = completeTask.mutateAsync({
-                    params: {
-                        path: { id: draggableId },
-                    },
-                });
+                const promise = completeTask.mutateAsync(draggableId);
                 toast.promise(promise, {
                     loading: "Actualizando estado de la tarea...",
                     success: "Tarea actualizada correctamente",

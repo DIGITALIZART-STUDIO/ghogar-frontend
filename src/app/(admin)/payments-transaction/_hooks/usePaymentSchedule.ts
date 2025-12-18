@@ -1,16 +1,16 @@
-import { backend as api } from "@/types/backend";
-import { useAuthContext } from "@/context/auth-provider";
+import { useQuery } from "@tanstack/react-query";
+import { GetPaymentScheduleByReservation } from "../../reservations/_actions/PaymentActions";
 
 export function usePaymentSchedule(reservationId: string) {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/Payments/reservation/{id}/schedule", {
-        params: {
-            path: { id: reservationId },
+    return useQuery({
+        queryKey: ["paymentSchedule", reservationId],
+        queryFn: async () => {
+            const [data, error] = await GetPaymentScheduleByReservation(reservationId);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data ?? [];
         },
         enabled: !!reservationId,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
     });
 }

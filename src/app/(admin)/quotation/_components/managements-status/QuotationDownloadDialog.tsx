@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useDownloadQuotationPDF } from "../../_hooks/useQuotations";
+import { DownloadQuotationPDF } from "../../_actions/QuotationActions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function QuotationDownloadDialog({
@@ -15,35 +15,38 @@ export function QuotationDownloadDialog({
     onOpenChange: (v: boolean) => void,
     quotationId: string,
 }) {
-    const [error, setError] = useState("");
+    const [, setError] = useState("");
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-    const downloadQuotationPDF = useDownloadQuotationPDF();
 
     // Download the PDF from the backend on open
-    useEffect(() => {
-        if (!isOpen) {
-            return;
-        }
+    useEffect(
+        () => {
+            if (!isOpen) {
+                return;
+            }
 
-        (async() => {
-            try {
-                const pdfBlob = await downloadQuotationPDF(quotationId);
+            (async() => {
+                const [pdfBlob, error] = await DownloadQuotationPDF(quotationId);
+                if (!!error) {
+                    console.error(error);
+                    setError(`Error cargando PDF: ${error.message}`);
+                    return;
+                }
+
                 const dataUrl = URL.createObjectURL(pdfBlob);
                 setPdfUrl(dataUrl);
-                setError("");
-            } catch (error) {
-                console.error("Error loading PDF:", error);
-                setError(`Error cargando PDF: ${error instanceof Error ? error.message : "Error desconocido"}`);
-            }
-        })();
-    }, [isOpen, quotationId, downloadQuotationPDF]);
+            })();
 
-    // Cleanup URL when component unmounts or URL changes
-    useEffect(() => () => {
-        if (pdfUrl) {
-            URL.revokeObjectURL(pdfUrl);
-        }
-    }, [pdfUrl]);
+            return () => {
+                if (pdfUrl) {
+                    URL.revokeObjectURL(pdfUrl);
+                }
+            };
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [isOpen, quotationId],
+    );
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -55,14 +58,7 @@ export function QuotationDownloadDialog({
                     </DialogTitle>
                 </DialogHeader>
                 <div className="px-6">
-                    {error ? (
-                        <div className="flex items-center justify-center w-full max-h-[80vh] h-[500px] border border-red-200 rounded bg-red-50">
-                            <div className="text-center">
-                                <p className="text-red-600 font-medium">Error al cargar el PDF</p>
-                                <p className="text-red-500 text-sm mt-2">{error}</p>
-                            </div>
-                        </div>
-                    ) : !!pdfUrl ? (
+                    {!!pdfUrl ? (
                         <iframe
                             src={pdfUrl}
                             title="PDF Preview"

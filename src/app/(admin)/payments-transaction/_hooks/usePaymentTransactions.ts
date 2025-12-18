@@ -1,181 +1,141 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { backend as api, downloadFileWithClient, uploadWithFormData } from "@/types/backend";
-import { useAuthContext } from "@/context/auth-provider";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    getAllPaymentTransactions,
+    getPaymentTransactionById,
+    createPaymentTransaction,
+    updatePaymentTransaction,
+    deletePaymentTransaction,
+    getPaymentTransactionsByReservationId,
+    getQuotaStatusByReservationId,
+} from "../_actions/PaymentTransactionActions";
+import { PaymentTransactionCreate, PaymentTransactionUpdate } from "../_types/paymentTransaction";
 
 // Obtener todas las transacciones
 export function usePaymentTransactions() {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/PaymentTransaction", {
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
+    return useQuery({
+        queryKey: ["paymentTransactions"],
+        queryFn: async () => {
+            const [data, error] = await getAllPaymentTransactions();
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data ?? [];
         },
     });
 }
 
 // Obtener una transacción por ID
 export function usePaymentTransaction(id: string) {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/PaymentTransaction/{id}", {
-        params: {
-            path: { id },
+    return useQuery({
+        queryKey: ["paymentTransaction", id],
+        queryFn: async () => {
+            const [data, error] = await getPaymentTransactionById(id);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data;
         },
         enabled: !!id,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
     });
 }
 
 // Obtener transacciones por ReservationId
 export function usePaymentTransactionsByReservation(reservationId: string) {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/PaymentTransaction/by-reservation/{reservationId}", {
-        params: {
-            path: { reservationId },
+    return useQuery({
+        queryKey: ["paymentTransactionsByReservation", reservationId],
+        queryFn: async () => {
+            const [data, error] = await getPaymentTransactionsByReservationId(reservationId);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data ?? [];
         },
         enabled: !!reservationId,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
-        },
     });
 }
 
 // Obtener estado de cuotas por ReservationId (y opcionalmente excluyendo una transacción)
 export function useQuotaStatusByReservation(reservationId: string, excludeTransactionId?: string) {
-    const { handleAuthError } = useAuthContext();
-
-    return api.useQuery("get", "/api/PaymentTransaction/quota-status/by-reservation/{reservationId}/{excludeTransactionId}", {
-        params: {
-            path: {
-                reservationId,
-                excludeTransactionId: excludeTransactionId ?? "",
-            },
+    return useQuery({
+        queryKey: ["quotaStatusByReservation", reservationId, excludeTransactionId],
+        queryFn: async () => {
+            const [data, error] = await getQuotaStatusByReservationId(reservationId, excludeTransactionId);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data ?? [];
         },
         enabled: !!reservationId,
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
+    });
+}
+
+// Crear una transacción
+export function useCreatePaymentTransaction() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (dto: PaymentTransactionCreate) => {
+            const [data, error] = await createPaymentTransaction(dto);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data;
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
+            if (variables.reservationId) {
+                queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", variables.reservationId] });
+                queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", variables.reservationId] });
+                queryClient.invalidateQueries({ queryKey: ["paymentSchedule", variables.reservationId] });
+            }
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
         },
     });
 }
 
-// Query keys constants for better maintainability - matching openapi-react-query format
-const PAYMENT_TRANSACTION_QUERY_KEYS = {
-    all: ["get", "/api/PaymentTransaction"] as const,
-    byId: (id: string) => ["get", "/api/PaymentTransaction/{id}", { path: { id } }] as const,
-    byReservation: (reservationId: string) => ["get", "/api/PaymentTransaction/by-reservation/{reservationId}", { path: { reservationId } }] as const,
-    quotaStatusByReservation: (reservationId: string, excludeTransactionId?: string) => ["get", "/api/PaymentTransaction/quota-status/by-reservation/{reservationId}/{excludeTransactionId}", {
-        path: {
-            reservationId,
-            excludeTransactionId: excludeTransactionId ?? "",
+// Actualizar una transacción
+export function useUpdatePaymentTransaction() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ id, dto }: { id: string; dto: PaymentTransactionUpdate }) => {
+            const [data, error] = await updatePaymentTransaction(id, dto);
+            if (error) {
+                throw new Error(error.message);
+            }
+            return data;
         },
-    }] as const,
-} as const;
-
-// Helper function to invalidate all payment transaction-related queries
-const invalidatePaymentTransactionQueries = (queryClient: ReturnType<typeof useQueryClient>) => {
-    queryClient.invalidateQueries({ queryKey: PAYMENT_TRANSACTION_QUERY_KEYS.all });
-    // Invalidar todas las queries de PaymentTransaction (incluye variaciones con parámetros)
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
-    // Invalidar queries relacionadas de Reservations
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
-};
-
-// Crear una transacción con soporte para archivos
-export const useCreatePaymentTransaction = uploadWithFormData("post", "/api/PaymentTransaction", {
-    useAuthContext,
-    invalidateQueries: (queryClient) => {
-        invalidatePaymentTransactionQueries(queryClient);
-    },
-});
-
-// Actualizar una transacción con soporte para archivos
-export const useUpdatePaymentTransaction = uploadWithFormData("put", "/api/PaymentTransaction/{id}", {
-    useAuthContext,
-    invalidateQueries: (queryClient) => {
-        invalidatePaymentTransactionQueries(queryClient);
-    },
-});
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
+            if (variables.dto.reservationId) {
+                queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", variables.dto.reservationId] });
+                queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", variables.dto.reservationId] });
+                queryClient.invalidateQueries({ queryKey: ["paymentSchedule", variables.dto.reservationId] });
+            }
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+        },
+    });
+}
 
 // Eliminar una transacción
 export function useDeletePaymentTransaction() {
     const queryClient = useQueryClient();
-    const { handleAuthError } = useAuthContext();
-
-    return api.useMutation("delete", "/api/PaymentTransaction/{id}", {
-        onError: async (error: unknown) => {
-            await handleAuthError(error);
+    return useMutation({
+        // Recibe un objeto con id y reservationId
+        mutationFn: async ({ id, reservationId }: { id: string; reservationId?: string }) => {
+            const [, error] = await deletePaymentTransaction(id);
+            if (error) {
+                throw new Error(error.message);
+            }
+            // Retorna ambos valores correctamente
+            return { id, reservationId };
         },
-        onSuccess: () => {
-            // Invalidar queries de transacciones de pago con las query keys correctas
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/{id}"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/by-reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/PaymentTransaction/quota-status/by-reservation"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/canceled/pending-validation/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/pending-payments/paginated"] });
-            queryClient.invalidateQueries({ queryKey: ["get", "/api/Reservations/advisor/paginated"] });
+        onSuccess: ({ reservationId }) => {
+            queryClient.invalidateQueries({ queryKey: ["paymentTransactions"] });
+            queryClient.invalidateQueries({ queryKey: ["canceledReservations"] });
+            if (reservationId) {
+                queryClient.invalidateQueries({ queryKey: ["paymentTransactionsByReservation", reservationId] });
+                queryClient.invalidateQueries({ queryKey: ["quotaStatusByReservation", reservationId] });
+                queryClient.invalidateQueries({ queryKey: ["paymentSchedule", reservationId] });
+            }
         },
     });
-}
-
-// Hook para descargar PDF de cronograma de pagos
-export function useDownloadSchedulePDF() {
-    const { handleAuthError } = useAuthContext();
-
-    return async (reservationId: string) => {
-        try {
-            return await downloadFileWithClient("get", "/api/Reservations/{reservationId}/schedule/pdf", {
-                path: { reservationId },
-            });
-        } catch (error) {
-            await handleAuthError(error);
-            throw error;
-        }
-    };
-}
-
-// Hook para descargar PDF de pagos procesados
-export function useDownloadProcessedPaymentsPDF() {
-    const { handleAuthError } = useAuthContext();
-
-    return async (reservationId: string) => {
-        try {
-            return await downloadFileWithClient("get", "/api/Reservations/{reservationId}/processed-payments/pdf", {
-                path: { reservationId },
-            });
-        } catch (error) {
-            await handleAuthError(error);
-            throw error;
-        }
-    };
-}
-
-// Hook para descargar PDF de recibo
-export function useDownloadReceiptPDF() {
-    const { handleAuthError } = useAuthContext();
-
-    return async (reservationId: string) => {
-        try {
-            return await downloadFileWithClient("get", "/api/Reservations/{reservationId}/receipt/pdf", {
-                path: { reservationId },
-            });
-        } catch (error) {
-            await handleAuthError(error);
-            throw error;
-        }
-    };
 }

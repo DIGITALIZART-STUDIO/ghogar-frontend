@@ -67,9 +67,7 @@ export function CreateLeadsDialog() {
             status: LeadStatus.Registered,
         };
 
-        const promise = createLead.mutateAsync({
-            body: payload,
-        });
+        const promise = createLead.mutateAsync(payload);
 
         toast.promise(promise, {
             loading: "Creando lead...",

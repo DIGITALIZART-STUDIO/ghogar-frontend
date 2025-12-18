@@ -122,12 +122,7 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
                 return;
             }
 
-            const promise = updateClient.mutateAsync({
-                params: {
-                    path: { id: client.id },
-                },
-                body: clientData,
-            });
+            const promise = updateClient.mutateAsync({ id: client.id, client: clientData });
 
             toast.promise(promise, {
                 loading: "Actualizando cliente...",

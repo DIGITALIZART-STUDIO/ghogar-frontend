@@ -1,378 +1,249 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-    // InfiniteData,
-    UseInfiniteQueryResult,
-    UseQueryResult,
-    UseSuspenseInfiniteQueryResult,
-} from "@tanstack/react-query";
-import { AlertCircle, Check, ChevronDown, Loader2 } from "lucide-react";
-import { useDebouncedCallback } from "use-debounce";
+import React, { forwardRef, ReactNode, useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { Command as CommandPrimitive } from "cmdk";
+import { Check, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./command";
+import { CommandGroup, CommandInput, CommandItem, CommandList } from "./command";
+import { Skeleton } from "./skeleton";
 
-export type Option<T> = {
-    value: string;
-    label: string;
-    entity?: T;
-    component?: React.ReactNode;
+export type Option = {
+  value: string;
+  label: string;
+  [key: string]: string;
 };
 
-type AutoCompleteProps<T> = {
-    // Props básicas (compatibilidad con versión anterior)
-    options?: Array<Option<T>>;
-    emptyMessage?: string;
-    value?: Option<T>;
-    onValueChange?: (value: Option<T>) => void;
-    isLoading?: boolean;
-    disabled?: boolean;
-    placeholder?: string;
-    onPreventSelection?: (value: Option<T>) => boolean;
-    showComponentOnSelection?: boolean; // Nueva prop para controlar si mostrar component o label cuando se selecciona
-
-    // Props para búsqueda remota (nuevas)
-    queryState?: UseQueryResult<Array<T>, unknown> | UseInfiniteQueryResult<unknown, unknown> | UseSuspenseInfiniteQueryResult<unknown, unknown>;
-    onSearchChange?: (searchTerm: string) => void;
-    searchPlaceholder?: string;
-    debounceMs?: number;
-    regexInput?: RegExp;
-    total?: number;
-    notFoundAction?: React.ReactNode;
-
-    // Props de scroll infinito
-    onScrollEnd?: () => void;
-
-    // Props de UI mejoradas
-    className?: string;
-    commandContentClassName?: string;
-    commandInputClassName?: string;
-    variant?: "default" | "outline";
+type AutoCompleteProps = {
+  options: Array<Option>;
+  emptyMessage: string;
+  value?: Option;
+  onValueChange?: (value: Option) => void;
+  isLoading?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+  className?: string;
+  showClearButton?: boolean;
+  renderOption?: (option: Option) => ReactNode;
+  renderSelectedValue?: (option: Option) => ReactNode;
 };
 
-export function AutoComplete<T = unknown>({
-    // Props básicas
-    options = [],
-    placeholder = "Buscar...",
-    emptyMessage = "No se encontraron resultados",
-    value,
-    onValueChange,
-    disabled = false,
-    isLoading: externalLoading = false,
-    onPreventSelection,
-    showComponentOnSelection = false, // Por defecto, mostrar solo el label
-
-    // Props de búsqueda remota
-    queryState,
-    onSearchChange,
-    searchPlaceholder,
-    debounceMs = 300,
-    regexInput,
-    total,
-    notFoundAction,
-
-    // Props de scroll
-    onScrollEnd,
-
-    // Props de UI
-    className,
-    commandContentClassName,
-    commandInputClassName,
-}: AutoCompleteProps<T>) {
+const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>((
+    {
+        options,
+        placeholder,
+        emptyMessage,
+        value,
+        onValueChange,
+        disabled,
+        isLoading = false,
+        className,
+        showClearButton = true,
+        renderOption,
+        renderSelectedValue,
+    },
+    ref,
+) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const isInteractingWithDropdownRef = useRef(false);
 
     const [isOpen, setOpen] = useState(false);
-    const [selected, setSelected] = useState<Option<T> | undefined>(value);
+    const [selected, setSelected] = useState<Option | undefined>(value);
     const [inputValue, setInputValue] = useState<string>(value?.label ?? "");
-    const [, setSearchTerm] = useState("");
 
-    // Sincronizar con el prop value cuando cambie externamente
     useEffect(() => {
         setSelected(value);
         setInputValue(value?.label ?? "");
-        if (!value) {
-            setSearchTerm("");
-        }
     }, [value]);
 
-    // Determinar si usamos búsqueda remota o local
-    const isRemoteSearch = Boolean(queryState && onSearchChange);
-
-    // Estados de la query remota
-    const remoteData = queryState?.data;
-    const remoteLoading = queryState?.isLoading;
-    const isError = queryState?.isError;
-    const error = queryState?.error;
-    const refetch = queryState?.refetch;
-
-    // Determinar estado de loading
-    const isLoading = isRemoteSearch ? remoteLoading : externalLoading;
-
-    // Determinar opciones a usar
-    const currentOptions = useMemo(() => {
-        if (isRemoteSearch && remoteData) {
-            return options.length > 0 ? options : [];
-        }
-        return options;
-    }, [isRemoteSearch, remoteData, options]);
-
-    // Mensajes memoizados
-    const messages = useMemo(
-        () => ({
-            loading: "Cargando...",
-            error: "Error al cargar los datos",
-            empty: emptyMessage,
-            noResults: "Sin resultados",
-        }),
-        [emptyMessage],
-    );
-
-    // Callback con debounce para búsqueda remota
-    const debouncedSearch = useDebouncedCallback((term: string) => {
-        if (!isRemoteSearch) {
-            return;
-        }
-
-        if (regexInput) {
-            if (regexInput.test(term) || term === "") {
-                onSearchChange?.(term);
-                setSearchTerm(term);
-            }
-        } else {
-            onSearchChange?.(term);
-            setSearchTerm(term);
-        }
-    }, debounceMs);
-
-    // Manejo de cambios en el input
-    const handleInputChange = useCallback(
-        (newValue: string) => {
-            setInputValue(newValue);
-
-            // Si estamos buscando y hay algo seleccionado, deseleccionar
-            if (selected && newValue !== selected.label) {
-                setSelected(undefined);
-                // No llamar onValueChange con undefined, solo limpiar internamente
-            }
-
-            if (isRemoteSearch) {
-                debouncedSearch(newValue);
-            }
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isRemoteSearch, debouncedSearch, selected, onValueChange],
-    );
-
-    const handleSelectOption = useCallback(
-        (selectedOption: Option<T>) => {
-            onValueChange?.(selectedOption);
-            if (onPreventSelection && onPreventSelection(selectedOption)) {
-                return; // Si la selección está bloqueada, no hacer nada mas
-            }
-            setInputValue(selectedOption.label);
-            setSelected(selectedOption);
-            //onValueChange?.(selectedOption);
-            setOpen(false);
-        },
-        [onPreventSelection, onValueChange],
-    );
-
-    const handleFocus = useCallback(() => {
-        setOpen(true);
-        // Al hacer focus, si hay algo seleccionado, limpiar para buscar
-        if (selected) {
-            setInputValue("");
-            if (isRemoteSearch) {
-                debouncedSearch("");
-            }
-        }
-    }, [selected, isRemoteSearch, debouncedSearch]);
-
-    const handleBlur = useCallback(() => {
-        // Delay para permitir clicks en opciones
-        setTimeout(() => {
-            if (isInteractingWithDropdownRef.current) {
-                // Mantener abierto si la interacción ocurre dentro del dropdown
-                isInteractingWithDropdownRef.current = false;
-                // restaurar el foco para evitar cerrar por blur
-                inputRef.current?.focus();
+    const handleKeyDown = useCallback(
+        (event: KeyboardEvent<HTMLDivElement>) => {
+            const input = inputRef.current;
+            if (!input) {
                 return;
             }
+
+            if (!isOpen) {
+                setOpen(true);
+            }
+
+            if (event.key === "Enter" && input.value.trim() !== "") {
+                const exactMatches = options.filter((option) => option.label.toLowerCase() === input.value.trim().toLowerCase());
+
+                if (exactMatches.length >= 1) {
+                    setSelected(exactMatches[0]);
+                    onValueChange?.(exactMatches[0]);
+                    setOpen(false);
+                }
+            }
+
+            if (event.key === "Escape") {
+                input.blur();
+            }
+        },
+        [isOpen, options, onValueChange],
+    );
+
+    const handleBlur = useCallback(() => {
+        setOpen(false);
+        setInputValue(selected?.label ?? "");
+    }, [selected]);
+
+    const handleSelectOption = useCallback(
+        (selectedOption: Option) => {
+            setInputValue(selectedOption.label);
+            setSelected(selectedOption);
+            onValueChange?.(selectedOption);
             setOpen(false);
 
-            // Si hay algo seleccionado, mantener el label; si no, limpiar
-            if (selected) {
-                setInputValue(selected.label);
-            } else {
-                setInputValue("");
-            }
+            setTimeout(() => {
+                inputRef?.current?.blur();
+            }, 0);
+        },
+        [onValueChange],
+    );
 
-            // Limpiar búsqueda al cerrar solo si no hay nada seleccionado
-            if (isRemoteSearch && !selected) {
-                debouncedSearch("");
-            }
-        }, 200);
-    }, [selected, isRemoteSearch, debouncedSearch]);
+    const handleClearSelection = useCallback(() => {
+        const emptyOption: Option = { value: "", label: "" };
+        setSelected(undefined);
+        setInputValue("");
+        onValueChange?.(emptyOption);
+        inputRef.current?.focus();
+    }, [onValueChange]);
 
-    // Calcular opciones adicionales disponibles
-    const moreOptions = useMemo(() => (total ? Math.max(0, total - currentOptions.length) : 0), [total, currentOptions.length]);
+    const handleScrollCapture = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+    }, []);
 
-    // Renderizar el trigger/input
-    const renderTrigger = () => {
-        if (selected && !isOpen) {
-            // Mostrar información del item seleccionado
-            return (
-                <div
-                    className={cn(
-                        "flex items-center justify-between w-full px-3 py-2 text-sm bg-background border border-input rounded-md cursor-pointer hover:bg-accent transition-colors",
-                        disabled && "opacity-50 cursor-not-allowed",
-                    )}
-                    onClick={() => !disabled && setOpen(true)}
-                >
-                    <div className="flex-1 min-w-0">
-                        {showComponentOnSelection && selected.component ? (
-                            <div className="truncate">{selected.component}</div>
-                        ) : (
-                            <span className="truncate" title={selected.label}>
-                                {selected.label}
-                            </span>
-                        )}
-                    </div>
-                    <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-                </div>
-            );
+    const handleCommandClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+    }, []);
+
+    const SelectedValueDisplay = () => {
+        if (!selected) {
+            return null;
         }
 
-        // Input normal para búsqueda usando CommandInput
-        return (
-            <CommandInput
-                ref={inputRef}
-                value={inputValue}
-                onValueChange={handleInputChange}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                placeholder={searchPlaceholder ?? placeholder}
-                disabled={disabled}
-                className={cn("h-10", commandInputClassName)}
-                showBorder
-            />
-        );
+        if (renderSelectedValue) {
+            return <div className="flex-1 overflow-hidden text-ellipsis">
+                {renderSelectedValue(selected)}
+            </div>;
+        }
+
+        return <div className="flex-1 overflow-hidden text-ellipsis capitalize">
+            {selected.label}
+        </div>;
     };
 
     return (
-        <div className={cn("relative", className)}>
-            <Command shouldFilter={false}>
-                {renderTrigger()}
+        <CommandPrimitive onKeyDown={handleKeyDown}>
+            <div className="relative" onClick={handleCommandClick}>
+                {selected && renderSelectedValue ? (
+                    <div className="flex items-center border rounded-md pl-3 pr-8 py-2 h-10 bg-white dark:bg-slate-800 relative capitalize">
+                        <SelectedValueDisplay />
+                        {showClearButton && (
+                            <Button
+                                type="button"
+                                variant={"icon"}
+                                size={"icon"}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600"
+                                onClick={handleClearSelection}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <CommandInput
+                            ref={ref}
+                            value={inputValue}
+                            onValueChange={isLoading ? undefined : setInputValue}
+                            onBlur={handleBlur}
+                            onFocus={() => setOpen(true)}
+                            placeholder={placeholder}
+                            disabled={disabled}
+                            className={cn(className, "capitalize")}
+                            showBorder
+                        />
+                        {selected && showClearButton && (
+                            <Button
+                                type="button"
+                                variant={"icon"}
+                                size={"icon"}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600"
+                                onClick={handleClearSelection}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </>
+                )}
+            </div>
 
+            <div className={cn("relative", isOpen ? "mt-1" : "mt-0", className)}>
                 {isOpen && (
                     <div
-                        className={cn(
-                            "absolute top-full left-0 right-0 z-50 mt-1 rounded-md border bg-popover shadow-lg animate-in fade-in-0 zoom-in-95 overflow-hidden",
-                            commandContentClassName,
-                        )}
-                        data-prevent-dialog-close="true"
-                        ref={dropdownRef}
-                        onPointerDown={(e) => {
-                            isInteractingWithDropdownRef.current = true;
-                            e.stopPropagation();
+                        className="fixed inset-0 z-40 bg-transparent"
+                        onMouseDown={() => {
+                            setOpen(false);
                         }}
-                        onMouseDown={(e) => {
-                            isInteractingWithDropdownRef.current = true;
-                            e.stopPropagation();
-                        }}
-                        onClick={(e) => {
-                            isInteractingWithDropdownRef.current = true;
-                            e.stopPropagation();
-                        }}
-                    >
+                    />
+                )}
+                <div
+                    className={cn(
+                        "absolute top-0 z-50 w-full rounded-xl border border-input bg-white dark:bg-slate-800 shadow outline-none animate-in fade-in-0 zoom-in-95",
+                        isOpen ? "block" : "hidden",
+                    )}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    <div className="max-h-[300px] overflow-y-auto" onScrollCapture={handleScrollCapture}>
                         <CommandList
-                            className="max-h-64 overflow-auto"
-                            onScrollEnd={onScrollEnd}
-                            onPointerDown={(e) => {
-                                isInteractingWithDropdownRef.current = true;
-                                e.stopPropagation();
-                            }}
+                            className="h-full rounded-lg capitalize bg-white dark:bg-slate-800"
                             onMouseDown={(e) => {
-                                isInteractingWithDropdownRef.current = true;
-                                e.stopPropagation();
-                            }}
-                            onClick={(e) => {
-                                isInteractingWithDropdownRef.current = true;
-                                e.stopPropagation();
+                                e.preventDefault();
                             }}
                         >
-                            {/* Estado de carga */}
-                            {isLoading ? (
-                                <div className="flex items-center justify-center p-4">
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    <span className="text-sm text-muted-foreground">{String(messages.loading)}</span>
-                                </div>
-                            ) : null}
-
-                            {/* Estado de error */}
-                            {isError && error ? (
-                                <div className="flex flex-col items-center justify-center p-4 space-y-2">
-                                    <AlertCircle className="h-8 w-8 text-destructive" />
-                                    <p className="text-sm text-muted-foreground text-center">{messages.error}</p>
-                                    {refetch && (
-                                        <Button type="button" variant="outline" size="sm" onClick={() => refetch()} className="mt-2">
-                                            Reintentar
-                                        </Button>
-                                    )}
-                                </div>
-                            ) : null}
-
-                            {/* Lista de opciones */}
-                            {!isLoading && !isError && currentOptions.length > 0 && (
+                            {isLoading && (
+                                <CommandPrimitive.Loading>
+                                    <div className="p-1">
+                                        <Skeleton className="h-8 w-full" />
+                                    </div>
+                                </CommandPrimitive.Loading>
+                            )}
+                            {!isLoading && options.length > 0 && (
                                 <CommandGroup>
-                                    {currentOptions.map((option: Option<T>) => {
+                                    {options.map((option) => {
                                         const isSelected = selected?.value === option.value;
                                         return (
                                             <CommandItem
                                                 key={option.value}
-                                                value={option.value}
+                                                value={option.label}
+                                                onMouseDown={(event) => {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+                                                }}
                                                 onSelect={() => handleSelectOption(option)}
-                                                className={cn(
-                                                    "flex w-full items-center gap-2 cursor-pointer",
-                                                    !isSelected ? "" : "pl-8",
-                                                    isSelected && "bg-accent text-accent-foreground",
-                                                )}
+                                                className={cn("flex w-full items-center gap-2 ", !isSelected ? "pl-8" : null)}
                                             >
-                                                {option.component ?? option.label}
-                                                <Check
-                                                    className={cn(
-                                                        "ml-auto h-4 w-4 text-emerald-500 shrink-0",
-                                                        isSelected ? "opacity-100" : "opacity-0",
-                                                    )}
-                                                />
+                                                {isSelected && <Check className="w-4" />}
+                                                {renderOption ? renderOption(option) : option.label}
                                             </CommandItem>
                                         );
                                     })}
                                 </CommandGroup>
                             )}
-
-                            {/* Sin resultados */}
-                            {!isLoading && !isError && currentOptions.length === 0 && (
-                                <CommandEmpty>
-                                    <div className="p-4 text-center">
-                                        <p className="text-sm text-muted-foreground mb-2">{messages.noResults}</p>
-                                        {notFoundAction}
-                                    </div>
-                                </CommandEmpty>
-                            )}
-
-                            {/* Indicador de opciones adicionales */}
-                            {moreOptions > 0 && (
-                                <div className="px-3 py-2 text-xs text-muted-foreground border-t bg-muted/50">
-                                    {moreOptions} opciones adicionales disponibles
-                                </div>
+                            {!isLoading && options.length === 0 && (
+                                <CommandPrimitive.Empty className="select-none rounded-sm px-2 py-3 text-center text-sm">
+                                    {emptyMessage}
+                                </CommandPrimitive.Empty>
                             )}
                         </CommandList>
                     </div>
-                )}
-            </Command>
-        </div>
+                </div>
+            </div>
+        </CommandPrimitive>
     );
-}
+});
+
+AutoComplete.displayName = "AutoComplete";
+
+export { AutoComplete };

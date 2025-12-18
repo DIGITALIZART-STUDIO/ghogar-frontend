@@ -2,10 +2,9 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Bell, Ellipsis, Hash, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
+import { Ellipsis, Hash, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
-import { toast } from "sonner";
 
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +18,6 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Lead, LeadCaptureSource, LeadStatus } from "../../_types/lead";
 import { LeadCaptureSourceLabels, LeadStatusLabels } from "../../_utils/leads.utils";
 import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
@@ -27,7 +25,6 @@ import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog
 import { UpdateLeadSheet } from "../update/UpdateLeadsSheet";
 import { UpdateClientSheet } from "@/app/(admin)/clients/_components/update/UpdateClientsSheet";
 import { Client } from "@/app/(admin)/clients/_types/client";
-import { useSendPersonalizedLeadNotification } from "../../_hooks/useLeads";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -297,64 +294,42 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
             const [showEditDialog, setShowEditDialog] = useState(false);
             const [showEditClientDialog, setShowEditClientDialog] = useState(false);
 
-            const { isActive, id } = row.original ?? {};
+            const { isActive } = row.original ?? {};
             const client = row.original?.client;
-
-            // Hook para enviar notificación personalizada
-            const sendNotification = useSendPersonalizedLeadNotification();
-
-            // Función para manejar el envío de notificación
-            const handleSendNotification = async () => {
-                if (!id) {
-                    toast.error("No se pudo identificar el lead");
-                    return;
-                }
-
-                const promise = sendNotification.mutateAsync({
-                    params: {
-                        path: {
-                            leadId: id
-                        }
-                    }
-                });
-
-                toast.promise(promise, {
-                    loading: "Enviando notificación...",
-                    success: "Notificación enviada exitosamente",
-                    error: (e) => `Error al enviar notificación: ${e.message ?? e}`,
-                });
-
-                promise.catch((error) => {
-                    // Manejar errores específicos si es necesario
-                    console.error("Error enviando notificación:", error);
-                });
-            };
             return (
-                <div className="flex items-center gap-2">
-                    {/* Botón de notificación separado con tooltip */}
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleSendNotification}
-                                disabled={!isActive || sendNotification.isPending}
-                                aria-label="Enviar notificación"
-                            >
-                                <Bell className="size-4 text-primary" aria-hidden="true" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>
-                                {sendNotification.isPending
-                                    ? "Enviando notificación..."
-                                    : "Enviar notificación"
-                                }
-                            </p>
-                        </TooltipContent>
-                    </Tooltip>
+                <div>
+                    <div>
+                        {showEditDialog && (
+                            <UpdateLeadSheet open={showEditDialog} onOpenChange={setShowEditDialog} lead={row?.original} />
+                        )}
 
-                    {/* Dropdown menu */}
+                        {showDeleteDialog && (
+                            <DeleteLeadsDialog
+                                open={showDeleteDialog}
+                                onOpenChange={setShowDeleteDialog}
+                                leads={[row?.original]}
+                                showTrigger={false}
+                                onSuccess={() => {
+                                    row.toggleSelected(false);
+                                }}
+                            />
+                        )}
+
+                        {showReactivateDialog && (
+                            <ReactivateLeadsDialog
+                                open={showReactivateDialog}
+                                onOpenChange={setShowReactivateDialog}
+                                leads={[row?.original]}
+                                showTrigger={false}
+                                onSuccess={() => {
+                                    row.toggleSelected(false);
+                                }}
+                            />
+                        )}
+                        {showEditClientDialog && (
+                            <UpdateClientSheet open={showEditClientDialog} onOpenChange={setShowEditClientDialog} client={client as Client} />
+                        )}
+                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
@@ -397,40 +372,6 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-
-                    {/* Diálogos */}
-                    <div>
-                        {showEditDialog && (
-                            <UpdateLeadSheet open={showEditDialog} onOpenChange={setShowEditDialog} lead={row?.original} />
-                        )}
-
-                        {showDeleteDialog && (
-                            <DeleteLeadsDialog
-                                open={showDeleteDialog}
-                                onOpenChange={setShowDeleteDialog}
-                                leads={[row?.original]}
-                                showTrigger={false}
-                                onSuccess={() => {
-                                    row.toggleSelected(false);
-                                }}
-                            />
-                        )}
-
-                        {showReactivateDialog && (
-                            <ReactivateLeadsDialog
-                                open={showReactivateDialog}
-                                onOpenChange={setShowReactivateDialog}
-                                leads={[row?.original]}
-                                showTrigger={false}
-                                onSuccess={() => {
-                                    row.toggleSelected(false);
-                                }}
-                            />
-                        )}
-                        {showEditClientDialog && (
-                            <UpdateClientSheet open={showEditClientDialog} onOpenChange={setShowEditClientDialog} client={client as Client} />
-                        )}
-                    </div>
                 </div>
             );
         },

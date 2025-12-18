@@ -14,24 +14,6 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="es" suppressHydrationWarning>
-            <head>
-                {/* OpenCV.js para funcionalidad de recorte inteligente */}
-                <script async src="https://docs.opencv.org/4.x/opencv.js" />
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            window.onOpenCvReady = function() {
-                                window.dispatchEvent(new CustomEvent('opencv-ready'));
-                            };
-                            
-                            // Verificar si ya está cargado
-                            if (typeof cv !== 'undefined' && cv.Mat) {
-                                window.dispatchEvent(new CustomEvent('opencv-ready'));
-                            }
-                        `,
-                    }}
-                />
-            </head>
             <body
                 suppressHydrationWarning
                 className="font-montserrat text-base leading-normal antialiased bg-background text-foreground"

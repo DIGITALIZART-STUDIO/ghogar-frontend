@@ -61,8 +61,8 @@ export default function TeamTabsContent({ data, isLoading }: TeamTabsContentProp
                             </CardTitle>
                         </CardHeader>
 
-                        <CardContent className="overflow-visible max-h-[800px] h-full">
-                            <ResponsiveContainer height={450}>
+                        <CardContent className="overflow-visible">
+                            <ResponsiveContainer height={400}>
                                 <ComposedChart
                                     data={processedTeamData}
                                     layout="vertical"

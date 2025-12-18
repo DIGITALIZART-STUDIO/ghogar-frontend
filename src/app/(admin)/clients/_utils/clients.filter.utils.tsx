@@ -21,45 +21,6 @@ const ClientTypesIcons = Object.fromEntries(Object.entries(ClientTypesLabels).ma
     return [clientTypes, IconComponent];
 }));
 
-// Función para crear faceted filters con callbacks del servidor
-export const createFacetedFilters = (
-    onIsActiveChange: (values: Array<boolean>) => void,
-    onTypeChange: (values: Array<string>) => void,
-    currentIsActive: Array<boolean> = [],
-    currentType: Array<string> = []
-) => [
-    {
-        column: "estado",
-        title: "Estado",
-        options: [
-            {
-                label: "Activo",
-                value: true,
-                icon: ActiveIcon,
-            },
-            {
-                label: "Inactivo",
-                value: false,
-                icon: InactiveIcon,
-            },
-        ],
-        onFilterChange: onIsActiveChange,
-        currentValue: currentIsActive,
-    },
-    {
-        column: "tipo",
-        title: "Tipo de Cliente",
-        options: Object.entries(ClientTypesLabels).map(([clientTypes, config]) => ({
-            label: config.label,
-            value: clientTypes,
-            icon: ClientTypesIcons[clientTypes],
-        })),
-        onFilterChange: onTypeChange,
-        currentValue: currentType,
-    },
-];
-
-// Filtros estáticos para compatibilidad
 export const facetedFilters = [
     {
         column: "estado",
@@ -78,6 +39,7 @@ export const facetedFilters = [
         ],
     },
     {
+    // Filtro para el estado civil generado dinámicamente
         column: "tipo",
         title: "Tipo de Cliente",
         options: Object.entries(ClientTypesLabels).map(([clientTypes, config]) => ({

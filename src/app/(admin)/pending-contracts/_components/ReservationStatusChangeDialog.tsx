@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toast } from "sonner";
+import { toastWrapper } from "@/types/toasts";
 import ReservationStatusChangeContent from "./ReservationStatusChangeContent";
 import { ReservationStatus } from "../../reservations/_types/reservation";
-import { useChangeReservationStatus } from "../../reservations/_hooks/useReservations";
+import { ChangeReservationStatus } from "../../reservations/_actions/ReservationActions";
 
 interface ReservationStatusChangeDialogProps {
   isOpen: boolean;
@@ -26,51 +26,43 @@ export function ReservationStatusChangeDialog({
 }: ReservationStatusChangeDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 640px)");
     const [selectedStatus, setSelectedStatus] = useState<ReservationStatus | null>(null);
+    const [isPending, startTransition] = useTransition();
     const [showSuccess, setShowSuccess] = useState(false);
-    const changeStatus = useChangeReservationStatus();
 
     const handleStatusChange = (status: ReservationStatus) => {
         setSelectedStatus(status);
     };
 
-    const handleConfirm = async () => {
+    const handleConfirm = () => {
         if (!selectedStatus || selectedStatus === currentStatus) {
             return;
         }
 
-        try {
+        startTransition(async() => {
             // Preparar el DTO para la acción de cambio de estado
             const statusDto = {
                 status: selectedStatus,
             };
 
-            await toast.promise(
-                changeStatus.mutateAsync({
-                    params: {
-                        path: { id: reservationId },
-                    },
-                    body: statusDto,
-                }),
-                {
-                    loading: "Actualizando estado de reserva...",
-                    success: "Estado actualizado exitosamente",
-                    error: (error) => `Error al cambiar el estado: ${error.message ?? "Error desconocido"}`,
-                }
-            );
+            const [, error] = await toastWrapper(ChangeReservationStatus(reservationId, statusDto), {
+                loading: "Actualizando estado de reserva...",
+                success: "Estado actualizado exitosamente",
+                error: (e) => `Error al cambiar el estado: ${e.message || "Error desconocido"}`,
+            });
 
-            setShowSuccess(true);
-            // Cerrar el diálogo después de 2 segundos
-            setTimeout(() => {
-                onClose();
-                // Resetear estados después del cierre
+            if (!error) {
+                setShowSuccess(true);
+                // Cerrar el diálogo después de 2 segundos
                 setTimeout(() => {
-                    setSelectedStatus(null);
-                    setShowSuccess(false);
-                }, 300);
-            }, 2000);
-        } catch (error) {
-            console.error("Error changing reservation status:", error);
-        }
+                    onClose();
+                    // Resetear estados después del cierre
+                    setTimeout(() => {
+                        setSelectedStatus(null);
+                        setShowSuccess(false);
+                    }, 300);
+                }, 2000);
+            }
+        });
     };
 
     const dialogContent = (
@@ -79,7 +71,7 @@ export function ReservationStatusChangeDialog({
             reservationId={reservationId}
             currentStatus={currentStatus}
             selectedStatus={selectedStatus}
-            isPending={changeStatus.isPending}
+            isPending={isPending}
             onClose={onClose}
             handleStatusChange={handleStatusChange}
             handleConfirm={handleConfirm}

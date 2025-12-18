@@ -17,11 +17,12 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { toast } from "sonner";
-import { useUpdateLot } from "../../_hooks/useLots";
+import { toastWrapper } from "@/types/toasts";
+import { UpdateLot } from "../../_actions/LotActions";
 import { CreateLotSchema, lotSchema } from "../../_schemas/createLotsSchema";
 import { LotData, LotStatus } from "../../_types/lot";
-import { useActiveBlocks } from "../../../[id]/blocks/_hooks/useBlocks";
+import { GetActiveBlocksByProject } from "../../../[id]/blocks/_actions/BlockActions";
+import { BlockData } from "../../../[id]/blocks/_types/block";
 import UpdateLotsForm from "./UpdateLotsForm";
 
 const infoSheet = {
@@ -39,9 +40,8 @@ interface UpdateLotsSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
 export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLotsSheetProps) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
-
-    const updateLot = useUpdateLot();
-    const { data: blocks = [], isLoading: isLoadingBlocks } = useActiveBlocks(projectId);
+    const [blocks, setBlocks] = useState<Array<BlockData>>([]);
+    const [isLoadingBlocks, setIsLoadingBlocks] = useState(false);
 
     const form = useForm<CreateLotSchema>({
         resolver: zodResolver(lotSchema),
@@ -53,6 +53,34 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
             blockId: lot?.blockId ?? "",
         },
     });
+
+    const loadActiveBlocks = async() => {
+        setIsLoadingBlocks(true);
+        try {
+            const [result, error] = await GetActiveBlocksByProject(projectId);
+
+            if (error) {
+                console.error("Error loading active blocks:", error);
+                setBlocks([]);
+                return;
+            }
+
+            setBlocks(result || []);
+        } catch (error) {
+            console.error("Error loading active blocks:", error);
+            setBlocks([]);
+        } finally {
+            setIsLoadingBlocks(false);
+        }
+    };
+
+    // Cargar bloques activos cuando se abre el dialog
+    useEffect(() => {
+        if (open && projectId) {
+            loadActiveBlocks();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, projectId]);
 
     useEffect(() => {
         if (open) {
@@ -69,11 +97,6 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
 
     const onSubmit = async(input: CreateLotSchema) => {
         startTransition(async() => {
-            if (!lot?.id) {
-                toast.error("Lot ID is required");
-                return;
-            }
-
             // Preparar los datos según el tipo de cliente
             const lotData = {
                 lotNumber: input.lotNumber,
@@ -83,25 +106,17 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
                 blockId: input.blockId,
             };
 
-            const promise = updateLot.mutateAsync({
-                params: {
-                    path: { id: lot.id },
-                },
-                body: lotData,
-            });
-
-            toast.promise(promise, {
+            if (!lot?.id) {
+                throw new Error("Block ID is required");
+            }
+            const [, error] = await toastWrapper(UpdateLot(lot.id, lotData), {
                 loading: "Actualizando lote...",
-                success: "Lote actualizado exitosamente",
+                success: "Lote actualizada exitosamente",
                 error: (e) => `Error al actualizar lote: ${e.message}`,
             });
 
-            try {
-                await promise;
+            if (!error) {
                 setIsSuccess(true);
-            } catch (error) {
-                // Manejar errores específicos si es necesario
-                console.error("Error updating lot:", error);
             }
         });
     };
@@ -138,7 +153,7 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
                             </span>
                         </div>
                     ) : (
-                        <UpdateLotsForm form={form} onSubmit={onSubmit} blocks={blocks} projectId={projectId}>
+                        <UpdateLotsForm form={form} onSubmit={onSubmit} blocks={blocks}>
                             <SheetFooter className="gap-2 pt-2 sm:space-x-0">
                                 <div className="flex flex-row-reverse gap-2">
                                     <Button type="submit" disabled={isPending}>

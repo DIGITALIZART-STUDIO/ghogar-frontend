@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Table as TableInstance } from "@tanstack/react-table";
 
+import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { PaymentsTransactionTableToolbarActions } from "./PaymentsTransactionTableToolbarActions";
 import { ReservationDto, ReservationWithPaymentsDto } from "@/app/(admin)/reservations/_types/reservation";
 import { paymentsTransactionColumns } from "./PaymentsTransactionTableColumns";
@@ -11,7 +12,6 @@ import {
     CustomPaginationTableParams,
     ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
-import { DataTable } from "@/components/datatable/data-table";
 
 interface PaymentsTransactionTableProps {
   data: Array<ReservationWithPaymentsDto>;
@@ -27,7 +27,7 @@ export function PaymentsTransactionTable({
     const columns = useMemo(() => paymentsTransactionColumns(), []);
 
     return (
-        <DataTable
+        <DataTableExpanded
             isLoading={false}
             data={data}
             columns={columns}

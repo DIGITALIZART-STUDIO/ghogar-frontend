@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,18 +8,37 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import ReservationViewContent from "./ReservationViewContent";
-import {  ReservationPendingValidationDto } from "../../reservations/_types/reservation";
-import { useReservationById } from "../../reservations/_hooks/useReservations";
+import { ReservationDto } from "../../reservations/_types/reservation";
+import { GetReservationById } from "../../reservations/_actions/ReservationActions";
 
 interface ReservationViewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  reservation: ReservationPendingValidationDto;
+  reservation: ReservationDto;
 }
 
 export function ReservationViewDialog({ open, onOpenChange, reservation }: ReservationViewDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 900px)");
-    const { data, isLoading } = useReservationById(reservation?.id ?? "", open);
+    const [data, setData] = useState<ReservationDto>();
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        async function fetchReservationData() {
+            if (open && reservation?.id) {
+                setIsLoading(true);
+                try {
+                    const [reservationResult] = await GetReservationById(reservation.id);
+                    setData(reservationResult);
+                } catch (error) {
+                    console.error("Error fetching reservation:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        fetchReservationData();
+    }, [open, reservation?.id]);
 
     // Calcular días restantes hasta vencimiento
     const calculateDaysLeft = () => {

@@ -1,5 +1,5 @@
 
-import { Crown, ShieldCheck, UserCog,  Handshake, BriefcaseBusiness, HelpCircle, Banknote, ShoppingCart } from "lucide-react";
+import { Crown, ShieldCheck, UserCog,  Handshake, BriefcaseBusiness, HelpCircle, Banknote } from "lucide-react";
 
 export const calculatePasswordStrength = (password: string): { score: number; label: string; color: string } => {
     let score = 0;
@@ -72,7 +72,6 @@ export type UserRole =
     | "Supervisor"
     | "SalesAdvisor"
     | "Manager"
-    | "CommercialManager"
     | "FinanceManager";
 
 export const UserRoleLabels: Record<
@@ -112,11 +111,6 @@ export const UserRoleLabels: Record<
         label: "Gerente de Finanzas",
         icon: Banknote,
         className: "text-teal-700 border-teal-200",
-    },
-    CommercialManager: {
-        label: "Gerente Comercial",
-        icon: ShoppingCart,
-        className: "text-amber-700 border-amber-200",
     },
     Other: {
         label: "Otro",

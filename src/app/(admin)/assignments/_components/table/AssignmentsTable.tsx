@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
 
 import { Lead } from "@/app/(admin)/leads/_types/lead";
+import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
 import { assignmentsColumns } from "./AssignmentsTableColumns";
 import { AssignmentsTableToolbarActions } from "./AssignmentsTableToolbarActions";
 import { AssignmentDescription } from "./AssignmentDescription";
@@ -12,35 +13,18 @@ import {
     CustomPaginationTableParams,
     ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
-import { createFacetedFilters } from "../../_utils/assignments.filter.utils";
-import { DataTable } from "@/components/datatable/data-table";
+import { facetedFilters } from "../../_utils/assignments.filter.utils";
 
 interface AssignmentsTableProps {
     data: Array<Lead>;
     pagination: CustomPaginationTableParams;
     onPaginationChange: ServerPaginationChangeEventCallback;
-    search?: string;
-    setSearch?: (search: string) => void;
-    status?: Array<string>;
-    setStatus?: (status: Array<string>) => void;
-    captureSource?: Array<string>;
-    setCaptureSource?: (captureSource: Array<string>) => void;
-    handleOrderChange?: (field: string, direction: "asc" | "desc") => void;
-    resetFilters?: () => void;
-    isLoading?: boolean;
 }
 
 export function AssignmentsTable({
     data,
     pagination,
     onPaginationChange,
-    search,
-    setSearch,
-    status,
-    setStatus,
-    captureSource,
-    setCaptureSource,
-    isLoading = false,
 }: AssignmentsTableProps) {
     const router = useRouter();
 
@@ -53,36 +37,23 @@ export function AssignmentsTable({
 
     const columns = useMemo(() => assignmentsColumns(handleTasksInterface), [handleTasksInterface]);
 
-    // Crear faceted filters con callbacks del servidor
-    const customFacetedFilters = useMemo(() => {
-        if (setStatus && setCaptureSource) {
-            return createFacetedFilters(
-                setStatus,
-                setCaptureSource,
-                status ?? [],
-                captureSource ?? []
-            );
-        }
-        return [];
-    }, [setStatus, setCaptureSource, status, captureSource]);
-
     return (
-        <DataTable
-            isLoading={isLoading}
+        <DataTableExpanded
+            isLoading={false}
             data={data}
             columns={columns}
             toolbarActions={(table: TableInstance<Lead>) => <AssignmentsTableToolbarActions table={table} />}
             filterPlaceholder="Buscar mis leads..."
-            facetedFilters={customFacetedFilters}
+            facetedFilters={facetedFilters}
             renderExpandedRow={(row) => <AssignmentDescription row={row} />}
-            externalFilterValue={search}
-            onGlobalFilterChange={setSearch}
             serverPagination={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
                 pageCount: pagination.totalPages,
                 total: pagination.total,
-                onPaginationChange: onPaginationChange,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
             }}
         />
     );

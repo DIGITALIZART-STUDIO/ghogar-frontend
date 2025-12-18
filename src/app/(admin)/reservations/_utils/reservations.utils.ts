@@ -13,17 +13,17 @@ export const ReservationStatusLabels: Record<
     [ReservationStatus.ISSUED]: {
         label: "Emitida",
         icon: FileText,
-        className: "text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+        className: "text-blue-700 border-blue-200",
     },
     [ReservationStatus.CANCELED]: {
         label: "Cancelado",
         icon: CheckCircle,
-        className: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-800",
+        className: "text-green-700 border-green-200",
     },
     [ReservationStatus.ANULATED]: {
         label: "Anulado",
         icon: Ban,
-        className: "text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
+        className: "text-red-700 border-red-200",
     },
 };
 

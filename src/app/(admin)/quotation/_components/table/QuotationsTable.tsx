@@ -3,37 +3,28 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
+import { IdCard } from "lucide-react";
 
+import { DataTable } from "@/components/datatable/data-table";
 import { SummaryQuotation } from "../../_types/quotation";
-import { createFacetedFilters } from "../../_utils/quotations.filter.utils";
+import { facetedFilters, getUniqueIdentifiers } from "../../_utils/quotations.filter.utils";
 import { quotationsColumns } from "./QuotationsTableColumns";
 import { QuotationsTableToolbarActions } from "./QuotationsTableToolbarActions";
 import {
     CustomPaginationTableParams,
     ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
-import { DataTable } from "@/components/datatable/data-table";
 
 interface QuotationsTableProps {
     data: Array<SummaryQuotation>;
     pagination: CustomPaginationTableParams;
     onPaginationChange: ServerPaginationChangeEventCallback;
-    search?: string;
-    onSearchChange: (search: string) => void;
-    status?: Array<string>;
-    onStatusChange: (status: Array<string>) => void;
-    isLoading?: boolean;
 }
 
 export function QuotationsTable({
     data,
     pagination,
     onPaginationChange,
-    search,
-    onSearchChange,
-    status,
-    onStatusChange,
-    isLoading = false,
 }: QuotationsTableProps) {
     const router = useRouter();
 
@@ -46,30 +37,43 @@ export function QuotationsTable({
 
     const columns = useMemo(() => quotationsColumns(handleEditInterface), [handleEditInterface]);
 
-    // Crear filtros personalizados con callbacks del servidor
-    const customFacetedFilters = useMemo(
-        () => createFacetedFilters(onStatusChange, status),
-        [onStatusChange, status]
-    );
+    // Crear el filtro dinámico para identificadores (DNI/RUC)
+    const uniqueIdentifiers = useMemo(() => getUniqueIdentifiers(data), [data]);
+
+    // Crear todos los filtros
+    const allFilters = useMemo(() => {
+        const filters = [...facetedFilters];
+
+        if (uniqueIdentifiers.length > 0) {
+            filters.push({
+                column: "lead",
+                title: "Identificador",
+                options: uniqueIdentifiers.map((identifier) => ({
+                    label: `${identifier.type}: ${identifier.value}`,
+                    value: identifier.value,
+                    icon: IdCard,
+                })),
+            });
+        }
+
+        return filters;
+    }, [uniqueIdentifiers]);
 
     return (
         <DataTable
-            isLoading={isLoading}
             data={data}
             columns={columns}
-            toolbarActions={(table: TableInstance<SummaryQuotation>) => (
-                <QuotationsTableToolbarActions table={table} />
-            )}
+            toolbarActions={(table: TableInstance<SummaryQuotation>) => <QuotationsTableToolbarActions table={table} />}
             filterPlaceholder="Buscar cotizaciones..."
-            facetedFilters={customFacetedFilters}
-            externalFilterValue={search}
-            onGlobalFilterChange={onSearchChange}
+            facetedFilters={allFilters}
             serverPagination={{
                 pageIndex: pagination.page - 1,
                 pageSize: pagination.pageSize,
                 pageCount: pagination.totalPages,
                 total: pagination.total,
-                onPaginationChange: onPaginationChange,
+                onPaginationChange: async (pageIndex, pageSize) => {
+                    onPaginationChange(pageIndex + 1, pageSize);
+                },
             }}
         />
     );

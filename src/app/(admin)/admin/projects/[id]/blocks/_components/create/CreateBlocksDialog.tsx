@@ -28,8 +28,8 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toast } from "sonner";
-import { useCreateBlock } from "../../_hooks/useBlocks";
+import { toastWrapper } from "@/types/toasts";
+import { CreateBlock } from "../../_actions/BlockActions";
 import { blockSchema, CreateBlockSchema } from "../../_schemas/createBlocksSchema";
 import CreateBlocksForm from "./CreateBlocksForm";
 
@@ -50,8 +50,6 @@ export function CreateBlocksDialog({ projectId, refetch }: CreateBlocksDialogPro
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const createBlock = useCreateBlock();
-
     const form = useForm<CreateBlockSchema>({
         resolver: zodResolver(blockSchema),
         defaultValues: {
@@ -67,19 +65,13 @@ export function CreateBlocksDialog({ projectId, refetch }: CreateBlocksDialogPro
                 projectId: projectId,
             };
 
-            const promise = createBlock.mutateAsync({
-                body: blockData,
-            });
-
-            toast.promise(promise, {
+            const [, error] = await toastWrapper(CreateBlock(blockData), {
                 loading: "Creando manzana...",
                 success: "Manzana creada exitosamente",
                 error: (e) => `Error al crear manzana: ${e.message}`,
             });
 
-            const result = await promise;
-
-            if (result) {
+            if (!error) {
                 setIsSuccess(true);
             }
         });

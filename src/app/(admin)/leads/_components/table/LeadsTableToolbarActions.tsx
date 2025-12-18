@@ -22,11 +22,11 @@ export function LeadsTableToolbarActions({ table }: LeadsTableToolbarActionsProp
     const downloadLeadsExcelMutation = useDownloadLeadsExcel();
 
     const handleExpireLeads = async () => {
-        const promise = checkAndUpdateExpiredLeads.mutateAsync({});
+        const promise = checkAndUpdateExpiredLeads.mutateAsync();
 
         toast.promise(promise, {
             loading: "Expirando leads...",
-            success: "Leads expirados correctamente",
+            success: (data) => `Leads expirados: ${data?.expiredLeadsCount ?? "?"}`,
             error: (e) => `Error al forzar expiración de leads: ${e.message ?? e}`,
         });
 

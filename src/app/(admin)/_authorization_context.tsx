@@ -5,7 +5,7 @@ import { rolePermissions } from "@/components/layout/types";
 import { usePathname } from "next/navigation";
 import UnauthorizedPage from "../unauthorized";
 
-export type Role = "SuperAdmin" | "Admin" | "Supervisor" | "SalesAdvisor" | "Manager" | "FinanceManager" | "CommercialManager";
+export type Role = "SuperAdmin" | "Admin" | "Supervisor" | "SalesAdvisor" | "Manager" | "FinanceManager";
 export type Module = "Users"
 export type Claim = "CREATE" | "READ" | "UPDATE" | "DELETE"
 
@@ -22,7 +22,6 @@ export const roles: RolesTypes = {
     SalesAdvisor: "Asesor",
     Manager: "Gerente",
     FinanceManager: "Gerente de Finanzas",
-    CommercialManager: "Gerente Comercial",
 };
 
 const AuthContext = createContext<Array<Role> | null>(null);
@@ -47,6 +46,10 @@ export const useClaims = () => {
     return context;
 };
 
+function normalizeRoute(route: string): string {
+    return route.endsWith("/") && route.length > 1 ? route.slice(0, -1) : route;
+}
+
 /**
  * Verifica si el usuario tiene permiso para acceder a una ruta
  */
@@ -58,9 +61,10 @@ export const useRouteAuthorization = (route: string): boolean => {
 
     const role = context[0];
     const allowedRoutes = rolePermissions[role] || [];
+    const normalizedRoute = normalizeRoute(route);
 
     // Permite acceso si la ruta actual empieza con alguna ruta permitida
-    return allowedRoutes.some((allowed) => route === allowed || route.startsWith(`${allowed}/`)
+    return allowedRoutes.some((allowed) => normalizedRoute === allowed || normalizedRoute.startsWith(`${allowed}/`)
     );
 };
 /**
@@ -91,7 +95,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const isAuthorized = useRouteAuthorization(pathname);
 
     if (!isAuthorized) {
-        // Renderizamos directamente la página de unauthorized
+    // Renderizamos directamente la página de unauthorized
         return <UnauthorizedPage />;
     }
 

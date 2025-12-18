@@ -75,12 +75,7 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
             projectId: input.projectId,
         };
 
-        const promise = updateLead.mutateAsync({
-            params: {
-                path: { id: lead.id },
-            },
-            body: payload,
-        });
+        const promise = updateLead.mutateAsync({ id: lead.id, lead: payload });
 
         toast.promise(promise, {
             loading: "Actualizando lead...",

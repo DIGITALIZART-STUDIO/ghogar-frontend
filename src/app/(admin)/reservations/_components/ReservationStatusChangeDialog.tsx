@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { toast } from "sonner";
-import { useChangeReservationStatus } from "../_hooks/useReservations";
-import { ReservationDto, ReservationStatus } from "../_types/reservation";
-import { reservationStatusChangeSchema, type ReservationStatusChangeSchema } from "../create/_schemas/createReservationSchema";
-import { ResponsiveDialog } from "@/components/common/ResponsiveDialog";
+import { toastWrapper } from "@/types/toasts";
+import { ChangeReservationStatus } from "../_actions/ReservationActions";
+import { ReservationStatus } from "../_types/reservation";
 import ReservationStatusChangeContent from "./ReservationStatusChangeContent";
 
 interface ReservationStatusChangeDialogProps {
@@ -17,7 +16,6 @@ interface ReservationStatusChangeDialogProps {
   onClose: () => void;
   currentStatus: ReservationStatus;
   reservationId: string;
-  reservationData?: ReservationDto;
 }
 
 export function ReservationStatusChangeDialog({
@@ -25,79 +23,90 @@ export function ReservationStatusChangeDialog({
     onClose,
     currentStatus,
     reservationId,
-    reservationData,
 }: ReservationStatusChangeDialogProps) {
     const isDesktop = useMediaQuery("(min-width: 640px)");
+    const [selectedStatus, setSelectedStatus] = useState<ReservationStatus | null>(null);
+    const [isPending, startTransition] = useTransition();
     const [showSuccess, setShowSuccess] = useState(false);
-    const changeStatus = useChangeReservationStatus();
 
-    const form = useForm<ReservationStatusChangeSchema>({
-        resolver: zodResolver(reservationStatusChangeSchema),
-        defaultValues: {
-            status: undefined,
-            isFullPayment: false,
-            paymentAmount: 0,
-            paymentDate: new Date().toISOString(),
-            paymentMethod: undefined,
-            bankName: "",
-            paymentReference: "",
-            paymentNotes: "",
-        },
-    });
-
-    const handleSubmit = async (data: ReservationStatusChangeSchema) => {
-        if (data.status === currentStatus) {
-            return;
-        }
-        try {
-            await toast.promise(
-                changeStatus.mutateAsync({
-                    params: {
-                        path: { id: reservationId },
-                    },
-                    body: data,
-                }),
-                {
-                    loading: "Actualizando estado de reserva...",
-                    success: "Estado actualizado exitosamente",
-                    error: (error) => `Error al cambiar el estado: ${error.message ?? "Error desconocido"}`,
-                }
-            );
-
-            setShowSuccess(true);
-            // Cerrar el diálogo después de 2 segundos
-            setTimeout(() => {
-                onClose();
-                // Resetear estados después del cierre
-                setTimeout(() => {
-                    form.reset();
-                    setShowSuccess(false);
-                }, 300);
-            }, 2000);
-        } catch (error) {
-            console.error("Error changing reservation status:", error);
-        }
+    const handleStatusChange = (status: ReservationStatus) => {
+        setSelectedStatus(status);
     };
 
+    const handleConfirm = () => {
+        if (!selectedStatus || selectedStatus === currentStatus) {
+            return;
+        }
+
+        startTransition(async() => {
+            // Preparar el DTO para la acción de cambio de estado
+            const statusDto = {
+                status: selectedStatus,
+            };
+
+            const [, error] = await toastWrapper(ChangeReservationStatus(reservationId, statusDto), {
+                loading: "Actualizando estado de reserva...",
+                success: "Estado actualizado exitosamente",
+                error: (e) => `Error al cambiar el estado: ${e.message || "Error desconocido"}`,
+            });
+
+            if (!error) {
+                setShowSuccess(true);
+                // Cerrar el diálogo después de 2 segundos
+                setTimeout(() => {
+                    onClose();
+                    // Resetear estados después del cierre
+                    setTimeout(() => {
+                        setSelectedStatus(null);
+                        setShowSuccess(false);
+                    }, 300);
+                }, 2000);
+            }
+        });
+    };
+
+    const dialogContent = (
+        <ReservationStatusChangeContent
+            showSuccess={showSuccess}
+            reservationId={reservationId}
+            currentStatus={currentStatus}
+            selectedStatus={selectedStatus}
+            isPending={isPending}
+            onClose={onClose}
+            handleStatusChange={handleStatusChange}
+            handleConfirm={handleConfirm}
+        />
+    );
+
+    if (isDesktop) {
+        return (
+            <Dialog open={isOpen} onOpenChange={onClose}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="sr-only">
+                            Cambiar Estado de Reserva
+                        </DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="max-h-[calc(100vh-200px)]">
+                        {dialogContent}
+                    </ScrollArea>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
     return (
-        <ResponsiveDialog
-            open={isOpen}
-            onOpenChange={onClose}
-            isDesktop={isDesktop}
-            title="Cambiar Estado de Reserva"
-            description="Cambie el estado de la reserva"
-            dialogContentClassName="sm:max-w-2xl px-0"
-            showTrigger={false}
-        >
-            <ReservationStatusChangeContent
-                showSuccess={showSuccess}
-                currentStatus={currentStatus}
-                form={form}
-                isPending={changeStatus.isPending}
-                onClose={onClose}
-                onSubmit={handleSubmit}
-                reservationData={reservationData}
-            />
-        </ResponsiveDialog>
+        <Drawer open={isOpen} onOpenChange={onClose}>
+            <DrawerContent>
+                <DrawerHeader className="text-left">
+                    <DrawerTitle className="sr-only">
+                        Cambiar Estado de Reserva
+                    </DrawerTitle>
+                </DrawerHeader>
+                <ScrollArea className="px-4 pb-4 max-h-[calc(100vh-200px)]">
+                    {dialogContent}
+                </ScrollArea>
+            </DrawerContent>
+        </Drawer>
     );
 }

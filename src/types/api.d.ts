@@ -1420,6 +1420,45 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/Dashboard/commercial-manager": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          year?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["SupervisorDashboardDto"];
+            "application/json": components["schemas"]["SupervisorDashboardDto"];
+            "text/json": components["schemas"]["SupervisorDashboardDto"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/Email/send": {
     parameters: {
       query?: never;
@@ -8723,7 +8762,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block2"];
+      block?: components["schemas"]["Block5"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8741,7 +8780,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block2"];
+      block?: components["schemas"]["Block5"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8759,7 +8798,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block2"];
+      block?: components["schemas"]["Block5"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8777,7 +8816,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block2"];
+      block?: components["schemas"]["Block5"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -8795,7 +8834,7 @@ export interface components {
       status: components["schemas"]["LotStatus"];
       /** Format: uuid */
       blockId: string;
-      block?: components["schemas"]["Block2"];
+      block?: components["schemas"]["Block5"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10087,7 +10126,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project3"];
+      project?: components["schemas"]["Project9"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10104,7 +10143,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project3"];
+      project?: components["schemas"]["Project9"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10121,7 +10160,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project3"];
+      project?: components["schemas"]["Project9"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10138,7 +10177,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project3"];
+      project?: components["schemas"]["Project9"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10155,7 +10194,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project3"];
+      project?: components["schemas"]["Project9"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;

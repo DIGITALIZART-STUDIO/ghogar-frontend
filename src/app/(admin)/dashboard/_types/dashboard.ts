@@ -9,3 +9,5 @@ export type FinanceManagerDashboard = components["schemas"]["FinanceManagerDashb
 export type SupervisorDashboard = components["schemas"]["SupervisorDashboardDto"];
 
 export type ManagerDashboard = components["schemas"]["ManagerDashboardDto"];
+
+export type TeamData = Array<components["schemas"]["TeamMemberDto"]>;

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TabsContent } from "@/components/ui/tabs";
 import { SalesAdvisorDashboard } from "../../../_types/dashboard";
+import { PaymentMethodLabels, ReservationStatusLabels } from "../../../../reservations/_utils/reservations.utils";
 import { EmptyState } from "../../EmptyState";
 
 interface ReservationsTabsContentProps {
@@ -80,20 +81,33 @@ export default function ReservationsTabsContent({ data, isLoading }: Reservation
                         <span>Fecha: {reservation.reservationDate}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          className={`text-xs ${
-                            reservation.status === "ISSUED"
-                              ? "bg-green-600 hover:bg-green-700"
-                              : reservation.status === "CANCELED"
-                                ? "bg-red-500 hover:bg-red-600"
-                                : "bg-slate-600 hover:bg-slate-700"
-                          } text-white`}
-                        >
-                          {reservation.status}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {reservation.paymentMethod}
-                        </Badge>
+                        {(() => {
+                          const statusConfig =
+                            ReservationStatusLabels[reservation.status as keyof typeof ReservationStatusLabels];
+                          const StatusIcon = statusConfig?.icon || CheckCircle;
+                          return (
+                            <Badge
+                              className={`text-xs ${statusConfig?.className || "bg-slate-600 hover:bg-slate-700"} flex items-center gap-1`}
+                            >
+                              <StatusIcon className="w-3 h-3" />
+                              {statusConfig?.label || reservation.status}
+                            </Badge>
+                          );
+                        })()}
+                        {(() => {
+                          const paymentConfig =
+                            PaymentMethodLabels[reservation.paymentMethod as keyof typeof PaymentMethodLabels];
+                          const PaymentIcon = paymentConfig?.icon || DollarSign;
+                          return (
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${paymentConfig?.className || ""} flex items-center gap-1`}
+                            >
+                              <PaymentIcon className="w-3 h-3" />
+                              {paymentConfig?.label || reservation.paymentMethod}
+                            </Badge>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

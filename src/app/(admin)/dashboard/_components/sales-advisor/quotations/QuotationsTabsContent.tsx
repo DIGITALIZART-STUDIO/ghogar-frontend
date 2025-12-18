@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TabsContent } from "@/components/ui/tabs";
 import { SalesAdvisorDashboard } from "../../../_types/dashboard";
+import { QuotationStatusLabels } from "../../../../quotation/_utils/quotations.utils";
 import { EmptyState } from "../../EmptyState";
 
 interface QuotationsTabsContentProps {
@@ -91,17 +92,19 @@ export default function QuotationsTabsContent({ data, isLoading }: QuotationsTab
                       <p className="text-xs text-slate-500 dark:text-slate-400">Válida hasta: {quotation.validUntil}</p>
                     </div>
                     <div className="flex flex-col items-center gap-2">
-                      <Badge
-                        className={`${
-                          quotation.status === "ISSUED"
-                            ? "bg-slate-600 hover:bg-slate-700"
-                            : quotation.status === "ACCEPTED"
-                              ? "bg-green-600 hover:bg-green-700"
-                              : "bg-red-500 hover:bg-red-600"
-                        } text-white`}
-                      >
-                        {quotation.status}
-                      </Badge>
+                      {(() => {
+                        const statusConfig =
+                          QuotationStatusLabels[quotation.status as keyof typeof QuotationStatusLabels];
+                        const StatusIcon = statusConfig?.icon || FileText;
+                        return (
+                          <Badge
+                            className={`${statusConfig?.className || "bg-slate-600 hover:bg-slate-700"} text-white flex items-center gap-1`}
+                          >
+                            <StatusIcon className="w-3 h-3" />
+                            {statusConfig?.label || quotation.status}
+                          </Badge>
+                        );
+                      })()}
                       <div className="flex gap-1">
                         <Button variant="outline" size="sm">
                           <Eye className="w-3 h-3" />

@@ -295,14 +295,14 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
                             if (active && payload && payload.length) {
                               const data = payload[0].payload;
                               return (
-                                <div className="bg-white border border-slate-200 rounded-xl p-4 dark:bg-slate-800 dark:border-slate-700">
+                                <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-4">
                                   <div className="flex items-center gap-2 mb-2">
                                     {data.icon && (
                                       <div className={`p-1 rounded-md ${data.bgColor}`}>
                                         <data.icon className={`w-4 h-4 ${data.textColor}`} />
                                       </div>
                                     )}
-                                    <p className="font-semibold text-sm">{data.label}</p>
+                                    <p className="font-medium text-sm">{data.label}</p>
                                   </div>
                                   <p className="text-sm text-slate-600 dark:text-slate-400">
                                     Cantidad: <span className="font-semibold">{data.count}</span>
@@ -383,15 +383,12 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
                             return (
-                              <div className="bg-white border border-slate-200 rounded-xl p-4 dark:bg-slate-800 dark:border-slate-700">
-                                <p className="font-semibold mb-2 text-slate-800 dark:text-slate-200">{label}</p>
+                              <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                                <p className="font-medium mb-2">{label}</p>
                                 {payload.map((entry, index) => (
-                                  <div key={index} className="flex items-center gap-2 mb-1">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                                    <p className="text-sm text-slate-700 dark:text-slate-300">
-                                      {entry.name}: <span className="font-semibold">{entry.value}</span>
-                                    </p>
-                                  </div>
+                                  <p key={index} className="text-sm" style={{ color: entry.color }}>
+                                    {entry.name}: {entry.value}
+                                  </p>
                                 ))}
                               </div>
                             );

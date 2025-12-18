@@ -1,14 +1,16 @@
 "use client";
 
-import { Activity, Calendar, CheckCircle, Clock, Edit, Mail, MapPin, Phone, Target, User } from "lucide-react";
+import { Activity, Calendar, CheckCircle, Clock, Edit, Target } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+import { TaskTypes } from "@/app/(admin)/assignments/[id]/tasks/_types/leadTask";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TabsContent } from "@/components/ui/tabs";
 import { SalesAdvisorDashboard } from "../../../_types/dashboard";
+import { getTaskLabel, TaskTypesConfig } from "../../../../assignments/[id]/tasks/_utils/tasks.utils";
 import { EmptyState } from "../../EmptyState";
 
 interface TasksTabsContentProps {
@@ -60,31 +62,23 @@ export default function TasksTabsContent({ data, isLoading }: TasksTabsContentPr
                   className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
-                        task.type === "Call"
-                          ? "bg-slate-600"
-                          : task.type === "Meeting"
-                            ? "bg-slate-700"
-                            : task.type === "Email"
-                              ? "bg-slate-500"
-                              : task.type === "Visit"
-                                ? "bg-primary"
-                                : "bg-slate-400"
-                      }`}
-                    >
-                      {task.type === "Call" && <Phone className="w-5 h-5" />}
-                      {task.type === "Meeting" && <User className="w-5 h-5" />}
-                      {task.type === "Email" && <Mail className="w-5 h-5" />}
-                      {task.type === "Visit" && <MapPin className="w-5 h-5" />}
-                      {task.type === "Other" && <Activity className="w-5 h-5" />}
-                    </div>
+                    {(() => {
+                      const taskConfig = TaskTypesConfig[task.type as keyof typeof TaskTypesConfig];
+                      const TaskIcon = taskConfig?.icon || Activity;
+                      return (
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center ${taskConfig?.bgColor || "bg-gray-50"}`}
+                        >
+                          <TaskIcon className={`w-5 h-5 ${taskConfig?.textColor || "text-gray-700"}`} />
+                        </div>
+                      );
+                    })()}
                     <div>
                       <h4 className="font-medium text-slate-800 dark:text-slate-100">{task.clientName}</h4>
                       <p className="text-sm text-slate-600 dark:text-slate-400">{task.description}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">
-                          {task.type}
+                          {getTaskLabel(task.type as TaskTypes)}
                         </Badge>
                         <span className="text-xs text-slate-500 dark:text-slate-400">
                           {new Date(task.scheduledDate ?? "").toLocaleTimeString("es-ES", {
@@ -145,19 +139,36 @@ export default function TasksTabsContent({ data, isLoading }: TasksTabsContentPr
             />
           ) : (
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data?.tasksByType}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
-                <XAxis dataKey="type" className="text-slate-600 dark:text-slate-400" />
-                <YAxis className="text-slate-600 dark:text-slate-400" />
+              <BarChart data={data?.tasksByType} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
+                <XAxis
+                  dataKey="type"
+                  stroke="#64748b"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => getTaskLabel(value as TaskTypes)}
+                />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "0.5rem",
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                          <p className="font-medium mb-2">{label}</p>
+                          {payload.map((entry, index) => (
+                            <p key={index} className="text-sm" style={{ color: entry.color }}>
+                              {entry.name}: {entry.value}
+                            </p>
+                          ))}
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
-                <Bar dataKey="completed" fill="hsl(var(--primary))" name="Completadas" />
-                <Bar dataKey="pending" fill="hsl(var(--slate-400))" name="Pendientes" />
+                <Bar dataKey="completed" fill="#10b981" name="Completadas" radius={[4, 4, 0, 0]} opacity={0.95} />
+                <Bar dataKey="pending" fill="#facc15" name="Pendientes" radius={[4, 4, 0, 0]} opacity={0.95} />
               </BarChart>
             </ResponsiveContainer>
           )}

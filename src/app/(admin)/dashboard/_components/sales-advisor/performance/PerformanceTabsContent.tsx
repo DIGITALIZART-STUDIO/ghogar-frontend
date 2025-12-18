@@ -55,36 +55,96 @@ export default function PerformanceTabsContent({ data, isLoading }: PerformanceT
             />
           ) : (
             <ResponsiveContainer width="100%" height={400}>
-              <ComposedChart data={data?.myProjects}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
+              <ComposedChart data={data?.myProjects} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
                 <XAxis
                   dataKey="project"
                   angle={-45}
                   textAnchor="end"
                   height={100}
-                  className="text-slate-600 dark:text-slate-400"
+                  stroke="#64748b"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
                 />
-                <YAxis yAxisId="left" className="text-slate-600 dark:text-slate-400" />
-                <YAxis yAxisId="right" orientation="right" className="text-slate-600 dark:text-slate-400" />
+                <YAxis yAxisId="left" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  stroke="#64748b"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "0.5rem",
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-4 shadow-lg z-50">
+                          <p className="font-medium mb-3 text-slate-800 dark:text-slate-200">{label}</p>
+                          <div className="space-y-2">
+                            {payload.map((entry, index) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                                <p className="text-sm text-slate-700 dark:text-slate-300">
+                                  <span className="font-semibold">{entry.name}:</span>{" "}
+                                  <span style={{ color: entry.color }}>{entry.value}</span>
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
+                  cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
                 />
-                <Bar yAxisId="left" dataKey="leadsAssigned" fill="hsl(var(--slate-300))" name="Asignados" />
-                <Bar yAxisId="left" dataKey="leadsCompleted" fill="hsl(var(--slate-500))" name="Completados" />
-                <Bar yAxisId="left" dataKey="quotationsIssued" fill="hsl(var(--slate-700))" name="Cotizaciones" />
-                <Bar yAxisId="left" dataKey="reservationsMade" fill="hsl(var(--primary))" name="Reservaciones" />
+                <Bar
+                  yAxisId="left"
+                  dataKey="leadsAssigned"
+                  fill="#3b82f6"
+                  name="Asignados"
+                  radius={[4, 4, 0, 0]}
+                  opacity={0.95}
+                  stackId="a"
+                />
+                <Bar
+                  yAxisId="left"
+                  dataKey="leadsCompleted"
+                  fill="#10b981"
+                  name="Completados"
+                  radius={[4, 4, 0, 0]}
+                  opacity={0.95}
+                  stackId="a"
+                />
+                <Bar
+                  yAxisId="left"
+                  dataKey="quotationsIssued"
+                  fill="#f59e0b"
+                  name="Cotizaciones"
+                  radius={[4, 4, 0, 0]}
+                  opacity={0.95}
+                  stackId="a"
+                />
+                <Bar
+                  yAxisId="left"
+                  dataKey="reservationsMade"
+                  fill="#059669"
+                  name="Reservaciones"
+                  radius={[4, 4, 0, 0]}
+                  opacity={0.95}
+                  stackId="a"
+                />
                 <Line
                   yAxisId="right"
                   type="monotone"
                   dataKey="conversionRate"
-                  stroke="hsl(var(--primary))"
+                  stroke="#10b981"
                   strokeWidth={3}
                   name="Conversión %"
-                  dot={{ fill: "hsl(var(--primary))", r: 4 }}
+                  dot={{ fill: "#10b981", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: "#10b981", strokeWidth: 2 }}
                 />
               </ComposedChart>
             </ResponsiveContainer>

@@ -31,6 +31,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
       bankName: "",
       exchangeRate: "",
       expiresAt: "",
+      notified: false,
       schedule: "",
       coOwners: [],
     },

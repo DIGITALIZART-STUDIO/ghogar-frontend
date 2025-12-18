@@ -1,30 +1,367 @@
-import { useQuery } from "@tanstack/react-query";
-import { GetActiveBlocksByProject, GetBlocksByProject } from "../_actions/BlockActions";
+import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-export function useBlocks(projectId: string) {
-    return useQuery({
-        queryKey: ["blocks", projectId],
-        queryFn: async () => {
-            const [blocks, error] = await GetBlocksByProject(projectId);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return blocks ?? [];
+import { useAuthContext } from "@/context/auth-provider";
+import { backend as api } from "@/types/backend";
+
+// Query keys constants for better maintainability - matching openapi-react-query format
+const BLOCKS_QUERY_KEYS = {
+  all: ["get", "/api/Blocks"] as const,
+  byProject: (projectId: string) => ["get", "/api/Blocks/project/{projectId}", { path: { projectId } }] as const,
+  byProjectActive: (projectId: string) =>
+    ["get", "/api/Blocks/project/{projectId}/active", { path: { projectId } }] as const,
+  byProjectActivePaginated: (projectId: string) =>
+    ["get", "/api/Blocks/project/{projectId}/active/paginated", { path: { projectId } }] as const,
+  byId: (id: string) => ["get", "/api/Blocks/{id}", { path: { id } }] as const,
+} as const;
+
+// Helper function to invalidate all block-related queries
+const invalidateBlockQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  projectId?: string,
+  blockId?: string
+) => {
+  // Invalidar todas las queries de bloques usando prefijos parciales
+  // React Query invalida todas las queries que empiecen con el prefijo cuando usamos exact: false
+  queryClient.invalidateQueries({
+    predicate: (query) => {
+      const key = query.queryKey;
+      return (
+        Array.isArray(key) &&
+        key.length > 0 &&
+        key[0] === "get" &&
+        typeof key[1] === "string" &&
+        (key[1].startsWith("/api/Blocks") || key[1].startsWith("/api/Projects"))
+      );
+    },
+  });
+
+  // Invalidar queries específicas si se proporcionan IDs
+  if (projectId) {
+    queryClient.invalidateQueries({ queryKey: BLOCKS_QUERY_KEYS.byProject(projectId) });
+    queryClient.invalidateQueries({ queryKey: BLOCKS_QUERY_KEYS.byProjectActive(projectId) });
+    queryClient.invalidateQueries({ queryKey: BLOCKS_QUERY_KEYS.byProjectActivePaginated(projectId) });
+  }
+  if (blockId) {
+    queryClient.invalidateQueries({ queryKey: BLOCKS_QUERY_KEYS.byId(blockId) });
+  }
+};
+
+// Hook para obtener todos los bloques
+export function useAllBlocks() {
+  const { handleAuthError } = useAuthContext();
+
+  return api.useQuery("get", "/api/Blocks", {
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para paginación infinita de bloques por proyecto con búsqueda
+export function useBlocks(projectId: string, pageSize: number = 10, preselectedId?: string) {
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const [orderBy, setOrderBy] = useState<string | undefined>("createdat");
+  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("desc");
+  const { handleAuthError } = useAuthContext();
+
+  const query = api.useInfiniteQuery(
+    "get",
+    "/api/Blocks/project/{projectId}",
+    {
+      params: {
+        path: { projectId },
+        query: {
+          search,
+          page: 1, // Este valor será reemplazado automáticamente por pageParam
+          pageSize,
+          orderBy,
+          orderDirection,
+          preselectedId,
         },
-    });
+      },
+    },
+    {
+      getNextPageParam: (lastPage) => {
+        // Si hay más páginas disponibles, devolver el siguiente número de página
+        if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+          return lastPage.meta.page + 1;
+        }
+        return undefined; // No hay más páginas
+      },
+      getPreviousPageParam: (firstPage) => {
+        // Si no estamos en la primera página, devolver la página anterior
+        if (firstPage.meta?.page && firstPage.meta.page > 1) {
+          return firstPage.meta.page - 1;
+        }
+        return undefined; // No hay páginas anteriores
+      },
+      initialPageParam: 1,
+      pageParamName: "page", // Esto le dice a openapi-react-query que use "page" como parámetro de paginación
+      enabled: !!projectId,
+      onError: async (error: unknown) => {
+        await handleAuthError(error);
+      },
+    }
+  );
+
+  // Obtener todos los bloques de todas las páginas de forma plana
+  const allBlocks = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+  const handleScrollEnd = useCallback(() => {
+    if (query.hasNextPage && !query.isFetchingNextPage) {
+      query.fetchNextPage();
+    }
+  }, [query]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    if (value !== "None" && value !== null && value !== undefined) {
+      setSearch(value.trim());
+    } else {
+      setSearch(undefined);
+    }
+  }, []);
+
+  const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+    setOrderBy(field);
+    setOrderDirection(direction);
+  }, []);
+
+  const resetSearch = useCallback(() => {
+    setSearch(undefined);
+    setOrderBy("createdat");
+    setOrderDirection("desc");
+  }, []);
+
+  return {
+    query,
+    allBlocks, // Todos los bloques acumulados
+    fetchNextPage: query.fetchNextPage,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    refetch: query.refetch,
+    search,
+    setSearch,
+    orderBy,
+    orderDirection,
+    handleScrollEnd,
+    handleSearchChange,
+    handleOrderChange,
+    resetSearch,
+    // Información de paginación
+    totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+    totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+    currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+  };
 }
 
 // Hook para obtener bloques activos por proyecto
 export function useActiveBlocks(projectId: string) {
-    return useQuery({
-        queryKey: ["activeBlocks", projectId],
-        queryFn: async () => {
-            const [blocks, error] = await GetActiveBlocksByProject(projectId);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return blocks ?? [];
+  const { handleAuthError } = useAuthContext();
+
+  return api.useQuery("get", "/api/Blocks/project/{projectId}/active", {
+    params: {
+      path: { projectId },
+    },
+    enabled: !!projectId,
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para obtener un bloque específico
+export function useBlock(id: string) {
+  const { handleAuthError } = useAuthContext();
+
+  return api.useQuery("get", "/api/Blocks/{id}", {
+    params: {
+      path: { id },
+    },
+    enabled: !!id,
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para crear un bloque
+export function useCreateBlock() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("post", "/api/Blocks", {
+    onSuccess: () => {
+      invalidateBlockQueries(queryClient);
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para actualizar un bloque
+export function useUpdateBlock() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("put", "/api/Blocks/{id}", {
+    onSuccess: (data, variables) => {
+      // Extraer projectId del bloque actualizado si está disponible
+      const blockId = variables.params?.path?.id;
+      invalidateBlockQueries(queryClient, undefined, blockId);
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para eliminar un bloque
+export function useDeleteBlock() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("delete", "/api/Blocks/{id}", {
+    onSuccess: () => {
+      invalidateBlockQueries(queryClient);
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para activar un bloque
+export function useActivateBlock() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("put", "/api/Blocks/{id}/activate", {
+    onSuccess: (data, variables) => {
+      const blockId = variables.params?.path?.id;
+      invalidateBlockQueries(queryClient, undefined, blockId);
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para desactivar un bloque
+export function useDeactivateBlock() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("put", "/api/Blocks/{id}/deactivate", {
+    onSuccess: (data, variables) => {
+      const blockId = variables.params?.path?.id;
+      invalidateBlockQueries(queryClient, undefined, blockId);
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Hook para obtener bloques activos paginados por proyecto con búsqueda
+export function usePaginatedActiveBlocksByProjectWithSearch(
+  projectId: string,
+  pageSize: number = 10,
+  preselectedId?: string
+) {
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
+  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
+  const { handleAuthError } = useAuthContext();
+
+  const query = api.useInfiniteQuery(
+    "get",
+    "/api/Blocks/project/{projectId}/active/paginated",
+    {
+      params: {
+        path: {
+          projectId,
         },
-        enabled: !!projectId,
-    });
+        query: {
+          search,
+          page: 1, // Este valor será reemplazado automáticamente por pageParam
+          pageSize,
+          orderBy,
+          orderDirection,
+          preselectedId,
+        },
+      },
+    },
+    {
+      getNextPageParam: (lastPage) => {
+        if (lastPage.meta?.page && lastPage.meta?.totalPages && lastPage.meta.page < lastPage.meta.totalPages) {
+          return lastPage.meta.page + 1;
+        }
+        return undefined;
+      },
+      getPreviousPageParam: (firstPage) => {
+        if (firstPage.meta?.page && firstPage.meta.page > 1) {
+          return firstPage.meta.page - 1;
+        }
+        return undefined;
+      },
+      initialPageParam: 1,
+      pageParamName: "page",
+      enabled: !!projectId,
+      onError: async (error: unknown) => {
+        await handleAuthError(error);
+      },
+    }
+  );
+
+  const allBlocks = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
+
+  const handleScrollEnd = useCallback(() => {
+    if (query.hasNextPage && !query.isFetchingNextPage) {
+      query.fetchNextPage();
+    }
+  }, [query]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    if (value !== "None" && value !== null && value !== undefined) {
+      setSearch(value.trim());
+    } else {
+      setSearch(undefined);
+    }
+  }, []);
+
+  const handleOrderChange = useCallback((field: string, direction: "asc" | "desc") => {
+    setOrderBy(field);
+    setOrderDirection(direction);
+  }, []);
+
+  const resetSearch = useCallback(() => {
+    setSearch(undefined);
+    setOrderBy("createdat");
+    setOrderDirection("desc");
+  }, []);
+
+  return {
+    query,
+    allBlocks,
+    fetchNextPage: query.fetchNextPage,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    search,
+    setSearch,
+    orderBy,
+    orderDirection,
+    handleScrollEnd,
+    handleSearchChange,
+    handleOrderChange,
+    resetSearch,
+    totalCount: query.data?.pages[0]?.meta?.total ?? 0,
+    totalPages: query.data?.pages[0]?.meta?.totalPages ?? 0,
+    currentPage: query.data?.pages[0]?.meta?.page ?? 1,
+  };
 }

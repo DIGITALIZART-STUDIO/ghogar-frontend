@@ -1,468 +1,546 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format, parse, parseISO } from "date-fns";
-import {
-    Banknote,
-    DollarSign,
-    User,
-    Calendar,
-    Wallet,
-    Building2,
-} from "lucide-react";
+import { Banknote, Building2, Calendar, DollarSign, FileText, User, Wallet } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
+import { useClientById } from "@/app/(admin)/clients/_hooks/useClients";
+import { QuotationSearch } from "@/app/(admin)/quotation/_components/search/QuotationSearch";
+import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
 import { InputWithIcon } from "@/components/input-with-icon";
-import { AutoComplete, Option } from "@/components/ui/autocomplete";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import { CreateReservationSchema } from "../_schemas/createReservationSchema";
 import { CurrencyLabels, PaymentMethodLabels } from "../../_utils/reservations.utils";
-import { SummaryQuotation } from "@/app/(admin)/quotation/_types/quotation";
-import { useEffect } from "react";
+import { CoOwnersSection } from "../../[reservationId]/edit/_components/CoOwnersSection";
 
 interface ReservationFormProps {
-    quotationsData: Array<SummaryQuotation>;
-    form: UseFormReturn<CreateReservationSchema>;
-    onSubmit: (data: CreateReservationSchema) => void;
-    isPending: boolean;
+  quotationsData: Array<SummaryQuotation>;
+  form: UseFormReturn<CreateReservationSchema>;
+  onSubmit: (data: CreateReservationSchema) => void;
+  isPending: boolean;
 }
 
 export function ReservationForm({ quotationsData, form, onSubmit, isPending }: ReservationFormProps) {
-    const router = useRouter();
+  const router = useRouter();
 
-    // Prepare quotation options for dropdown
-    const quotationOptions: Array<Option> = quotationsData.map((quotation) => ({
-        value: quotation.id ?? "",
-        label: `${quotation.code} - ${quotation.clientName} (${quotation.projectName})`,
-    }));
+  // Get selected quotation for displaying client info
+  const selectedQuotationId = form.watch("quotationId");
+  const selectedQuotation = quotationsData.find((q) => q.id === selectedQuotationId);
 
-    // Get selected quotation for displaying client info
-    const selectedQuotationId = form.watch("quotationId");
-    const selectedQuotation = quotationsData.find((q) => q.id === selectedQuotationId);
+  // Get client data when quotation is selected
+  const clientId = selectedQuotation?.clientId;
+  const { data: clientData } = useClientById(clientId);
 
-    // Auto-populate form fields when a quotation is selected
-    useEffect(() => {
-        if (!selectedQuotation) {
-            // Clear fields if no quotation is selected
-            // @ts-expect-error those damn uncontrolled inputs
-            form.setValue("currency", "");
-            form.setValue("amountPaid", "");
-            form.setValue("exchangeRate", "");
-            return;
-        }
+  // Auto-populate form fields when a quotation is selected
+  useEffect(() => {
+    if (!selectedQuotation) {
+      // Clear fields if no quotation is selected
+      // @ts-expect-error those damn uncontrolled inputs
+      form.setValue("currency", "");
+      form.setValue("amountPaid", "");
+      form.setValue("exchangeRate", "");
+      form.setValue("coOwners", []);
+      return;
+    }
 
-        // Set currency based on quotation currency
-        if (selectedQuotation.currency === "PEN") {
-            form.setValue("currency", "SOLES");
-        } else if (selectedQuotation.currency === "USD") {
-            form.setValue("currency", "DOLARES");
-        }
+    // Set currency based on quotation currency
+    if (selectedQuotation.currency === "PEN") {
+      form.setValue("currency", "SOLES");
+    } else if (selectedQuotation.currency === "USD") {
+      form.setValue("currency", "DOLARES");
+    }
 
-        // Set exchange rate from quotation
-        if (selectedQuotation.exchangeRate) {
-            form.setValue("exchangeRate", selectedQuotation.exchangeRate.toString());
-        }
+    // Set exchange rate from quotation
+    if (selectedQuotation.exchangeRate) {
+      form.setValue("exchangeRate", selectedQuotation.exchangeRate.toString());
+    }
 
-        // Suggest a default amount (10% of final price as common practice for reservations)
-        if (selectedQuotation.finalPrice) {
-            const suggestedAmount = Math.round(selectedQuotation.finalPrice * 0.1); // 10% as initial payment
-            if (!form.getValues("amountPaid")) { // Only set if user hasn't entered an amount
-                form.setValue("amountPaid", suggestedAmount.toString());
-            }
-        }
+    // Suggest a default amount (10% of final price as common practice for reservations)
+    if (selectedQuotation.finalPrice) {
+      // Usar 10% del precio final como monto sugerido de separación
+      const suggestedAmount = Math.round(selectedQuotation.finalPrice * 0.1);
+      if (!form.getValues("amountPaid")) {
+        // Only set if user hasn't entered an amount
+        form.setValue("amountPaid", suggestedAmount.toString());
+      }
+    }
 
-        // Set default expiration date (30 days from today)
-        if (!form.getValues("expiresAt")) { // Only set if user hasn't set an expiration
-            const expirationDate = new Date();
-            expirationDate.setDate(expirationDate.getDate() + 30); // 30 days from now
-            form.setValue("expiresAt", expirationDate.toISOString());
-        }
+    // Set default expiration date (30 days from today)
+    if (!form.getValues("expiresAt")) {
+      // Only set if user hasn't set an expiration
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 30); // 30 days from now
+      form.setValue("expiresAt", expirationDate.toISOString());
+    }
 
-        // Set default reservation date to today if not set
-        if (!form.getValues("reservationDate")) {
-            const today = new Date();
-            const todayString = format(today, "yyyy-MM-dd");
-            form.setValue("reservationDate", todayString);
-        }
-    }, [selectedQuotation, form]);
+    // Set default reservation date to today if not set
+    if (!form.getValues("reservationDate")) {
+      const today = new Date();
+      const todayString = format(today, "yyyy-MM-dd");
+      form.setValue("reservationDate", todayString);
+    }
+  }, [selectedQuotation, form]);
 
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Columna izquierda - Información principal */}
-                    <div className="lg:col-span-2">
-
-                        {/* Sección principal - Datos de reserva */}
-                        <div className="rounded-xl mb-8 bg-card border border-secondary">
-                            <div className="p-6 bg-primary/10 dark:bg-primary/90 border-b flex items-center rounded-tl-xl rounded-tr-xl">
-                                <Calendar className="h-5 w-5 text-gray-600 dark:text-gray-800 mr-3" />
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    Datos de la Separación
-                                </h2>
-                            </div>
-
-                            <div className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="quotationId"
-                                        render={({ field }) => (
-                                            <FormItem className="sm:col-span-2">
-                                                <FormLabel>
-                                                    Cotización
-                                                </FormLabel>
-                                                <AutoComplete
-                                                    options={quotationOptions}
-                                                    emptyMessage="No se encontró la cotización."
-                                                    placeholder="Seleccione una cotización"
-                                                    onValueChange={(selectedOption) => {
-                                                        field.onChange(selectedOption?.value ?? "");
-                                                    }}
-                                                    value={quotationOptions.find((option) => option.value === field.value) ?? undefined}
-                                                />
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    {/* Display selected quotation info */}
-                                    {selectedQuotation && (
-                                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 col-span-2">
-                                            <div className="flex items-center mb-2">
-                                                <User className="h-4 w-4 text-blue-600 mr-2" />
-                                                <span className="text-sm font-medium text-blue-800">
-                                                    Cliente seleccionado:
-                                                </span>
-                                            </div>
-                                            <div className="text-sm text-blue-700">
-                                                {selectedQuotation.clientName}
-                                            </div>
-                                            <div className="text-xs text-blue-600 mt-1">
-                                                Proyecto:
-                                                {" "}
-                                                {selectedQuotation.projectName}
-                                            </div>
-                                        </div>
-                                    )}
-                                    <FormField
-                                        control={form.control}
-                                        name="reservationDate"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-col">
-                                                <FormLabel>
-                                                    Fecha de Separación
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <DatePicker
-                                                        value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
-                                                        onChange={(date) => {
-                                                            if (date) {
-                                                                const formattedDate = format(date, "yyyy-MM-dd");
-                                                                field.onChange(formattedDate);
-                                                            } else {
-                                                                field.onChange("");
-                                                            }
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="expiresAt"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-col">
-                                                <FormLabel>
-                                                    Fecha de Vencimiento
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <DatePicker
-                                                        value={field.value ? parseISO(field.value) : undefined}
-                                                        onChange={(date) => {
-                                                            if (date) {
-                                                                field.onChange(date.toISOString());
-                                                            } else {
-                                                                field.onChange("");
-                                                            }
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Sección de pago */}
-                        <div className="rounded-xl overflow-hidden mb-8 bg-card border border-secondary">
-                            <div className="p-6 bg-green-100 dark:bg-green-900 border-b flex items-center">
-                                <Wallet className="h-5 w-5 text-green-600 dark:text-green-400 mr-3" />
-                                <h2 className="text-lg font-semibold text-green-800 dark:text-green-200">
-                                    Información de Pago
-                                </h2>
-                            </div>
-
-                            <div className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="amountPaid"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Monto Pagado
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={DollarSign} placeholder="1500.00" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="currency"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Moneda
-                                                </FormLabel>
-                                                <Select value={field.value} onValueChange={field.onChange}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Seleccione moneda" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {Object.entries(CurrencyLabels).map(([value, label]) => (
-                                                            <SelectItem key={value} value={value}>
-                                                                {label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="paymentMethod"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Método de Pago
-                                                </FormLabel>
-                                                <Select value={field.value} onValueChange={field.onChange} >
-                                                    <FormControl>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Seleccione método" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {Object.entries(PaymentMethodLabels).map(([value, { label, icon: Icon, className }]) => (
-                                                            <SelectItem key={value} value={value}>
-                                                                <span className="flex items-center gap-2">
-                                                                    <Icon className={`${className} w-4 h-4`} />
-                                                                    <span className={className}>{label}</span>
-                                                                </span>
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="bankName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Banco (Opcional)
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={Building2} placeholder="Banco de Crédito del Perú" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="exchangeRate"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Tipo de Cambio
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={Banknote} placeholder="3.75" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <div className="md:col-span-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="schedule"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Cronograma de Pagos (Opcional)
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Textarea
-                                                            placeholder="Describe el cronograma de pagos si aplica..."
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Columna derecha - Resumen */}
-                    <div>
-                        <div className="bg-card rounded-lg border p-6 sticky top-6">
-                            <h3 className="text-lg font-semibold mb-4">
-                                Resumen de Separación
-                            </h3>
-
-                            {selectedQuotation ? (
-                                <div className="space-y-3 text-sm">
-                                    <div className="flex justify-between">
-                                        <span>
-                                            Cotización:
-                                        </span>
-                                        <span className="font-medium">
-                                            {selectedQuotation.code}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>
-                                            Cliente:
-                                        </span>
-                                        <span className="font-medium">
-                                            {selectedQuotation.clientName}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>
-                                            Proyecto:
-                                        </span>
-                                        <span className="font-medium">
-                                            {selectedQuotation.projectName}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>
-                                            Lote:
-                                        </span>
-                                        <span className="font-medium">
-                                            Mz.
-                                            {selectedQuotation.blockName}
-                                            {" "}
-                                            Lt.
-                                            {selectedQuotation.lotNumber}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>
-                                            Precio Final:
-                                        </span>
-                                        <span className="font-medium">
-                                            {selectedQuotation.currency === "PEN" ? "S/" : "$"}
-                                            {selectedQuotation.finalPrice?.toLocaleString()}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>
-                                            Área:
-                                        </span>
-                                        <span className="font-medium">
-                                            {selectedQuotation.areaAtQuotation} m²
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>
-                                            T.C.:
-                                        </span>
-                                        <span className="font-medium">
-                                            {selectedQuotation.exchangeRate}
-                                        </span>
-                                    </div>
-
-                                    <div className="pt-3 border-t border-border">
-                                        <div className="text-xs text-muted-foreground mb-2">
-                                            💡 Campos completados automáticamente
-                                        </div>
-                                        <div className="space-y-1 text-xs">
-                                            <div className="flex justify-between">
-                                                <span>Moneda:</span>
-                                                <span className="text-green-600">
-                                                    {selectedQuotation.currency === "PEN" ? "Soles" : "Dólares"}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span>Separación sugerida (10%):</span>
-                                                <span className="text-green-600">
-                                                    {selectedQuotation.currency === "PEN" ? "S/" : "$"}
-                                                    {Math.round(selectedQuotation.finalPrice * 0.1).toLocaleString()}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <p className="text-sm text-muted-foreground">
-                                    Seleccione una cotización para ver el resumen.
-                                </p>
-                            )}
-
-                            <div className="flex gap-2 mt-6">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => router.push("/reservations")}
-                                    className="flex-1"
-                                >
-                                    Cancelar
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={isPending}
-                                    className="flex-1"
-                                >
-                                    {isPending ? "Creando..." : "Crear Separación"}
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit, (errors) => console.log("Form validation errors:", errors))}
+        className="space-y-0"
+      >
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Columna izquierda - Información principal */}
+          <div className="space-y-6 flex-1 order-2 lg:order-1">
+            {/* Card Cotización */}
+            <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                  <h2 className="text-base font-medium text-slate-800 dark:text-slate-200">Selección de Cotización</h2>
                 </div>
-            </form>
-        </Form>
-    );
+              </div>
+
+              <div className="p-4">
+                <FormField
+                  control={form.control}
+                  name="quotationId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                        Cotización
+                      </FormLabel>
+                      <QuotationSearch
+                        value={field.value}
+                        onSelect={(quotationId) => {
+                          field.onChange(quotationId);
+                        }}
+                        placeholder="Seleccione una cotización"
+                        searchPlaceholder="Buscar por cliente, proyecto, lote..."
+                        emptyMessage="No se encontraron cotizaciones"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Información del cliente seleccionado */}
+                {selectedQuotation && (
+                  <div className="mt-4 space-y-2">
+                    {/* Información del cliente */}
+                    <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border-l-2 border-amber-300 dark:border-amber-600">
+                      <div className="flex items-center gap-2 mb-1">
+                        <User className="h-4 w-4 text-amber-700 dark:text-amber-300" />
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                          {selectedQuotation.clientName}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-600 dark:text-slate-400">{selectedQuotation.projectName}</div>
+                    </div>
+
+                    {/* Validaciones de estado */}
+                    {selectedQuotation.status !== "ACCEPTED" && (
+                      <div className="p-3 bg-red-50 dark:bg-red-900/20 border-l-2 border-red-300 dark:border-red-600">
+                        <div className="flex items-center gap-2 mb-1">
+                          <FileText className="h-4 w-4 text-red-700 dark:text-red-300" />
+                          <span className="text-sm font-medium text-red-800 dark:text-red-200">
+                            Cotización no aceptada
+                          </span>
+                        </div>
+                        <div className="text-xs text-red-600 dark:text-red-400">
+                          Solo se pueden crear separaciones de cotizaciones aceptadas
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedQuotation.status === "ACCEPTED" && (
+                      <div className="p-3 bg-green-50 dark:bg-green-900/20 border-l-2 border-green-300 dark:border-green-600">
+                        <div className="flex items-center gap-2 mb-1">
+                          <FileText className="h-4 w-4 text-green-700 dark:text-green-300" />
+                          <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                            Cotización aceptada
+                          </span>
+                        </div>
+                        <div className="text-xs text-green-600 dark:text-green-400">Lista para crear separación</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Card Fechas */}
+            <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                  <h2 className="text-base font-medium text-slate-800 dark:text-slate-200">Fechas de Separación</h2>
+                </div>
+              </div>
+
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="reservationDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                          Fecha de Separación
+                        </FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            value={field.value ? parse(field.value, "yyyy-MM-dd", new Date()) : undefined}
+                            onChange={(date) => {
+                              if (date) {
+                                const formattedDate = format(date, "yyyy-MM-dd");
+                                field.onChange(formattedDate);
+                              } else {
+                                field.onChange("");
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="expiresAt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                          Fecha de Vencimiento
+                        </FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            value={field.value ? parseISO(field.value) : undefined}
+                            onChange={(date) => {
+                              if (date) {
+                                field.onChange(date.toISOString());
+                              } else {
+                                field.onChange("");
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Card Pago */}
+            <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                  <h2 className="text-base font-medium text-slate-800 dark:text-slate-200">Información de Pago</h2>
+                </div>
+              </div>
+
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="amountPaid"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                          Monto Pagado
+                        </FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={DollarSign} placeholder="Ingrese el monto pagado" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                          Moneda
+                        </FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Seleccione la moneda" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.entries(CurrencyLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="paymentMethod"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                          Método de Pago
+                        </FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Seleccione el método de pago" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.entries(PaymentMethodLabels).map(([value, { label, icon: Icon, className }]) => (
+                              <SelectItem key={value} value={value}>
+                                <span className="flex items-center gap-2">
+                                  <Icon className={`${className} w-4 h-4`} />
+                                  <span>{label}</span>
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="bankName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300">Banco (Opcional)</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={Building2} placeholder="Ingrese el nombre del banco" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="exchangeRate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
+                          Tipo de Cambio
+                        </FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={Banknote} placeholder="Ingrese el tipo de cambio" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Copropietarios */}
+            {clientId && <CoOwnersSection clientId={clientId} form={form} />}
+          </div>
+
+          {/* Separador entre columnas */}
+          <div className="hidden lg:block order-2">
+            <Separator orientation="vertical" className="h-full" />
+          </div>
+
+          {/* Columna derecha - Resumen en Card */}
+          <div className="w-full lg:w-[500px] order-1 lg:order-3">
+            <div className="bg-card rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden lg:sticky lg:top-4">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Resumen</h3>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Detalles de la separación</p>
+              </div>
+
+              <div className="p-4">
+                {selectedQuotation ? (
+                  <div className="space-y-4">
+                    {/* Información básica */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Cotización</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.code}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Cliente</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.clientName}
+                        </span>
+                      </div>
+
+                      {clientData && (
+                        <>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">DNI</span>
+                            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                              {clientData.dni ?? "—"}
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">Teléfono</span>
+                            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                              {clientData.phoneNumber ?? "—"}
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">Email</span>
+                            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                              {clientData.email ?? "—"}
+                            </span>
+                          </div>
+                        </>
+                      )}
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Proyecto</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.projectName}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Lote</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.blockName && `Mz. ${selectedQuotation.blockName}`}
+                          {selectedQuotation.lotNumber && ` Lt. ${selectedQuotation.lotNumber}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Información financiera */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Precio Total</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.currency === "PEN" ? "S/" : "$"}
+                          {selectedQuotation.totalPrice?.toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Precio Final</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.currency === "PEN" ? "S/" : "$"}
+                          {selectedQuotation.finalPrice?.toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">A Financiar</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.currency === "PEN" ? "S/" : "$"}
+                          {selectedQuotation.amountFinanced?.toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Área</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.areaAtQuotation} m²
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">T.C.</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {selectedQuotation.exchangeRate}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Información de separación */}
+                    <div className="space-y-3">
+                      <div className="text-xs text-slate-500 dark:text-slate-500 mb-2">
+                        Información de la separación
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Moneda</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          {selectedQuotation.currency === "PEN" ? "Soles" : "Dólares"}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Separación sugerida (10%)</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          {selectedQuotation.currency === "PEN" ? "S/" : "$"}
+                          {Math.round(selectedQuotation.finalPrice * 0.1).toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">Monto a financiar</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          {selectedQuotation.currency === "PEN" ? "S/" : "$"}
+                          {selectedQuotation.amountFinanced?.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <Calendar className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                    <p className="text-sm text-slate-500 dark:text-slate-500">
+                      Seleccione una cotización para ver el resumen
+                    </p>
+                  </div>
+                )}
+
+                <div className="mt-6 space-y-3">
+                  <Button
+                    type="submit"
+                    disabled={isPending || (selectedQuotation && selectedQuotation.status !== "ACCEPTED")}
+                    className="w-full"
+                  >
+                    {isPending ? "Creando..." : "Crear Separación"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push("/reservations")}
+                    className="w-full"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
 }

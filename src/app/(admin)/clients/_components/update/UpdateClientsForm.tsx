@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, Heart, Home, IdCard, Mail, Plus, Trash2, User, Users } from "lucide-react";
+import { Building2, Heart, Home, IdCard, Mail, Plus, Trash2, User, UserCircle, Users } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { getCountries, type Country } from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
@@ -27,472 +27,493 @@ interface UpdateCustomersFormProps extends Omit<React.ComponentPropsWithRef<type
 }
 
 export default function UpdateCustomersForm({ children, form, onSubmit }: UpdateCustomersFormProps) {
-    const clientType = form.watch("type");
+  const clientType = form.watch("type");
 
-    const copropietarios = form.watch("coOwners") ?? [];
-    const separacionBienes = form.watch("separateProperty");
+  const copropietarios = form.watch("coOwners") ?? [];
+  const separacionBienes = form.watch("separateProperty");
 
-    const addCopropietario = () => {
-        if (copropietarios.length < 6) {
-            const currentCopropietarios = form.getValues("coOwners") ?? [];
-            form.setValue("coOwners", [...currentCopropietarios, { name: "", dni: "", phone: "", address: "", email: "" }]);
-        }
-    };
+  const addCopropietario = () => {
+    if (copropietarios.length < 6) {
+      const currentCopropietarios = form.getValues("coOwners") ?? [];
+      form.setValue("coOwners", [...currentCopropietarios, { name: "", dni: "", phone: "", address: "", email: "" }]);
+    }
+  };
 
-    const removeCopropietario = (index: number) => {
-        const currentCopropietarios = form.getValues("coOwners") ?? [];
-        const newCopropietarios = currentCopropietarios.filter((_, i) => i !== index);
-        form.setValue("coOwners", newCopropietarios);
-    };
+  const removeCopropietario = (index: number) => {
+    const currentCopropietarios = form.getValues("coOwners") ?? [];
+    const newCopropietarios = currentCopropietarios.filter((_, i) => i !== index);
+    form.setValue("coOwners", newCopropietarios);
+  };
 
-    const handleSeparacionBienesChange = (checked: boolean) => {
-        form.setValue("separateProperty", checked);
-        if (!checked) {
-            form.setValue("separatePropertyData", undefined);
-        } else {
-            form.setValue("separatePropertyData", {
-                spouseName: "",
-                spouseDni: "",
-                phone: "",
-                maritalStatus: "Casado",
-                address: "",
-                email: "",
-            });
-        }
-    };
+  const handleSeparacionBienesChange = (checked: boolean) => {
+    form.setValue("separateProperty", checked);
+    if (!checked) {
+      form.setValue("separatePropertyData", undefined);
+    } else {
+      form.setValue("separatePropertyData", {
+        spouseName: "",
+        spouseDni: "",
+        phone: "",
+        maritalStatus: "Casado",
+        address: "",
+        email: "",
+      });
+    }
+  };
 
-    const [selectedCountryCode, setSelectedCountryCode] = useState<Country>("PE");
+  const [selectedCountryCode, setSelectedCountryCode] = useState<Country>("PE");
 
-    const countryOptions: Array<CountryOption> = getCountries().map((country) => ({
-        value: es[country],
-        label: es[country] ?? country,
-        original: country,
-    }));
+  const countryOptions: Array<CountryOption> = getCountries().map((country) => ({
+    value: es[country],
+    label: es[country] ?? country,
+    original: country,
+  }));
 
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
-                {/* Información Básica */}
-                <div className="space-y-4">
-                    <div className="flex flex-col gap-4">
-                        {/* Client Type Selection */}
-                        <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor="documentType">Tipo de Cliente</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                                        <FormControl>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Selecciona un tipo de cliente" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {Object.values(ClientTypes).map((clientTypes) => {
-                                                    const clientTypesConfig = ClientTypesLabels[clientTypes];
-                                                    const Icon = clientTypesConfig.icon;
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
+        {/* Información Básica */}
+        <div className="space-y-4">
+          <h3 className="font-semibold text-gray-900 border-b pb-2 dark:text-gray-100 flex items-center gap-2">
+            <UserCircle className="size-5 text-primary" />
+            Información Básica
+          </h3>
+          <div className="flex flex-col gap-4">
+            {/* Client Type Selection */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required htmlFor="documentType">
+                    Tipo de Cliente
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Seleccione el tipo de cliente" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        {Object.values(ClientTypes).map((clientTypes) => {
+                          const clientTypesConfig = ClientTypesLabels[clientTypes];
+                          const Icon = clientTypesConfig.icon;
 
-                                                    return (
-                                                        <SelectItem key={clientTypes} value={clientTypes} className="flex items-center gap-2">
-                                                            <Icon className={`size-4 ${clientTypesConfig.className}`} />
-                                                            <span>{clientTypesConfig.label}</span>
-                                                        </SelectItem>
-                                                    );
-                                                })}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                          return (
+                            <SelectItem key={clientTypes} value={clientTypes} className="flex items-center gap-2">
+                              <Icon className={`size-4 ${clientTypesConfig.className}`} />
+                              <span>{clientTypesConfig.label}</span>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        {/* Conditional fields based on client type */}
-                        {clientType === ClientTypes.Natural ? (
-                            <div>
-                                <DocumentNumberLookup form={form} type="dni" initialValue={form.getValues("dni") ?? undefined} isUpdate />
-                            </div>
-                        ) : clientType === ClientTypes.Juridico ? (
-                            <>
-                                <div>
-                                    <DocumentNumberLookup form={form} type="ruc" initialValue={form.getValues("ruc") ?? undefined} isUpdate />
-                                </div>
-                                <FormField
-                                    control={form.control}
-                                    name="companyName"
-                                    render={({ field }) => (
-                                        <FormItem className="transition-all duration-300 ease-in-out">
-                                            <FormLabel>Nombre de la Empresa</FormLabel>
-                                            <FormControl>
-                                                <InputWithIcon Icon={Building2} placeholder="Ejm: Empresa S.A.C." {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </>
-                        ) : null}
+            {/* Conditional fields based on client type */}
+            {clientType === ClientTypes.Natural ? (
+              <div>
+                <DocumentNumberLookup
+                  form={form}
+                  type="dni"
+                  initialValue={form.getValues("dni") ?? undefined}
+                  isUpdate
+                />
+              </div>
+            ) : clientType === ClientTypes.Juridico ? (
+              <>
+                <div>
+                  <DocumentNumberLookup
+                    form={form}
+                    type="ruc"
+                    initialValue={form.getValues("ruc") ?? undefined}
+                    isUpdate
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="companyName"
+                  render={({ field }) => (
+                    <FormItem className="transition-all duration-300 ease-in-out">
+                      <FormLabel required>Nombre de la Empresa</FormLabel>
+                      <FormControl>
+                        <InputWithIcon Icon={Building2} placeholder="Ingrese el nombre de la empresa" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            ) : null}
 
-                        {/* Name */}
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        {clientType === ClientTypes.Juridico ? "Representante Legal" : "Nombre Completo"}
-                                    </FormLabel>
-                                    <FormControl>
-                                        <InputWithIcon Icon={User} placeholder="Ejm: Juan Perez" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>
+                    {clientType === ClientTypes.Juridico ? "Representante Legal" : "Nombre Completo"}
+                  </FormLabel>
+                  <FormControl>
+                    <InputWithIcon Icon={User} placeholder="Ingrese el nombre completo" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        <FormField
-                            control={form.control}
-                            name="country"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>País</FormLabel>
-                                    <FormControl>
-                                        <CountryAutocomplete
-                                            options={countryOptions}
-                                            flags={flags}
-                                            emptyMessage="No se encontró el país."
-                                            placeholder="Seleccione un país"
-                                            onValueChange={(selectedOption) => {
-                                                field.onChange(selectedOption?.value ?? "");
-                                                // Actualizar el código de país para el PhoneInput
-                                                if (selectedOption) {
-                                                    setSelectedCountryCode(selectedOption.original as Country);
-                                                }
-                                            }}
-                                            value={countryOptions.find((option) => option.value === field.value) ?? undefined}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>País</FormLabel>
+                  <FormControl>
+                    <CountryAutocomplete
+                      options={countryOptions}
+                      flags={flags}
+                      emptyMessage="No se encontró el país."
+                      placeholder="Seleccione el país"
+                      onValueChange={(selectedOption) => {
+                        field.onChange(selectedOption?.value ?? "");
+                        // Actualizar el código de país para el PhoneInput
+                        if (selectedOption) {
+                          setSelectedCountryCode(selectedOption.original as Country);
+                        }
+                      }}
+                      value={countryOptions.find((option) => option.value === field.value) ?? undefined}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        {/* Phone Number */}
-                        <FormField
-                            control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Teléfono</FormLabel>
-                                    <FormControl>
-                                        <PhoneInput
-                                            defaultCountry={selectedCountryCode}
-                                            placeholder="999 888 777"
-                                            value={field.value}
-                                            onChange={(value) => field.onChange(value)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            {/* Phone Number */}
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>Teléfono</FormLabel>
+                  <FormControl>
+                    <PhoneInput
+                      defaultCountry={selectedCountryCode}
+                      placeholder="Ingrese el número de teléfono"
+                      value={field.value}
+                      onChange={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        {/* Email */}
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Correo Electrónico</FormLabel>
-                                    <FormControl>
-                                        <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>Correo Electrónico</FormLabel>
+                  <FormControl>
+                    <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                        {/* Address */}
-                        <FormField
-                            control={form.control}
-                            name="address"
-                            render={({ field }) => (
-                                <FormItem className="md:col-span-2">
-                                    <FormLabel>Dirección</FormLabel>
-                                    <FormControl>
-                                        <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
+            {/* Address */}
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel required>Dirección</FormLabel>
+                  <FormControl>
+                    <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Sección de Copropietarios */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="size-5" />
+              Copropietarios
+              <span className="text-sm font-normal text-muted-foreground">({copropietarios.length}/6)</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {copropietarios.map((_, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 space-y-4 transition-all duration-300 ease-in-out animate-in slide-in-from-top-2"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Copropietario {index + 1}</h4>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeCopropietario(index)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
                 </div>
 
-                <Separator />
+                <div className="grid grid-cols-1 gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`coOwners.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Nombre Completo</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={User} placeholder="Ingrese el nombre completo" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Sección de Copropietarios */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Users className="size-5" />
-                            Copropietarios
-                            <span className="text-sm font-normal text-muted-foreground">({copropietarios.length}/6)</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {copropietarios.map((_, index) => (
-                            <div
-                                key={index}
-                                className="border rounded-lg p-4 space-y-4 transition-all duration-300 ease-in-out animate-in slide-in-from-top-2"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <h4 className="font-medium">Copropietario {index + 1}</h4>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeCopropietario(index)}
-                                        className="text-red-500 hover:text-red-700 transition-colors"
-                                    >
-                                        <Trash2 className="size-4" />
-                                    </Button>
-                                </div>
+                  <FormField
+                    control={form.control}
+                    name={`coOwners.${index}.dni`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>DNI</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={IdCard} placeholder="Ingrese el DNI" maxLength={8} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                <div className="grid grid-cols-1 gap-4">
-                                    <FormField
-                                        control={form.control}
-                                        name={`coOwners.${index}.name`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nombre Completo</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={User} placeholder="Nombre completo" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name={`coOwners.${index}.phone`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Teléfono (Opcional)</FormLabel>
+                        <FormControl>
+                          <PhoneInput
+                            defaultCountry={"PE"}
+                            placeholder="Ingrese el número de teléfono"
+                            value={field.value ?? ""}
+                            onChange={(value) => field.onChange(value)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                    <FormField
-                                        control={form.control}
-                                        name={`coOwners.${index}.dni`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>DNI</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={IdCard} placeholder="12345678" maxLength={8} {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name={`coOwners.${index}.address`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Dirección</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                    <FormField
-                                        control={form.control}
-                                        name={`coOwners.${index}.phone`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Teléfono (Opcional)</FormLabel>
-                                                <FormControl>
-                                                    <PhoneInput
-                                                        defaultCountry={"PE"}
-                                                        placeholder="999 888 777"
-                                                        value={field.value ?? ""}
-                                                        onChange={(value) => field.onChange(value)}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name={`coOwners.${index}.email`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Correo Electrónico</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            ))}
 
-                                    <FormField
-                                        control={form.control}
-                                        name={`coOwners.${index}.address`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Dirección</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+            {copropietarios.length < 6 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addCopropietario}
+                className="w-full transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Plus className="size-4 mr-2" />
+                Agregar Copropietario
+              </Button>
+            )}
+          </CardContent>
+        </Card>
 
-                                    <FormField
-                                        control={form.control}
-                                        name={`coOwners.${index}.email`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Correo Electrónico</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                        ))}
+        <Separator />
 
-                        {copropietarios.length < 6 && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={addCopropietario}
-                                className="w-full transition-all duration-200 hover:scale-[1.02]"
-                            >
-                                <Plus className="size-4 mr-2" />
-                                Agregar Copropietario
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
+        {/* Sección de Separación de Bienes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="size-5" />
+              Separación de Bienes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="separateProperty"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={handleSeparacionBienesChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>¿El cliente tiene separación de bienes?</FormLabel>
+                    <p className="text-sm text-muted-foreground">
+                      Marque esta opción si el cliente está casado sin separación de bienes
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
 
-                <Separator />
+            {separacionBienes && (
+              <div className="border rounded-lg p-4 space-y-4 transition-all duration-300 ease-in-out animate-in slide-in-from-top-2">
+                <h4 className="font-medium">Datos del Cónyuge</h4>
 
-                {/* Sección de Separación de Bienes */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Heart className="size-5" />
-                            Separación de Bienes
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="separateProperty"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl>
-                                        <Checkbox checked={field.value} onCheckedChange={handleSeparacionBienesChange} />
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                        <FormLabel>¿El cliente tiene separación de bienes?</FormLabel>
-                                        <p className="text-sm text-muted-foreground">
-                                            Marque esta opción si el cliente está casado con separación de bienes
-                                        </p>
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
+                <div className="grid grid-cols-1 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="separatePropertyData.spouseName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Nombre del Cónyuge</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={User} placeholder="Ingrese el nombre completo del cónyuge" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                        {separacionBienes && (
-                            <div className="border rounded-lg p-4 space-y-4 transition-all duration-300 ease-in-out animate-in slide-in-from-top-2">
-                                <h4 className="font-medium">Datos del Cónyuge</h4>
+                  <FormField
+                    control={form.control}
+                    name="separatePropertyData.spouseDni"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>DNI del Cónyuge</FormLabel>
+                        <FormControl>
+                          <InputWithIcon
+                            Icon={IdCard}
+                            placeholder="Ingrese el DNI del cónyuge"
+                            maxLength={8}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                <div className="grid grid-cols-1 gap-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="separatePropertyData.spouseName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nombre del Cónyuge</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={User} placeholder="Nombre completo del cónyuge" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name="separatePropertyData.phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Teléfono (Opcional)</FormLabel>
+                        <FormControl>
+                          <PhoneInput
+                            defaultCountry={"PE"}
+                            placeholder="Ingrese el número de teléfono"
+                            value={field.value ?? ""}
+                            onChange={(value) => field.onChange(value)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="separatePropertyData.spouseDni"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>DNI del Cónyuge</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={IdCard} placeholder="12345678" maxLength={8} {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name="separatePropertyData.maritalStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Estado Civil</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Seleccione el estado civil" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Casado">Casado</SelectItem>
+                            <SelectItem value="Separado">Separado</SelectItem>
+                            <SelectItem value="Unión de hecho">Unión de hecho</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="separatePropertyData.phone"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Teléfono (Opcional)</FormLabel>
-                                                <FormControl>
-                                                    <PhoneInput
-                                                        defaultCountry={"PE"}
-                                                        placeholder="999 888 777"
-                                                        value={field.value ?? ""}
-                                                        onChange={(value) => field.onChange(value)}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name="separatePropertyData.address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Dirección</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="separatePropertyData.maritalStatus"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Estado Civil</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Seleccionar estado civil" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="Casado">Casado</SelectItem>
-                                                        <SelectItem value="Separado">Separado</SelectItem>
-                                                        <SelectItem value="Unión de hecho">Unión de hecho</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={form.control}
+                    name="separatePropertyData.email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Correo Electrónico</FormLabel>
+                        <FormControl>
+                          <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="separatePropertyData.address"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Dirección</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={Home} placeholder="Ejm: Jr. Los Pinos 123" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="separatePropertyData.email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Correo Electrónico</FormLabel>
-                                                <FormControl>
-                                                    <InputWithIcon Icon={Mail} placeholder="usuario@ejemplo.com" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {children}
-            </form>
-        </Form>
-    );
+        {children}
+      </form>
+    </Form>
+  );
 }

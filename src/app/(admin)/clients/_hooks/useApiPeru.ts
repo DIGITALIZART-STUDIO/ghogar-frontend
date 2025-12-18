@@ -1,32 +1,46 @@
-import { useQuery } from "@tanstack/react-query";
-import { GetDniInfo, GetRucFullInfo } from "../_actions/ApiPeruActions";
+import { useAuthContext } from "@/context/auth-provider";
+import { backend as api } from "@/types/backend";
 
 // Hook para obtener información de RUC
 export function useRucFullInfo(ruc: string) {
-    return useQuery({
-        queryKey: ["rucFullInfo", ruc],
-        queryFn: async () => {
-            const [data, error] = await GetRucFullInfo(ruc);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data;
-        },
-        enabled: !!ruc,
-    });
+  const { handleAuthError } = useAuthContext();
+
+  return api.useQuery(
+    "get",
+    "/api/apiperu/ruc/{ruc}/info",
+    {
+      params: {
+        path: { ruc },
+      },
+    },
+    {
+      enabled: !!ruc,
+      retry: false,
+      onError: async (error: unknown) => {
+        await handleAuthError(error);
+      },
+    }
+  );
 }
 
 // Hook para obtener información de DNI
 export function useDniInfo(dni: string) {
-    return useQuery({
-        queryKey: ["dniInfo", dni],
-        queryFn: async () => {
-            const [data, error] = await GetDniInfo(dni);
-            if (error) {
-                throw new Error(error.message);
-            }
-            return data;
-        },
-        enabled: !!dni,
-    });
+  const { handleAuthError } = useAuthContext();
+
+  return api.useQuery(
+    "get",
+    "/api/apiperu/dni/{dni}/info",
+    {
+      params: {
+        path: { dni },
+      },
+    },
+    {
+      enabled: !!dni,
+      retry: false,
+      onError: async (error: unknown) => {
+        await handleAuthError(error);
+      },
+    }
+  );
 }

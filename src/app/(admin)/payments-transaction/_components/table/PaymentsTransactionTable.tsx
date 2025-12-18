@@ -3,15 +3,15 @@
 import { useMemo } from "react";
 import { Table as TableInstance } from "@tanstack/react-table";
 
-import { DataTableExpanded } from "@/components/datatable/data-table-expanded";
-import { PaymentsTransactionTableToolbarActions } from "./PaymentsTransactionTableToolbarActions";
 import { ReservationDto, ReservationWithPaymentsDto } from "@/app/(admin)/reservations/_types/reservation";
-import { paymentsTransactionColumns } from "./PaymentsTransactionTableColumns";
-import { PaymentsExpandedContent } from "./PaymentsTransactionContent";
+import { DataTable } from "@/components/datatable/data-table";
 import {
-    CustomPaginationTableParams,
-    ServerPaginationChangeEventCallback,
+  CustomPaginationTableParams,
+  ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
+import { PaymentsExpandedContent } from "./PaymentsTransactionContent";
+import { paymentsTransactionColumns } from "./PaymentsTransactionTableColumns";
+import { PaymentsTransactionTableToolbarActions } from "./PaymentsTransactionTableToolbarActions";
 
 interface PaymentsTransactionTableProps {
   data: Array<ReservationWithPaymentsDto>;
@@ -19,32 +19,28 @@ interface PaymentsTransactionTableProps {
   onPaginationChange: ServerPaginationChangeEventCallback;
 }
 
-export function PaymentsTransactionTable({
-    data,
-    pagination,
-    onPaginationChange,
-}: PaymentsTransactionTableProps) {
-    const columns = useMemo(() => paymentsTransactionColumns(), []);
+export function PaymentsTransactionTable({ data, pagination, onPaginationChange }: PaymentsTransactionTableProps) {
+  const columns = useMemo(() => paymentsTransactionColumns(), []);
 
-    return (
-        <DataTableExpanded
-            isLoading={false}
-            data={data}
-            columns={columns}
-            toolbarActions={(table: TableInstance<ReservationDto>) => (
-                <PaymentsTransactionTableToolbarActions table={table} />
-            )}
-            filterPlaceholder="Buscar pagos..."
-            renderExpandedRow={(reservation) => <PaymentsExpandedContent reservation={reservation} />}
-            serverPagination={{
-                pageIndex: pagination.page - 1,
-                pageSize: pagination.pageSize,
-                pageCount: pagination.totalPages,
-                total: pagination.total,
-                onPaginationChange: async (pageIndex, pageSize) => {
-                    onPaginationChange(pageIndex + 1, pageSize);
-                },
-            }}
-        />
-    );
+  return (
+    <DataTable
+      isLoading={false}
+      data={data}
+      columns={columns}
+      toolbarActions={(table: TableInstance<ReservationDto>) => (
+        <PaymentsTransactionTableToolbarActions table={table} />
+      )}
+      filterPlaceholder="Buscar pagos..."
+      renderExpandedRow={(reservation) => <PaymentsExpandedContent reservation={reservation} />}
+      serverPagination={{
+        pageIndex: pagination.page - 1,
+        pageSize: pagination.pageSize,
+        pageCount: pagination.totalPages,
+        total: pagination.total,
+        onPaginationChange: async (pageIndex, pageSize) => {
+          onPaginationChange(pageIndex + 1, pageSize);
+        },
+      }}
+    />
+  );
 }

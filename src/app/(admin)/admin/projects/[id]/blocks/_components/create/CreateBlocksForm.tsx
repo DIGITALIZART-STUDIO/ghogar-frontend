@@ -11,26 +11,26 @@ interface CreateBlocksFormProps extends Omit<React.ComponentPropsWithRef<"form">
 }
 
 export default function CreateBlocksForm({ children, form, onSubmit }: CreateBlocksFormProps) {
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Nombre de la Manzana</FormLabel>
-                            <FormControl>
-                                <Input placeholder="A, B, 1, 2..." {...field} />
-                            </FormControl>
-                            <FormDescription>Identificador único de la manzana dentro del proyecto</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>Nombre de la Manzana</FormLabel>
+              <FormControl>
+                <Input placeholder="Ingrese el nombre de la manzana" {...field} />
+              </FormControl>
+              <FormDescription>Identificador único de la manzana dentro del proyecto</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-                {children}
-            </form>
-        </Form>
-    );
+        {children}
+      </form>
+    </Form>
+  );
 }

@@ -6,6 +6,8 @@ import { ChevronDown, ChevronRight, Ellipsis, Hash, NotebookPen, Settings, UserR
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
+import { UpdateClientSheet } from "@/app/(admin)/clients/_components/update/UpdateClientsSheet";
+import { Client } from "@/app/(admin)/clients/_types/client";
 import { Lead, LeadCaptureSource, LeadStatus } from "@/app/(admin)/leads/_types/lead";
 import { LeadCaptureSourceLabels, LeadStatusLabels } from "@/app/(admin)/leads/_utils/leads.utils";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
@@ -13,17 +15,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CreateLeadTasksDialog } from "../../[id]/tasks/_components/create/CreateLeadTasksDialog";
 import { LeadStatusToggleDialog } from "../state-management/LeadStatusTogleDialog";
-import { UpdateClientSheet } from "@/app/(admin)/clients/_components/update/UpdateClientsSheet";
-import { Client } from "@/app/(admin)/clients/_types/client";
 
 /**
  * Generar las columnas de la tabla de usuarios
@@ -31,366 +31,359 @@ import { Client } from "@/app/(admin)/clients/_types/client";
  * @returns Columnas de la tabla de usuarios
  */
 export const assignmentsColumns = (handleTasksInterface: (id: string) => void): Array<ColumnDef<Lead>> => [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <div className="px-2">
-                <Checkbox
-                    checked={table.getIsAllPageRowsSelected() ?? (table.getIsSomePageRowsSelected() && "indeterminate")}
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className="translate-y-0.5"
-                />
-            </div>
-        ),
-        cell: ({ row }) => (
-            <div className="px-2">
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                    className="translate-y-0.5"
-                />
-            </div>
-        ),
-        enableSorting: false,
-        enableHiding: false,
-        enablePinning: true,
-    },
+  {
+    id: "select",
+    header: ({ table }) => (
+      <div className="px-2">
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected() ?? (table.getIsSomePageRowsSelected() && "indeterminate")}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+          className="translate-y-0.5"
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="px-2">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="translate-y-0.5"
+        />
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    enablePinning: true,
+  },
 
-    {
-        id: "Código",
-        accessorKey: "code",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Código" />,
-        cell: ({ row }) => (
-            <span className="inline-flex items-center gap-2 font-mono text-xs px-2 py-1 rounded
+  {
+    id: "Código",
+    accessorKey: "code",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Código" />,
+    cell: ({ row }) => (
+      <span
+        className="inline-flex items-center gap-2 font-mono text-xs px-2 py-1 rounded
                 bg-zinc-100 text-zinc-800 border border-zinc-300
                 dark:bg-zinc-900 dark:text-zinc-200 dark:border-zinc-700"
-            >
-                <Hash className="size-4 text-primary" aria-hidden="true" />
-                {row.original?.code ?? "Sin datos"}
-            </span>
-        ),
-        enableColumnFilter: false,
-        enableSorting: true,
+      >
+        <Hash className="size-4 text-primary" aria-hidden="true" />
+        {row.original?.code ?? "Sin datos"}
+      </span>
+    ),
+    enableColumnFilter: false,
+    enableSorting: true,
+  },
+
+  {
+    id: "Cliente",
+    accessorKey: "client.name",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
+    cell: ({ row }) => {
+      if (!row.original || !row.original.client) {
+        return <div className="min-w-32 text-muted-foreground italic">Cliente sin datos</div>;
+      }
+      const client = row.original.client!;
+      const phone = client.phoneNumber;
+
+      let phoneContent = null;
+      if (phone) {
+        try {
+          const country = RPNInput.parsePhoneNumber(phone)?.country;
+          const formattedPhone = RPNInput.formatPhoneNumberIntl(phone);
+
+          phoneContent = (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {country && (
+                <span className="flex h-4 w-6 overflow-hidden rounded-sm">
+                  {flags[country] && React.createElement(flags[country], { title: country })}
+                </span>
+              )}
+              <span>{formattedPhone ?? phone}</span>
+            </div>
+          );
+        } catch {
+          phoneContent = <div className="text-xs text-muted-foreground">{phone}</div>;
+        }
+      }
+
+      return (
+        <div className="min-w-32 flex flex-col gap-1">
+          <div className="truncate capitalize">{row.getValue("Cliente") ?? "Sin datos"}</div>
+          {phoneContent}
+        </div>
+      );
     },
+    enableColumnFilter: true,
+  },
 
-    {
-        id: "Cliente",
-        accessorKey: "client.name",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Cliente" />,
-        cell: ({ row }) => {
-            if (!row.original || !row.original.client) {
-                return (
-                    <div className="min-w-32 text-muted-foreground italic">
-                        Cliente sin datos
-                    </div>
-                );
-            }
-            const client = row.original.client!;
-            const phone = client.phoneNumber;
+  {
+    id: "seguimiento",
+    accessorKey: "status",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Seguimiento" />,
+    cell: ({ row }) => {
+      const leadStatus = row.getValue("seguimiento") as LeadStatus;
+      const leadStatusConfig = LeadStatusLabels[leadStatus];
 
-            let phoneContent = null;
-            if (phone) {
-                try {
-                    const country = RPNInput.parsePhoneNumber(phone)?.country;
-                    const formattedPhone = RPNInput.formatPhoneNumberIntl(phone);
+      if (!leadStatusConfig) {
+        return <div>No registrado</div>;
+      }
 
-                    phoneContent = (
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            {country && (
-                                <span className="flex h-4 w-6 overflow-hidden rounded-sm">
-                                    {flags[country] && React.createElement(flags[country], { title: country })}
-                                </span>
-                            )}
-                            <span>{formattedPhone ?? phone}</span>
-                        </div>
-                    );
-                } catch {
-                    phoneContent = (
-                        <div className="text-xs text-muted-foreground">{phone}</div>
-                    );
-                }
-            }
+      const Icon = leadStatusConfig.icon;
 
-            return (
-                <div className="min-w-32 flex flex-col gap-1">
-                    <div className="truncate capitalize">{row.getValue("Cliente") ?? "Sin datos"}</div>
-                    {phoneContent}
-                </div>
-            );
-        },
-        enableColumnFilter: true,
+      return (
+        <div className="text-xs min-w-32">
+          <Badge variant="outline" className={leadStatusConfig.className}>
+            <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
+            {leadStatusConfig.label}
+          </Badge>
+        </div>
+      );
     },
+    filterFn: (row, id, value) => {
+      const rowValue = row.getValue(id);
 
-    {
-        id: "seguimiento",
-        accessorKey: "status",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Seguimiento" />,
-        cell: ({ row }) => {
-            const leadStatus = row.getValue("seguimiento") as LeadStatus;
-            const leadStatusConfig = LeadStatusLabels[leadStatus];
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          return true;
+        }
+        return value.includes(rowValue);
+      }
 
-            if (!leadStatusConfig) {
-                return <div>No registrado</div>;
-            }
-
-            const Icon = leadStatusConfig.icon;
-
-            return (
-                <div className="text-xs min-w-32">
-                    <Badge variant="outline" className={leadStatusConfig.className}>
-                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
-                        {leadStatusConfig.label}
-                    </Badge>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            const rowValue = row.getValue(id);
-
-            if (Array.isArray(value)) {
-                if (value.length === 0) {
-                    return true;
-                }
-                return value.includes(rowValue);
-            }
-
-            return rowValue === value;
-        },
-        enableColumnFilter: true,
+      return rowValue === value;
     },
+    enableColumnFilter: true,
+  },
 
-    {
-        id: "Medio de captación",
-        accessorKey: "captureSource",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Medio de captación" />,
-        cell: ({ row }) => {
-            const documentType = row.getValue("Medio de captación") as LeadCaptureSource;
-            const documentTypeConfig = LeadCaptureSourceLabels[documentType];
+  {
+    id: "Medio de captación",
+    accessorKey: "captureSource",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Medio de captación" />,
+    cell: ({ row }) => {
+      const documentType = row.getValue("Medio de captación") as LeadCaptureSource;
+      const documentTypeConfig = LeadCaptureSourceLabels[documentType];
 
-            if (!documentTypeConfig) {
-                return <div>No registrado</div>;
-            }
+      if (!documentTypeConfig) {
+        return <div>No registrado</div>;
+      }
 
-            const Icon = documentTypeConfig.icon;
+      const Icon = documentTypeConfig.icon;
 
-            return (
-                <div className="text-xs min-w-32">
-                    <Badge variant="outline" className={documentTypeConfig.className}>
-                        <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
-                        {documentTypeConfig.label}
-                    </Badge>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            const rowValue = row.getValue(id);
-
-            if (Array.isArray(value)) {
-                if (value.length === 0) {
-                    return true;
-                }
-                return value.includes(rowValue);
-            }
-
-            return rowValue === value;
-        },
-        enableColumnFilter: true,
+      return (
+        <div className="text-xs min-w-32">
+          <Badge variant="outline" className={documentTypeConfig.className}>
+            <Icon className="size-4 flex-shrink-0 mr-1" aria-hidden="true" />
+            {documentTypeConfig.label}
+          </Badge>
+        </div>
+      );
     },
+    filterFn: (row, id, value) => {
+      const rowValue = row.getValue(id);
 
-    {
-        id: "fecha de Expiración",
-        accessorKey: "expirationDate",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
-        cell: ({ row }) => {
-            const expirationDate = row.getValue("fecha de Expiración") as string;
-            const status = row.original?.status;
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          return true;
+        }
+        return value.includes(rowValue);
+      }
 
-            // Si está completado o cancelado, no mostrar días
-            if (status === "Completed" || status === "Canceled") {
-                return (
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
-                        No aplica
-                    </Badge>
-                );
-            }
-
-            if (!expirationDate) {
-                return <div>No definida</div>;
-            }
-
-            const expDate = new Date(expirationDate);
-            const currentDate = new Date();
-
-            // Calcular la diferencia en días
-            const diffTime = expDate.getTime() - currentDate.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            // Determinar el estado basado en los días restantes
-            let badgeClass = "";
-            let label = "";
-
-            if (diffDays > 3) {
-                badgeClass = "bg-emerald-100 text-emerald-500 border-emerald-200";
-                label = `${diffDays} días restantes`;
-            } else if (diffDays >= 0) {
-                badgeClass = "bg-amber-100 text-amber-500 border-amber-200";
-                label =
-                diffDays === 0
-                    ? "Expira hoy"
-                    : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
-            } else {
-                badgeClass = "bg-red-100 text-red-500 border-red-200";
-                label = `Expirado hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? "s" : ""}`;
-            }
-
-            return (
-                <div className="flex flex-col gap-1">
-                    <Badge variant="secondary" className={badgeClass}>
-                        {label}
-                    </Badge>
-                </div>
-            );
-        },
-        filterFn: (row, id, value) => {
-            if (!row.getValue(id)) {
-                return false;
-            }
-
-            const expirationDate = new Date(row.getValue(id) as string);
-            const currentDate = new Date();
-            const diffTime = expirationDate.getTime() - currentDate.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            // Estado: "próximo" (verde), "cercano" (amarillo), "expirado" (rojo)
-            const status = diffDays > 3 ? "próximo" : diffDays >= 0 ? "cercano" : "expirado";
-
-            if (Array.isArray(value)) {
-                if (value.length === 0) {
-                    return true;
-                }
-                return value.includes(status);
-            }
-
-            return status === value;
-        },
-        enableColumnFilter: true,
+      return rowValue === value;
     },
+    enableColumnFilter: true,
+  },
 
-    {
-        id: "expand", // Nueva columna para expansión
-        header: () => null, // No mostrar un título en el header
-        cell: ({ row }) => (
-            <Button
-                onClick={() => row.toggleExpanded()} // Alternar la expansión de la fila
-                aria-label="Expand row"
-                className="flex items-center justify-center p-2"
-                variant={"ghost"}
-            >
-                {row.getIsExpanded() ? (
-                    <ChevronDown className="size-4" /> // Ícono cuando la fila está expandida
-                ) : (
-                    <ChevronRight className="size-4" /> // Ícono cuando la fila está colapsada
-                )}
-            </Button>
-        ),
-        enableSorting: false,
-        enableHiding: false,
-        enablePinning: true,
+  {
+    id: "fecha de Expiración",
+    accessorKey: "expirationDate",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
+    cell: ({ row }) => {
+      const expirationDate = row.getValue("fecha de Expiración") as string;
+      const status = row.original?.status;
+
+      // Si está completado o cancelado, no mostrar días
+      if (status === "Completed" || status === "Canceled") {
+        return (
+          <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
+            No aplica
+          </Badge>
+        );
+      }
+
+      if (!expirationDate) {
+        return <div>No definida</div>;
+      }
+
+      const expDate = new Date(expirationDate);
+      const currentDate = new Date();
+
+      // Calcular la diferencia en días
+      const diffTime = expDate.getTime() - currentDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Determinar el estado basado en los días restantes
+      let badgeClass = "";
+      let label = "";
+
+      if (diffDays > 3) {
+        badgeClass = "bg-emerald-100 text-emerald-500 border-emerald-200";
+        label = `${diffDays} días restantes`;
+      } else if (diffDays >= 0) {
+        badgeClass = "bg-amber-100 text-amber-500 border-amber-200";
+        label =
+          diffDays === 0
+            ? "Expira hoy"
+            : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
+      } else {
+        badgeClass = "bg-red-100 text-red-500 border-red-200";
+        label = `Expirado hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? "s" : ""}`;
+      }
+
+      return (
+        <div className="flex flex-col gap-1">
+          <Badge variant="secondary" className={badgeClass}>
+            {label}
+          </Badge>
+        </div>
+      );
     },
+    filterFn: (row, id, value) => {
+      if (!row.getValue(id)) {
+        return false;
+      }
 
-    {
-        id: "actions",
-        cell: function Cell({ row }) {
-            const [createTaskDialog, setCreateTaskDialog] = useState(false);
-            const [toggleStatusDialog, setToggleStatusDialog] = useState(false);
-            const [showEditClientDialog, setShowEditClientDialog] = useState(false);
-            const handleCloseStatusChange = () => {
-                setToggleStatusDialog(false);
-            };
+      const expirationDate = new Date(row.getValue(id) as string);
+      const currentDate = new Date();
+      const diffTime = expirationDate.getTime() - currentDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            const status = row.original?.status;
+      // Estado: "próximo" (verde), "cercano" (amarillo), "expirado" (rojo)
+      const status = diffDays > 3 ? "próximo" : diffDays >= 0 ? "cercano" : "expirado";
 
-            const client = row.original?.client;
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          return true;
+        }
+        return value.includes(status);
+      }
 
-            return (
-                <div>
-                    {createTaskDialog && (
-                        <CreateLeadTasksDialog
-                            open={createTaskDialog}
-                            setOpen={setCreateTaskDialog}
-                            assignedToId={row.original?.assignedToId ?? ""}
-                            leadId={row.original?.id ?? ""}
-                        />
-                    )}
-                    {toggleStatusDialog && (
-                        <LeadStatusToggleDialog
-                            isOpen={toggleStatusDialog}
-                            onClose={handleCloseStatusChange}
-                            leadId={row.original?.id ?? ""}
-                            leadName={row.original?.client?.name ?? ""}
-                            currentStatus={status as LeadStatus}
-                        />
-                    )}
-
-                    {showEditClientDialog && (
-                        <UpdateClientSheet open={showEditClientDialog} onOpenChange={setShowEditClientDialog} client={client as Client} />
-                    )}
-
-                    <div />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
-                                <Ellipsis className="size-4" aria-hidden="true" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem
-                                onSelect={() => row.original?.id && handleTasksInterface(row.original.id)}
-                                disabled={
-                                    row.original?.status === LeadStatus.Expired ||
-                row.original?.status === LeadStatus.Canceled
-                                }
-                            >
-                                Mis tareas
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                onSelect={() => setCreateTaskDialog(true)}
-                                disabled={
-                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
-                                }
-                            >
-                                Crear tarea
-                                <DropdownMenuShortcut>
-                                    <NotebookPen className="size-4" aria-hidden="true" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => setShowEditClientDialog(true)}
-                                disabled={
-                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
-                                }
-                            >
-                                Editar cliente
-                                <DropdownMenuShortcut>
-                                    <UserRoundPen className="size-4" aria-hidden="true" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => setToggleStatusDialog(true)} disabled={
-                                    row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled
-                                }
-                            >
-                                Cambiar estado
-                                <DropdownMenuShortcut><Settings className="size-4" aria-hidden="true" /></DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            );
-        },
-        enablePinning: true,
+      return status === value;
     },
+    enableColumnFilter: true,
+  },
+
+  {
+    id: "expand", // Nueva columna para expansión
+    header: () => null, // No mostrar un título en el header
+    cell: ({ row }) => (
+      <Button
+        onClick={() => row.toggleExpanded()} // Alternar la expansión de la fila
+        aria-label="Expand row"
+        className="flex items-center justify-center p-2"
+        variant={"ghost"}
+      >
+        {row.getIsExpanded() ? (
+          <ChevronDown className="size-4" /> // Ícono cuando la fila está expandida
+        ) : (
+          <ChevronRight className="size-4" /> // Ícono cuando la fila está colapsada
+        )}
+      </Button>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    enablePinning: true,
+  },
+
+  {
+    id: "actions",
+    cell: function Cell({ row }) {
+      const [createTaskDialog, setCreateTaskDialog] = useState(false);
+      const [toggleStatusDialog, setToggleStatusDialog] = useState(false);
+      const [showEditClientDialog, setShowEditClientDialog] = useState(false);
+      const handleCloseStatusChange = () => {
+        setToggleStatusDialog(false);
+      };
+
+      const status = row.original?.status;
+
+      const client = row.original?.client;
+
+      return (
+        <div>
+          {createTaskDialog && (
+            <CreateLeadTasksDialog
+              open={createTaskDialog}
+              setOpen={setCreateTaskDialog}
+              assignedToId={row.original?.assignedToId ?? ""}
+              leadId={row.original?.id ?? ""}
+            />
+          )}
+          {toggleStatusDialog && (
+            <LeadStatusToggleDialog
+              isOpen={toggleStatusDialog}
+              onClose={handleCloseStatusChange}
+              leadId={row.original?.id ?? ""}
+              leadName={row.original?.client?.name ?? ""}
+              currentStatus={status as LeadStatus}
+            />
+          )}
+
+          {showEditClientDialog && (
+            <UpdateClientSheet
+              open={showEditClientDialog}
+              onOpenChange={setShowEditClientDialog}
+              client={client as Client}
+            />
+          )}
+
+          <div />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button aria-label="Open menu" variant="ghost" className="flex size-8 p-0 data-[state=open]:bg-muted">
+                <Ellipsis className="size-4" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem
+                onSelect={() => row.original?.id && handleTasksInterface(row.original.id)}
+                disabled={row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled}
+              >
+                Mis tareas
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setCreateTaskDialog(true)}
+                disabled={row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled}
+              >
+                Crear tarea
+                <DropdownMenuShortcut>
+                  <NotebookPen className="size-4" aria-hidden="true" />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setShowEditClientDialog(true)}
+                disabled={row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled}
+              >
+                Editar cliente
+                <DropdownMenuShortcut>
+                  <UserRoundPen className="size-4" aria-hidden="true" />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setToggleStatusDialog(true)}
+                disabled={row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled}
+              >
+                Cambiar estado
+                <DropdownMenuShortcut>
+                  <Settings className="size-4" aria-hidden="true" />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      );
+    },
+    enablePinning: true,
+  },
 ];

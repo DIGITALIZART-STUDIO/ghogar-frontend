@@ -3,78 +3,69 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
-import { IdCard } from "lucide-react";
 
 import { DataTable } from "@/components/datatable/data-table";
+import {
+  CustomPaginationTableParams,
+  ServerPaginationChangeEventCallback,
+} from "@/types/tanstack-table/CustomPagination";
 import { SummaryQuotation } from "../../_types/quotation";
-import { facetedFilters, getUniqueIdentifiers } from "../../_utils/quotations.filter.utils";
+import { createFacetedFilters } from "../../_utils/quotations.filter.utils";
 import { quotationsColumns } from "./QuotationsTableColumns";
 import { QuotationsTableToolbarActions } from "./QuotationsTableToolbarActions";
-import {
-    CustomPaginationTableParams,
-    ServerPaginationChangeEventCallback,
-} from "@/types/tanstack-table/CustomPagination";
 
 interface QuotationsTableProps {
-    data: Array<SummaryQuotation>;
-    pagination: CustomPaginationTableParams;
-    onPaginationChange: ServerPaginationChangeEventCallback;
+  data: Array<SummaryQuotation>;
+  pagination: CustomPaginationTableParams;
+  onPaginationChange: ServerPaginationChangeEventCallback;
+  search?: string;
+  onSearchChange: (search: string) => void;
+  status?: Array<string>;
+  onStatusChange: (status: Array<string>) => void;
+  isLoading?: boolean;
 }
 
 export function QuotationsTable({
-    data,
-    pagination,
-    onPaginationChange,
+  data,
+  pagination,
+  onPaginationChange,
+  search,
+  onSearchChange,
+  status,
+  onStatusChange,
+  isLoading = false,
 }: QuotationsTableProps) {
-    const router = useRouter();
+  const router = useRouter();
 
-    const handleEditInterface = useCallback(
-        (id: string) => {
-            router.push(`/quotation/${id}/update`);
-        },
-        [router],
-    );
+  const handleEditInterface = useCallback(
+    (id: string) => {
+      router.push(`/quotation/${id}/update`);
+    },
+    [router]
+  );
 
-    const columns = useMemo(() => quotationsColumns(handleEditInterface), [handleEditInterface]);
+  const columns = useMemo(() => quotationsColumns(handleEditInterface), [handleEditInterface]);
 
-    // Crear el filtro dinámico para identificadores (DNI/RUC)
-    const uniqueIdentifiers = useMemo(() => getUniqueIdentifiers(data), [data]);
+  // Crear filtros personalizados con callbacks del servidor
+  const customFacetedFilters = useMemo(() => createFacetedFilters(onStatusChange, status), [onStatusChange, status]);
 
-    // Crear todos los filtros
-    const allFilters = useMemo(() => {
-        const filters = [...facetedFilters];
-
-        if (uniqueIdentifiers.length > 0) {
-            filters.push({
-                column: "lead",
-                title: "Identificador",
-                options: uniqueIdentifiers.map((identifier) => ({
-                    label: `${identifier.type}: ${identifier.value}`,
-                    value: identifier.value,
-                    icon: IdCard,
-                })),
-            });
-        }
-
-        return filters;
-    }, [uniqueIdentifiers]);
-
-    return (
-        <DataTable
-            data={data}
-            columns={columns}
-            toolbarActions={(table: TableInstance<SummaryQuotation>) => <QuotationsTableToolbarActions table={table} />}
-            filterPlaceholder="Buscar cotizaciones..."
-            facetedFilters={allFilters}
-            serverPagination={{
-                pageIndex: pagination.page - 1,
-                pageSize: pagination.pageSize,
-                pageCount: pagination.totalPages,
-                total: pagination.total,
-                onPaginationChange: async (pageIndex, pageSize) => {
-                    onPaginationChange(pageIndex + 1, pageSize);
-                },
-            }}
-        />
-    );
+  return (
+    <DataTable
+      isLoading={isLoading}
+      data={data}
+      columns={columns}
+      toolbarActions={(table: TableInstance<SummaryQuotation>) => <QuotationsTableToolbarActions table={table} />}
+      filterPlaceholder="Buscar cotizaciones..."
+      facetedFilters={customFacetedFilters}
+      externalFilterValue={search}
+      onGlobalFilterChange={onSearchChange}
+      serverPagination={{
+        pageIndex: pagination.page - 1,
+        pageSize: pagination.pageSize,
+        pageCount: pagination.totalPages,
+        total: pagination.total,
+        onPaginationChange: onPaginationChange,
+      }}
+    />
+  );
 }

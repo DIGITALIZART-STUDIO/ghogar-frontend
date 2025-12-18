@@ -29,3 +29,27 @@ export type ServerPaginationTanstackTableConfig = {
   total: number;
   onPaginationChange: ServerPaginationChangeEventCallback;
 };
+
+// Configuración para búsqueda y filtros del servidor
+export type ServerSearchConfig = {
+  search: string;
+  onSearchChange: (search: string) => void;
+  searchPlaceholder?: string;
+};
+
+export type ServerFilterConfig = {
+  filters: Record<string, unknown>;
+  onFiltersChange: (filters: Record<string, unknown>) => void;
+  availableFilters?: Array<{
+    key: string;
+    label: string;
+    type: "select" | "boolean" | "text";
+    options?: Array<{ label: string; value: unknown }>;
+  }>;
+};
+
+// Configuración extendida para paginación del servidor con búsqueda y filtros
+export type ServerPaginationWithSearchConfig = ServerPaginationTanstackTableConfig & {
+  search?: ServerSearchConfig;
+  filters?: ServerFilterConfig;
+};

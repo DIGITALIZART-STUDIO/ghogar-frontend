@@ -71,7 +71,7 @@ export default function UpdateCustomersForm({ children, form, onSubmit }: Update
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4 sm:px-6">
         {/* Información Básica */}
         <div className="space-y-4">
           <h3 className="font-semibold text-gray-900 border-b pb-2 dark:text-gray-100 flex items-center gap-2">

@@ -15,6 +15,7 @@ interface LotsServerComponentProps {
   title: string;
   description: string;
   canCreateLot: boolean;
+  projectCurrency?: string;
 }
 
 export default function LotsServerComponent({
@@ -23,6 +24,7 @@ export default function LotsServerComponent({
   title,
   description,
   canCreateLot,
+  projectCurrency,
 }: LotsServerComponentProps) {
   // Usar el hook de paginación infinita con búsqueda y filtros
   const {
@@ -73,10 +75,10 @@ export default function LotsServerComponent({
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-            <p className="text-muted-foreground">{description}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex-1 space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">{description}</p>
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
@@ -90,10 +92,10 @@ export default function LotsServerComponent({
   if (isError) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-            <p className="text-muted-foreground">{description}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex-1 space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">{description}</p>
           </div>
         </div>
         <ErrorGeneral />
@@ -104,13 +106,19 @@ export default function LotsServerComponent({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-          <p className="text-muted-foreground">{description}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex-1 space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{description}</p>
         </div>
         {canCreateLot && projectId && (
-          <CreateLotsDialog projectId={projectId} blockId={blockId && blockId.trim() !== "" ? blockId : undefined} />
+          <div className="flex-shrink-0">
+            <CreateLotsDialog
+              projectId={projectId}
+              blockId={blockId && blockId.trim() !== "" ? blockId : undefined}
+              projectCurrency={projectCurrency}
+            />
+          </div>
         )}
       </div>
 
@@ -124,6 +132,7 @@ export default function LotsServerComponent({
         search={search}
         status={status}
         onResetSearch={resetSearch}
+        projectCurrency={projectCurrency}
       />
 
       {/* Indicador de carga para más lotes */}

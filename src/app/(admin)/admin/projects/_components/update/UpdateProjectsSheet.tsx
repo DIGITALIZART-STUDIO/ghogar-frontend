@@ -141,18 +141,16 @@ export function UpdateProjectsSheet({ project, open, onOpenChange }: UpdateProje
         </SheetHeader>
         <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
           <UpdateProjectsForm form={form} onSubmit={onSubmit} initialImageUrl={project.projectUrlImage ?? ""}>
-            <SheetFooter className="gap-2 pt-2 sm:space-x-0">
-              <div className="flex flex-row-reverse gap-2">
-                <Button type="submit" disabled={isPending}>
-                  {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-                  Actualizar
+            <SheetFooter className="px-0 pt-4 flex flex-col gap-2 sm:flex-row-reverse sm:gap-2">
+              <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
+                {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                Actualizar
+              </Button>
+              <SheetClose asChild>
+                <Button type="button" variant="outline" className="w-full sm:w-auto bg-transparent">
+                  Cancelar
                 </Button>
-                <SheetClose asChild>
-                  <Button type="button" variant="outline">
-                    Cancelar
-                  </Button>
-                </SheetClose>
-              </div>
+              </SheetClose>
             </SheetFooter>
           </UpdateProjectsForm>
         </ScrollArea>

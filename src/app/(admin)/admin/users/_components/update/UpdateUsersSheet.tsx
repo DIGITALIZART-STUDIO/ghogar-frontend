@@ -152,37 +152,37 @@ export function UpdateUsersSheet({ user, open, onOpenChange }: UpdateUserSheetPr
         <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
           <>
             <UpdateUsersForm form={form} onSubmit={onSubmit}>
-              <div className="gap-2 pt-2 sm:space-x-0">
-                <div className="flex flex-row-reverse gap-2">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-                    Actualizar
+              <div className="px-0 pt-4 flex flex-col gap-2 sm:flex-row-reverse sm:gap-2">
+                <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
+                  {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                  Actualizar
+                </Button>
+                <SheetClose asChild>
+                  <Button type="button" variant="outline" className="w-full sm:w-auto bg-transparent">
+                    Cancelar
                   </Button>
-                  <SheetClose asChild>
-                    <Button type="button" variant="outline">
-                      Cancelar
-                    </Button>
-                  </SheetClose>
-                </div>
+                </SheetClose>
               </div>
             </UpdateUsersForm>
 
             <Separator />
 
             <UpdateUsersPasswordForm form={formPassword} onSubmit={onSubmitPassword}>
-              <div className="gap-2 pt-2 sm:space-x-0">
-                <div className="flex flex-row-reverse gap-2 w-full">
-                  <Button type="submit" disabled={isPending || !form.formState.isValid} className="gap-2">
-                    {isPending && <RefreshCcw className="h-4 w-4 animate-spin" aria-hidden="true" />}
-                    <Key className="size-4" />
-                    Cambiar Contraseña
+              <div className="px-0 pt-4 flex flex-col gap-2 sm:flex-row-reverse sm:gap-2">
+                <Button
+                  type="submit"
+                  disabled={isPending || !form.formState.isValid}
+                  className="gap-2 w-full sm:w-auto"
+                >
+                  {isPending && <RefreshCcw className="h-4 w-4 animate-spin" aria-hidden="true" />}
+                  <Key className="size-4" />
+                  Cambiar Contraseña
+                </Button>
+                <SheetClose asChild>
+                  <Button type="button" variant="outline" className="w-full sm:w-auto bg-transparent">
+                    Cancelar
                   </Button>
-                  <SheetClose asChild>
-                    <Button type="button" variant="outline">
-                      Cancelar
-                    </Button>
-                  </SheetClose>
-                </div>
+                </SheetClose>
               </div>
             </UpdateUsersPasswordForm>
           </>

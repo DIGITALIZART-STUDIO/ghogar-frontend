@@ -99,6 +99,7 @@ export default function LotsPageProvider({ projectId, blockId }: LotsPageProvide
         title={title}
         description={description}
         canCreateLot
+        projectCurrency={projectData?.currency}
       />
     </div>
   );

@@ -190,30 +190,30 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
 
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-4 sm:p-6 space-y-4">
         {/* Project Info */}
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
+        <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 dark:text-gray-300">
           <span className="flex items-center">
-            <DollarSign className="mr-1 h-4 w-4" />
+            <DollarSign className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
             {safeProject.currency}
           </span>
           <span className="flex items-center">
-            <Building2 className="mr-1 h-4 w-4" />
+            <Building2 className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
             {safeProject.totalBlocks} manzanas
           </span>
           <span className="flex items-center">
-            <Calendar className="mr-1 h-4 w-4" />
+            <Calendar className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
             {new Date(safeProject.createdAt).getFullYear()}
           </span>
         </div>
 
         {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
+        <div className="space-y-1 sm:space-y-2">
+          <div className="flex justify-between text-xs sm:text-sm">
             <span className="text-gray-600 dark:text-gray-300">Progreso de ventas</span>
             <span className="font-semibold text-gray-900 dark:text-gray-100">{completionRate}%</span>
           </div>
-          <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-2.5 sm:h-3 bg-gray-200 rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-700 ease-out"
               style={{ width: `${completionRate}%` }}
@@ -222,22 +222,22 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="text-center p-3 bg-green-50 rounded-lg">
-            <div className="text-lg font-bold text-green-600">{safeProject.availableLots}</div>
-            <div className="text-xs text-green-700">Disponibles</div>
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="text-center p-2 sm:p-3 bg-green-50 rounded-lg">
+            <div className="text-base sm:text-lg font-bold text-green-600">{safeProject.availableLots}</div>
+            <div className="text-[10px] sm:text-xs text-green-700">Disponibles</div>
           </div>
-          <div className="text-center p-3 bg-yellow-50 rounded-lg">
-            <div className="text-lg font-bold text-yellow-600">{safeProject.reservedLots}</div>
-            <div className="text-xs text-yellow-700">Reservados</div>
+          <div className="text-center p-2 sm:p-3 bg-yellow-50 rounded-lg">
+            <div className="text-base sm:text-lg font-bold text-yellow-600">{safeProject.reservedLots}</div>
+            <div className="text-[10px] sm:text-xs text-yellow-700">Reservados</div>
           </div>
-          <div className="text-center p-3 bg-red-50 rounded-lg">
-            <div className="text-lg font-bold text-red-600">{safeProject.soldLots}</div>
-            <div className="text-xs text-red-700">Vendidos</div>
+          <div className="text-center p-2 sm:p-3 bg-red-50 rounded-lg">
+            <div className="text-base sm:text-lg font-bold text-red-600">{safeProject.soldLots}</div>
+            <div className="text-[10px] sm:text-xs text-red-700">Vendidos</div>
           </div>
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <div className="text-lg font-bold text-blue-600">{safeProject.quotedLots}</div>
-            <div className="text-xs text-blue-700">Cotizados</div>
+          <div className="text-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+            <div className="text-base sm:text-lg font-bold text-blue-600">{safeProject.quotedLots}</div>
+            <div className="text-[10px] sm:text-xs text-blue-700">Cotizados</div>
           </div>
         </div>
 

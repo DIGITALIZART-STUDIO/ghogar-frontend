@@ -44,9 +44,10 @@ const dataForm = {
 interface CreateLotsDialogProps {
   projectId: string;
   blockId?: string; // Opcional para preseleccionar un bloque
+  projectCurrency?: string;
 }
 
-export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) {
+export function CreateLotsDialog({ projectId, blockId, projectCurrency }: CreateLotsDialogProps) {
   const isDesktop = useMediaQuery("(min-width: 810px)");
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -143,6 +144,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                   blocks={blocks}
                   selectedBlockId={blockId}
                   projectId={projectId}
+                  projectCurrency={projectCurrency}
                 >
                   <DialogFooter>
                     <div className="grid grid-cols-2 gap-2 w-full">
@@ -196,6 +198,7 @@ export function CreateLotsDialog({ projectId, blockId }: CreateLotsDialogProps) 
                   blocks={blocks}
                   selectedBlockId={blockId}
                   projectId={projectId}
+                  projectCurrency={projectCurrency}
                 >
                   <DrawerFooter className="px-0 pt-2 flex flex-col-reverse">
                     <Button disabled={isPending || blocks.length === 0} className="w-full">

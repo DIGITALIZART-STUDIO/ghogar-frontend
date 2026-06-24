@@ -17,6 +17,7 @@ interface CreateLotsFormProps extends Omit<React.ComponentPropsWithRef<"form">, 
   blocks: Array<BlockData>; // Array de bloques activos
   selectedBlockId?: string; // ID del bloque preseleccionado
   projectId: string; // ID del proyecto para el BlockSearch
+  projectCurrency?: string;
 }
 
 export default function CreateLotsForm({
@@ -26,6 +27,7 @@ export default function CreateLotsForm({
   blocks,
   selectedBlockId,
   projectId,
+  projectCurrency = "USD",
 }: CreateLotsFormProps) {
   const area = form.watch("area");
   const price = form.watch("price");
@@ -33,6 +35,14 @@ export default function CreateLotsForm({
 
   const pricePerSquareMeter = area > 0 && price > 0 ? price / area : 0;
   const selectedBlock = blocks.find((block) => block.id === watchedBlockId);
+
+  const isSoles = projectCurrency.toUpperCase() === "PEN" || projectCurrency.toLowerCase() === "soles";
+  const currencySymbol = isSoles ? "S/" : "$";
+  const CurrencyIcon = isSoles
+    ? ({ className }: { className?: string }) => (
+        <span className={`font-bold inline-flex items-center justify-center ${className ?? ""}`}>S/</span>
+      )
+    : DollarSign;
 
   return (
     <Form {...form}>
@@ -120,7 +130,7 @@ export default function CreateLotsForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel required icon={DollarSign}>
+                  <FormLabel required icon={CurrencyIcon as React.ElementType}>
                     Precio Total
                   </FormLabel>
                   <FormControl>
@@ -144,7 +154,10 @@ export default function CreateLotsForm({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium">Precio por m²:</span>
-                  <div className="text-2xl font-bold ">${pricePerSquareMeter.toFixed(0)}</div>
+                  <div className="text-2xl font-bold ">
+                    {currencySymbol}
+                    {pricePerSquareMeter.toFixed(0)}
+                  </div>
                 </div>
                 {selectedBlock && (
                   <div>

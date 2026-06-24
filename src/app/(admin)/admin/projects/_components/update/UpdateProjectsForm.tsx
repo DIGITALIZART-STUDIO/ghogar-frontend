@@ -18,7 +18,7 @@ interface UpdateProjectsFormProps extends Omit<React.ComponentPropsWithRef<typeo
 export default function UpdateProjectsForm({ children, form, onSubmit, initialImageUrl }: UpdateProjectsFormProps) {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4 sm:px-6">
         {/* Basic Information */}
         <div className="space-y-4">
           <h3 className=" font-semibold text-gray-900 border-b pb-2 dark:text-gray-100">Información Básica</h3>

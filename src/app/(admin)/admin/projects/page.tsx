@@ -169,9 +169,13 @@ export default function ProjectsPage() {
 
   return (
     <div>
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-        <HeaderPage title="Panel Inmobiliario" description="Gestiona tus proyectos inmobiliarios" />
-        <CreateProjectsDialog />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex-1 min-w-0">
+          <HeaderPage title="Panel Inmobiliario" description="Gestiona tus proyectos inmobiliarios" />
+        </div>
+        <div className="flex-shrink-0">
+          <CreateProjectsDialog />
+        </div>
       </div>
 
       <div className="space-y-6 pt-4">
@@ -213,11 +217,13 @@ export default function ProjectsPage() {
 
         {/* Projects Grid */}
         <div>
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-            <HeaderPage title="Tus Proyectos" description="Administra y monitorea el progreso de cada desarrollo" />
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex-1 min-w-0">
+              <HeaderPage title="Tus Proyectos" description="Administra y monitorea el progreso de cada desarrollo" />
+            </div>
 
             {/* Buscador creativo */}
-            <div className="relative w-full lg:w-80">
+            <div className="relative w-full sm:w-80 flex-shrink-0">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input

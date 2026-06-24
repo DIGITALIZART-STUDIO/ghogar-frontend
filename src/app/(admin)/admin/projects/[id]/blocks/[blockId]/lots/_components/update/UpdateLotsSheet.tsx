@@ -34,9 +34,10 @@ interface UpdateLotsSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
   projectId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  projectCurrency?: string;
 }
 
-export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLotsSheetProps) {
+export function UpdateLotsSheet({ lot, projectId, open, onOpenChange, projectCurrency }: UpdateLotsSheetProps) {
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -140,19 +141,18 @@ export function UpdateLotsSheet({ lot, projectId, open, onOpenChange }: UpdateLo
               blocks={blocks}
               selectedBlockId={lot?.blockId}
               projectId={projectId}
+              projectCurrency={projectCurrency}
             >
-              <SheetFooter className="gap-2 pt-2 sm:space-x-0">
-                <div className="flex flex-row-reverse gap-2">
-                  <Button type="submit" disabled={isPending}>
-                    {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-                    Actualizar
+              <SheetFooter className="px-0 pt-4 flex flex-col gap-2 sm:flex-row-reverse sm:gap-2">
+                <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
+                  {isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                  Actualizar
+                </Button>
+                <SheetClose asChild>
+                  <Button type="button" variant="outline" className="w-full sm:w-auto bg-transparent">
+                    Cancelar
                   </Button>
-                  <SheetClose asChild>
-                    <Button type="button" variant="outline">
-                      Cancelar
-                    </Button>
-                  </SheetClose>
-                </div>
+                </SheetClose>
               </SheetFooter>
             </UpdateLotsForm>
           )}

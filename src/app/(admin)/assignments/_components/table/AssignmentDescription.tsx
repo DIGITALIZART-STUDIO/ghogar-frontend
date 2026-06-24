@@ -149,8 +149,8 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
     <div className="w-full bg-card border border-border rounded-xl overflow-hidden shadow-sm">
       {/* BALANCED HEADER */}
       <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-4 border-b border-border">
-        <div className="flex  flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <div className="flex items-start sm:items-center gap-4 w-full min-w-0">
             <div className="relative">
               <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
                 <AvatarFallback
@@ -167,11 +167,13 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
             </div>
 
             <div className="min-w-0">
-              <h3 className="font-bold text-base text-foreground truncate">{displayName}</h3>
+              <div className="grid">
+                <h3 className="font-bold text-base text-foreground truncate">{displayName}</h3>
+              </div>
               <p className="text-sm text-muted-foreground">
                 {row.project ? `Interesado en ${row.project.name}` : "Sin proyecto asignado"}
               </p>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 <Badge className={cn("text-xs font-medium", statusInfo.className)} variant={"outline"}>
                   <StatusIcon className="w-3 h-3 mr-1" />
                   {statusInfo.label}
@@ -190,24 +192,35 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
             </div>
           </div>
 
-          <div className="md:text-right text-center">
-            <div
-              className={cn(
-                "text-2xl font-bold",
-                isExpired ? "text-red-600" : isExpiringSoon ? "text-orange-600" : "text-slate-700 dark:text-slate-300"
-              )}
-            >
-              {Math.abs(daysLeft)}
-            </div>
-            <div className="text-xs text-muted-foreground font-medium">
-              {isExpired ? "días vencido" : "días restantes"}
+          <div className="text-left md:text-right shrink-0 border-t border-border/50 md:border-none pt-3 md:pt-0 w-full md:w-auto">
+            <div className="flex items-center justify-between md:block">
+              <div className="text-xs text-muted-foreground font-medium md:hidden">
+                {isExpired ? "Estado del tiempo:" : "Tiempo disponible:"}
+              </div>
+              <div className="text-right">
+                <div
+                  className={cn(
+                    "text-2xl font-bold",
+                    isExpired
+                      ? "text-red-600"
+                      : isExpiringSoon
+                        ? "text-orange-600"
+                        : "text-slate-700 dark:text-slate-300"
+                  )}
+                >
+                  {Math.abs(daysLeft)}
+                </div>
+                <div className="text-xs text-muted-foreground font-medium">
+                  {isExpired ? "días vencido" : "días restantes"}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* BALANCED MAIN CONTENT */}
-      <div className="p-5 space-y-5">
+      <div className="p-4 sm:p-5 space-y-5">
         {/* CLIENT & PROJECT INFO - Balanced Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* CLIENT INFORMATION */}
@@ -473,7 +486,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                   <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">DNI Cónyuge</div>
                   <div className="text-sm font-semibold text-foreground">{separatePropertyData.spouseDni}</div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:col-span-2">
                   {separatePropertyData.email && (
                     <a
                       href={`mailto:${separatePropertyData.email}`}
@@ -526,13 +539,13 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 md:mt-0">
             {row.client?.phoneNumber && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => window.open(`https://wa.me/${row.client?.phoneNumber.replace(/\+/g, "")}`, "_blank")}
-                className="text-green-600 border-green-200 hover:bg-green-50 dark:text-green-400 dark:border-green-800 dark:hover:bg-green-950/30"
+                className="w-full sm:w-auto text-green-600 border-green-200 hover:bg-green-50 dark:text-green-400 dark:border-green-800 dark:hover:bg-green-950/30"
               >
                 <LogoWhatsapp className="w-4 h-4 mr-1" />
                 WhatsApp
@@ -543,7 +556,7 @@ export const AssignmentDescription = ({ row }: AssignmentDescriptionProps) => {
                 variant="outline"
                 size="sm"
                 onClick={() => window.open(`mailto:${row.client?.email}`, "_blank")}
-                className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-950/30"
+                className="w-full sm:w-auto text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-950/30"
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Email

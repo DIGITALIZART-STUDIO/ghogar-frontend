@@ -21,6 +21,7 @@ interface LotsClientProps {
   onResetSearch?: () => void;
   search?: string;
   status?: string;
+  projectCurrency?: string;
 }
 
 export function LotsClient({
@@ -31,6 +32,7 @@ export function LotsClient({
   onResetSearch,
   search,
   status,
+  projectCurrency,
 }: LotsClientProps) {
   const [projectFilter, setProjectFilter] = useState<string>("all");
 
@@ -188,37 +190,41 @@ export function LotsClient({
       )}
 
       {/* Quick Stats - Diseño mejorado */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {/* Total */}
         <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{stats.total}</div>
-                <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mt-1">Total Lotes</div>
+                <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">{stats.total}</div>
+                <div className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mt-1">
+                  Total Lotes
+                </div>
               </div>
-              <div className="p-3 rounded-full bg-slate-200 dark:bg-slate-700">
-                <Home className="w-6 h-6 text-slate-700 dark:text-slate-300" />
+              <div className="p-2 sm:p-3 rounded-full bg-slate-200 dark:bg-slate-700">
+                <Home className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700 dark:text-slate-300" />
               </div>
             </div>
-            <div className="absolute -right-4 -top-4 w-16 h-16 bg-slate-200/20 dark:bg-slate-600/20 rounded-full" />
+            <div className="absolute -right-4 -top-4 w-12 h-12 sm:w-16 sm:h-16 bg-slate-200/20 dark:bg-slate-600/20 rounded-full" />
           </CardContent>
         </Card>
 
         {/* Available */}
         <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 border-emerald-200 dark:border-emerald-700">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">{stats.available}</div>
-                <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400 mt-1">
+                <div className="text-2xl sm:text-3xl font-bold text-emerald-700 dark:text-emerald-300">
+                  {stats.available}
+                </div>
+                <div className="text-xs sm:text-sm font-medium text-emerald-600 dark:text-emerald-400 mt-1 truncate">
                   {getLotStatusConfig(LotStatus.Available).label}
                 </div>
               </div>
-              <div className="p-3 rounded-full bg-emerald-200 dark:bg-emerald-800">
+              <div className="p-2 sm:p-3 rounded-full bg-emerald-200 dark:bg-emerald-800">
                 {(() => {
                   const Icon = getLotStatusConfig(LotStatus.Available).icon;
-                  return <Icon className="w-6 h-6 text-emerald-700 dark:text-emerald-300" />;
+                  return <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-700 dark:text-emerald-300" />;
                 })()}
               </div>
             </div>
@@ -227,18 +233,18 @@ export function LotsClient({
 
         {/* Quoted */}
         <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 border-amber-200 dark:border-amber-700">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-amber-700 dark:text-amber-300">{stats.quoted}</div>
-                <div className="text-sm font-medium text-amber-600 dark:text-amber-400 mt-1">
+                <div className="text-2xl sm:text-3xl font-bold text-amber-700 dark:text-amber-300">{stats.quoted}</div>
+                <div className="text-xs sm:text-sm font-medium text-amber-600 dark:text-amber-400 mt-1 truncate">
                   {getLotStatusConfig(LotStatus.Quoted).label}
                 </div>
               </div>
-              <div className="p-3 rounded-full bg-amber-200 dark:bg-amber-800">
+              <div className="p-2 sm:p-3 rounded-full bg-amber-200 dark:bg-amber-800">
                 {(() => {
                   const Icon = getLotStatusConfig(LotStatus.Quoted).icon;
-                  return <Icon className="w-6 h-6 text-amber-700 dark:text-amber-300" />;
+                  return <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-700 dark:text-amber-300" />;
                 })()}
               </div>
             </div>
@@ -247,18 +253,18 @@ export function LotsClient({
 
         {/* Reserved */}
         <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">{stats.reserved}</div>
-                <div className="text-sm font-medium text-blue-600 dark:text-blue-400 mt-1">
+                <div className="text-2xl sm:text-3xl font-bold text-blue-700 dark:text-blue-300">{stats.reserved}</div>
+                <div className="text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-400 mt-1 truncate">
                   {getLotStatusConfig(LotStatus.Reserved).label}
                 </div>
               </div>
-              <div className="p-3 rounded-full bg-blue-200 dark:bg-blue-800">
+              <div className="p-2 sm:p-3 rounded-full bg-blue-200 dark:bg-blue-800">
                 {(() => {
                   const Icon = getLotStatusConfig(LotStatus.Reserved).icon;
-                  return <Icon className="w-6 h-6 text-blue-700 dark:text-blue-300" />;
+                  return <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700 dark:text-blue-300" />;
                 })()}
               </div>
             </div>
@@ -267,34 +273,34 @@ export function LotsClient({
 
         {/* Sold */}
         <Card className="relative overflow-hidden border-0  bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/30 dark:to-gray-700/30 border-gray-200 dark:border-gray-600">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-gray-700 dark:text-gray-300">{stats.sold}</div>
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-700 dark:text-gray-300">{stats.sold}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-1 truncate">
                   {getLotStatusConfig(LotStatus.Sold).label}
                 </div>
               </div>
-              <div className="p-3 rounded-full bg-gray-200 dark:bg-gray-700">
+              <div className="p-2 sm:p-3 rounded-full bg-gray-200 dark:bg-gray-700">
                 {(() => {
                   const Icon = getLotStatusConfig(LotStatus.Sold).icon;
-                  return <Icon className="w-6 h-6 text-gray-700 dark:text-gray-300" />;
+                  return <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />;
                 })()}
               </div>
             </div>
-            <div className="absolute -right-4 -top-4 w-16 h-16 bg-gray-200/20 dark:bg-gray-600/20 rounded-full" />
+            <div className="absolute -right-4 -top-4 w-12 h-12 sm:w-16 sm:h-16 bg-gray-200/20 dark:bg-gray-600/20 rounded-full" />
           </CardContent>
         </Card>
       </div>
 
       {/* Lots Grid */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
             Lotes Encontrados ({filteredLots.length})
           </h2>
           {(search || status !== "all" || projectFilter !== "all") && (
-            <Button variant="outline" onClick={clearFilters}>
+            <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto">
               Limpiar Filtros
             </Button>
           )}
@@ -312,7 +318,7 @@ export function LotsClient({
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredLots.map((lot) => (
-              <LotCard key={lot.id} lot={lot} projectId={projectId ?? ""} />
+              <LotCard key={lot.id} lot={lot} projectId={projectId ?? ""} projectCurrency={projectCurrency} />
             ))}
           </div>
         )}

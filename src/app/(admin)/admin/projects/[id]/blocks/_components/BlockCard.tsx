@@ -81,23 +81,23 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false,
           : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
       }`}
     >
-      <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
+      <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+        <div className="flex items-start justify-between gap-2 sm:gap-4">
+          <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
             {/* Icono con indicador de estado */}
             <div className="relative flex-shrink-0">
               <div
-                className={`p-3 rounded-xl transition-colors ${
+                className={`p-2 sm:p-3 rounded-xl transition-colors ${
                   block.isActive
                     ? "bg-primary text-primary-foreground"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                 }`}
               >
-                <Building className="h-5 w-5" />
+                <Building className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               {/* Indicador de estado sutil */}
               <div
-                className={`absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white dark:border-gray-800 ${
+                className={`absolute -top-1 -right-1 h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border-2 border-white dark:border-gray-800 ${
                   block.isActive ? "bg-green-500" : "bg-gray-400"
                 }`}
               />
@@ -105,12 +105,12 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false,
 
             {/* Información del bloque */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+              <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
+                <CardTitle className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
                   {block.name}
                 </CardTitle>
               </div>
-              <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
+              <CardDescription className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
                 {block.totalLots} lotes en total
               </CardDescription>
             </div>
@@ -163,12 +163,12 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false,
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Progress Overview */}
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Progreso de ventas</span>
-            <span className="text-sm text-gray-500">{soldPercentage.toFixed(1)}% vendido</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Progreso de ventas</span>
+            <span className="text-xs sm:text-sm text-gray-500">{soldPercentage.toFixed(1)}% vendido</span>
           </div>
           <Progress value={soldPercentage} className="h-2" />
         </div>
@@ -176,18 +176,20 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false,
         <Separator />
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {statusConfig.map((status, index) => (
             <div
               key={index}
-              className={`p-3 rounded-lg border ${status.bgColor} ${status.borderColor} transition-colors`}
+              className={`p-2 sm:p-3 rounded-lg border ${status.bgColor} ${status.borderColor} transition-colors`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">{status.label}</span>
-                <div className={`w-2 h-2 rounded-full ${status.color}`} />
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <span className="text-[10px] sm:text-xs font-medium text-gray-600 uppercase tracking-wide truncate pr-1">
+                  {status.label}
+                </span>
+                <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${status.color} flex-shrink-0`} />
               </div>
               <div className="flex items-end justify-between">
-                <span className={`text-2xl font-bold ${status.textColor}`}>{status.value}</span>
+                <span className={`text-lg sm:text-2xl font-bold ${status.textColor}`}>{status.value}</span>
               </div>
             </div>
           ))}

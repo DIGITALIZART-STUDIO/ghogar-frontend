@@ -17,7 +17,7 @@ interface UpdateUsersFormProps extends Omit<React.ComponentPropsWithRef<typeof S
 export default function UpdateUsersForm({ children, form, onSubmit }: UpdateUsersFormProps) {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6 pb-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4 sm:px-6 pb-4">
         {/* Información Básica */}
 
         <div className="flex items-center gap-2">

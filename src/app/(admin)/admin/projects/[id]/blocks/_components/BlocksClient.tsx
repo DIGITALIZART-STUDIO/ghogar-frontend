@@ -225,14 +225,16 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
           <HeaderPage
             title={`Manzanas - ${project?.name ?? "Sin nombre"}`}
             description={project?.location ?? "Sin ubicación"}
           />
         </div>
-        <CreateBlocksDialog projectId={projectId} refetch={refetch} />
+        <div className="flex-shrink-0">
+          <CreateBlocksDialog projectId={projectId} refetch={refetch} />
+        </div>
       </div>
       <div className="space-y-6">
         {/* Buscador */}

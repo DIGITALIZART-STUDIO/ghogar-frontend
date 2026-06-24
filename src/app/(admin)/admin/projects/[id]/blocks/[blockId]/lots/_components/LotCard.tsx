@@ -24,9 +24,10 @@ import { UpdateLotsSheet } from "./update/UpdateLotsSheet";
 interface LotCardProps {
   lot: LotData;
   projectId: string;
+  projectCurrency?: string;
 }
 
-export function LotCard({ lot, projectId }: LotCardProps) {
+export function LotCard({ lot, projectId, projectCurrency = "USD" }: LotCardProps) {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [openUpdateSheet, setOpenUpdateSheet] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
@@ -127,21 +128,29 @@ export function LotCard({ lot, projectId }: LotCardProps) {
   const statusConfig = getLotStatusConfig(status as LotStatus);
   const StatusIcon = statusConfig.icon;
 
+  const isSoles = projectCurrency.toUpperCase() === "PEN" || projectCurrency.toLowerCase() === "soles";
+  const currencySymbol = isSoles ? "S/" : "$";
+  const CurrencyIcon = isSoles
+    ? ({ className }: { className?: string }) => (
+        <span className={`font-bold inline-flex items-center justify-center ${className ?? ""}`}>S/</span>
+      )
+    : DollarSign;
+
   return (
     <Card className="overflow-hidden hover-lift border bg-card">
-      <CardHeader className="pb-4">
+      <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
         {/* Header superior con número de lote y acciones */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-muted">
-                <Building2 className="h-5 w-5 text-muted-foreground" />
+            <div className="flex items-center gap-2 sm:gap-3 mb-2">
+              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-muted flex-shrink-0">
+                <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
               </div>
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-foreground leading-tight truncate">
                   Lote {lot.lotNumber}
                 </CardTitle>
-                <CardDescription className="text-sm text-muted-foreground mt-0.5">
+                <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
                   {lot.blockName ?? "Sin bloque"} • {lot.projectName ?? "Sin proyecto"}
                 </CardDescription>
               </div>
@@ -149,7 +158,7 @@ export function LotCard({ lot, projectId }: LotCardProps) {
           </div>
 
           {/* Botón de acciones */}
-          <div className="flex-shrink-0 self-start sm:self-center">
+          <div className="flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
@@ -197,29 +206,43 @@ export function LotCard({ lot, projectId }: LotCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="p-4 sm:p-6 space-y-4">
         {/* Métricas principales - Responsive grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div className="flex flex-col p-3 rounded-lg border bg-muted/30">
-            <div className="flex items-center gap-2 mb-2">
-              <Ruler className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Área</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+          <div className="flex flex-col p-2 sm:p-3 rounded-lg border bg-muted/30">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+              <Ruler className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">
+                Área
+              </span>
             </div>
-            <div className="text-lg sm:text-xl font-bold text-foreground">{area.toFixed(1)} m²</div>
+            <div className="text-base sm:text-lg lg:text-xl font-bold text-foreground truncate">
+              {area.toFixed(1)} m²
+            </div>
           </div>
-          <div className="flex flex-col p-3 rounded-lg border bg-muted/30">
-            <div className="flex items-center gap-2 mb-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Precio</span>
+          <div className="flex flex-col p-2 sm:p-3 rounded-lg border bg-muted/30">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+              <CurrencyIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">
+                Precio
+              </span>
             </div>
-            <div className="text-lg sm:text-xl font-bold text-foreground">${price.toLocaleString()}</div>
+            <div className="text-base sm:text-lg lg:text-xl font-bold text-foreground truncate">
+              {currencySymbol}
+              {price.toLocaleString()}
+            </div>
           </div>
-          <div className="flex flex-col p-3 rounded-lg border bg-muted/30 col-span-2 sm:col-span-1">
-            <div className="flex items-center gap-2 mb-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Precio/m²</span>
+          <div className="flex flex-col p-2 sm:p-3 rounded-lg border bg-muted/30 col-span-2 sm:col-span-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+              <CurrencyIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">
+                Precio/m²
+              </span>
             </div>
-            <div className="text-lg sm:text-xl font-bold text-foreground">${pricePerSquareMeter.toFixed(0)}</div>
+            <div className="text-base sm:text-lg lg:text-xl font-bold text-foreground truncate">
+              {currencySymbol}
+              {pricePerSquareMeter.toFixed(0)}
+            </div>
           </div>
         </div>
 
@@ -260,7 +283,13 @@ export function LotCard({ lot, projectId }: LotCardProps) {
         </div>
       </CardContent>
       {openUpdateSheet && (
-        <UpdateLotsSheet lot={lot} projectId={projectId} open={openUpdateSheet} onOpenChange={setOpenUpdateSheet} />
+        <UpdateLotsSheet
+          lot={lot}
+          projectId={projectId}
+          projectCurrency={projectCurrency}
+          open={openUpdateSheet}
+          onOpenChange={setOpenUpdateSheet}
+        />
       )}
     </Card>
   );

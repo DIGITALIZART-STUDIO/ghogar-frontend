@@ -19,7 +19,7 @@ interface UpdateLeadsFormProps extends Omit<React.ComponentPropsWithRef<typeof S
 export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLeadsFormProps) {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4 sm:px-6">
         <FormField
           control={form.control}
           name="captureSource"

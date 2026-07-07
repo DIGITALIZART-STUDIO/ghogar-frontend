@@ -15,6 +15,7 @@ import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { useAuthContext } from "@/context/auth-provider";
 import { AuthorizationContext, ProtectedRoute, Role } from "./_authorization_context";
 import { useUsers } from "./admin/users/_hooks/useUser";
+import { getInitials } from "./profile/_utils/profile.utils";
 
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
   const { handleAuthError, isLoggingOut } = useAuthContext();
@@ -83,12 +84,9 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
     return <ErrorGeneral />;
   }
 
-  const username = data.user.name!;
-  const initials = username
-    .split(" ")
-    .map((n) => n[0].toUpperCase())
-    .slice(0, 2)
-    .join("");
+  const fallbackName = data.user.userName ?? data.user.email ?? "Usuario";
+  const username = data.user.name?.trim() ? data.user.name.trim() : fallbackName;
+  const initials = getInitials(data.user.name ?? "", fallbackName) || "U";
 
   return (
     <AdminLayout name={username} email={data.user.email!} initials={initials} roles={data.roles as Array<string>}>

@@ -37,6 +37,7 @@ export default function InformationQuotationForm({
   setSelectedLead,
 }: InformationQuotationFormProps) {
   const [isDiscountApproved, setIsDiscountApproved] = useState(false);
+  const isSuperAdmin = userData?.roles?.[0] === "SuperAdmin";
 
   // Hook para obtener el tipo de cambio
   const exchangeRateQuery = useCurrentExchangeRate();
@@ -485,7 +486,7 @@ export default function InformationQuotationForm({
                           placeholder="Ingrese el porcentaje inicial"
                           {...field}
                           className="border-emerald-200 focus:border-emerald-500"
-                          readOnly={!!form.watch("projectId") && !!form.watch("downPayment")}
+                          readOnly={!isSuperAdmin && !!form.watch("projectId") && !!form.watch("downPayment")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -506,7 +507,7 @@ export default function InformationQuotationForm({
                           placeholder="Ingrese los meses a financiar"
                           {...field}
                           className="border-emerald-200 focus:border-emerald-500"
-                          readOnly={!!form.watch("projectId") && !!form.watch("monthsFinanced")}
+                          readOnly={!isSuperAdmin && !!form.watch("projectId") && !!form.watch("monthsFinanced")}
                         />
                       </FormControl>
                       <FormMessage />

@@ -122,19 +122,37 @@ export function useUsersWithLeadsSummary(projectId?: string) {
   );
 }
 
+function invalidateLeadQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
+}
+
 export function useCreateLead() {
   const queryClient = useQueryClient();
   const { handleAuthError } = useAuthContext();
 
   return api.useMutation("post", "/api/Leads", {
     onSuccess: () => {
-      // Invalidar queries de leads con las query keys correctas
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
+      invalidateLeadQueries(queryClient);
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+export function useCreateLeadFromPhone() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("post", "/api/Leads/from-phone", {
+    onSuccess: () => {
+      invalidateLeadQueries(queryClient);
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/Clients"] });
     },
     onError: async (error: unknown) => {
       await handleAuthError(error);

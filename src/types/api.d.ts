@@ -2454,6 +2454,49 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/Leads/from-phone": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["LeadFromPhoneCreateDto"];
+          "text/json": components["schemas"]["LeadFromPhoneCreateDto"];
+          "application/*+json": components["schemas"]["LeadFromPhoneCreateDto"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadFromPhoneCreateResponseDto"];
+            "application/json": components["schemas"]["LeadFromPhoneCreateResponseDto"];
+            "text/json": components["schemas"]["LeadFromPhoneCreateResponseDto"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/Leads/paginated": {
     parameters: {
       query?: never;
@@ -8563,6 +8606,21 @@ export interface components {
       projectId?: string | null;
       status: components["schemas"]["LeadStatus"];
       captureSource: components["schemas"]["LeadCaptureSource"];
+    };
+    LeadFromPhoneCreateDto: {
+      phoneNumber: string;
+      captureSource: components["schemas"]["LeadCaptureSource"];
+      /** Format: uuid */
+      assignedToId?: string;
+      /** Format: uuid */
+      projectId?: string;
+    };
+    LeadFromPhoneCreateResponseDto: {
+      lead: components["schemas"]["Lead4"];
+      /** Format: uuid */
+      clientId: string;
+      clientCreated: boolean;
+      clientExisted: boolean;
     };
     LeadDTO: {
       /** Format: uuid */

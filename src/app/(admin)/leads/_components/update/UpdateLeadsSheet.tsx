@@ -18,6 +18,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useLeadCreateDefaults } from "../../_hooks/useLeadCreateDefaults";
 import { useUpdateLead } from "../../_hooks/useLeads";
 import { CreateLeadSchema, leadSchema } from "../../_schemas/createLeadsSchema";
 import { Lead, LeadCaptureSource } from "../../_types/lead";
@@ -36,6 +37,7 @@ interface UpdateLeadSheetProps extends Omit<React.ComponentPropsWithRef<typeof S
 
 export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetProps) {
   const [isSuccess, setIsSuccess] = useState(false);
+  const { isSalesAdvisor } = useLeadCreateDefaults();
 
   const form = useForm<CreateLeadSchema>({
     resolver: zodResolver(leadSchema),
@@ -130,7 +132,7 @@ export function UpdateLeadSheet({ lead, open, onOpenChange }: UpdateLeadSheetPro
           <SheetDescription>{infoSheet.description}</SheetDescription>
         </SheetHeader>
         <ScrollArea className="w-full h-[calc(100vh-150px)] p-0">
-          <UpdateLeadsForm form={form} onSubmit={onSubmit}>
+          <UpdateLeadsForm form={form} onSubmit={onSubmit} isSalesAdvisor={isSalesAdvisor}>
             <SheetFooter className="px-0 pt-4 flex flex-col gap-2 sm:flex-row-reverse sm:gap-2">
               <Button type="submit" disabled={updateLead.isPending} className="w-full sm:w-auto">
                 {updateLead.isPending && <RefreshCcw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}

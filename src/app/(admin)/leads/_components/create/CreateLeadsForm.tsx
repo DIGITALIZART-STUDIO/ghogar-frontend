@@ -42,7 +42,8 @@ export default function CreateLeadsForm({
                       onSelect={(clientId) => {
                         field.onChange(clientId);
                       }}
-                      preselectedId={field.value ?? undefined}
+                      preselectedId={field.value || undefined}
+                      useCurrentUser={isSalesAdvisor}
                       placeholder="Seleccione un cliente"
                       searchPlaceholder="Buscar por nombre, DNI, RUC, teléfono..."
                       emptyMessage="No se encontraron clientes"

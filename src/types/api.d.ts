@@ -1075,6 +1075,8 @@ export interface paths {
           orderBy?: string;
           orderDirection?: string;
           preselectedId?: string;
+          useCurrentUser?: boolean;
+          projectId?: string;
         };
         header?: never;
         path?: never;

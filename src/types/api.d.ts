@@ -5987,6 +5987,51 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/Quotations/paginated": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          page?: number;
+          pageSize?: number;
+          search?: string;
+          status?: Array<components["schemas"]["QuotationStatus"]>;
+          clientId?: Array<string>;
+          projectId?: string;
+          orderBy?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+            "application/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+            "text/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/Quotations/advisor/paginated": {
     parameters: {
       query?: never;
@@ -8452,6 +8497,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     } | null;
     Lead2: {
       /** Format: uuid */
@@ -8487,6 +8536,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     } | null;
     Lead3: {
       /** Format: uuid */
@@ -8522,6 +8575,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     Lead4: {
       /** Format: uuid */
@@ -8557,6 +8614,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     Lead5: {
       /** Format: uuid */
@@ -8592,6 +8653,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     /** @enum {unknown} */
     LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
@@ -8696,6 +8761,10 @@ export interface components {
       projectName?: string | null;
       /** Format: int32 */
       recycleCount?: number;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     LeadTask: {
       /** Format: uuid */
@@ -10108,6 +10177,9 @@ export interface components {
       clientName: string;
       clientIdentification?: string | null;
       clientIdentificationType?: string | null;
+      /** Format: uuid */
+      advisorId?: string;
+      advisorName?: string | null;
       projectName: string;
       /** Format: double */
       totalPrice: number;

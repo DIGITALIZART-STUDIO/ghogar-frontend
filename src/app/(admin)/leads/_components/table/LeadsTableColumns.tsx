@@ -2,11 +2,12 @@
 
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Bell, Ellipsis, Hash, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
+import { Bell, Ellipsis, Hash, RefreshCcw, RefreshCcwDot, Trash, UserRoundPen } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 import { toast } from "sonner";
 
+import { useClaims } from "@/app/(admin)/_authorization_context";
 import { UpdateClientSheet } from "@/app/(admin)/clients/_components/update/UpdateClientsSheet";
 import { Client } from "@/app/(admin)/clients/_types/client";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
@@ -24,17 +25,32 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSendPersonalizedLeadNotification } from "../../_hooks/useLeads";
 import { Lead, LeadCaptureSource, LeadStatus } from "../../_types/lead";
-import { LeadCaptureSourceLabels, LeadStatusLabels } from "../../_utils/leads.utils";
+import {
+  canManageLeadRecycle,
+  canRecycleLead,
+  formatLeadDate,
+  getLeadExpirationBadge,
+  getLeadExpirationFilterStatus,
+  LEAD_SERVER_SORT_FIELDS,
+  LeadCaptureSourceLabels,
+  LeadStatusLabels,
+} from "../../_utils/leads.utils";
 import { DeleteLeadsDialog } from "../state-management/DeleteLeadsDialog";
 import { ReactivateLeadsDialog } from "../state-management/ReactivateLeadsDialog";
+import { RecycleLeadDialog } from "../state-management/RecycleLeadDialog";
 import { UpdateLeadSheet } from "../update/UpdateLeadsSheet";
+import { LeadsServerSortColumnHeader } from "./LeadsServerSortColumnHeader";
+
+export type LeadsTableSorting = {
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
+  onOrderChange?: (field: string, direction: "asc" | "desc") => void;
+};
 
 /**
- * Generar las columnas de la tabla de usuarios
- * @param isSuperAdmin Valor si el usuario es super administrador
- * @returns Columnas de la tabla de usuarios
+ * Generar las columnas de la tabla de leads
  */
-export const leadsColumns = (): Array<ColumnDef<Lead>> => [
+export const leadsColumns = (sorting?: LeadsTableSorting): Array<ColumnDef<Lead>> => [
   {
     id: "select",
     header: ({ table }) => (
@@ -206,71 +222,85 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
   },
 
   {
+    id: "fecha de ingreso",
+    accessorKey: "entryDate",
+    header: () => (
+      <LeadsServerSortColumnHeader
+        title="Fecha de ingreso"
+        sortField={LEAD_SERVER_SORT_FIELDS.entryDate}
+        orderBy={sorting?.orderBy}
+        orderDirection={sorting?.orderDirection}
+        onOrderChange={sorting?.onOrderChange}
+      />
+    ),
+    cell: ({ row }) => {
+      const entryDate = row.original?.entryDate;
+
+      return (
+        <div className="flex min-w-[7.5rem] flex-col gap-1 text-sm">
+          <span>{formatLeadDate(entryDate)}</span>
+          {row.original?.lastRecycledAt && (
+            <span className="text-xs text-muted-foreground">
+              Reciclado: {formatLeadDate(row.original.lastRecycledAt)}
+            </span>
+          )}
+        </div>
+      );
+    },
+    enableSorting: false,
+  },
+
+  {
+    id: "vence",
+    accessorKey: "expirationDate",
+    header: () => (
+      <LeadsServerSortColumnHeader
+        title="Vence"
+        sortField={LEAD_SERVER_SORT_FIELDS.expirationDate}
+        orderBy={sorting?.orderBy}
+        orderDirection={sorting?.orderDirection}
+        onOrderChange={sorting?.onOrderChange}
+      />
+    ),
+    cell: ({ row }) => {
+      const status = row.original?.status;
+
+      if (status === "Completed" || status === "Canceled") {
+        return <span className="text-sm text-muted-foreground">No aplica</span>;
+      }
+
+      return <span className="min-w-[6.5rem] text-sm">{formatLeadDate(row.original?.expirationDate)}</span>;
+    },
+    enableSorting: false,
+  },
+
+  {
     id: "fecha de Expiración",
     accessorKey: "expirationDate",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Expiración" />,
     cell: ({ row }) => {
-      const expirationDate = row.getValue("fecha de Expiración") as string;
-      const status = row.original?.status;
+      const lead = row.original;
+      const expirationBadge = getLeadExpirationBadge(lead ?? {});
 
-      // Si está completado o cancelado, no mostrar días
-      if (status === "Completed" || status === "Canceled") {
-        return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
-            No aplica
-          </Badge>
-        );
-      }
-
-      if (!expirationDate) {
-        return <div>No definida</div>;
-      }
-
-      const expDate = new Date(expirationDate);
-      const currentDate = new Date();
-
-      // Calcular la diferencia en días
-      const diffTime = expDate.getTime() - currentDate.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      // Determinar el estado basado en los días restantes
-      let badgeClass = "";
-      let label = "";
-
-      if (diffDays > 3) {
-        badgeClass = "bg-emerald-100 text-emerald-500 border-emerald-200";
-        label = `${diffDays} días restantes`;
-      } else if (diffDays >= 0) {
-        badgeClass = "bg-amber-100 text-amber-500 border-amber-200";
-        label =
-          diffDays === 0
-            ? "Expira hoy"
-            : `${diffDays} día${diffDays !== 1 ? "s" : ""} restante${diffDays !== 1 ? "s" : ""}`;
-      } else {
-        badgeClass = "bg-red-100 text-red-500 border-red-200";
-        label = `Expirado hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? "s" : ""}`;
+      if (!expirationBadge.showBadge) {
+        return <div>{expirationBadge.label}</div>;
       }
 
       return (
         <div className="flex flex-col gap-1">
-          <Badge variant="secondary" className={badgeClass}>
-            {label}
+          <Badge variant="secondary" className={expirationBadge.className}>
+            {expirationBadge.label}
           </Badge>
         </div>
       );
     },
-    filterFn: (row, id, value) => {
-      if (!row.getValue(id)) {
+    filterFn: (row, _id, value) => {
+      const lead = row.original;
+      if (!lead) {
         return false;
       }
 
-      const expirationDate = new Date(row.getValue(id) as string);
-      const currentDate = new Date();
-      const diffTime = expirationDate.getTime() - currentDate.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      // Estado: "próximo" (verde), "cercano" (amarillo), "expirado" (rojo)
-      const status = diffDays > 3 ? "próximo" : diffDays >= 0 ? "cercano" : "expirado";
+      const status = getLeadExpirationFilterStatus(lead);
 
       if (Array.isArray(value)) {
         if (value.length === 0) {
@@ -289,11 +319,16 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
     cell: function Cell({ row }) {
       const [showDeleteDialog, setShowDeleteDialog] = useState(false);
       const [showReactivateDialog, setShowReactivateDialog] = useState(false);
+      const [showRecycleDialog, setShowRecycleDialog] = useState(false);
       const [showEditDialog, setShowEditDialog] = useState(false);
       const [showEditClientDialog, setShowEditClientDialog] = useState(false);
 
-      const { isActive, id } = row.original ?? {};
-      const client = row.original?.client;
+      const roles = useClaims();
+      const canRecycleLeads = canManageLeadRecycle(roles);
+      const lead = row.original;
+      const { isActive, id } = lead ?? {};
+      const client = lead?.client;
+      const isRecyclable = canRecycleLead(lead);
 
       // Hook para enviar notificación personalizada
       const sendNotification = useSendPersonalizedLeadNotification();
@@ -351,28 +386,34 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
                 <Ellipsis className="size-4" aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuItem onSelect={() => setShowEditDialog(true)} disabled={!isActive}>
                 Editar
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() => setShowEditClientDialog(true)}
-                disabled={row.original?.status === LeadStatus.Expired || row.original?.status === LeadStatus.Canceled}
+                disabled={lead?.status === LeadStatus.Expired || lead?.status === LeadStatus.Canceled}
               >
                 Editar cliente
                 <DropdownMenuShortcut>
                   <UserRoundPen className="size-4" aria-hidden="true" />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
-              {/*             {isSuperAdmin && ( */}
               <DropdownMenuItem onSelect={() => setShowReactivateDialog(true)} disabled={isActive}>
                 Reactivar
                 <DropdownMenuShortcut>
                   <RefreshCcwDot className="size-4" aria-hidden="true" />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
-              {/*       )} */}
+              {canRecycleLeads && (
+                <DropdownMenuItem onSelect={() => setShowRecycleDialog(true)} disabled={!isRecyclable}>
+                  Reciclar
+                  <DropdownMenuShortcut>
+                    <RefreshCcw className="size-4" aria-hidden="true" />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onSelect={() => setShowDeleteDialog(true)}
                 disabled={!isActive}
@@ -404,11 +445,22 @@ export const leadsColumns = (): Array<ColumnDef<Lead>> => [
               />
             )}
 
-            {showReactivateDialog && (
+            {showReactivateDialog && lead && (
               <ReactivateLeadsDialog
                 open={showReactivateDialog}
                 onOpenChange={setShowReactivateDialog}
-                leads={[row?.original]}
+                leads={[lead]}
+                showTrigger={false}
+                onSuccess={() => {
+                  row.toggleSelected(false);
+                }}
+              />
+            )}
+            {showRecycleDialog && lead && (
+              <RecycleLeadDialog
+                open={showRecycleDialog}
+                onOpenChange={setShowRecycleDialog}
+                lead={lead}
                 showTrigger={false}
                 onSuccess={() => {
                   row.toggleSelected(false);

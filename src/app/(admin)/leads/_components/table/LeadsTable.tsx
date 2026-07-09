@@ -24,6 +24,8 @@ interface LeadsTableProps {
   captureSource?: Array<string>;
   setCaptureSource?: (captureSource: Array<string>) => void;
   handleOrderChange?: (field: string, direction: "asc" | "desc") => void;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
   resetFilters?: () => void;
   isLoading?: boolean;
 }
@@ -38,9 +40,20 @@ export function LeadsTable({
   setStatus,
   captureSource,
   setCaptureSource,
+  handleOrderChange,
+  orderBy,
+  orderDirection,
   isLoading = false,
 }: LeadsTableProps) {
-  const columns = useMemo(() => leadsColumns(), []);
+  const columns = useMemo(
+    () =>
+      leadsColumns({
+        orderBy,
+        orderDirection,
+        onOrderChange: handleOrderChange,
+      }),
+    [handleOrderChange, orderBy, orderDirection]
+  );
 
   // Crear faceted filters con callbacks del servidor
   const customFacetedFilters = useMemo(() => {

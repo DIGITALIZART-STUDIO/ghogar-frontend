@@ -1,10 +1,15 @@
 import { useCallback, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 import { useLeadsByAssignedToPagination } from "@/app/(admin)/leads/_hooks/useLeadsByAssignedToPagination";
 import { useLeadsPagination } from "@/app/(admin)/leads/_hooks/useLeadsPagination";
 import { useAuthContext } from "@/context/auth-provider";
+import type { components } from "@/types/api";
 import { backend as api, downloadFileWithClient } from "@/types/backend";
+import type { Lead } from "../_types/lead";
+
+type PaginatedLeadsResponse = components["schemas"]["PaginatedResponseV2OfLead"];
+type RecycledLeadResponse = components["schemas"]["Lead4"];
 
 // Para todos los leads paginados (wrapper del nuevo hook)
 export function usePaginatedLeads(page: number = 1, pageSize: number = 10) {
@@ -122,13 +127,75 @@ export function useUsersWithLeadsSummary(projectId?: string) {
   );
 }
 
-function invalidateLeadQueries(queryClient: ReturnType<typeof useQueryClient>) {
+function patchLeadInPaginatedResponse(
+  paginated: PaginatedLeadsResponse | undefined,
+  updatedLead: RecycledLeadResponse
+): PaginatedLeadsResponse | undefined {
+  if (!paginated?.data || !updatedLead.id) {
+    return paginated;
+  }
+
+  return {
+    ...paginated,
+    data: paginated.data.map((lead) => (lead.id === updatedLead.id ? { ...lead, ...updatedLead } : lead)),
+  };
+}
+
+function patchLeadInLeadList(
+  leads: Array<Lead> | undefined,
+  updatedLead: RecycledLeadResponse
+): Array<Lead> | undefined {
+  if (!leads || !updatedLead.id) {
+    return leads;
+  }
+
+  return leads.map((lead) => {
+    if (!lead || lead.id !== updatedLead.id) {
+      return lead;
+    }
+
+    return { ...lead, ...updatedLead };
+  });
+}
+
+function syncRecycledLeadInCache(queryClient: QueryClient, updatedLead: RecycledLeadResponse) {
+  if (!updatedLead.id) {
+    return;
+  }
+
+  queryClient.setQueriesData<PaginatedLeadsResponse>({ queryKey: ["get", "/api/Leads/paginated"] }, (current) =>
+    patchLeadInPaginatedResponse(current, updatedLead)
+  );
+
+  queryClient.setQueriesData<PaginatedLeadsResponse>(
+    { queryKey: ["get", "/api/Leads/assignedto/paginated"] },
+    (current) => patchLeadInPaginatedResponse(current, updatedLead)
+  );
+
+  queryClient.setQueriesData<Array<Lead>>({ queryKey: ["get", "/api/Leads/assignedto"] }, (current) =>
+    patchLeadInLeadList(current, updatedLead)
+  );
+}
+
+function invalidateLeadQueries(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/paginated"] });
   queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto"] });
   queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"] });
   queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
   queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
   queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
+}
+
+async function refreshLeadQueries(queryClient: QueryClient) {
+  invalidateLeadQueries(queryClient);
+  queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/expired"] });
+
+  await Promise.all([
+    queryClient.refetchQueries({ queryKey: ["get", "/api/Leads/paginated"], type: "active" }),
+    queryClient.refetchQueries({ queryKey: ["get", "/api/Leads/assignedto/paginated"], type: "active" }),
+    queryClient.refetchQueries({ queryKey: ["get", "/api/Leads/assignedto"], type: "active" }),
+    queryClient.refetchQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"], type: "active" }),
+  ]);
 }
 
 export function useCreateLead() {
@@ -216,6 +283,22 @@ export function useActivateLeads() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/assigned/summary"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/available-for-quotation"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Leads/users/with-leads/summary"] });
+    },
+    onError: async (error: unknown) => {
+      await handleAuthError(error);
+    },
+  });
+}
+
+// Reciclar un lead expirado o cancelado
+export function useRecycleLead() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return api.useMutation("post", "/api/Leads/{id}/recycle", {
+    onSuccess: async (updatedLead) => {
+      syncRecycledLeadInCache(queryClient, updatedLead);
+      await refreshLeadQueries(queryClient);
     },
     onError: async (error: unknown) => {
       await handleAuthError(error);

@@ -17,6 +17,136 @@ import {
 
 import { LeadCaptureSource, LeadCompletionReason, LeadStatus } from "../_types/lead";
 
+export const LEAD_SERVER_SORT_FIELDS = {
+  entryDate: "entrydate",
+  expirationDate: "expirationdate",
+} as const;
+
+export function formatLeadDate(dateString?: string | null): string {
+  if (!dateString) {
+    return "—";
+  }
+
+  try {
+    return new Intl.DateTimeFormat("es-PE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "America/Lima",
+    }).format(new Date(dateString));
+  } catch {
+    return "—";
+  }
+}
+
+export function canManageLeadRecycle(roles: Array<string>): boolean {
+  return roles.includes("SuperAdmin") || roles.includes("Admin");
+}
+
+export function canRecycleLead(
+  lead?: {
+    id?: string;
+    isActive?: boolean;
+    status?: LeadStatus | string;
+  } | null
+): boolean {
+  if (!lead?.id || lead.isActive === false) {
+    return false;
+  }
+
+  return lead.status === LeadStatus.Expired || lead.status === LeadStatus.Canceled;
+}
+
+export type LeadExpirationFilterStatus = "próximo" | "cercano" | "expirado";
+
+export type LeadExpirationFields = {
+  status?: LeadStatus | string;
+  isExpired?: boolean;
+  daysUntilExpiration?: number;
+  expirationLabel?: string;
+  IsExpired?: boolean;
+  DaysUntilExpiration?: number;
+  ExpirationLabel?: string;
+};
+
+export function withLeadExpirationFields<T extends LeadExpirationFields>(lead: T): LeadExpirationFields & T {
+  return {
+    ...lead,
+    isExpired: lead.isExpired ?? lead.IsExpired,
+    daysUntilExpiration: lead.daysUntilExpiration ?? lead.DaysUntilExpiration,
+    expirationLabel: lead.expirationLabel ?? lead.ExpirationLabel,
+  };
+}
+
+export function getLeadExpirationFilterStatus(
+  lead: Pick<LeadExpirationFields, "isExpired" | "daysUntilExpiration" | "IsExpired" | "DaysUntilExpiration">
+): LeadExpirationFilterStatus {
+  const normalized = withLeadExpirationFields(lead);
+
+  if (normalized.isExpired) {
+    return "expirado";
+  }
+
+  if ((normalized.daysUntilExpiration ?? 0) <= 3) {
+    return "cercano";
+  }
+
+  return "próximo";
+}
+
+export function getLeadExpirationBadge(
+  lead: LeadExpirationFields,
+  variant: "filled" | "outline" = "filled"
+): {
+  label: string;
+  className: string;
+  showBadge: boolean;
+} {
+  const normalized = withLeadExpirationFields(lead);
+
+  if (normalized.status === LeadStatus.Completed || normalized.status === LeadStatus.Canceled) {
+    return {
+      label: "No aplica",
+      className: variant === "filled" ? "bg-gray-100 text-gray-500 border-gray-200" : "text-gray-500 border-gray-200",
+      showBadge: true,
+    };
+  }
+
+  if (!normalized.expirationLabel) {
+    return {
+      label: "No definida",
+      className: "",
+      showBadge: false,
+    };
+  }
+
+  if (normalized.isExpired) {
+    return {
+      label: normalized.expirationLabel,
+      className: variant === "filled" ? "bg-red-100 text-red-500 border-red-200" : "text-red-500 border-red-200",
+      showBadge: true,
+    };
+  }
+
+  if ((normalized.daysUntilExpiration ?? 0) <= 3) {
+    return {
+      label: normalized.expirationLabel,
+      className:
+        variant === "filled" ? "bg-amber-100 text-amber-500 border-amber-200" : "text-amber-500 border-amber-200",
+      showBadge: true,
+    };
+  }
+
+  return {
+    label: normalized.expirationLabel,
+    className:
+      variant === "filled"
+        ? "bg-emerald-100 text-emerald-500 border-emerald-200"
+        : "text-emerald-500 border-emerald-200",
+    showBadge: true,
+  };
+}
+
 export const LeadStatusLabels: Record<
   LeadStatus,
   {

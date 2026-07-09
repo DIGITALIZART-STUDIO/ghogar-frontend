@@ -30,6 +30,8 @@ export default function LeadsPage() {
     clientId,
     setClientId,
     handleOrderChange,
+    orderBy,
+    orderDirection,
     resetFilters,
   } = usePaginatedLeads(page, pageSize);
 
@@ -55,7 +57,7 @@ export default function LeadsPage() {
     return (
       <div>
         <HeaderPage title="Leads" description="Cargando leads..." />
-        <DataTableSkeleton columns={7} numFilters={3} />
+        <DataTableSkeleton columns={9} numFilters={3} />
       </div>
     );
   }
@@ -89,6 +91,8 @@ export default function LeadsPage() {
           captureSource={captureSource}
           setCaptureSource={setCaptureSource}
           handleOrderChange={handleOrderChange}
+          orderBy={orderBy}
+          orderDirection={orderDirection}
           resetFilters={resetFilters}
           isLoading={isLoading}
         />

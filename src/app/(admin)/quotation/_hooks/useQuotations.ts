@@ -69,6 +69,7 @@ export function useCreateQuotation() {
     onSuccess: () => {
       // Invalidar queries de cotizaciones con las query keys correctas
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/paginated"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
     },
     onError: async (error: unknown) => {
@@ -87,6 +88,7 @@ export function useUpdateQuotation() {
       // Invalidar queries de cotizaciones con las query keys correctas
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/{id}"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/paginated"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
     },
     onError: async (error: unknown) => {
@@ -104,6 +106,7 @@ export function useDeleteQuotation() {
     onSuccess: () => {
       // Invalidar queries de cotizaciones con las query keys correctas
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/paginated"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
     },
     onError: async (error: unknown) => {
@@ -122,6 +125,7 @@ export function useChangeQuotationStatus() {
       // Invalidar queries de cotizaciones con las query keys correctas
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/{id}"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/paginated"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/Quotations/advisor/paginated"] });
     },
     onError: async (error: unknown) => {

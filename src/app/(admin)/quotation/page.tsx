@@ -2,17 +2,20 @@
 
 import { useCallback, useState } from "react";
 
+import { useClaims } from "@/app/(admin)/_authorization_context";
+import { hasGlobalListView } from "@/app/(admin)/_utils/global-list-view";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
 import { QuotationsTable } from "./_components/table/QuotationsTable";
-import { useQuotationsByAdvisorPagination } from "./_hooks/useQuotationsByAdvisorPagination";
+import { useQuotationsListPagination } from "./_hooks/useQuotationsListPagination";
 
 export default function QuotationPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const roles = useClaims();
+  const isGlobalView = hasGlobalListView(roles[0]);
 
-  // Obtener cotizaciones paginadas por asesor con filtros
   const {
     data: quotations,
     meta,
@@ -22,18 +25,22 @@ export default function QuotationPage() {
     filters,
     setSearch,
     handleStatusChange,
-  } = useQuotationsByAdvisorPagination(page, pageSize);
+  } = useQuotationsListPagination(page, pageSize, isGlobalView);
 
   const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
     setPage(newPage);
     setPageSize(newPageSize);
   }, []);
 
-  // Solo mostrar skeleton completo en la carga inicial (cuando no hay datos)
+  const pageTitle = isGlobalView ? "Todas las Cotizaciones" : "Mis Cotizaciones";
+  const pageDescription = isGlobalView
+    ? "Gestión de todas las cotizaciones del sistema."
+    : "Gestión de cotizaciones generadas por el usuario.";
+
   if (isLoading && !quotations) {
     return (
       <div>
-        <HeaderPage title="Mis Cotizaciones" description="Cargando cotizaciones..." />
+        <HeaderPage title={pageTitle} description="Cargando cotizaciones..." />
         <DataTableSkeleton columns={7} numFilters={1} />
       </div>
     );
@@ -42,7 +49,7 @@ export default function QuotationPage() {
   if (error || !quotations) {
     return (
       <div>
-        <HeaderPage title="Mis Cotizaciones" description="Gestión de cotizaciones generadas por el usuario." />
+        <HeaderPage title={pageTitle} description={pageDescription} />
         <ErrorGeneral />
       </div>
     );
@@ -50,7 +57,7 @@ export default function QuotationPage() {
 
   return (
     <div>
-      <HeaderPage title="Mis Cotizaciones" description="Gestión de cotizaciones generadas por el usuario." />
+      <HeaderPage title={pageTitle} description={pageDescription} />
       <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
         <QuotationsTable
           data={quotations}

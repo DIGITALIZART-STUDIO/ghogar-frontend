@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useClientsPagination } from "@/app/(admin)/clients/_hooks/useClientsPagination";
@@ -236,8 +236,17 @@ export function useDownloadImportTemplate() {
   });
 }
 
+interface PaginatedClientsWithSearchOptions {
+  preselectedId?: string;
+  useCurrentUser?: boolean;
+  projectId?: string;
+}
+
 // Hook para paginación infinita de clientes con búsqueda (usando backend2)
-export function usePaginatedClientsWithSearch(pageSize: number = 10, preselectedId?: string) {
+export function usePaginatedClientsWithSearch(
+  pageSize: number = 10,
+  { preselectedId, useCurrentUser, projectId }: PaginatedClientsWithSearchOptions = {}
+) {
   const [search, setSearch] = useState<string | undefined>(undefined);
   const [orderBy, setOrderBy] = useState<string | undefined>(undefined);
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
@@ -254,6 +263,8 @@ export function usePaginatedClientsWithSearch(pageSize: number = 10, preselected
           orderBy,
           orderDirection,
           preselectedId,
+          useCurrentUser,
+          projectId,
         },
       },
     },
@@ -277,9 +288,21 @@ export function usePaginatedClientsWithSearch(pageSize: number = 10, preselected
     }
   );
 
-  // Obtener todos los clientes de todas las páginas de forma plana
-  const allClients =
-    query.data?.pages.flatMap((page: { data?: Array<components["schemas"]["Client"]> }) => page.data ?? []) ?? [];
+  // Obtener todos los clientes de todas las páginas, deduplicados por id.
+  // El backend puede incluir preselectedId además del resultado paginado normal.
+  const allClients = useMemo(() => {
+    const clients =
+      query.data?.pages.flatMap((page: { data?: Array<components["schemas"]["Client"]> }) => page.data ?? []) ?? [];
+    const uniqueById = new Map<string, components["schemas"]["Client"]>();
+
+    for (const client of clients) {
+      if (client.id) {
+        uniqueById.set(client.id, client);
+      }
+    }
+
+    return Array.from(uniqueById.values());
+  }, [query.data?.pages]);
 
   const handleScrollEnd = useCallback(() => {
     if (query.hasNextPage && !query.isFetchingNextPage) {

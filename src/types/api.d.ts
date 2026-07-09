@@ -1075,6 +1075,8 @@ export interface paths {
           orderBy?: string;
           orderDirection?: string;
           preselectedId?: string;
+          useCurrentUser?: boolean;
+          projectId?: string;
         };
         header?: never;
         path?: never;
@@ -2444,6 +2446,49 @@ export interface paths {
             "text/plain": components["schemas"]["Lead4"];
             "application/json": components["schemas"]["Lead4"];
             "text/json": components["schemas"]["Lead4"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Leads/from-phone": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["LeadFromPhoneCreateDto"];
+          "text/json": components["schemas"]["LeadFromPhoneCreateDto"];
+          "application/*+json": components["schemas"]["LeadFromPhoneCreateDto"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadFromPhoneCreateResponseDto"];
+            "application/json": components["schemas"]["LeadFromPhoneCreateResponseDto"];
+            "text/json": components["schemas"]["LeadFromPhoneCreateResponseDto"];
           };
         };
       };
@@ -5944,6 +5989,51 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/Quotations/paginated": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          page?: number;
+          pageSize?: number;
+          search?: string;
+          status?: Array<components["schemas"]["QuotationStatus"]>;
+          clientId?: Array<string>;
+          projectId?: string;
+          orderBy?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+            "application/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+            "text/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/Quotations/advisor/paginated": {
     parameters: {
       query?: never;
@@ -8409,6 +8499,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     } | null;
     Lead2: {
       /** Format: uuid */
@@ -8444,6 +8538,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     } | null;
     Lead3: {
       /** Format: uuid */
@@ -8479,6 +8577,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     Lead4: {
       /** Format: uuid */
@@ -8514,6 +8616,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     Lead5: {
       /** Format: uuid */
@@ -8549,6 +8655,10 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     /** @enum {unknown} */
     LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
@@ -8563,6 +8673,21 @@ export interface components {
       projectId?: string | null;
       status: components["schemas"]["LeadStatus"];
       captureSource: components["schemas"]["LeadCaptureSource"];
+    };
+    LeadFromPhoneCreateDto: {
+      phoneNumber: string;
+      captureSource: components["schemas"]["LeadCaptureSource"];
+      /** Format: uuid */
+      assignedToId?: string;
+      /** Format: uuid */
+      projectId?: string;
+    };
+    LeadFromPhoneCreateResponseDto: {
+      lead: components["schemas"]["Lead4"];
+      /** Format: uuid */
+      clientId: string;
+      clientCreated: boolean;
+      clientExisted: boolean;
     };
     LeadDTO: {
       /** Format: uuid */
@@ -8638,6 +8763,10 @@ export interface components {
       projectName?: string | null;
       /** Format: int32 */
       recycleCount?: number;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string;
     };
     LeadTask: {
       /** Format: uuid */
@@ -10050,6 +10179,9 @@ export interface components {
       clientName: string;
       clientIdentification?: string | null;
       clientIdentificationType?: string | null;
+      /** Format: uuid */
+      advisorId?: string;
+      advisorName?: string | null;
       projectName: string;
       /** Format: double */
       totalPrice: number;

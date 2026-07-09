@@ -14,9 +14,10 @@ interface UpdateLeadsFormProps extends Omit<React.ComponentPropsWithRef<typeof S
   children: React.ReactNode;
   form: UseFormReturn<CreateLeadSchema>;
   onSubmit: (data: CreateLeadSchema) => void;
+  isSalesAdvisor: boolean;
 }
 
-export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLeadsFormProps) {
+export default function UpdateLeadsForm({ children, form, onSubmit, isSalesAdvisor }: UpdateLeadsFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4 sm:px-6">
@@ -70,7 +71,8 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                   onSelect={(clientId) => {
                     field.onChange(clientId);
                   }}
-                  preselectedId={field.value ?? ""}
+                  preselectedId={field.value || undefined}
+                  useCurrentUser={isSalesAdvisor}
                   placeholder="Seleccione un cliente"
                   searchPlaceholder="Buscar por nombre, DNI, RUC..."
                   emptyMessage="No se encontraron clientes"
@@ -93,7 +95,7 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                   onSelect={(userId) => {
                     field.onChange(userId);
                   }}
-                  preselectedId={field.value ?? ""}
+                  preselectedId={field.value || undefined}
                   placeholder="Seleccione un asesor"
                   searchPlaceholder="Buscar por nombre, email, rol..."
                   emptyMessage="No se encontraron asesores"
@@ -116,7 +118,7 @@ export default function UpdateLeadsForm({ children, form, onSubmit }: UpdateLead
                   onSelect={(projectId) => {
                     field.onChange(projectId);
                   }}
-                  preselectedId={field.value ?? ""}
+                  preselectedId={field.value || undefined}
                   placeholder="Seleccione un proyecto"
                   searchPlaceholder="Buscar por nombre, ubicación..."
                   emptyMessage="No se encontraron proyectos"

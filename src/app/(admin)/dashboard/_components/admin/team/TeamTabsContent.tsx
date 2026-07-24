@@ -1,6 +1,7 @@
 "use client";
 
-import { Award, BarChart3, Star, Trophy, Users } from "lucide-react";
+import { useState } from "react";
+import { Award, BarChart3, ChevronDown, Star, Trophy, Users } from "lucide-react";
 import {
   CartesianGrid,
   ComposedChart,
@@ -19,15 +20,26 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Progress } from "@/components/ui/progress";
 import { TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import type { DashboardDateParams } from "../../../_hooks/useDashboard";
 import type { TeamData } from "../../../_types/dashboard";
 import { EmptyState } from "../../EmptyState";
+import { TeamMemberActivityPanel } from "./TeamMemberActivityPanel";
 
 interface TeamTabsContentProps {
   teamData: TeamData;
   isLoading?: boolean;
+  enableMemberActivity?: boolean;
+  dateFilter?: DashboardDateParams;
 }
 
-export default function TeamTabsContent({ teamData, isLoading }: TeamTabsContentProps) {
+export default function TeamTabsContent({
+  teamData,
+  isLoading,
+  enableMemberActivity = false,
+  dateFilter,
+}: TeamTabsContentProps) {
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+
   // Procesar y ordenar datos del equipo para top 10
   const processedTeamData = teamData
     ? [...teamData]
@@ -41,6 +53,13 @@ export default function TeamTabsContent({ teamData, isLoading }: TeamTabsContent
     : [];
 
   const hasTeamData = processedTeamData.length > 0;
+
+  const toggleMember = (userId?: string) => {
+    if (!enableMemberActivity || !userId) {
+      return;
+    }
+    setExpandedUserId((current) => (current === userId ? null : userId));
+  };
 
   return (
     <TabsContent value="team" className="space-y-8">
@@ -208,7 +227,9 @@ export default function TeamTabsContent({ teamData, isLoading }: TeamTabsContent
                 <div>
                   <span className="text-xl font-semibold tracking-tight">Detalles del Ranking</span>
                   <CardDescription className="mt-1">
-                    <CardDescription>Métricas completas de cada miembro del equipo</CardDescription>
+                    {enableMemberActivity
+                      ? "Selecciona un asesor para ver sus últimos leads y tareas"
+                      : "Métricas completas de cada miembro del equipo"}
                   </CardDescription>
                 </div>
               </CardTitle>
@@ -225,12 +246,28 @@ export default function TeamTabsContent({ teamData, isLoading }: TeamTabsContent
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                   {processedTeamData.map((member, index) => {
                     const isTopThree = index < 3;
+                    const isExpanded = enableMemberActivity && expandedUserId === member.userId;
+                    const canExpand = enableMemberActivity && !!member.userId;
 
                     return (
                       <div
-                        key={index}
+                        key={member.userId ?? `${member.name}-${index}`}
+                        role={canExpand ? "button" : undefined}
+                        tabIndex={canExpand ? 0 : undefined}
+                        onClick={() => toggleMember(member.userId)}
+                        onKeyDown={(event) => {
+                          if (!canExpand) {
+                            return;
+                          }
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            toggleMember(member.userId);
+                          }
+                        }}
                         className={cn(
                           "p-4 rounded-xl border transition-all duration-200 hover:shadow-sm",
+                          canExpand && "cursor-pointer",
+                          isExpanded && "ring-2 ring-primary/30 shadow-sm",
                           isTopThree
                             ? index === 0
                               ? "bg-gradient-to-br from-amber-50/80 to-yellow-50/60 border-amber-200/60 dark:from-amber-900/20 dark:to-yellow-900/10 dark:border-amber-700/30"
@@ -267,22 +304,32 @@ export default function TeamTabsContent({ teamData, isLoading }: TeamTabsContent
                             </div>
                           </div>
 
-                          {/* Badge de eficiencia más sutil */}
-                          <Badge
-                            className={cn(
-                              "text-xs font-medium px-2 py-1",
-                              (member.efficiency ?? 0) >= 80
-                                ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400"
-                                : (member.efficiency ?? 0) >= 60
-                                  ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400"
-                                  : (member.efficiency ?? 0) >= 40
-                                    ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400"
-                                    : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400"
+                          <div className="flex items-center gap-2">
+                            {/* Badge de eficiencia más sutil */}
+                            <Badge
+                              className={cn(
+                                "text-xs font-medium px-2 py-1",
+                                (member.efficiency ?? 0) >= 80
+                                  ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400"
+                                  : (member.efficiency ?? 0) >= 60
+                                    ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400"
+                                    : (member.efficiency ?? 0) >= 40
+                                      ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400"
+                                      : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400"
+                              )}
+                              variant="outline"
+                            >
+                              {member.efficiency}%
+                            </Badge>
+                            {canExpand && (
+                              <ChevronDown
+                                className={cn(
+                                  "h-4 w-4 text-muted-foreground transition-transform",
+                                  isExpanded && "rotate-180"
+                                )}
+                              />
                             )}
-                            variant="outline"
-                          >
-                            {member.efficiency}%
-                          </Badge>
+                          </div>
                         </div>
 
                         {/* Info del miembro */}
@@ -324,6 +371,15 @@ export default function TeamTabsContent({ teamData, isLoading }: TeamTabsContent
                           </div>
                           <Progress value={member.efficiency} className="h-1.5" />
                         </div>
+
+                        {isExpanded && member.userId && dateFilter && (
+                          <div
+                            onClick={(event) => event.stopPropagation()}
+                            onKeyDown={(event) => event.stopPropagation()}
+                          >
+                            <TeamMemberActivityPanel userId={member.userId} dateFilter={dateFilter} />
+                          </div>
+                        )}
                       </div>
                     );
                   })}

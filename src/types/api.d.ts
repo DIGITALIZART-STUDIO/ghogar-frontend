@@ -1237,6 +1237,10 @@ export interface paths {
       parameters: {
         query?: {
           year?: number;
+          /** Format: date */
+          from?: string;
+          /** Format: date */
+          to?: string;
         };
         header?: never;
         path?: never;
@@ -1253,6 +1257,52 @@ export interface paths {
             "text/plain": components["schemas"]["DashboardAdminDto"];
             "application/json": components["schemas"]["DashboardAdminDto"];
             "text/json": components["schemas"]["DashboardAdminDto"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Dashboard/admin/team-member/{userId}/activity": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          year?: number;
+          /** Format: date */
+          from?: string;
+          /** Format: date */
+          to?: string;
+        };
+        header?: never;
+        path: {
+          /** Format: uuid */
+          userId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["AdminTeamMemberActivityDto"];
+            "application/json": components["schemas"]["AdminTeamMemberActivityDto"];
+            "text/json": components["schemas"]["AdminTeamMemberActivityDto"];
           };
         };
       };
@@ -8331,6 +8381,29 @@ export interface components {
       paymentMethodsData?: Array<components["schemas"]["PaymentMethodDto"]>;
       upcomingPayments?: Array<components["schemas"]["UpcomingPaymentDto"]>;
       cashFlowData?: Array<components["schemas"]["CashFlowDto"]>;
+      recentLeads?: Array<components["schemas"]["RecentLeadDto"]>;
+    };
+    AdminTeamMemberActivityDto: {
+      /** Format: uuid */
+      userId?: string;
+      userName?: string;
+      leads?: Array<components["schemas"]["RecentLeadDto"]>;
+      tasks?: Array<components["schemas"]["AdminTeamMemberTaskDto"]>;
+    };
+    AdminTeamMemberTaskDto: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      leadId?: string;
+      description?: string;
+      type?: string;
+      isCompleted?: boolean;
+      /** Format: date-time */
+      scheduledDate?: string;
+      /** Format: date-time */
+      completedDate?: string | null;
+      /** Format: date-time */
+      createdAt?: string;
     };
     DashboardReservationStatusDto: {
       status?: string;
@@ -10781,6 +10854,8 @@ export interface components {
     /** @enum {unknown} */
     TaskType: "Call" | "Meeting" | "Email" | "Visit" | "Other";
     TeamMemberDto: {
+      /** Format: uuid */
+      userId?: string;
       name?: string;
       role?: string;
       /** Format: int32 */

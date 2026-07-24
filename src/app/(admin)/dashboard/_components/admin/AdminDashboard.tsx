@@ -6,11 +6,11 @@ import { createPortal } from "react-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { FilterYear } from "@/components/ui/filter-year";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useDashboardAdmin } from "../../_hooks/useDashboard";
 import { AdminDashboard } from "../../_types/dashboard";
+import { FilterDashboardPeriod, type DashboardPeriodFilter } from "../FilterDashboardPeriod";
 import ClientsTabsContent from "./clients/ClientsTabsContent";
 import LeadsTabsContent from "./leads/LeadsTabsContent";
 import OverviewTabsContent from "./overview/OverviewTabsContent";
@@ -19,12 +19,13 @@ import ProjectsTabsContent from "./projects/ProjectsTabsContent";
 import TeamTabsContent from "./team/TeamTabsContent";
 
 export default function AdminDashboardComponent() {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [periodFilter, setPeriodFilter] = useState<DashboardPeriodFilter>({
+    year: new Date().getFullYear(),
+  });
   const [activeTab, setActiveTab] = useState("overview");
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  const { data, isLoading } = useDashboardAdmin(selectedYear);
+  const { data, isLoading } = useDashboardAdmin(periodFilter);
 
-  // Buscar el elemento headerContent cuando el componente se monta
   useEffect(() => {
     const findElement = () => {
       const element = document.getElementById("headerContent");
@@ -33,10 +34,8 @@ export default function AdminDashboardComponent() {
       }
     };
 
-    // Buscar inmediatamente
     findElement();
 
-    // Si no existe, usar MutationObserver para detectar cuando se crea
     if (!portalElement) {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -66,12 +65,10 @@ export default function AdminDashboardComponent() {
   return (
     <div>
       {portalElement &&
-        createPortal(<FilterYear selectedYear={selectedYear} onSelectYear={setSelectedYear} />, portalElement)}
+        createPortal(<FilterDashboardPeriod value={periodFilter} onChange={setPeriodFilter} />, portalElement)}
 
       <div className="space-y-4">
-        {/* Header con métricas principales rediseñado */}
         <div className="mb-4">
-          {/* KPIs principales rediseñados */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <Card className="relative overflow-hidden">
               <div className="absolute top-0 right-0 w-20 h-20 bg-slate-500/5 rounded-full -translate-y-10 translate-x-10" />
@@ -216,7 +213,6 @@ export default function AdminDashboardComponent() {
           </div>
         </div>
 
-        {/* Tabs principales rediseñados */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div>
             <TabsList className="h-auto p-1 border border-card grid w-full grid-cols-6 ">
@@ -284,7 +280,12 @@ export default function AdminDashboardComponent() {
 
           <OverviewTabsContent data={data as AdminDashboard} isLoading={isLoading} />
           <ProjectsTabsContent data={data as AdminDashboard} isLoading={isLoading} />
-          <TeamTabsContent teamData={data?.teamData ?? []} isLoading={isLoading} />
+          <TeamTabsContent
+            teamData={data?.teamData ?? []}
+            isLoading={isLoading}
+            enableMemberActivity
+            dateFilter={periodFilter}
+          />
           <LeadsTabsContent data={data as AdminDashboard} isLoading={isLoading} />
           <ClientsTabsContent data={data as AdminDashboard} isLoading={isLoading} />
           <PaymentsTabsContent data={data as AdminDashboard} isLoading={isLoading} />

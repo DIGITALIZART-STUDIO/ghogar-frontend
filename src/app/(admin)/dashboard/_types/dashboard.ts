@@ -11,3 +11,7 @@ export type SupervisorDashboard = components["schemas"]["SupervisorDashboardDto"
 export type ManagerDashboard = components["schemas"]["ManagerDashboardDto"];
 
 export type TeamData = Array<components["schemas"]["TeamMemberDto"]>;
+
+export type AdminTeamMemberActivity = components["schemas"]["AdminTeamMemberActivityDto"];
+
+export type RecentLead = components["schemas"]["RecentLeadDto"];

@@ -1,6 +1,19 @@
 "use client";
 
-import { Activity, AlertTriangle, Target, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import Link from "next/link";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import {
+  Activity,
+  AlertTriangle,
+  ArrowRight,
+  MapPin,
+  Phone,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -18,6 +31,7 @@ import { LeadStatusLabels } from "@/app/(admin)/assignments/_utils/assignments.u
 import { LeadCaptureSource } from "@/app/(admin)/leads/_types/lead";
 import { LeadCaptureSourceLabels } from "@/app/(admin)/leads/_utils/leads.utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Progress } from "@/components/ui/progress";
@@ -392,6 +406,86 @@ export default function LeadsTabsContent({ data, isLoading }: LeadsTabsContentPr
                   <p className="text-sm text-green-600 dark:text-green-400">Tasa actual de cierre</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
+                    <Activity className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-slate-800 dark:text-slate-200">
+                      Leads creados
+                    </CardTitle>
+                    <CardDescription>Últimos 10 leads por fecha de ingreso</CardDescription>
+                  </div>
+                </div>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/leads">
+                    Ver más
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!data?.recentLeads || data.recentLeads.length === 0 ? (
+                <EmptyState
+                  icon={Activity}
+                  title="Sin leads en el periodo"
+                  description="No hay leads creados para el rango de fechas seleccionado"
+                />
+              ) : (
+                <div className="space-y-3">
+                  {data.recentLeads.map((lead) => {
+                    const statusKey = lead.status as keyof typeof LeadStatusLabels;
+                    const statusConfig = LeadStatusLabels[statusKey];
+
+                    return (
+                      <div
+                        key={lead.id}
+                        className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700 dark:bg-slate-800/40"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-slate-800 dark:text-slate-100 truncate">
+                            {lead.clientName ?? "Sin cliente"}
+                          </p>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600 dark:text-slate-400">
+                            {lead.clientPhone && (
+                              <span className="inline-flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                {lead.clientPhone}
+                              </span>
+                            )}
+                            {lead.projectName && (
+                              <span className="inline-flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                {lead.projectName}
+                              </span>
+                            )}
+                            {lead.entryDate && (
+                              <span>{format(new Date(lead.entryDate), "dd MMM yyyy", { locale: es })}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                          {statusConfig && (
+                            <Badge variant="outline" className={statusConfig.className}>
+                              {statusConfig.label}
+                            </Badge>
+                          )}
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                            {lead.assignedTo ?? "Sin asignar"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </>

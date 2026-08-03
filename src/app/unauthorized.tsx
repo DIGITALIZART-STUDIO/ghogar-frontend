@@ -41,6 +41,7 @@ const routeNames: Record<string, string> = {
   "/assignments": "Asignaciones",
   "/admin/users": "Gestión de Usuarios",
   "/admin/projects": "Gestión de Proyectos",
+  "/reports": "Reportes",
   "/profile": "Perfil",
   "/": "Inicio",
 };

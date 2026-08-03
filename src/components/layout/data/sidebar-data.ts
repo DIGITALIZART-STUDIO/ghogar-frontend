@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   BookUser,
   ClipboardList,
   Coins,
@@ -107,6 +108,11 @@ export const sidebarData: SidebarData = {
           title: "Proyectos",
           url: "/admin/projects",
           icon: BookUser,
+        },
+        {
+          title: "Reportes",
+          url: "/reports",
+          icon: BarChart3,
         },
       ],
     },

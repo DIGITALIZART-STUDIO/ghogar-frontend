@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { TabsContent } from "@/components/ui/tabs";
 import { SalesAdvisorDashboard } from "../../../_types/dashboard";
-import { QuotationStatusLabels } from "../../../../quotation/_utils/quotations.utils";
+import { formatCurrency, QuotationStatusLabels } from "../../../../quotation/_utils/quotations.utils";
 import { EmptyState } from "../../EmptyState";
 
 interface QuotationsTabsContentProps {
@@ -84,10 +84,10 @@ export default function QuotationsTabsContent({ data, isLoading }: QuotationsTab
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                        ${quotation.finalPrice?.toLocaleString()} {quotation.currency}
+                        {formatCurrency(quotation.finalPrice ?? 0, quotation.currency)}
                       </p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Original: ${quotation.totalPrice?.toLocaleString()}
+                        Original: {formatCurrency(quotation.totalPrice ?? 0, quotation.currency)}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">Válida hasta: {quotation.validUntil}</p>
                     </div>

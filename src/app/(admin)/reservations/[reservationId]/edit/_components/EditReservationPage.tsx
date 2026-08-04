@@ -32,7 +32,6 @@ export default function EditReservationPage({ reservationData, quotationData }: 
       quotationId: quotationData.id, // Agregar el quotationId que falta
       reservationDate: format(new Date(reservationData.reservationDate ?? ""), "yyyy-MM-dd"),
       amountPaid: correctSeparationAmount.toString(), // Usar el monto correcto calculado
-      currency: reservationData.currency ?? "SOLES",
       paymentMethod: reservationData.paymentMethod ?? "CASH",
       bankName: reservationData.bankName ?? "",
       exchangeRate: reservationData.exchangeRate?.toString() ?? "3.75",
@@ -49,7 +48,7 @@ export default function EditReservationPage({ reservationData, quotationData }: 
       const reservationUpdateData = {
         reservationDate: data.reservationDate,
         amountPaid: parseFloat(data.amountPaid),
-        currency: data.currency as "SOLES" | "DOLARES",
+        // La moneda la deriva el backend desde la cotización asociada (no se envía)
         paymentMethod: data.paymentMethod as "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER",
         bankName: data.bankName ?? undefined,
         exchangeRate: parseFloat(data.exchangeRate),

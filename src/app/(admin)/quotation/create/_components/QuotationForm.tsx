@@ -11,6 +11,7 @@ import { UserGetDTO } from "@/app/(admin)/admin/users/_types/user";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { CreateQuotationSchema } from "../_schemas/createQuotationsSchema";
+import { getCurrencySymbol } from "../../_utils/quotations.utils";
 import InformationQuotationForm from "./InformationQuotationForm";
 
 interface QuotationFormProps {
@@ -27,10 +28,12 @@ interface QuotationFormProps {
   projectName?: string;
   blockName?: string;
   lotNumber?: string;
+  currency?: string;
   selectedLead?: { name: string; code: string } | null;
   setProjectName?: (name: string) => void;
   setBlockName?: (name: string) => void;
   setLotNumber?: (number: string) => void;
+  setCurrency?: (currency: string) => void;
   setSelectedLead?: (lead: { name: string; code: string } | null) => void;
 }
 
@@ -44,10 +47,12 @@ export function QuotationForm({
   projectName: propProjectName,
   blockName: propBlockName,
   lotNumber: propLotNumber,
+  currency: propCurrency,
   selectedLead: propSelectedLead,
   setProjectName: propSetProjectName,
   setBlockName: propSetBlockName,
   setLotNumber: propSetLotNumber,
+  setCurrency: propSetCurrency,
   setSelectedLead: propSetSelectedLead,
 }: QuotationFormProps) {
   const router = useRouter();
@@ -56,6 +61,7 @@ export function QuotationForm({
   const [projectName, setProjectName] = useState(propProjectName ?? "");
   const [blockName, setBlockName] = useState(propBlockName ?? "");
   const [lotNumber, setLotNumber] = useState(propLotNumber ?? "");
+  const [currency, setCurrency] = useState(propCurrency ?? "PEN");
 
   // Estados para almacenar información del lead seleccionado
   const [selectedLead, setSelectedLead] = useState<{ name: string; code: string } | null>(propSelectedLead ?? null);
@@ -64,7 +70,9 @@ export function QuotationForm({
   const finalSetProjectName = propSetProjectName ?? setProjectName;
   const finalSetBlockName = propSetBlockName ?? setBlockName;
   const finalSetLotNumber = propSetLotNumber ?? setLotNumber;
+  const finalSetCurrency = propSetCurrency ?? setCurrency;
   const finalSetSelectedLead = propSetSelectedLead ?? setSelectedLead;
+  const currencySymbol = getCurrencySymbol(currency);
 
   const area = form.watch("area");
   const pricePerM2 = form.watch("pricePerM2");
@@ -98,10 +106,13 @@ export function QuotationForm({
     if (propLotNumber !== undefined) {
       setLotNumber(propLotNumber);
     }
+    if (propCurrency !== undefined) {
+      setCurrency(propCurrency);
+    }
     if (propSelectedLead !== undefined) {
       setSelectedLead(propSelectedLead);
     }
-  }, [propProjectName, propBlockName, propLotNumber, propSelectedLead]);
+  }, [propProjectName, propBlockName, propLotNumber, propCurrency, propSelectedLead]);
 
   // Calcular valores automáticamente
   useEffect(() => {
@@ -155,6 +166,7 @@ export function QuotationForm({
             setProjectName={finalSetProjectName}
             setBlockName={finalSetBlockName}
             setLotNumber={finalSetLotNumber}
+            setCurrency={finalSetCurrency}
             userData={userData}
             setSelectedLead={finalSetSelectedLead}
           />
@@ -212,7 +224,7 @@ export function QuotationForm({
                         </div>
                         <div className="text-amber-700 dark:text-amber-300">Precio/m²:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
-                          {form.watch("pricePerM2") ? `$${form.watch("pricePerM2")}` : "—"}
+                          {form.watch("pricePerM2") ? `${currencySymbol} ${form.watch("pricePerM2")}` : "—"}
                         </div>
                       </div>
                     </div>
@@ -228,15 +240,15 @@ export function QuotationForm({
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div className="text-emerald-700 dark:text-emerald-300">Precio Total:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
-                          {form.watch("totalPrice") ? `$${form.watch("totalPrice")}` : "—"}
+                          {form.watch("totalPrice") ? `${currencySymbol} ${form.watch("totalPrice")}` : "—"}
                         </div>
                         <div className="text-emerald-700 dark:text-emerald-300">Descuento:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
-                          {form.watch("discount") ? `$${form.watch("discount")}` : "—"}
+                          {form.watch("discount") ? `${currencySymbol} ${form.watch("discount")}` : "—"}
                         </div>
                         <div className="text-emerald-700 dark:text-emerald-300 font-medium">Precio Final:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
-                          {form.watch("finalPrice") ? `$${form.watch("finalPrice")}` : "—"}
+                          {form.watch("finalPrice") ? `${currencySymbol} ${form.watch("finalPrice")}` : "—"}
                         </div>
                       </div>
                     </div>
@@ -257,12 +269,12 @@ export function QuotationForm({
                         <div className="text-slate-700 dark:text-slate-300">Monto Inicial:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
                           {form.watch("finalPrice") && form.watch("downPayment")
-                            ? `$${calculateDownPaymentAmount().toLocaleString()}`
+                            ? `${currencySymbol} ${calculateDownPaymentAmount().toLocaleString()}`
                             : "—"}
                         </div>
                         <div className="text-slate-700 dark:text-slate-300">A Financiar:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
-                          {form.watch("amountFinanced") ? `$${form.watch("amountFinanced")}` : "—"}
+                          {form.watch("amountFinanced") ? `${currencySymbol} ${form.watch("amountFinanced")}` : "—"}
                         </div>
                         <div className="text-slate-700 dark:text-slate-300">Plazo:</div>
                         <div className="font-medium text-right text-slate-900 dark:text-slate-100">
@@ -276,7 +288,9 @@ export function QuotationForm({
                   {form.watch("amountFinanced") && form.watch("monthsFinanced") && (
                     <div className="bg-slate-800 dark:bg-slate-700 text-white rounded-lg p-4 text-center">
                       <div className="text-sm mb-1">Cuota Mensual Estimada</div>
-                      <div className="text-2xl font-bold">${calculateMonthlyPayment()}</div>
+                      <div className="text-2xl font-bold">
+                        {currencySymbol} {calculateMonthlyPayment()}
+                      </div>
                     </div>
                   )}
 

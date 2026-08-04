@@ -23,9 +23,7 @@ export const reservationSchema = z.object({
     })
     .min(1, "Debes seleccionar una fecha válida"),
   amountPaid: z.string().min(1, { message: "El monto pagado es requerido" }),
-  currency: z.enum(["SOLES", "DOLARES"], {
-    required_error: "La moneda es requerida",
-  }),
+  // La moneda no es un input del usuario: el backend la deriva de la cotización asociada.
   paymentMethod: z.enum(["CASH", "BANK_DEPOSIT", "BANK_TRANSFER"], {
     required_error: "El método de pago es requerido",
     message: "Seleccione un método de pago",

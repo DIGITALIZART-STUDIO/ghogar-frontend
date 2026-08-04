@@ -27,15 +27,30 @@ export const QuotationStatusLabels: Record<
   },
 };
 
+/** Normaliza códigos/nombres de moneda a símbolo de visualización. */
+export const getCurrencySymbol = (currency?: string | null): string => {
+  const normalized = (currency ?? "PEN").trim().toUpperCase();
+
+  if (normalized === "PEN" || normalized === "SOLES" || normalized === "S/") {
+    return "S/";
+  }
+  if (normalized === "USD" || normalized === "DOLARES" || normalized === "DÓLARES" || normalized === "$") {
+    return "$";
+  }
+  if (normalized === "EUR" || normalized === "EUROS" || normalized === "€") {
+    return "€";
+  }
+
+  const trimmedCurrency = currency?.trim();
+  if (!trimmedCurrency) {
+    return "S/";
+  }
+  return trimmedCurrency;
+};
+
 // Función para formatear moneda
 export const formatCurrency = (amount: number, currency: string = "PEN"): string => {
-  const currencySymbols: Record<string, string> = {
-    PEN: "S/",
-    USD: "$",
-    EUR: "€",
-  };
-
-  const symbol = currencySymbols[currency] || currency;
+  const symbol = getCurrencySymbol(currency);
   return `${symbol} ${amount.toLocaleString("es-PE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

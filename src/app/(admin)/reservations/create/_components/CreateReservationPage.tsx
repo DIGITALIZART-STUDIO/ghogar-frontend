@@ -26,7 +26,6 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
       quotationId: "",
       reservationDate: "",
       amountPaid: "", // Se calculará automáticamente cuando se seleccione una cotización
-      currency: undefined,
       paymentMethod: undefined,
       bankName: "",
       exchangeRate: "",
@@ -44,7 +43,7 @@ export default function CreateReservationPage({ quotationsData }: CreateReservat
         quotationId: data.quotationId,
         reservationDate: data.reservationDate,
         amountPaid: parseFloat(data.amountPaid),
-        currency: data.currency as "SOLES" | "DOLARES",
+        // La moneda la deriva el backend desde la cotización asociada (no se envía)
         paymentMethod: data.paymentMethod as "CASH" | "BANK_DEPOSIT" | "BANK_TRANSFER",
         bankName: data.bankName ?? undefined,
         exchangeRate: parseFloat(data.exchangeRate),

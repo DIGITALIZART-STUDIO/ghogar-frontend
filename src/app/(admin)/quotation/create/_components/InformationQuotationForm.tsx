@@ -24,6 +24,7 @@ interface InformationQuotationFormProps {
   setProjectName: (name: string) => void;
   setBlockName: (name: string) => void;
   setLotNumber: (number: string) => void;
+  setCurrency: (currency: string) => void;
   userData: UserGetDTO;
   setSelectedLead: (lead: { name: string; code: string } | null) => void;
 }
@@ -33,6 +34,7 @@ export default function InformationQuotationForm({
   setProjectName,
   setBlockName,
   setLotNumber,
+  setCurrency,
   userData,
   setSelectedLead,
 }: InformationQuotationFormProps) {
@@ -215,6 +217,7 @@ export default function InformationQuotationForm({
 
                             // Para mostrar el nombre del proyecto en el resumen
                             setProjectName(project.name ?? "");
+                            setCurrency(project.currency ?? "PEN");
 
                             // Resetear valores dependientes
                             form.setValue("blockId", "");

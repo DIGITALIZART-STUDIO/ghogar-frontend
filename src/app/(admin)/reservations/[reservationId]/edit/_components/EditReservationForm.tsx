@@ -13,7 +13,7 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { CurrencyLabels, PaymentMethodLabels } from "../../../_utils/reservations.utils";
+import { getCurrencyLabelFromCode, PaymentMethodLabels } from "../../../_utils/reservations.utils";
 import { CreateReservationSchema } from "../../../create/_schemas/createReservationSchema";
 import { CoOwnersSection } from "./CoOwnersSection";
 
@@ -33,6 +33,9 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
 
   // Calcular el monto sugerido de separación (10% del precio final)
   const suggestedSeparationAmount = Math.round((quotationData.finalPrice ?? 0) * 0.1);
+
+  // Moneda real de la cotización asociada (fallback solo para display)
+  const quotationCurrencyCode = quotationData.currency ?? "PEN";
 
   return (
     <Form {...form}>
@@ -66,7 +69,13 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
                       <div>
                         Lote: Mz. {quotationData.blockName} Lt. {quotationData.lotNumber}
                       </div>
-                      <div>Precio: $ {quotationData.finalPrice?.toLocaleString()}</div>
+                      <div>
+                        Precio:{" "}
+                        {quotationData.finalPrice?.toLocaleString("es-PE", {
+                          style: "currency",
+                          currency: quotationCurrencyCode,
+                        })}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -154,38 +163,24 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
                         <FormMessage />
                         <p className="text-sm text-slate-600 dark:text-slate-400">
                           Monto sugerido:{" "}
-                          {suggestedSeparationAmount.toLocaleString("es-PE", { style: "currency", currency: "PEN" })}
+                          {suggestedSeparationAmount.toLocaleString("es-PE", {
+                            style: "currency",
+                            currency: quotationCurrencyCode,
+                          })}
                         </p>
                       </FormItem>
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="currency"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
-                          Moneda
-                        </FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccione la moneda" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.entries(CurrencyLabels).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <FormItem>
+                    <FormLabel className="text-slate-700 dark:text-slate-300">Moneda</FormLabel>
+                    <div className="flex h-10 w-full items-center rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
+                      {getCurrencyLabelFromCode(quotationData.currency)}
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-500">
+                      Se deriva automáticamente de la cotización asociada.
+                    </p>
+                  </FormItem>
 
                   <FormField
                     control={form.control}
@@ -323,7 +318,7 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
                       <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                         {(quotationData.finalPrice ?? 0).toLocaleString("es-PE", {
                           style: "currency",
-                          currency: "PEN",
+                          currency: quotationCurrencyCode,
                         })}
                       </span>
                     </div>
@@ -333,7 +328,7 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
                       <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                         {(quotationData.downPayment ?? 0).toLocaleString("es-PE", {
                           style: "currency",
-                          currency: "PEN",
+                          currency: quotationCurrencyCode,
                         })}
                       </span>
                     </div>
@@ -343,7 +338,7 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
                       <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                         {(quotationData.amountFinanced ?? 0).toLocaleString("es-PE", {
                           style: "currency",
-                          currency: "PEN",
+                          currency: quotationCurrencyCode,
                         })}
                       </span>
                     </div>
@@ -358,7 +353,10 @@ export function EditReservationForm({ quotationData, form, onSubmit, isPending }
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-slate-600 dark:text-slate-400">Separación sugerida (10%)</span>
                       <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                        {suggestedSeparationAmount.toLocaleString("es-PE", { style: "currency", currency: "PEN" })}
+                        {suggestedSeparationAmount.toLocaleString("es-PE", {
+                          style: "currency",
+                          currency: quotationCurrencyCode,
+                        })}
                       </span>
                     </div>
                   </div>

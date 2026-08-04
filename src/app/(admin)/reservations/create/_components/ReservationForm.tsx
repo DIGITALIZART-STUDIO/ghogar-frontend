@@ -16,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { CreateReservationSchema } from "../_schemas/createReservationSchema";
-import { CurrencyLabels, PaymentMethodLabels } from "../../_utils/reservations.utils";
+import { getCurrencyLabelFromCode, PaymentMethodLabels } from "../../_utils/reservations.utils";
 import { CoOwnersSection } from "../../[reservationId]/edit/_components/CoOwnersSection";
 
 interface ReservationFormProps {
@@ -41,20 +41,13 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
   useEffect(() => {
     if (!selectedQuotation) {
       // Clear fields if no quotation is selected
-      // @ts-expect-error those damn uncontrolled inputs
-      form.setValue("currency", "");
       form.setValue("amountPaid", "");
       form.setValue("exchangeRate", "");
       form.setValue("coOwners", []);
       return;
     }
 
-    // Set currency based on quotation currency
-    if (selectedQuotation.currency === "PEN") {
-      form.setValue("currency", "SOLES");
-    } else if (selectedQuotation.currency === "USD") {
-      form.setValue("currency", "DOLARES");
-    }
+    // La moneda se deriva de la cotización en el backend (no es un campo editable)
 
     // Set exchange rate from quotation
     if (selectedQuotation.exchangeRate) {
@@ -265,32 +258,17 @@ export function ReservationForm({ quotationsData, form, onSubmit, isPending }: R
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="currency"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-slate-700 dark:text-slate-300" required>
-                          Moneda
-                        </FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccione la moneda" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.entries(CurrencyLabels).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <FormItem>
+                    <FormLabel className="text-slate-700 dark:text-slate-300">Moneda</FormLabel>
+                    <div className="flex h-10 w-full items-center rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
+                      {selectedQuotation
+                        ? getCurrencyLabelFromCode(selectedQuotation.currency)
+                        : "Seleccione una cotización"}
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-500">
+                      Se deriva automáticamente de la cotización seleccionada.
+                    </p>
+                  </FormItem>
 
                   <FormField
                     control={form.control}

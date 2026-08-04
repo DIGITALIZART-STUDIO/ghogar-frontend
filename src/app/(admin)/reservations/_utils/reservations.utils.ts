@@ -42,6 +42,26 @@ export const CurrencyLabels: Record<Currency, string> = {
   [Currency.DOLARES]: "Dólares ($)",
 };
 
+/**
+ * Etiquetas de display para los códigos de moneda de las cotizaciones
+ * (string libre del backend, ej. "PEN", "USD").
+ */
+export const QuotationCurrencyLabels: Record<string, string> = {
+  PEN: "Soles (S/)",
+  USD: "Dólares ($)",
+};
+
+/**
+ * Devuelve la etiqueta de display para un código de moneda de cotización.
+ * Si el código no es conocido, se muestra el código crudo (sin valores por defecto engañosos).
+ */
+export function getCurrencyLabelFromCode(currencyCode?: string | null): string {
+  if (!currencyCode) {
+    return "—";
+  }
+  return QuotationCurrencyLabels[currencyCode] ?? currencyCode;
+}
+
 export const PaymentMethodLabels: Record<
   PaymentMethod,
   {

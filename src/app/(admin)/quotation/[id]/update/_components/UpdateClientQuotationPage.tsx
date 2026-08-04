@@ -31,6 +31,7 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
   const [projectName, setProjectName] = useState(data.projectName ?? "");
   const [blockName, setBlockName] = useState(data.blockName ?? "");
   const [lotNumber, setLotNumber] = useState(data.lotNumber?.toString() ?? "");
+  const [currency, setCurrency] = useState(data.currency ?? "PEN");
 
   // Estado para almacenar información del lead seleccionado
   const [selectedLead, setSelectedLead] = useState<{ name: string; code: string } | null>({
@@ -72,6 +73,7 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
     setProjectName(data.projectName ?? "");
     setBlockName(data.blockName ?? "");
     setLotNumber(data.lotNumber?.toString() ?? "");
+    setCurrency(data.currency ?? "PEN");
 
     // Establecer el lead seleccionado
     setSelectedLead({
@@ -155,10 +157,12 @@ export default function UpdateClientQuotationPage({ data, userData }: UpdateClie
       projectName={projectName}
       blockName={blockName}
       lotNumber={lotNumber}
+      currency={currency}
       selectedLead={selectedLead}
       setProjectName={setProjectName}
       setBlockName={setBlockName}
       setLotNumber={setLotNumber}
+      setCurrency={setCurrency}
       setSelectedLead={setSelectedLead}
     />
   );

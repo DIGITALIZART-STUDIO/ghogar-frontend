@@ -8239,8 +8239,8 @@ export interface components {
       ruc?: string | null;
       companyName?: string | null;
       phoneNumber: string;
-      email: string;
-      address: string;
+      email?: string | null;
+      address?: string | null;
       country?: string | null;
       type: components["schemas"]["ClientType"];
       separateProperty?: boolean;

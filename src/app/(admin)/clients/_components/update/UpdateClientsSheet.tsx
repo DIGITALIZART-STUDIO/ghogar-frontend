@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sheet";
 import { useClientById, useUpdateClient } from "../../_hooks/useClients";
 import { clientSchema, CreateClientsSchema } from "../../_schemas/createClientsSchema";
-import { Client, ClientTypes } from "../../_types/client";
+import { Client, ClientTypes, type ClientUpdateDto } from "../../_types/client";
 import UpdateCustomersForm from "./UpdateClientsForm";
 
 const infoSheet = {
@@ -109,18 +109,18 @@ export function UpdateClientSheet({ client, open, onOpenChange }: UpdateClientSh
 
   const onSubmit = async (input: CreateClientsSchema) => {
     startTransition(async () => {
-      const clientData = {
+      const clientData: ClientUpdateDto = {
         name: input.name,
         phoneNumber: input.phoneNumber,
-        email: input.email,
-        address: input.address,
+        email: input.email ?? "",
+        address: input.address ?? "",
         type: input.type,
-        country: input.country,
+        country: input.country ?? "",
         coOwners: JSON.stringify(input.coOwners),
         separateProperty: input.separateProperty,
         separatePropertyData: input.separatePropertyData ? JSON.stringify(input.separatePropertyData) : null,
-        dni: input.type === ClientTypes.Natural ? input.dni : null,
-        ruc: input.type === ClientTypes.Juridico ? input.ruc : null,
+        dni: input.type === ClientTypes.Natural ? (input.dni ?? "") : null,
+        ruc: input.type === ClientTypes.Juridico ? (input.ruc ?? "") : null,
         companyName: input.type === ClientTypes.Juridico ? (input.companyName ?? input.name) : null,
       };
 

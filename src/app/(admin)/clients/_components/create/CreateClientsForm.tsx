@@ -130,9 +130,9 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                   name="companyName"
                   render={({ field }) => (
                     <FormItem className="transition-all duration-300 ease-in-out">
-                      <FormLabel required>Nombre de la Empresa</FormLabel>
+                      <FormLabel>Nombre de la Empresa</FormLabel>
                       <FormControl>
-                        <InputWithIcon Icon={Building2} placeholder="Ingrese el nombre de la empresa" {...field} />
+                        <InputWithIcon Icon={Building2} placeholder="Ingrese el nombre de la empresa" {...field} value={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -163,7 +163,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel required>País</FormLabel>
+                  <FormLabel>País</FormLabel>
                   <FormControl>
                     <CountryAutocomplete
                       options={countryOptions}
@@ -196,8 +196,8 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                     <PhoneInput
                       defaultCountry={selectedCountryCode}
                       placeholder="Ingrese el número de teléfono"
-                      value={field.value}
-                      onChange={(value) => field.onChange(value)}
+                      value={field.value ?? ""}
+                      onChange={(value) => field.onChange(value ?? "")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -211,9 +211,9 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel required>Correo Electrónico</FormLabel>
+                  <FormLabel>Correo Electrónico</FormLabel>
                   <FormControl>
-                    <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} />
+                    <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} value={field.value ?? ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -226,9 +226,9 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
               name="address"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel required>Dirección</FormLabel>
+                  <FormLabel>Dirección</FormLabel>
                   <FormControl>
-                    <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} />
+                    <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} value={field.value ?? ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -320,9 +320,9 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                     name={`coOwners.${index}.address`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Dirección</FormLabel>
+                        <FormLabel>Dirección</FormLabel>
                         <FormControl>
-                          <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} />
+                          <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -336,7 +336,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                       <FormItem>
                         <FormLabel>Correo Electrónico</FormLabel>
                         <FormControl>
-                          <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} />
+                          <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -474,9 +474,9 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                     name="separatePropertyData.address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel required>Dirección</FormLabel>
+                        <FormLabel>Dirección</FormLabel>
                         <FormControl>
-                          <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} />
+                          <InputWithIcon Icon={Home} placeholder="Ingrese la dirección" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -490,7 +490,7 @@ export default function CreateClientForm({ children, form, onSubmit }: CreateCli
                       <FormItem>
                         <FormLabel>Correo Electrónico</FormLabel>
                         <FormControl>
-                          <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} />
+                          <InputWithIcon Icon={Mail} placeholder="Ingrese el correo electrónico" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

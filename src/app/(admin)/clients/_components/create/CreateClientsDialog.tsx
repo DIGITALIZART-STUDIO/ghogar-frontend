@@ -31,7 +31,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useCreateClient } from "../../_hooks/useClients";
 import { clientSchema, type CreateClientsSchema } from "../../_schemas/createClientsSchema";
-import { ClientTypes } from "../../_types/client";
+import { ClientTypes, type ClientCreateDto } from "../../_types/client";
 import CreateClientsForm from "./CreateClientsForm";
 
 const dataForm = {
@@ -60,6 +60,7 @@ export function CreateClientsDialog({ trigger, onClientCreated }: CreateClientsD
       dni: "",
       ruc: "",
       companyName: "",
+      country: "",
       phoneNumber: "",
       email: "",
       address: "",
@@ -72,27 +73,20 @@ export function CreateClientsDialog({ trigger, onClientCreated }: CreateClientsD
 
   const onSubmit = async (input: CreateClientsSchema) => {
     startTransition(async () => {
-      const clientData: {
-        name: string;
-        phoneNumber: string;
-        email: string;
-        address: string;
-        type: typeof input.type;
-        separateProperty: boolean;
-        coOwners?: string;
-        country?: string;
-        separatePropertyData?: string;
-        dni?: string;
-        ruc?: string;
-        companyName?: string;
-      } = {
+      const clientData: ClientCreateDto = {
         name: input.name.trim(),
         phoneNumber: input.phoneNumber.trim(),
-        email: input.email.trim(),
-        address: input.address.trim(),
         type: input.type,
         separateProperty: input.separateProperty ?? false,
       };
+
+      if (input.email?.trim()) {
+        clientData.email = input.email.trim();
+      }
+
+      if (input.address?.trim()) {
+        clientData.address = input.address.trim();
+      }
 
       if (input.coOwners && input.coOwners.length > 0) {
         clientData.coOwners = JSON.stringify(input.coOwners);

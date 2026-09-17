@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { useClaims } from "@/app/(admin)/_authorization_context";
-import { hasGlobalListView } from "@/app/(admin)/_utils/global-list-view";
+import { hasGlobalListView, hasSharedSalesListView } from "@/app/(admin)/_utils/global-list-view";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
@@ -15,6 +15,7 @@ export default function QuotationPage() {
   const [pageSize, setPageSize] = useState(10);
   const roles = useClaims();
   const isGlobalView = hasGlobalListView(roles[0]);
+  const isSharedListView = hasSharedSalesListView(roles[0]);
 
   const {
     data: quotations,
@@ -25,17 +26,19 @@ export default function QuotationPage() {
     filters,
     setSearch,
     handleStatusChange,
-  } = useQuotationsListPagination(page, pageSize, isGlobalView);
+  } = useQuotationsListPagination(page, pageSize, isSharedListView);
 
   const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
     setPage(newPage);
     setPageSize(newPageSize);
   }, []);
 
-  const pageTitle = isGlobalView ? "Todas las Cotizaciones" : "Mis Cotizaciones";
+  const pageTitle = isGlobalView ? "Todas las Cotizaciones" : isSharedListView ? "Cotizaciones" : "Mis Cotizaciones";
   const pageDescription = isGlobalView
     ? "Gestión de todas las cotizaciones del sistema."
-    : "Gestión de cotizaciones generadas por el usuario.";
+    : isSharedListView
+      ? "Gestión de cotizaciones del equipo comercial."
+      : "Gestión de cotizaciones generadas por el usuario.";
 
   if (isLoading && !quotations) {
     return (

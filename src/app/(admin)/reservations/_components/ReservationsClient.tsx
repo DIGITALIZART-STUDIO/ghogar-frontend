@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { useClaims } from "@/app/(admin)/_authorization_context";
-import { hasGlobalListView } from "@/app/(admin)/_utils/global-list-view";
+import { hasGlobalListView, hasSharedSalesListView } from "@/app/(admin)/_utils/global-list-view";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
@@ -15,6 +15,7 @@ export default function ReservationsClient() {
   const [pageSize, setPageSize] = useState(10);
   const roles = useClaims();
   const isGlobalView = hasGlobalListView(roles[0]);
+  const isSharedListView = hasSharedSalesListView(roles[0]);
 
   const {
     data: reservations,
@@ -26,17 +27,19 @@ export default function ReservationsClient() {
     setSearch,
     handleStatusChange,
     handlePaymentMethodChange,
-  } = useReservationsListPagination(page, pageSize, isGlobalView);
+  } = useReservationsListPagination(page, pageSize, isSharedListView);
 
   const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
     setPage(newPage);
     setPageSize(newPageSize);
   }, []);
 
-  const pageTitle = isGlobalView ? "Todas las Separaciones" : "Mis Separaciones";
+  const pageTitle = isGlobalView ? "Todas las Separaciones" : isSharedListView ? "Separaciones" : "Mis Separaciones";
   const pageDescription = isGlobalView
     ? "Gestión de todas las separaciones del sistema."
-    : "Gestión y administración de recibos de separaciones para proyectos inmobiliarios";
+    : isSharedListView
+      ? "Gestión de separaciones del equipo comercial."
+      : "Gestión y administración de recibos de separaciones para proyectos inmobiliarios";
 
   if (isLoading && !reservations) {
     return (

@@ -17,6 +17,8 @@ const roleNames = {
   Supervisor: "Supervisor",
   SalesAdvisor: "Asesor de Ventas",
   Manager: "Gerente",
+  FinanceManager: "Gerente de Finanzas",
+  CommercialManager: "Gerente Comercial",
 };
 
 // Niveles de acceso visual
@@ -25,6 +27,8 @@ const roleLevel = {
   Admin: { level: 4, color: "bg-primary" },
   Supervisor: { level: 3, color: "bg-amber-200 dark:bg-slate-50" },
   Manager: { level: 3, color: "bg-amber-200 dark:bg-slate-50" },
+  CommercialManager: { level: 3, color: "bg-amber-200 dark:bg-slate-50" },
+  FinanceManager: { level: 3, color: "bg-amber-200 dark:bg-slate-50" },
   SalesAdvisor: { level: 2, color: "bg-amber-200 dark:bg-slate-50" },
 };
 

@@ -95,6 +95,7 @@ export default function DocumentNumberLookup({
   };
 
   const hasError = (): boolean => Boolean(error);
+  const fieldError = type === "dni" ? form.formState.errors.dni?.message : form.formState.errors.ruc?.message;
 
   return (
     <div className="space-y-4">
@@ -149,6 +150,8 @@ export default function DocumentNumberLookup({
             )}
           </Button>
         </div>
+
+        {fieldError && <p className="text-sm font-medium text-destructive">{fieldError}</p>}
 
         {/* Status simple */}
         {input.length > 0 && (

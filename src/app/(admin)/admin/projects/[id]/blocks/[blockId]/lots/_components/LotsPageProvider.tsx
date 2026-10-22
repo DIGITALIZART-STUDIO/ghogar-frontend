@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 
+import { useClaims } from "@/app/(admin)/_authorization_context";
 import { useProject } from "@/app/(admin)/admin/projects/_hooks/useProjects";
+import { canManageProject } from "@/app/(admin)/admin/projects/_utils/project-permissions";
 import ErrorGeneral from "@/components/errors/general-error";
 import {
   Breadcrumb,
@@ -21,6 +23,7 @@ interface LotsPageProviderProps {
 }
 
 export default function LotsPageProvider({ projectId, blockId }: LotsPageProviderProps) {
+  const canManage = canManageProject(useClaims());
   // Obtener datos del proyecto
   const projectQuery = useProject(projectId);
   const projectData = projectQuery.data;
@@ -98,7 +101,7 @@ export default function LotsPageProvider({ projectId, blockId }: LotsPageProvide
         projectId={projectId}
         title={title}
         description={description}
-        canCreateLot
+        canCreateLot={canManage}
         projectCurrency={projectData?.currency}
       />
     </div>

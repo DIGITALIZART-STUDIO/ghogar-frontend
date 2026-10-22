@@ -26,9 +26,17 @@ interface BlockCardProps {
   onToggleActive: (blockId: string, isActive: boolean) => void;
   isLoading?: boolean;
   refetch: () => void;
+  canManage?: boolean;
 }
 
-export function BlockCard({ block, projectId, onToggleActive, isLoading = false, refetch }: BlockCardProps) {
+export function BlockCard({
+  block,
+  projectId,
+  onToggleActive,
+  isLoading = false,
+  refetch,
+  canManage = false,
+}: BlockCardProps) {
   const [openSheet, setOpenSheet] = useState(false);
 
   // Calcular porcentajes para mejor visualización
@@ -116,50 +124,51 @@ export function BlockCard({ block, projectId, onToggleActive, isLoading = false,
             </div>
           </div>
 
-          {/* Botón de acciones */}
-          <div className="flex-shrink-0">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
-                >
-                  <span className="sr-only">Abrir menú</span>
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={handleEdit} disabled={isLoading}>
-                    <Pencil />
-                    Editar
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
+          {canManage && (
+            <div className="flex-shrink-0">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    <span className="sr-only">Abrir menú</span>
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[160px]">
+                  <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={handleEdit} disabled={isLoading}>
+                      <Pencil />
+                      Editar
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
 
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  {block.isActive ? (
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => onToggleActive(block.id ?? "", false)}
-                      disabled={isLoading}
-                    >
-                      <PowerOff />
-                      Desactivar
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem onClick={() => onToggleActive(block.id ?? "", true)} disabled={isLoading}>
-                      <Power />
-                      Activar
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {block.isActive ? (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => onToggleActive(block.id ?? "", false)}
+                        disabled={isLoading}
+                      >
+                        <PowerOff />
+                        Desactivar
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onClick={() => onToggleActive(block.id ?? "", true)} disabled={isLoading}>
+                        <Power />
+                        Activar
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </div>
       </CardHeader>
 

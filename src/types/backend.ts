@@ -81,8 +81,11 @@ export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit
           key.toLowerCase().includes("photo")
       );
 
-      // Detectar endpoints que siempre requieren FormData (por ejemplo, /api/Projects para POST/PUT)
-      const requiresFormData = url.includes("/api/Projects") && (init.method === "POST" || init.method === "PUT");
+      // Detectar CRUD de proyecto (imagen). No aplicar a subrutas como /contract.
+      const pathname = url.split("?")[0] ?? "";
+      const requiresFormData =
+        (init.method === "POST" && /\/api\/Projects\/?$/.test(pathname)) ||
+        (init.method === "PUT" && /\/api\/Projects\/[^/]+\/?$/.test(pathname));
 
       if (hasFiles || hasFileLikeFields || requiresFormData) {
         // Si hay archivos reales, usar multipart/form-data (FormData)
@@ -177,7 +180,11 @@ export const enhancedFetch = async (input: RequestInfo | URL, init?: RequestInit
       if (contentType && contentType.includes("application/json")) {
         // Si es JSON, parsearlo
         const errorData = await clonedResponse.json();
-        errorMessage = errorData.message ?? errorData.title ?? errorData.error ?? response.statusText;
+        if (typeof errorData === "string" && errorData.trim()) {
+          errorMessage = errorData;
+        } else {
+          errorMessage = errorData.message ?? errorData.title ?? errorData.error ?? response.statusText;
+        }
       } else if (contentType && contentType.includes("text/")) {
         // Si es texto plano, leerlo directamente
         const errorData = await clonedResponse.text();

@@ -92,6 +92,7 @@ export const rolePermissions: Record<string, Array<string>> = {
     "/leads",
     "/tasks",
     "/reports",
+    "/admin/projects",
     "/pending-contracts",
     "/payments-transaction",
     "/credit-management",
@@ -108,5 +109,6 @@ export const rolePermissions: Record<string, Array<string>> = {
     "/reservations",
     "/assignments",
     "/reports",
+    "/admin/projects",
   ],
 };

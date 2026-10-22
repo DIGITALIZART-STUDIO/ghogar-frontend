@@ -6,6 +6,7 @@ import { Download, Eye, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getApiErrorMessage } from "@/lib/utils";
 
 interface DocumentDownloadDialogProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export function DocumentDownloadDialog({
         setPdfUrl(dataUrl);
       } catch (error) {
         console.error("Error loading PDF:", error);
-        setError(`Error cargando PDF: ${error instanceof Error ? error.message : "Error desconocido"}`);
+        setError(getApiErrorMessage(error, "Error cargando PDF"));
       } finally {
         isLoadingRef.current = false;
       }
@@ -85,7 +86,7 @@ export function DocumentDownloadDialog({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading PDF:", error);
-      setError(`Error descargando PDF: ${error instanceof Error ? error.message : "Error desconocido"}`);
+      setError(getApiErrorMessage(error, "Error descargando PDF"));
     }
   };
 
@@ -106,7 +107,7 @@ export function DocumentDownloadDialog({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading Word:", error);
-      setError(`Error descargando Word: ${error instanceof Error ? error.message : "Error desconocido"}`);
+      setError(getApiErrorMessage(error, "Error descargando Word"));
     }
   };
 

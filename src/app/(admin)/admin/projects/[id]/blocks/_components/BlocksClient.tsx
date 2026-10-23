@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { Filter, Home, Loader2, Search, X } from "lucide-react";
+import { FileSignature, Filter, Home, Loader2, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 
+import { useClaims } from "@/app/(admin)/_authorization_context";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import ErrorGeneral from "@/components/errors/general-error";
 import {
@@ -15,11 +16,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useActivateBlock, useBlocks, useDeactivateBlock } from "../_hooks/useBlocks";
 import { BlockData } from "../_types/block";
 import { ProjectData } from "../../../_types/project";
+import { canEditProjectContract, canManageProject } from "../../../_utils/project-permissions";
 import { BlockCard } from "./BlockCard";
 import { CreateBlocksDialog } from "./create/CreateBlocksDialog";
 
@@ -29,6 +32,9 @@ interface BlocksClientProps {
 }
 
 export function BlocksClient({ projectId, project }: BlocksClientProps) {
+  const roles = useClaims();
+  const canEditContract = canEditProjectContract(roles);
+  const canManage = canManageProject(roles);
   // Usar el hook paginado para obtener bloques con búsqueda
   const {
     allBlocks: blocks,
@@ -232,8 +238,16 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
             description={project?.location ?? "Sin ubicación"}
           />
         </div>
-        <div className="flex-shrink-0">
-          <CreateBlocksDialog projectId={projectId} refetch={refetch} />
+        <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+          {canEditContract && (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/admin/projects/${projectId}/contract`}>
+                <FileSignature className="mr-2 h-4 w-4" />
+                Contrato
+              </Link>
+            </Button>
+          )}
+          {canManage && <CreateBlocksDialog projectId={projectId} refetch={refetch} />}
         </div>
       </div>
       <div className="space-y-6">
@@ -298,6 +312,7 @@ export function BlocksClient({ projectId, project }: BlocksClientProps) {
                   onToggleActive={handleToggleActive}
                   isLoading={isPending}
                   refetch={refetch}
+                  canManage={canManage}
                 />
               ))}
             </div>

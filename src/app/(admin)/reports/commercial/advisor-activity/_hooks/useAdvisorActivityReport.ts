@@ -1,23 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { format, startOfMonth } from "date-fns";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { LeadCaptureSource, LeadStatus } from "@/app/(admin)/leads/_types/lead";
 import { useAuthContext } from "@/context/auth-provider";
 import { AdvisorActivityFilters, AdvisorActivityReportResponse, HasAdvisorFilter } from "../_types/advisorActivity";
 import { buildAdvisorActivityQueryParams } from "../_utils/advisorActivity.query";
-
-function formatDate(date: Date): string {
-  // Usar fecha local (no UTC) para evitar correr un día en zonas como America/Lima
-  return format(date, "yyyy-MM-dd");
-}
+import { defaultReportDateRange } from "../../../_utils/report-dates";
 
 function defaultFilters(): AdvisorActivityFilters {
-  const now = new Date();
-
   return {
-    from: formatDate(startOfMonth(now)),
-    to: formatDate(now),
+    ...defaultReportDateRange(),
     advisorId: undefined,
     status: [],
     captureSource: [],
@@ -69,6 +61,7 @@ export function useAdvisorActivityReport(page: number, pageSize: number, project
   const query = useQuery({
     queryKey: ["reports", "commercial", "advisor-activity", queryParams.toString()],
     queryFn: () => fetchAdvisorActivityReport(queryParams),
+    placeholderData: keepPreviousData,
     retry: false,
   });
 

@@ -41,9 +41,10 @@ import { ComprobanteViewerDialog } from "./ComprobanteViewerDialog";
 interface PaymentTransactionsPanelProps {
   transactions: Array<PaymentTransaction>;
   currency: string;
+  parentId?: string;
 }
 
-export function PaymentTransactionsPanel({ transactions, currency }: PaymentTransactionsPanelProps) {
+export function PaymentTransactionsPanel({ transactions, currency, parentId }: PaymentTransactionsPanelProps) {
   const router = useRouter();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [expandedTransactions, setExpandedTransactions] = useState<Set<string>>(new Set());
@@ -82,9 +83,9 @@ export function PaymentTransactionsPanel({ transactions, currency }: PaymentTran
   // Funciones placeholder para las acciones
   const handleEdit = (transactionId: string) => {
     const transaction = transactions.find((t) => t.id === transactionId);
-    if (transaction && transaction.reservationId) {
-      // Redirigir a la página de edición usando Next.js 15
-      router.push(`/payments-transaction/${transaction.reservationId}/edit/${transactionId}`);
+    const targetId = parentId ?? transaction?.contractId ?? transaction?.reservationId;
+    if (transaction && targetId) {
+      router.push(`/payments-transaction/${targetId}/edit/${transactionId}`);
     }
   };
 

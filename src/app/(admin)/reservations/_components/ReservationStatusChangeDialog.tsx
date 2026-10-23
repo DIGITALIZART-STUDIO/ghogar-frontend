@@ -68,7 +68,10 @@ export function ReservationStatusChangeDialog({
         }),
         {
           loading: "Actualizando estado de reserva...",
-          success: "Estado actualizado exitosamente",
+          success:
+            data.status === ReservationStatus.CANCELED
+              ? "Separación pagada. Se creó el contrato; el cronograma está en Contratos."
+              : "Estado actualizado exitosamente",
           error: (error) => `Error al cambiar el estado: ${error.message ?? "Error desconocido"}`,
         }
       );

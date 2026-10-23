@@ -193,6 +193,13 @@ export function useChangeReservationStatus() {
         invalidatePaymentScheduleQueries(queryClient, reservationId);
         invalidatePaymentTransactionQueries(queryClient, reservationId);
       }
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === "get" &&
+          typeof query.queryKey[1] === "string" &&
+          query.queryKey[1].startsWith("/api/Contracts"),
+      });
     },
     onError: async (error: unknown) => {
       await handleAuthError(error);

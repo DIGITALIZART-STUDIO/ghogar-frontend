@@ -63,10 +63,10 @@ export type LeadExpirationFields = {
   status?: LeadStatus | string;
   isExpired?: boolean;
   daysUntilExpiration?: number;
-  expirationLabel?: string;
+  expirationLabel?: string | null;
   IsExpired?: boolean;
   DaysUntilExpiration?: number;
-  ExpirationLabel?: string;
+  ExpirationLabel?: string | null;
 };
 
 export function withLeadExpirationFields<T extends LeadExpirationFields>(lead: T): LeadExpirationFields & T {

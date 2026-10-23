@@ -70,8 +70,8 @@ export const sidebarData: SidebarData = {
       title: "Cobranza",
       items: [
         {
-          title: "Contratos Pendientes",
-          url: "/pending-contracts",
+          title: "Contratos",
+          url: "/contracts",
           icon: FileSignature,
         },
         {

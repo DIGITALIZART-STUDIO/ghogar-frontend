@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BarChart3, Building2, Home, Loader2, Search, TrendingUp, X } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 
+import { useClaims } from "@/app/(admin)/_authorization_context";
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -12,6 +13,7 @@ import { ProjectCard } from "./_components/ProjectCard";
 import { StatsCard } from "./_components/StatsCard";
 import { usePaginatedAllProjectsWithSearch } from "./_hooks/useProjects";
 import { ProjectData } from "./_types/project";
+import { canManageProject } from "./_utils/project-permissions";
 
 // Función para calcular estadísticas usando los datos del DTO
 function getOverallStats(projects: Array<ProjectData>) {
@@ -39,6 +41,8 @@ function getOverallStats(projects: Array<ProjectData>) {
 }
 
 export default function ProjectsPage() {
+  const roles = useClaims();
+  const canManage = canManageProject(roles);
   // Usar el hook para obtener proyectos con paginación infinita
   const {
     allProjects: projects,
@@ -173,9 +177,11 @@ export default function ProjectsPage() {
         <div className="flex-1 min-w-0">
           <HeaderPage title="Panel Inmobiliario" description="Gestiona tus proyectos inmobiliarios" />
         </div>
-        <div className="flex-shrink-0">
-          <CreateProjectsDialog />
-        </div>
+        {canManage && (
+          <div className="flex-shrink-0">
+            <CreateProjectsDialog />
+          </div>
+        )}
       </div>
 
       <div className="space-y-6 pt-4">

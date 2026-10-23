@@ -2,9 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Building2, Calendar, DollarSign, Edit, MapPin, MoreVertical, Power, PowerOff } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  Calendar,
+  DollarSign,
+  Edit,
+  FileSignature,
+  MapPin,
+  MoreVertical,
+  Power,
+  PowerOff,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import { useClaims } from "@/app/(admin)/_authorization_context";
 import ProjectsCardImage from "@/assets/images/ProjectsCard.webp";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useActivateProject, useDeactivateProject } from "../_hooks/useProjects";
 import type { ProjectData } from "../_types/project";
+import { canEditProjectContract, canManageProject } from "../_utils/project-permissions";
 import { UpdateProjectsSheet } from "./update/UpdateProjectsSheet";
 
 interface ProjectCardProps {
@@ -26,6 +39,9 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const roles = useClaims();
+  const canManage = canManageProject(roles);
+  const canEditContract = canEditProjectContract(roles);
   const [openUpdateProject, setOpenUpdateProject] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
 
@@ -146,27 +162,43 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={handleEdit}>
-                  <Edit />
-                  Editar
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
+              {canEditContract && (
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/admin/projects/${safeProject.id}/contract`}>
+                      <FileSignature />
+                      Contrato
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              )}
 
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                {safeProject.isActive ? (
-                  <DropdownMenuItem variant="destructive" onClick={handleToggleStatus} disabled={isToggling}>
-                    <PowerOff />
-                    Desactivar
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={handleToggleStatus} disabled={isToggling}>
-                    <Power />
-                    Activar
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuGroup>
+              {canManage && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={handleEdit}>
+                      <Edit />
+                      Editar
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {safeProject.isActive ? (
+                      <DropdownMenuItem variant="destructive" onClick={handleToggleStatus} disabled={isToggling}>
+                        <PowerOff />
+                        Desactivar
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onClick={handleToggleStatus} disabled={isToggling}>
+                        <Power />
+                        Activar
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -242,7 +274,15 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* Action Button */}
-        <div className="pt-2">
+        <div className="pt-2 grid grid-cols-1 gap-2">
+          {canEditContract && (
+            <Button asChild size="sm" variant="outline" className="w-full" disabled={isToggling}>
+              <Link href={`/admin/projects/${safeProject.id}/contract`}>
+                <FileSignature className="mr-2 h-4 w-4" />
+                Contrato
+              </Link>
+            </Button>
+          )}
           <Button asChild size="sm" className="w-full" disabled={isToggling}>
             <Link href={`/admin/projects/${safeProject.id}/blocks`}>
               Ver Manzanas

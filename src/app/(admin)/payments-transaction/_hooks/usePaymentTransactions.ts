@@ -1,7 +1,15 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { ContractPaymentDto } from "@/app/(admin)/contracts/_types/contract";
 import { useAuthContext } from "@/context/auth-provider";
-import { backend as api, downloadFileWithClient, uploadWithFormData } from "@/types/backend";
+import {
+  backend as api,
+  BACKEND_URL,
+  downloadFileWithClient,
+  enhancedFetch,
+  uploadWithFormData,
+} from "@/types/backend";
+import { PaymentQuotaStatus, PaymentTransaction } from "../_types/paymentTransaction";
 import { invalidatePaymentScheduleQueries } from "./usePaymentSchedule";
 
 // Obtener todas las transacciones
@@ -90,7 +98,8 @@ const PAYMENT_TRANSACTION_QUERY_KEYS = {
 export const invalidatePaymentTransactionQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
   reservationId?: string,
-  transactionId?: string
+  transactionId?: string,
+  contractId?: string
 ) => {
   // Invalidar todas las queries de PaymentTransaction usando predicate
   // React Query invalida todas las queries que coincidan con el predicate
@@ -104,7 +113,9 @@ export const invalidatePaymentTransactionQueries = (
         typeof key[1] === "string" &&
         (key[1].startsWith("/api/PaymentTransaction") ||
           key[1].startsWith("/api/Reservations") ||
-          (key[1].startsWith("/api/Payments/reservation") && key[1].includes("/schedule")))
+          key[1].startsWith("/api/Contracts") ||
+          key[1].startsWith("/api/Payments/reservation") ||
+          key[1].startsWith("/api/Payments"))
       );
     },
   });
@@ -137,6 +148,11 @@ export const invalidatePaymentTransactionQueries = (
   if (transactionId) {
     queryClient.invalidateQueries({ queryKey: PAYMENT_TRANSACTION_QUERY_KEYS.byId(transactionId) });
   }
+  if (contractId) {
+    queryClient.invalidateQueries({
+      predicate: (query) => Array.isArray(query.queryKey) && query.queryKey.includes(contractId),
+    });
+  }
 };
 
 // Crear una transacción con soporte para archivos
@@ -145,7 +161,8 @@ export const useCreatePaymentTransaction = uploadWithFormData("post", "/api/Paym
   invalidateQueries: (queryClient, variables) => {
     // Extraer reservationId del body si está disponible
     const reservationId = (variables?.body as { reservationId?: string })?.reservationId;
-    invalidatePaymentTransactionQueries(queryClient, reservationId);
+    const contractId = (variables?.body as { contractId?: string })?.contractId;
+    invalidatePaymentTransactionQueries(queryClient, reservationId, undefined, contractId);
   },
 });
 
@@ -155,8 +172,9 @@ export const useUpdatePaymentTransaction = uploadWithFormData("put", "/api/Payme
   invalidateQueries: (queryClient, variables) => {
     // Extraer reservationId del body y transactionId de los params
     const reservationId = (variables?.body as { reservationId?: string })?.reservationId;
+    const contractId = (variables?.body as { contractId?: string })?.contractId;
     const transactionId = (variables as { params?: { path?: { id?: string } } })?.params?.path?.id;
-    invalidatePaymentTransactionQueries(queryClient, reservationId, transactionId);
+    invalidatePaymentTransactionQueries(queryClient, reservationId, transactionId, contractId);
   },
 });
 
@@ -222,6 +240,68 @@ export function useDownloadProcessedPaymentsPDF() {
 }
 
 // Hook para descargar PDF de recibo
+export function usePaymentTransactionsByContract(contractId: string) {
+  const { handleAuthError } = useAuthContext();
+
+  return useQuery({
+    queryKey: ["get", "/api/PaymentTransaction/by-contract/{contractId}", contractId],
+    enabled: !!contractId,
+    queryFn: async () => {
+      try {
+        const response = await enhancedFetch(`${BACKEND_URL}/api/PaymentTransaction/by-contract/${contractId}`);
+        return (await response.json()) as Array<PaymentTransaction>;
+      } catch (error) {
+        await handleAuthError(error);
+        throw error;
+      }
+    },
+  });
+}
+
+export function useQuotaStatusByContract(contractId: string, excludeTransactionId?: string) {
+  const { handleAuthError } = useAuthContext();
+  const suffix = excludeTransactionId ? `/${excludeTransactionId}` : "";
+
+  return useQuery({
+    queryKey: [
+      "get",
+      "/api/PaymentTransaction/quota-status/by-contract/{contractId}",
+      contractId,
+      excludeTransactionId,
+    ],
+    enabled: !!contractId,
+    queryFn: async () => {
+      try {
+        const response = await enhancedFetch(
+          `${BACKEND_URL}/api/PaymentTransaction/quota-status/by-contract/${contractId}${suffix}`
+        );
+        return (await response.json()) as PaymentQuotaStatus;
+      } catch (error) {
+        await handleAuthError(error);
+        throw error;
+      }
+    },
+  });
+}
+
+export function usePaymentScheduleByContract(contractId: string) {
+  const { handleAuthError } = useAuthContext();
+
+  return useQuery({
+    queryKey: ["get", "/api/Contracts/{id}/schedule", contractId],
+    enabled: !!contractId,
+    queryFn: async () => {
+      try {
+        const response = await enhancedFetch(`${BACKEND_URL}/api/Contracts/${contractId}/schedule`);
+        return (await response.json()) as Array<ContractPaymentDto>;
+      } catch (error) {
+        await handleAuthError(error);
+        throw error;
+      }
+    },
+  });
+}
+
 export function useDownloadReceiptPDF() {
   const { handleAuthError } = useAuthContext();
 

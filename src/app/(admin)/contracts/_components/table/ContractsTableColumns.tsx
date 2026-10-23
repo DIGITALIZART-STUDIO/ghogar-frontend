@@ -1,17 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { Calendar, Clock, Eye, Hash, MapPin } from "lucide-react";
+import { Calendar, Clock, Hash, MapPin } from "lucide-react";
 
 import { ClientHoverCard } from "@/components/common/ClientHoverCard";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ContractDto } from "../../_types/contract";
 import { ContractOriginLabels, ContractStatusLabels, formatContractCurrency } from "../../_utils/contracts.utils";
+import { ContractRowActions } from "./ContractRowActions";
 
 export const contractsColumns = (): Array<ColumnDef<ContractDto>> => [
   {
@@ -153,13 +152,7 @@ export const contractsColumns = (): Array<ColumnDef<ContractDto>> => [
   },
   {
     id: "acciones",
-    cell: ({ row }) => (
-      <Button variant="ghost" size="sm" asChild>
-        <Link href={`/contracts/${row.original.id}`}>
-          <Eye className="mr-1 h-4 w-4" />
-          Ver
-        </Link>
-      </Button>
-    ),
+    cell: ({ row }) => <ContractRowActions contract={row.original} />,
+    enablePinning: true,
   },
 ];

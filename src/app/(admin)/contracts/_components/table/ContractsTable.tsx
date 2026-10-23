@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Table as TableInstance } from "@tanstack/react-table";
 import { Plus } from "lucide-react";
 
@@ -40,6 +41,7 @@ export function ContractsTable({
   onOriginChange,
   isLoading = false,
 }: ContractsTableProps) {
+  const router = useRouter();
   const columns = useMemo(() => contractsColumns(), []);
   const facetedFilters = useMemo(
     () => createContractsFacetedFilters(onStatusChange, onOriginChange, status, origin),
@@ -59,6 +61,7 @@ export function ContractsTable({
           </Link>
         </Button>
       )}
+      onClickRow={(contract) => router.push(`/contracts/${contract.id}`)}
       filterPlaceholder="Buscar contratos..."
       facetedFilters={facetedFilters}
       externalFilterValue={search}

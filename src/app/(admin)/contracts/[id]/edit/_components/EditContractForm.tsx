@@ -9,13 +9,16 @@ import DatePicker from "@/components/ui/date-time-picker";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UpdateContractFormData } from "../../../_schemas/updateContractSchema";
+import { EditContractScheduleTable } from "./EditContractScheduleTable";
 
 interface EditContractFormProps {
   form: UseFormReturn<UpdateContractFormData>;
   paidInstallments: number;
+  currency: string;
+  isPreview: boolean;
 }
 
-export function EditContractForm({ form, paidInstallments }: EditContractFormProps) {
+export function EditContractForm({ form, paidInstallments, currency, isPreview }: EditContractFormProps) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "coOwners",
@@ -28,7 +31,7 @@ export function EditContractForm({ form, paidInstallments }: EditContractFormPro
         {paidInstallments > 0 ? (
           <p className="text-sm text-muted-foreground">
             Hay {paidInstallments} cuota{paidInstallments === 1 ? "" : "s"} pagada
-            {paidInstallments === 1 ? "" : "s"}. Esas no se tocan; el nuevo plazo no puede ser menor.
+            {paidInstallments === 1 ? "" : "s"} o con recibo. Esas no se tocan; el nuevo plazo no puede ser menor.
           </p>
         ) : null}
         <div className="grid gap-4 md:grid-cols-2">
@@ -102,6 +105,8 @@ export function EditContractForm({ form, paidInstallments }: EditContractFormPro
           />
         </div>
       </section>
+
+      <EditContractScheduleTable form={form} currency={currency} isPreview={isPreview} />
 
       <section className="rounded-xl border bg-card p-6 space-y-4">
         <div className="flex items-center justify-between">

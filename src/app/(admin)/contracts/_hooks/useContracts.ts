@@ -10,8 +10,10 @@ import {
   ContractDto,
   ContractListResponse,
   ContractPaymentDto,
+  ContractSchedulePreviewPayload,
   CreateContractPayload,
   UpdateContractPayload,
+  UpdateContractSchedulePayload,
 } from "../_types/contract";
 
 const CONTRACTS_KEY = ["get", "/api/Contracts"] as const;
@@ -206,6 +208,48 @@ export function useUpdateContract() {
     mutationFn: async ({ id, payload }: { id: string; payload: UpdateContractPayload }) => {
       try {
         const response = await enhancedFetch(`${BACKEND_URL}/api/Contracts/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        return (await response.json()) as ContractDto;
+      } catch (error) {
+        await handleAuthError(error);
+        throw error;
+      }
+    },
+    onSuccess: () => invalidateContractQueries(queryClient),
+  });
+}
+
+export function usePreviewContractSchedule() {
+  const { handleAuthError } = useAuthContext();
+
+  return useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: ContractSchedulePreviewPayload }) => {
+      try {
+        const response = await enhancedFetch(`${BACKEND_URL}/api/Contracts/${id}/schedule/preview`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        return (await response.json()) as Array<ContractPaymentDto>;
+      } catch (error) {
+        await handleAuthError(error);
+        throw error;
+      }
+    },
+  });
+}
+
+export function useUpdateContractSchedule() {
+  const queryClient = useQueryClient();
+  const { handleAuthError } = useAuthContext();
+
+  return useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: UpdateContractSchedulePayload }) => {
+      try {
+        const response = await enhancedFetch(`${BACKEND_URL}/api/Contracts/${id}/schedule`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

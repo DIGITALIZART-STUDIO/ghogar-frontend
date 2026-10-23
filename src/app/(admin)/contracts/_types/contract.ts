@@ -111,6 +111,25 @@ export type UpdateContractPayload = {
   coOwners?: string | null;
 };
 
+export type ContractScheduleTerms = {
+  totalPrice: number;
+  downPaymentAmount: number;
+  monthsFinanced: number;
+  startDate: string;
+};
+
+export type ContractSchedulePreviewPayload = ContractScheduleTerms;
+
+export type UpdateContractScheduleItemPayload = {
+  sequence: number;
+  dueDate: string;
+};
+
+export type UpdateContractSchedulePayload = UpdateContractPayload & {
+  applyRecalculatedSchedule: boolean;
+  installments: Array<UpdateContractScheduleItemPayload>;
+};
+
 export type ClientCurrencyBalanceDto = {
   currency: ContractCurrency;
   remainingAmount: number;

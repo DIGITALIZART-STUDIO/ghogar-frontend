@@ -1,7 +1,17 @@
 import type { ElementType } from "react";
 import { CheckCircle, Clock, FileSignature, FileText, FolderOpen, ShieldX, Truck } from "lucide-react";
 
-import { ContractCoOwner, ContractCurrency, ContractOrigin, ContractStatus, PaymentType } from "../_types/contract";
+import {
+  ContractCoOwner,
+  ContractCurrency,
+  ContractOrigin,
+  ContractPaymentDto,
+  ContractSchedulePreviewPayload,
+  ContractScheduleTerms,
+  ContractStatus,
+  PaymentType,
+  UpdateContractSchedulePayload,
+} from "../_types/contract";
 
 export const ContractStatusLabels: Record<ContractStatus, { label: string; icon: ElementType; className: string }> = {
   [ContractStatus.Draft]: {
@@ -109,7 +119,129 @@ export function parseContractCoOwners(raw?: string | null): Array<ContractCoOwne
   }
 }
 
+export type EditableContractInstallment = {
+  sequence: number;
+  dueDate: string;
+  amountDue: number;
+  amountPaid: number;
+  paid: boolean;
+  locked: boolean;
+};
+
+export function toContractDateOnly(value: string | null | undefined): string {
+  if (!value) {
+    return "";
+  }
+  return value.slice(0, 10);
+}
+
+export function toContractIsoDate(value: string): string {
+  return new Date(`${toContractDateOnly(value)}T00:00:00Z`).toISOString();
+}
+
+type NumericFormValue = number | string;
+
+type ContractScheduleTermsInput = {
+  totalPrice: NumericFormValue;
+  downPaymentAmount: NumericFormValue;
+  monthsFinanced: NumericFormValue;
+  startDate: string;
+};
+
+export function pickContractScheduleTerms(values: ContractScheduleTermsInput): ContractScheduleTerms {
+  return {
+    totalPrice: Number(values.totalPrice),
+    downPaymentAmount: Number(values.downPaymentAmount),
+    monthsFinanced: Number(values.monthsFinanced),
+    startDate: toContractDateOnly(values.startDate),
+  };
+}
+
+export function buildContractSchedulePreviewPayload(
+  values: ContractScheduleTermsInput
+): ContractSchedulePreviewPayload {
+  const terms = pickContractScheduleTerms(values);
+  return {
+    ...terms,
+    startDate: toContractIsoDate(terms.startDate),
+  };
+}
+
+export function buildUpdateContractSchedulePayload(data: {
+  totalPrice: NumericFormValue;
+  downPaymentAmount: NumericFormValue;
+  monthsFinanced: NumericFormValue;
+  exchangeRate: NumericFormValue;
+  startDate: string;
+  coOwners?: Array<ContractCoOwner>;
+  applyRecalculatedSchedule: boolean;
+  installments: Array<{ sequence: number; dueDate: string }>;
+}): UpdateContractSchedulePayload {
+  return {
+    totalPrice: Number(data.totalPrice),
+    downPaymentAmount: Number(data.downPaymentAmount),
+    monthsFinanced: Number(data.monthsFinanced),
+    exchangeRate: Number(data.exchangeRate),
+    startDate: toContractIsoDate(data.startDate),
+    coOwners: JSON.stringify(data.coOwners ?? []),
+    applyRecalculatedSchedule: data.applyRecalculatedSchedule,
+    installments: data.installments.map((installment) => ({
+      sequence: installment.sequence,
+      dueDate: toContractIsoDate(installment.dueDate),
+    })),
+  };
+}
+
+export function scheduleTermsChanged(current: ContractScheduleTerms, baseline: ContractScheduleTerms): boolean {
+  return (
+    current.totalPrice !== baseline.totalPrice ||
+    current.downPaymentAmount !== baseline.downPaymentAmount ||
+    current.monthsFinanced !== baseline.monthsFinanced ||
+    current.startDate !== baseline.startDate
+  );
+}
+
+export function isContractInstallmentLocked(payment: { paid: boolean; amountPaid?: number | null }): boolean {
+  return payment.paid || (payment.amountPaid ?? 0) > 0;
+}
+
+export function installmentsFromSchedule(schedule: Array<ContractPaymentDto>): Array<EditableContractInstallment> {
+  return schedule
+    .filter((payment) => payment.type === PaymentType.Installment)
+    .sort((left, right) => left.sequence - right.sequence)
+    .map((payment) => ({
+      sequence: payment.sequence,
+      dueDate: toContractDateOnly(payment.dueDate),
+      amountDue: payment.amountDue ?? 0,
+      amountPaid: payment.amountPaid ?? 0,
+      paid: payment.paid,
+      locked: isContractInstallmentLocked(payment),
+    }));
+}
+
+export function areInstallmentDatesNonDecreasing(installments: Array<{ sequence: number; dueDate: string }>): boolean {
+  const sorted = [...installments].sort((left, right) => left.sequence - right.sequence);
+  for (let index = 1; index < sorted.length; index += 1) {
+    const previous = sorted[index - 1]?.dueDate ?? "";
+    const current = sorted[index]?.dueDate ?? "";
+    if (current && previous && current < previous) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export type ContractPaymentRowStatus = "paid" | "partial" | "overdue" | "pending";
+
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+function toLocalDateOnly(timestamp: number): string {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export function getContractPaymentRowStatus(payment: {
   paid: boolean;
@@ -123,8 +255,15 @@ export function getContractPaymentRowStatus(payment: {
   if ((payment.amountPaid ?? 0) > 0) {
     return "partial";
   }
-  const dueDate = payment.dueDate ? new Date(payment.dueDate).getTime() : Number.NaN;
-  if (!Number.isNaN(dueDate) && dueDate < (payment.now ?? Date.now())) {
+  if (!payment.dueDate) {
+    return "pending";
+  }
+  const now = payment.now ?? Date.now();
+  if (DATE_ONLY_PATTERN.test(payment.dueDate)) {
+    return payment.dueDate < toLocalDateOnly(now) ? "overdue" : "pending";
+  }
+  const dueDate = new Date(payment.dueDate).getTime();
+  if (!Number.isNaN(dueDate) && dueDate < now) {
     return "overdue";
   }
   return "pending";

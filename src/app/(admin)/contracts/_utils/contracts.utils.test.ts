@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { ContractCurrency, ContractOrigin, ContractStatus, PaymentType } from "../_types/contract";
+import { ContractCurrency, ContractOrigin, ContractPaymentDto, ContractStatus, PaymentType } from "../_types/contract";
 import {
+  areInstallmentDatesNonDecreasing,
+  buildContractSchedulePreviewPayload,
+  buildUpdateContractSchedulePayload,
   canEditContract,
   canRegisterContractPayment,
   canToggleContractValidation,
@@ -11,11 +14,33 @@ import {
   ContractStatusLabels,
   formatContractCurrency,
   getContractPaymentRowStatus,
+  installmentsFromSchedule,
+  isContractInstallmentLocked,
   isContractOrigin,
   isContractStatus,
   parseContractCoOwners,
   PaymentTypeLabels,
+  pickContractScheduleTerms,
+  scheduleTermsChanged,
+  toContractDateOnly,
+  toContractIsoDate,
 } from "./contracts.utils";
+
+function payment(
+  overrides: Partial<ContractPaymentDto> & Pick<ContractPaymentDto, "id" | "type" | "sequence">
+): ContractPaymentDto {
+  return {
+    reservationId: "r1",
+    dueDate: "2026-01-01T00:00:00Z",
+    amountDue: 1000,
+    amountPaid: 0,
+    remainingAmount: 1000,
+    paid: false,
+    createdAt: "",
+    modifiedAt: "",
+    ...overrides,
+  };
+}
 
 describe("contracts.utils", () => {
   it("maps every contract status to a finance label", () => {
@@ -104,5 +129,172 @@ describe("contracts.utils", () => {
     expect(getContractPaymentRowStatus({ paid: false, amountPaid: 0, dueDate: "2026-11-01T00:00:00Z", now })).toBe(
       "pending"
     );
+  });
+
+  it("treats a date-only due date as overdue only after that calendar day", () => {
+    const now = new Date(2026, 9, 23, 12).getTime();
+    expect(getContractPaymentRowStatus({ paid: false, amountPaid: 0, dueDate: "2026-10-23", now })).toBe("pending");
+    expect(getContractPaymentRowStatus({ paid: false, amountPaid: 0, dueDate: "2026-10-22", now })).toBe("overdue");
+    expect(getContractPaymentRowStatus({ paid: false, amountPaid: 0, dueDate: "2026-10-24", now })).toBe("pending");
+  });
+
+  it("locks paid or partially paid installments", () => {
+    expect(isContractInstallmentLocked({ paid: true, amountPaid: 0 })).toBe(true);
+    expect(isContractInstallmentLocked({ paid: false, amountPaid: 50 })).toBe(true);
+    expect(isContractInstallmentLocked({ paid: false, amountPaid: null })).toBe(false);
+    expect(isContractInstallmentLocked({ paid: false, amountPaid: 0 })).toBe(false);
+  });
+
+  it("maps the contract schedule to editable installment rows", () => {
+    const rows = installmentsFromSchedule([
+      payment({
+        id: "dp",
+        type: PaymentType.DownPayment,
+        sequence: 0,
+        dueDate: "2026-01-01T00:00:00Z",
+        amountDue: 4000,
+        amountPaid: 4000,
+        remainingAmount: 0,
+        paid: true,
+      }),
+      payment({
+        id: "extra",
+        type: PaymentType.Extra,
+        sequence: 99,
+        dueDate: "2026-06-01T00:00:00Z",
+      }),
+      payment({
+        id: "i2",
+        type: PaymentType.Installment,
+        sequence: 2,
+        dueDate: "2026-03-01T00:00:00Z",
+        amountDue: 18000,
+        remainingAmount: 18000,
+      }),
+      payment({
+        id: "i1",
+        type: PaymentType.Installment,
+        sequence: 1,
+        dueDate: "2026-02-01T00:00:00Z",
+        amountDue: 18000,
+        amountPaid: 18000,
+        remainingAmount: 0,
+        paid: true,
+      }),
+    ]);
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toMatchObject({ sequence: 1, dueDate: "2026-02-01", locked: true, amountDue: 18000 });
+    expect(rows[1]).toMatchObject({ sequence: 2, dueDate: "2026-03-01", locked: false, amountPaid: 0 });
+  });
+
+  it("normalizes contract dates to yyyy-MM-dd and UTC midnight", () => {
+    expect(toContractDateOnly("2026-03-01T00:00:00Z")).toBe("2026-03-01");
+    expect(toContractDateOnly("2026-03-01")).toBe("2026-03-01");
+    expect(toContractDateOnly("")).toBe("");
+    expect(toContractDateOnly(null)).toBe("");
+    expect(toContractIsoDate("2026-03-01")).toBe("2026-03-01T00:00:00.000Z");
+    expect(toContractIsoDate("2026-03-01T15:30:00Z")).toBe("2026-03-01T00:00:00.000Z");
+  });
+
+  it("detects commercial term changes even when the form still holds strings", () => {
+    const baseline = pickContractScheduleTerms({
+      totalPrice: 40000,
+      downPaymentAmount: 4000,
+      monthsFinanced: 12,
+      startDate: "2026-01-01T00:00:00Z",
+    });
+    expect(baseline).toEqual({
+      totalPrice: 40000,
+      downPaymentAmount: 4000,
+      monthsFinanced: 12,
+      startDate: "2026-01-01",
+    });
+    expect(
+      scheduleTermsChanged(
+        pickContractScheduleTerms({
+          totalPrice: "40000",
+          downPaymentAmount: "4000",
+          monthsFinanced: "12",
+          startDate: "2026-01-01",
+        }),
+        baseline
+      )
+    ).toBe(false);
+    expect(
+      scheduleTermsChanged(
+        pickContractScheduleTerms({
+          totalPrice: 40000,
+          downPaymentAmount: 4000,
+          monthsFinanced: 18,
+          startDate: "2026-01-01",
+        }),
+        baseline
+      )
+    ).toBe(true);
+  });
+
+  it("accepts chronological or equal installment dates and rejects a backward sequence", () => {
+    expect(
+      areInstallmentDatesNonDecreasing([
+        { sequence: 2, dueDate: "2026-03-01" },
+        { sequence: 1, dueDate: "2026-02-01" },
+      ])
+    ).toBe(true);
+    expect(
+      areInstallmentDatesNonDecreasing([
+        { sequence: 1, dueDate: "2026-05-01" },
+        { sequence: 2, dueDate: "2026-05-01" },
+      ])
+    ).toBe(true);
+    expect(
+      areInstallmentDatesNonDecreasing([
+        { sequence: 1, dueDate: "2026-05-01" },
+        { sequence: 2, dueDate: "2026-04-01" },
+      ])
+    ).toBe(false);
+  });
+
+  it("builds the preview and save payloads the edit page sends to the API", () => {
+    expect(
+      buildContractSchedulePreviewPayload({
+        totalPrice: "50000",
+        downPaymentAmount: "8000",
+        monthsFinanced: "24",
+        startDate: "2026-03-01",
+      })
+    ).toEqual({
+      totalPrice: 50000,
+      downPaymentAmount: 8000,
+      monthsFinanced: 24,
+      startDate: "2026-03-01T00:00:00.000Z",
+    });
+
+    expect(
+      buildUpdateContractSchedulePayload({
+        totalPrice: 50000,
+        downPaymentAmount: 8000,
+        monthsFinanced: 2,
+        exchangeRate: 3.75,
+        startDate: "2026-03-01",
+        coOwners: [{ name: "Ana Pérez", dni: "12345678" }],
+        applyRecalculatedSchedule: true,
+        installments: [
+          { sequence: 1, dueDate: "2026-04-01" },
+          { sequence: 2, dueDate: "2026-05-01" },
+        ],
+      })
+    ).toEqual({
+      totalPrice: 50000,
+      downPaymentAmount: 8000,
+      monthsFinanced: 2,
+      exchangeRate: 3.75,
+      startDate: "2026-03-01T00:00:00.000Z",
+      coOwners: JSON.stringify([{ name: "Ana Pérez", dni: "12345678" }]),
+      applyRecalculatedSchedule: true,
+      installments: [
+        { sequence: 1, dueDate: "2026-04-01T00:00:00.000Z" },
+        { sequence: 2, dueDate: "2026-05-01T00:00:00.000Z" },
+      ],
+    });
   });
 });

@@ -55,8 +55,9 @@ export function DocumentDownloadDialog({
         const dataUrl = URL.createObjectURL(pdfBlob);
         setPdfUrl(dataUrl);
       } catch (error) {
-        console.error("Error loading PDF:", error);
-        setError(getApiErrorMessage(error, "Error cargando PDF"));
+        const message = getApiErrorMessage(error, "Error cargando PDF");
+        console.error("Error loading PDF:", message);
+        setError(message);
       } finally {
         isLoadingRef.current = false;
       }

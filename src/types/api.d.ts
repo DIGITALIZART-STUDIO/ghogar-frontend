@@ -859,6 +859,84 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/Clients/{id}/contracts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["ContractDto"]>;
+            "application/json": Array<components["schemas"]["ContractDto"]>;
+            "text/json": Array<components["schemas"]["ContractDto"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Clients/{id}/financial-summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ClientFinancialSummaryDto"];
+            "application/json": components["schemas"]["ClientFinancialSummaryDto"];
+            "text/json": components["schemas"]["ClientFinancialSummaryDto"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/Clients/batch": {
     parameters: {
       query?: never;
@@ -1226,6 +1304,408 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/Contracts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          page?: number;
+          pageSize?: number;
+          search?: string;
+          status?: Array<components["schemas"]["ContractStatus"]>;
+          origin?: Array<components["schemas"]["ContractOrigin"]>;
+          clientId?: string;
+          projectId?: string;
+          overdue?: boolean;
+          hasBalance?: boolean;
+          orderBy?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["PaginatedResponseV2OfContractDto"];
+            "application/json": components["schemas"]["PaginatedResponseV2OfContractDto"];
+            "text/json": components["schemas"]["PaginatedResponseV2OfContractDto"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateContractDto"];
+          "text/json": components["schemas"]["CreateContractDto"];
+          "application/*+json": components["schemas"]["CreateContractDto"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ContractDto"];
+            "application/json": components["schemas"]["ContractDto"];
+            "text/json": components["schemas"]["ContractDto"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ContractDto"];
+            "application/json": components["schemas"]["ContractDto"];
+            "text/json": components["schemas"]["ContractDto"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateContractDto"];
+          "text/json": components["schemas"]["UpdateContractDto"];
+          "application/*+json": components["schemas"]["UpdateContractDto"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ContractDto"];
+            "application/json": components["schemas"]["ContractDto"];
+            "text/json": components["schemas"]["ContractDto"];
+          };
+        };
+      };
+    };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}/schedule": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["PaymentDto"]>;
+            "application/json": Array<components["schemas"]["PaymentDto"]>;
+            "text/json": Array<components["schemas"]["PaymentDto"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}/rescind": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ContractDto"];
+            "application/json": components["schemas"]["ContractDto"];
+            "text/json": components["schemas"]["ContractDto"];
+          };
+        };
+      };
+    };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}/toggle-validation-status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ContractDto"];
+            "application/json": components["schemas"]["ContractDto"];
+            "text/json": components["schemas"]["ContractDto"];
+          };
+        };
+      };
+    };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}/pdf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}/docx": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/{id}/schedule/pdf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Contracts/backfill": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ContractBackfillResultDto"];
+            "application/json": components["schemas"]["ContractBackfillResultDto"];
+            "text/json": components["schemas"]["ContractBackfillResultDto"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/Dashboard/admin": {
     parameters: {
       query?: never;
@@ -1237,9 +1717,7 @@ export interface paths {
       parameters: {
         query?: {
           year?: number;
-          /** Format: date */
           from?: string;
-          /** Format: date */
           to?: string;
         };
         header?: never;
@@ -1257,6 +1735,28 @@ export interface paths {
             "text/plain": components["schemas"]["DashboardAdminDto"];
             "application/json": components["schemas"]["DashboardAdminDto"];
             "text/json": components["schemas"]["DashboardAdminDto"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Forbidden */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
           };
         };
       };
@@ -1280,14 +1780,11 @@ export interface paths {
       parameters: {
         query?: {
           year?: number;
-          /** Format: date */
           from?: string;
-          /** Format: date */
           to?: string;
         };
         header?: never;
         path: {
-          /** Format: uuid */
           userId: string;
         };
         cookie?: never;
@@ -1303,6 +1800,39 @@ export interface paths {
             "text/plain": components["schemas"]["AdminTeamMemberActivityDto"];
             "application/json": components["schemas"]["AdminTeamMemberActivityDto"];
             "text/json": components["schemas"]["AdminTeamMemberActivityDto"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Forbidden */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not Found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
           };
         };
       };
@@ -2010,438 +2540,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/LeadTasks": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": Array<components["schemas"]["LeadTask"]>;
-            "application/json": Array<components["schemas"]["LeadTask"]>;
-            "text/json": Array<components["schemas"]["LeadTask"]>;
-          };
-        };
-      };
-    };
-    put?: never;
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["LeadTaskCreateDto"];
-          "text/json": components["schemas"]["LeadTaskCreateDto"];
-          "application/*+json": components["schemas"]["LeadTaskCreateDto"];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["LeadTask2"];
-            "application/json": components["schemas"]["LeadTask2"];
-            "text/json": components["schemas"]["LeadTask2"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["LeadTask2"];
-            "application/json": components["schemas"]["LeadTask2"];
-            "text/json": components["schemas"]["LeadTask2"];
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["LeadTaskUpdateDto"];
-          "text/json": components["schemas"]["LeadTaskUpdateDto"];
-          "application/*+json": components["schemas"]["LeadTaskUpdateDto"];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["LeadTask2"];
-            "application/json": components["schemas"]["LeadTask2"];
-            "text/json": components["schemas"]["LeadTask2"];
-          };
-        };
-      };
-    };
-    post?: never;
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/lead/{leadId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          leadId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["LeadTasksResponseDto"];
-            "application/json": components["schemas"]["LeadTasksResponseDto"];
-            "text/json": components["schemas"]["LeadTasksResponseDto"];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/filter": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TaskFilterRequest"];
-          "text/json": components["schemas"]["TaskFilterRequest"];
-          "application/*+json": components["schemas"]["TaskFilterRequest"];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": Array<components["schemas"]["LeadTaskDTO"]>;
-            "application/json": Array<components["schemas"]["LeadTaskDTO"]>;
-            "text/json": Array<components["schemas"]["LeadTaskDTO"]>;
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["ProblemDetails"];
-            "application/json": components["schemas"]["ProblemDetails"];
-            "text/json": components["schemas"]["ProblemDetails"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/user/{userId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          userId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": Array<components["schemas"]["LeadTask"]>;
-            "application/json": Array<components["schemas"]["LeadTask"]>;
-            "text/json": Array<components["schemas"]["LeadTask"]>;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/pending": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": Array<components["schemas"]["LeadTask"]>;
-            "application/json": Array<components["schemas"]["LeadTask"]>;
-            "text/json": Array<components["schemas"]["LeadTask"]>;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/completed": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": Array<components["schemas"]["LeadTask"]>;
-            "application/json": Array<components["schemas"]["LeadTask"]>;
-            "text/json": Array<components["schemas"]["LeadTask"]>;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/daterange": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: {
-          startDate?: string;
-          endDate?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": Array<components["schemas"]["LeadTask"]>;
-            "application/json": Array<components["schemas"]["LeadTask"]>;
-            "text/json": Array<components["schemas"]["LeadTask"]>;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/LeadTasks/{id}/complete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/Leads": {
     parameters: {
       query?: never;
@@ -2464,9 +2562,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": Array<components["schemas"]["Lead3"]>;
-            "application/json": Array<components["schemas"]["Lead3"]>;
-            "text/json": Array<components["schemas"]["Lead3"]>;
+            "text/plain": Array<components["schemas"]["Lead"]>;
+            "application/json": Array<components["schemas"]["Lead"]>;
+            "text/json": Array<components["schemas"]["Lead"]>;
           };
         };
       };
@@ -2493,52 +2591,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": components["schemas"]["Lead4"];
-            "application/json": components["schemas"]["Lead4"];
-            "text/json": components["schemas"]["Lead4"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/Leads/from-phone": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["LeadFromPhoneCreateDto"];
-          "text/json": components["schemas"]["LeadFromPhoneCreateDto"];
-          "application/*+json": components["schemas"]["LeadFromPhoneCreateDto"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["LeadFromPhoneCreateResponseDto"];
-            "application/json": components["schemas"]["LeadFromPhoneCreateResponseDto"];
-            "text/json": components["schemas"]["LeadFromPhoneCreateResponseDto"];
+            "text/plain": components["schemas"]["Lead2"];
+            "application/json": components["schemas"]["Lead2"];
+            "text/json": components["schemas"]["Lead2"];
           };
         };
       };
@@ -2620,9 +2675,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": components["schemas"]["Lead4"];
-            "application/json": components["schemas"]["Lead4"];
-            "text/json": components["schemas"]["Lead4"];
+            "text/plain": components["schemas"]["Lead2"];
+            "application/json": components["schemas"]["Lead2"];
+            "text/json": components["schemas"]["Lead2"];
           };
         };
       };
@@ -2650,9 +2705,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": components["schemas"]["Lead4"];
-            "application/json": components["schemas"]["Lead4"];
-            "text/json": components["schemas"]["Lead4"];
+            "text/plain": components["schemas"]["Lead2"];
+            "application/json": components["schemas"]["Lead2"];
+            "text/json": components["schemas"]["Lead2"];
           };
         };
       };
@@ -2678,6 +2733,49 @@ export interface paths {
         };
       };
     };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Leads/from-phone": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["LeadCreateFromPhoneDto"];
+          "text/json": components["schemas"]["LeadCreateFromPhoneDto"];
+          "application/*+json": components["schemas"]["LeadCreateFromPhoneDto"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadCreateFromPhoneResultDto"];
+            "application/json": components["schemas"]["LeadCreateFromPhoneResultDto"];
+            "text/json": components["schemas"]["LeadCreateFromPhoneResultDto"];
+          };
+        };
+      };
+    };
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -2714,9 +2812,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": components["schemas"]["Lead4"];
-            "application/json": components["schemas"]["Lead4"];
-            "text/json": components["schemas"]["Lead4"];
+            "text/plain": components["schemas"]["Lead2"];
+            "application/json": components["schemas"]["Lead2"];
+            "text/json": components["schemas"]["Lead2"];
           };
         };
       };
@@ -2750,9 +2848,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": Array<components["schemas"]["Lead3"]>;
-            "application/json": Array<components["schemas"]["Lead3"]>;
-            "text/json": Array<components["schemas"]["Lead3"]>;
+            "text/plain": Array<components["schemas"]["Lead"]>;
+            "application/json": Array<components["schemas"]["Lead"]>;
+            "text/json": Array<components["schemas"]["Lead"]>;
           };
         };
       };
@@ -2789,9 +2887,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": Array<components["schemas"]["Lead3"]>;
-            "application/json": Array<components["schemas"]["Lead3"]>;
-            "text/json": Array<components["schemas"]["Lead3"]>;
+            "text/plain": Array<components["schemas"]["Lead"]>;
+            "application/json": Array<components["schemas"]["Lead"]>;
+            "text/json": Array<components["schemas"]["Lead"]>;
           };
         };
       };
@@ -2826,9 +2924,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": Array<components["schemas"]["Lead3"]>;
-            "application/json": Array<components["schemas"]["Lead3"]>;
-            "text/json": Array<components["schemas"]["Lead3"]>;
+            "text/plain": Array<components["schemas"]["Lead"]>;
+            "application/json": Array<components["schemas"]["Lead"]>;
+            "text/json": Array<components["schemas"]["Lead"]>;
           };
         };
       };
@@ -2911,9 +3009,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": Array<components["schemas"]["Lead3"]>;
-            "application/json": Array<components["schemas"]["Lead3"]>;
-            "text/json": Array<components["schemas"]["Lead3"]>;
+            "text/plain": Array<components["schemas"]["Lead"]>;
+            "application/json": Array<components["schemas"]["Lead"]>;
+            "text/json": Array<components["schemas"]["Lead"]>;
           };
         };
       };
@@ -2987,9 +3085,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": components["schemas"]["Lead4"];
-            "application/json": components["schemas"]["Lead4"];
-            "text/json": components["schemas"]["Lead4"];
+            "text/plain": components["schemas"]["Lead2"];
+            "application/json": components["schemas"]["Lead2"];
+            "text/json": components["schemas"]["Lead2"];
           };
         };
       };
@@ -3022,9 +3120,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "text/plain": Array<components["schemas"]["Lead3"]>;
-            "application/json": Array<components["schemas"]["Lead3"]>;
-            "text/json": Array<components["schemas"]["Lead3"]>;
+            "text/plain": Array<components["schemas"]["Lead"]>;
+            "application/json": Array<components["schemas"]["Lead"]>;
+            "text/json": Array<components["schemas"]["Lead"]>;
           };
         };
       };
@@ -3444,6 +3542,438 @@ export interface paths {
         header?: never;
         path: {
           leadId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["LeadTask"]>;
+            "application/json": Array<components["schemas"]["LeadTask"]>;
+            "text/json": Array<components["schemas"]["LeadTask"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["LeadTaskCreateDto"];
+          "text/json": components["schemas"]["LeadTaskCreateDto"];
+          "application/*+json": components["schemas"]["LeadTaskCreateDto"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadTask2"];
+            "application/json": components["schemas"]["LeadTask2"];
+            "text/json": components["schemas"]["LeadTask2"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadTask2"];
+            "application/json": components["schemas"]["LeadTask2"];
+            "text/json": components["schemas"]["LeadTask2"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["LeadTaskUpdateDto"];
+          "text/json": components["schemas"]["LeadTaskUpdateDto"];
+          "application/*+json": components["schemas"]["LeadTaskUpdateDto"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadTask2"];
+            "application/json": components["schemas"]["LeadTask2"];
+            "text/json": components["schemas"]["LeadTask2"];
+          };
+        };
+      };
+    };
+    post?: never;
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/lead/{leadId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          leadId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["LeadTasksResponseDto"];
+            "application/json": components["schemas"]["LeadTasksResponseDto"];
+            "text/json": components["schemas"]["LeadTasksResponseDto"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/filter": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["TaskFilterRequest"];
+          "text/json": components["schemas"]["TaskFilterRequest"];
+          "application/*+json": components["schemas"]["TaskFilterRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["LeadTaskDTO"]>;
+            "application/json": Array<components["schemas"]["LeadTaskDTO"]>;
+            "text/json": Array<components["schemas"]["LeadTaskDTO"]>;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/user/{userId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          userId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["LeadTask"]>;
+            "application/json": Array<components["schemas"]["LeadTask"]>;
+            "text/json": Array<components["schemas"]["LeadTask"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/pending": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["LeadTask"]>;
+            "application/json": Array<components["schemas"]["LeadTask"]>;
+            "text/json": Array<components["schemas"]["LeadTask"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/completed": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["LeadTask"]>;
+            "application/json": Array<components["schemas"]["LeadTask"]>;
+            "text/json": Array<components["schemas"]["LeadTask"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/daterange": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          startDate?: string;
+          endDate?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["LeadTask"]>;
+            "application/json": Array<components["schemas"]["LeadTask"]>;
+            "text/json": Array<components["schemas"]["LeadTask"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/LeadTasks/{id}/complete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
         };
         cookie?: never;
       };
@@ -5072,6 +5602,8 @@ export interface paths {
             AmountPaid?: number;
             /** Format: uuid */
             ReservationId?: string;
+            /** Format: uuid */
+            ContractId?: string;
             PaymentMethod?: string;
             ReferenceNumber?: string;
             ComprobanteUrl?: string;
@@ -5167,6 +5699,8 @@ export interface paths {
             AmountPaid?: number;
             /** Format: uuid */
             ReservationId?: string;
+            /** Format: uuid */
+            ContractId?: string;
             /** @default null */
             PaymentMethod?: string;
             /** @default null */
@@ -5262,6 +5796,85 @@ export interface paths {
             "text/plain": Array<components["schemas"]["PaymentTransactionDTO"]>;
             "application/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
             "text/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/PaymentTransaction/by-contract/{contractId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          contractId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["PaymentTransactionDTO"]>;
+            "application/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+            "text/json": Array<components["schemas"]["PaymentTransactionDTO"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/PaymentTransaction/quota-status/by-contract/{contractId}/{excludeTransactionId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          contractId: string;
+          excludeTransactionId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["PaymentQuotaStatusDTO"];
+            "application/json": components["schemas"]["PaymentQuotaStatusDTO"];
+            "text/json": components["schemas"]["PaymentQuotaStatusDTO"];
           };
         };
       };
@@ -5778,6 +6391,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /**
+     * Get contract template variables
+     * @description Returns the catalog of variables that can be inserted into a project contract
+     */
     get: {
       parameters: {
         query?: never;
@@ -5793,7 +6410,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
+            "text/plain": Array<components["schemas"]["ContractVariableDto"]>;
             "application/json": Array<components["schemas"]["ContractVariableDto"]>;
+            "text/json": Array<components["schemas"]["ContractVariableDto"]>;
           };
         };
       };
@@ -5813,6 +6432,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** Get project contract template */
     get: {
       parameters: {
         query?: never;
@@ -5830,11 +6450,14 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
+            "text/plain": components["schemas"]["ProjectContractTemplateDto"];
             "application/json": components["schemas"]["ProjectContractTemplateDto"];
+            "text/json": components["schemas"]["ProjectContractTemplateDto"];
           };
         };
       };
     };
+    /** Save project contract template */
     put: {
       parameters: {
         query?: never;
@@ -5847,6 +6470,8 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": components["schemas"]["ProjectContractSaveDto"];
+          "text/json": components["schemas"]["ProjectContractSaveDto"];
+          "application/*+json": components["schemas"]["ProjectContractSaveDto"];
         };
       };
       responses: {
@@ -5856,12 +6481,15 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
+            "text/plain": components["schemas"]["ProjectContractTemplateDto"];
             "application/json": components["schemas"]["ProjectContractTemplateDto"];
+            "text/json": components["schemas"]["ProjectContractTemplateDto"];
           };
         };
       };
     };
     post?: never;
+    /** Delete project contract template */
     delete: {
       parameters: {
         query?: never;
@@ -5873,8 +6501,8 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description No Content */
-        204: {
+        /** @description OK */
+        200: {
           headers: {
             [name: string]: unknown;
           };
@@ -5896,6 +6524,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /** Import project contract from Word */
     post: {
       parameters: {
         query?: never;
@@ -5907,8 +6536,24 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": {
-            file: string;
+          "application/x-www-form-urlencoded": {
+            /** @default null */
+            ContentType?: string;
+            /** @default null */
+            ContentDisposition?: string;
+            /** @default null */
+            Headers?: {
+              [key: string]: Array<string>;
+            };
+            /**
+             * Format: int64
+             * @default null
+             */
+            Length?: number;
+            /** @default null */
+            Name?: string;
+            /** @default null */
+            FileName?: string;
           };
         };
       };
@@ -5919,7 +6564,9 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
+            "text/plain": components["schemas"]["ProjectContractTemplateDto"];
             "application/json": components["schemas"]["ProjectContractTemplateDto"];
+            "text/json": components["schemas"]["ProjectContractTemplateDto"];
           };
         };
       };
@@ -5988,6 +6635,52 @@ export interface paths {
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/Quotations/paginated": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          page?: number;
+          pageSize?: number;
+          search?: string;
+          status?: Array<components["schemas"]["QuotationStatus"]>;
+          clientId?: Array<string>;
+          projectId?: string;
+          orderBy?: string;
+          advisorId?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+            "application/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+            "text/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -6186,51 +6879,6 @@ export interface paths {
             "text/plain": Array<components["schemas"]["QuotationSummaryDTO"]>;
             "application/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
             "text/json": Array<components["schemas"]["QuotationSummaryDTO"]>;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/Quotations/paginated": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: {
-          page?: number;
-          pageSize?: number;
-          search?: string;
-          status?: Array<components["schemas"]["QuotationStatus"]>;
-          clientId?: Array<string>;
-          projectId?: string;
-          orderBy?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
-            "application/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
-            "text/json": components["schemas"]["PaginatedResponseV2OfQuotationSummaryDTO"];
           };
         };
       };
@@ -7390,11 +8038,7 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content: {
-            "text/plain": components["schemas"]["PaymentHistoryDto"];
-            "application/json": components["schemas"]["PaymentHistoryDto"];
-            "text/json": components["schemas"]["PaymentHistoryDto"];
-          };
+          content?: never;
         };
       };
     };
@@ -7420,11 +8064,7 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content: {
-            "text/plain": components["schemas"]["PaymentHistoryDto"];
-            "application/json": components["schemas"]["PaymentHistoryDto"];
-            "text/json": components["schemas"]["PaymentHistoryDto"];
-          };
+          content?: never;
         };
       };
     };
@@ -8088,6 +8728,134 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/reports/commercial/advisor-activity/paginated": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          from?: string;
+          to?: string;
+          page?: number;
+          pageSize?: number;
+          advisorId?: string;
+          status?: Array<components["schemas"]["LeadStatus"]>;
+          captureSource?: Array<components["schemas"]["LeadCaptureSource"]>;
+          hasAdvisor?: boolean;
+          projectId?: string;
+          orderBy?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": components["schemas"]["PaginatedResponseV2OfAdvisorActivityReportItemDto"];
+            "application/json": components["schemas"]["PaginatedResponseV2OfAdvisorActivityReportItemDto"];
+            "text/json": components["schemas"]["PaginatedResponseV2OfAdvisorActivityReportItemDto"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/reports/commercial/advisor-activity/{leadId}/tasks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          leadId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": Array<components["schemas"]["AdvisorActivityTaskDto"]>;
+            "application/json": Array<components["schemas"]["AdvisorActivityTaskDto"]>;
+            "text/json": Array<components["schemas"]["AdvisorActivityTaskDto"]>;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/reports/commercial/advisor-activity/excel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: {
+      parameters: {
+        query?: {
+          from?: string;
+          to?: string;
+          advisorId?: string;
+          status?: Array<components["schemas"]["LeadStatus"]>;
+          captureSource?: Array<components["schemas"]["LeadCaptureSource"]>;
+          hasAdvisor?: boolean;
+          projectId?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8116,6 +8884,62 @@ export interface components {
       reference?: string | null;
       status?: components["schemas"]["PaymentStatus"];
       notes?: string | null;
+    };
+    AdminTeamMemberActivityDto: {
+      /** Format: uuid */
+      userId?: string;
+      userName?: string;
+      leads?: Array<components["schemas"]["RecentLeadDto"]>;
+      tasks?: Array<components["schemas"]["AdminTeamMemberTaskDto"]>;
+    };
+    AdminTeamMemberTaskDto: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      leadId?: string;
+      description?: string;
+      type?: string;
+      isCompleted?: boolean;
+      /** Format: date-time */
+      scheduledDate?: string;
+      /** Format: date-time */
+      completedDate?: string | null;
+      /** Format: date-time */
+      createdAt?: string;
+    };
+    AdvisorActivityReportItemDto: {
+      /** Format: uuid */
+      leadId?: string;
+      leadCode?: string;
+      /** Format: uuid */
+      clientId?: string | null;
+      clientName?: string;
+      clientPhone?: string;
+      /** Format: uuid */
+      assignedToId?: string | null;
+      assignedToName?: string | null;
+      status?: components["schemas"]["LeadStatus"];
+      captureSource?: components["schemas"]["LeadCaptureSource"];
+      /** Format: date-time */
+      entryDate?: string;
+      /** Format: uuid */
+      projectId?: string | null;
+      projectName?: string | null;
+      /** Format: int32 */
+      taskCount?: number;
+      /** Format: date-time */
+      lastTaskDate?: string | null;
+    };
+    AdvisorActivityTaskDto: {
+      /** Format: uuid */
+      id?: string;
+      type?: components["schemas"]["TaskType"];
+      description?: string;
+      /** Format: date-time */
+      scheduledDate?: string;
+      /** Format: date-time */
+      completedDate?: string | null;
+      isCompleted?: boolean;
     };
     AdvisorDashboardDto: {
       myLeads?: components["schemas"]["MyLeadsDto"];
@@ -8405,6 +9229,15 @@ export interface components {
       separateProperty?: boolean;
       separatePropertyData?: string | null;
     };
+    ClientCurrencyBalanceDto: {
+      currency?: components["schemas"]["Currency"];
+      /** Format: double */
+      remainingAmount?: number;
+      /** Format: double */
+      overdueAmount?: number;
+      /** Format: double */
+      totalPaid?: number;
+    };
     ClientDto: {
       /** Format: uuid */
       id?: string;
@@ -8426,6 +9259,13 @@ export interface components {
       address?: string | null;
       type?: string;
       isActive?: boolean;
+    };
+    ClientFinancialSummaryDto: {
+      /** Format: int32 */
+      activeContracts?: number;
+      /** Format: date-time */
+      nextPaymentDueDate?: string | null;
+      balances?: Array<components["schemas"]["ClientCurrencyBalanceDto"]>;
     };
     ClientRegistrationDto: {
       month?: string;
@@ -8484,14 +9324,107 @@ export interface components {
       processInfo?: components["schemas"]["ContactProcessInfo"];
       message?: string;
     };
+    ContractBackfillResultDto: {
+      /** Format: int32 */
+      contractsCreated?: number;
+      /** Format: int32 */
+      paymentsLinked?: number;
+      /** Format: int32 */
+      downPaymentsCreated?: number;
+      /** Format: int32 */
+      transactionsLinked?: number;
+      warnings?: Array<string>;
+    };
+    ContractDto: {
+      /** Format: uuid */
+      id?: string;
+      code: string;
+      /** Format: uuid */
+      clientId?: string;
+      clientName?: string;
+      /** Format: uuid */
+      lotId?: string;
+      lotNumber?: string;
+      blockName?: string;
+      /** Format: uuid */
+      projectId?: string;
+      projectName?: string;
+      /** Format: uuid */
+      reservationId?: string | null;
+      /** Format: uuid */
+      quotationId?: string | null;
+      quotationCode?: string | null;
+      origin?: components["schemas"]["ContractOrigin"];
+      status?: components["schemas"]["ContractStatus"];
+      /** Format: double */
+      totalPrice?: number;
+      /** Format: double */
+      downPaymentAmount?: number;
+      /** Format: double */
+      amountFinanced?: number;
+      /** Format: int32 */
+      monthsFinanced?: number;
+      currency?: components["schemas"]["Currency"];
+      /** Format: double */
+      exchangeRate?: number;
+      /** Format: date-time */
+      startDate?: string;
+      /** Format: date-time */
+      signedAt?: string | null;
+      coOwners?: string | null;
+      /** Format: int32 */
+      paymentCount?: number;
+      /** Format: date-time */
+      nextPaymentDueDate?: string | null;
+      /** Format: double */
+      nextPaymentAmount?: number;
+      /** Format: double */
+      amountPaid?: number;
+      /** Format: double */
+      remainingAmount?: number;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+    };
+    /** @enum {unknown} */
+    ContractOrigin: "Pipeline" | "Direct" | "Legacy";
+    /** @enum {unknown} */
+    ContractStatus: "Draft" | "PendingValidation" | "Active" | "Completed" | "Rescinded";
     /** @enum {unknown} */
     ContractValidationStatus: "None" | "PendingValidation" | "Validated";
+    ContractVariableDto: {
+      key: string;
+      label: string;
+      group: string;
+    };
     ConversionFunnelDto: {
       stage?: string;
       /** Format: int32 */
       count?: number;
       /** Format: double */
       percentage?: number;
+    };
+    CreateContractDto: {
+      origin: components["schemas"]["ContractOrigin"];
+      /** Format: uuid */
+      clientId: string;
+      /** Format: uuid */
+      lotId: string;
+      /** Format: double */
+      totalPrice: number;
+      /** Format: double */
+      downPaymentAmount: number;
+      /** Format: int32 */
+      monthsFinanced: number;
+      currency?: components["schemas"]["Currency"];
+      /** Format: double */
+      exchangeRate?: number;
+      /** Format: date-time */
+      startDate?: string | null;
+      coOwners?: string | null;
+      /** Format: int32 */
+      paidInstallments?: number;
     };
     /** @enum {unknown} */
     Currency: "SOLES" | "DOLARES";
@@ -8526,6 +9459,7 @@ export interface components {
       operationalEfficiency?: number;
       lotsByStatus?: Array<components["schemas"]["LotStatusDto"]>;
       teamData?: Array<components["schemas"]["TeamMemberDto"]>;
+      recentLeads?: Array<components["schemas"]["RecentLeadDto"]>;
       leadsByStatus?: Array<components["schemas"]["LeadStatusDto"]>;
       leadSources?: Array<components["schemas"]["LeadSourceDto"]>;
       clientAnalysis?: components["schemas"]["ClientAnalysisDto"];
@@ -8540,29 +9474,6 @@ export interface components {
       paymentMethodsData?: Array<components["schemas"]["PaymentMethodDto"]>;
       upcomingPayments?: Array<components["schemas"]["UpcomingPaymentDto"]>;
       cashFlowData?: Array<components["schemas"]["CashFlowDto"]>;
-      recentLeads?: Array<components["schemas"]["RecentLeadDto"]>;
-    };
-    AdminTeamMemberActivityDto: {
-      /** Format: uuid */
-      userId?: string;
-      userName?: string;
-      leads?: Array<components["schemas"]["RecentLeadDto"]>;
-      tasks?: Array<components["schemas"]["AdminTeamMemberTaskDto"]>;
-    };
-    AdminTeamMemberTaskDto: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      leadId?: string;
-      description?: string;
-      type?: string;
-      isCompleted?: boolean;
-      /** Format: date-time */
-      scheduledDate?: string;
-      /** Format: date-time */
-      completedDate?: string | null;
-      /** Format: date-time */
-      createdAt?: string;
     };
     DashboardReservationStatusDto: {
       status?: string;
@@ -8731,11 +9642,13 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      /** Format: date-time */
+      expirationReferenceDate?: string;
       isExpired?: boolean;
       /** Format: int32 */
       daysUntilExpiration?: number;
-      expirationLabel?: string;
-    } | null;
+      expirationLabel?: string | null;
+    };
     Lead2: {
       /** Format: uuid */
       id?: string;
@@ -8770,11 +9683,13 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      /** Format: date-time */
+      expirationReferenceDate?: string;
       isExpired?: boolean;
       /** Format: int32 */
       daysUntilExpiration?: number;
-      expirationLabel?: string;
-    } | null;
+      expirationLabel?: string | null;
+    };
     Lead3: {
       /** Format: uuid */
       id?: string;
@@ -8809,10 +9724,12 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      /** Format: date-time */
+      expirationReferenceDate?: string;
       isExpired?: boolean;
       /** Format: int32 */
       daysUntilExpiration?: number;
-      expirationLabel?: string;
+      expirationLabel?: string | null;
     };
     Lead4: {
       /** Format: uuid */
@@ -8848,10 +9765,12 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      /** Format: date-time */
+      expirationReferenceDate?: string;
       isExpired?: boolean;
       /** Format: int32 */
       daysUntilExpiration?: number;
-      expirationLabel?: string;
+      expirationLabel?: string | null;
     };
     Lead5: {
       /** Format: uuid */
@@ -8887,11 +9806,54 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       modifiedAt?: string;
+      /** Format: date-time */
+      expirationReferenceDate?: string;
       isExpired?: boolean;
       /** Format: int32 */
       daysUntilExpiration?: number;
-      expirationLabel?: string;
-    };
+      expirationLabel?: string | null;
+    } | null;
+    Lead6: {
+      /** Format: uuid */
+      id?: string;
+      code: string;
+      /** Format: uuid */
+      clientId?: string | null;
+      client?: components["schemas"]["Client2"];
+      /** Format: uuid */
+      assignedToId?: string | null;
+      assignedTo?: components["schemas"]["User"];
+      status: components["schemas"]["LeadStatus"];
+      captureSource: components["schemas"]["LeadCaptureSource"];
+      /** Format: date-time */
+      entryDate: string;
+      /** Format: date-time */
+      expirationDate: string;
+      /** Format: int32 */
+      recycleCount?: number;
+      /** Format: date-time */
+      lastRecycledAt?: string | null;
+      /** Format: uuid */
+      lastRecycledById?: string | null;
+      lastRecycledBy?: components["schemas"]["User"];
+      /** Format: uuid */
+      projectId?: string | null;
+      project?: components["schemas"]["Project7"];
+      referral?: components["schemas"]["Referral4"];
+      completionReason?: components["schemas"]["NullableOfLeadCompletionReason"];
+      cancellationReason?: string | null;
+      isActive?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+      /** Format: date-time */
+      expirationReferenceDate?: string;
+      isExpired?: boolean;
+      /** Format: int32 */
+      daysUntilExpiration?: number;
+      expirationLabel?: string | null;
+    } | null;
     /** @enum {unknown} */
     LeadCaptureSource: "Company" | "PersonalFacebook" | "RealEstateFair" | "Institutional" | "Loyalty";
     /** @enum {unknown} */
@@ -8906,20 +9868,20 @@ export interface components {
       status: components["schemas"]["LeadStatus"];
       captureSource: components["schemas"]["LeadCaptureSource"];
     };
-    LeadFromPhoneCreateDto: {
+    LeadCreateFromPhoneDto: {
       phoneNumber: string;
       captureSource: components["schemas"]["LeadCaptureSource"];
       /** Format: uuid */
-      assignedToId?: string;
+      assignedToId?: string | null;
       /** Format: uuid */
-      projectId?: string;
+      projectId?: string | null;
     };
-    LeadFromPhoneCreateResponseDto: {
+    LeadCreateFromPhoneResultDto: {
       lead: components["schemas"]["Lead4"];
       /** Format: uuid */
-      clientId: string;
-      clientCreated: boolean;
-      clientExisted: boolean;
+      clientId?: string;
+      clientCreated?: boolean;
+      clientExisted?: boolean;
     };
     LeadDTO: {
       /** Format: uuid */
@@ -9005,7 +9967,7 @@ export interface components {
       id?: string;
       /** Format: uuid */
       leadId: string;
-      lead?: components["schemas"]["Lead"];
+      lead?: components["schemas"]["Lead5"];
       /** Format: uuid */
       assignedToId: string;
       assignedTo?: components["schemas"]["User"];
@@ -9027,7 +9989,7 @@ export interface components {
       id?: string;
       /** Format: uuid */
       leadId: string;
-      lead?: components["schemas"]["Lead2"];
+      lead?: components["schemas"]["Lead6"];
       /** Format: uuid */
       assignedToId: string;
       assignedTo?: components["schemas"]["User"];
@@ -9601,6 +10563,14 @@ export interface components {
       /** Format: int32 */
       totalPages: number;
     };
+    PaginatedResponseV2OfAdvisorActivityReportItemDto: {
+      data?: Array<components["schemas"]["AdvisorActivityReportItemDto"]>;
+      meta?: components["schemas"]["PaginationMetadata"];
+      hasData?: boolean;
+      isEmpty?: boolean;
+      /** Format: int32 */
+      count?: number;
+    };
     PaginatedResponseV2OfBlockDTO: {
       data?: Array<components["schemas"]["BlockDTO"]>;
       meta?: components["schemas"]["PaginationMetadata"];
@@ -9617,8 +10587,16 @@ export interface components {
       /** Format: int32 */
       count?: number;
     };
+    PaginatedResponseV2OfContractDto: {
+      data?: Array<components["schemas"]["ContractDto"]>;
+      meta?: components["schemas"]["PaginationMetadata"];
+      hasData?: boolean;
+      isEmpty?: boolean;
+      /** Format: int32 */
+      count?: number;
+    };
     PaginatedResponseV2OfLead: {
-      data?: Array<components["schemas"]["Lead5"]>;
+      data?: Array<components["schemas"]["Lead3"]>;
       meta?: components["schemas"]["PaginationMetadata"];
       hasData?: boolean;
       isEmpty?: boolean;
@@ -9824,7 +10802,12 @@ export interface components {
       /** Format: uuid */
       id?: string;
       /** Format: uuid */
-      reservationId?: string;
+      reservationId?: string | null;
+      /** Format: uuid */
+      contractId?: string | null;
+      type?: components["schemas"]["PaymentType"];
+      /** Format: int32 */
+      sequence?: number;
       /** Format: date-time */
       dueDate?: string;
       /** Format: double */
@@ -9898,7 +10881,9 @@ export interface components {
       /** Format: uuid */
       id?: string;
       /** Format: uuid */
-      reservationId?: string;
+      reservationId?: string | null;
+      /** Format: uuid */
+      contractId?: string | null;
       clientName?: string;
       quotationCode?: string;
       /** Format: double */
@@ -9950,6 +10935,8 @@ export interface components {
       amountPaid?: number;
       /** Format: uuid */
       reservationId?: string | null;
+      /** Format: uuid */
+      contractId?: string | null;
       paymentMethod?: components["schemas"]["PaymentMethod"];
       referenceNumber?: string | null;
       comprobanteUrl?: string | null;
@@ -9960,6 +10947,8 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
     };
+    /** @enum {unknown} */
+    PaymentType: "DownPayment" | "Installment" | "Extra";
     PendingPaymentDto: {
       /** Format: uuid */
       id?: string;
@@ -10015,6 +11004,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: Array<components["schemas"]["Block"]>;
+      contractTemplate?: components["schemas"];
     } | null;
     Project10: {
       /** Format: uuid */
@@ -10035,6 +11025,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: components["schemas"];
+      contractTemplate?: components["schemas"]["ProjectContractTemplate5"];
     };
     Project2: {
       /** Format: uuid */
@@ -10055,6 +11046,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: components["schemas"];
+      contractTemplate?: components["schemas"]["ProjectContractTemplate"];
     };
     Project3: {
       /** Format: uuid */
@@ -10075,6 +11067,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: Array<components["schemas"]["Block2"]>;
+      contractTemplate?: components["schemas"];
     } | null;
     Project4: {
       /** Format: uuid */
@@ -10095,6 +11088,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: components["schemas"];
+      contractTemplate?: components["schemas"]["ProjectContractTemplate2"];
     };
     Project5: {
       /** Format: uuid */
@@ -10115,6 +11109,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: Array<components["schemas"]["Block3"]>;
+      contractTemplate?: components["schemas"];
     } | null;
     Project6: {
       /** Format: uuid */
@@ -10135,6 +11130,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: components["schemas"];
+      contractTemplate?: components["schemas"]["ProjectContractTemplate3"];
     };
     Project7: {
       /** Format: uuid */
@@ -10155,6 +11151,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: Array<components["schemas"]["Block4"]>;
+      contractTemplate?: components["schemas"];
     } | null;
     Project8: {
       /** Format: uuid */
@@ -10175,6 +11172,7 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: components["schemas"];
+      contractTemplate?: components["schemas"]["ProjectContractTemplate4"];
     };
     Project9: {
       /** Format: uuid */
@@ -10195,21 +11193,96 @@ export interface components {
       /** Format: date-time */
       modifiedAt?: string;
       blocks?: Array<components["schemas"]["Block5"]>;
+      contractTemplate?: components["schemas"];
     } | null;
-    ProjectDto: {
-      /** Format: uuid */
-      id?: string;
-      name?: string;
-      location?: string;
-    };
-    ContractVariableDto: {
-      key: string;
-      label: string;
-      group: string;
-    };
     ProjectContractSaveDto: {
       htmlContent: string;
     };
+    ProjectContractTemplate: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      projectId: string;
+      project?: components["schemas"]["Project2"];
+      htmlContent: string;
+      /** Format: uuid */
+      createdByUserId?: string | null;
+      /** Format: uuid */
+      modifiedByUserId?: string | null;
+      isActive?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+    } | null;
+    ProjectContractTemplate2: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      projectId: string;
+      project?: components["schemas"]["Project4"];
+      htmlContent: string;
+      /** Format: uuid */
+      createdByUserId?: string | null;
+      /** Format: uuid */
+      modifiedByUserId?: string | null;
+      isActive?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+    } | null;
+    ProjectContractTemplate3: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      projectId: string;
+      project?: components["schemas"]["Project6"];
+      htmlContent: string;
+      /** Format: uuid */
+      createdByUserId?: string | null;
+      /** Format: uuid */
+      modifiedByUserId?: string | null;
+      isActive?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+    } | null;
+    ProjectContractTemplate4: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      projectId: string;
+      project?: components["schemas"]["Project8"];
+      htmlContent: string;
+      /** Format: uuid */
+      createdByUserId?: string | null;
+      /** Format: uuid */
+      modifiedByUserId?: string | null;
+      isActive?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+    } | null;
+    ProjectContractTemplate5: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      projectId: string;
+      project?: components["schemas"]["Project10"];
+      htmlContent: string;
+      /** Format: uuid */
+      createdByUserId?: string | null;
+      /** Format: uuid */
+      modifiedByUserId?: string | null;
+      isActive?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      modifiedAt?: string;
+    } | null;
     ProjectContractTemplateDto: {
       exists?: boolean;
       /** Format: uuid */
@@ -10221,6 +11294,12 @@ export interface components {
       createdAt?: string | null;
       /** Format: date-time */
       modifiedAt?: string | null;
+    };
+    ProjectDto: {
+      /** Format: uuid */
+      id?: string;
+      name?: string;
+      location?: string;
     };
     ProjectDTO: {
       /** Format: uuid */
@@ -10431,9 +11510,6 @@ export interface components {
       clientName: string;
       clientIdentification?: string | null;
       clientIdentificationType?: string | null;
-      /** Format: uuid */
-      advisorId?: string;
-      advisorName?: string | null;
       projectName: string;
       /** Format: double */
       totalPrice: number;
@@ -10446,6 +11522,9 @@ export interface components {
       /** Format: double */
       areaAtQuotation: number;
       currency: string;
+      /** Format: uuid */
+      advisorId?: string;
+      advisorName?: string;
       status?: components["schemas"]["QuotationStatus"];
       statusText?: string;
       /** Format: double */
@@ -10510,7 +11589,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project9"];
+      project?: components["schemas"]["Project"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10527,7 +11606,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project9"];
+      project?: components["schemas"]["Project3"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10544,7 +11623,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project9"];
+      project?: components["schemas"]["Project5"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -10561,7 +11640,7 @@ export interface components {
       referredLeadId: string;
       /** Format: uuid */
       projectId?: string | null;
-      project?: components["schemas"]["Project9"];
+      project?: components["schemas"]["Project7"];
       isActive?: boolean;
       /** Format: date-time */
       createdAt?: string;
@@ -11078,6 +12157,8 @@ export interface components {
     UpcomingPaymentDto: {
       /** Format: uuid */
       reservationId?: string;
+      /** Format: uuid */
+      contractId?: string | null;
       clientName?: string;
       /** Format: date-time */
       dueDate?: string;
@@ -11086,6 +12167,19 @@ export interface components {
       /** Format: int32 */
       daysLeft?: number;
       status?: string;
+    };
+    UpdateContractDto: {
+      /** Format: double */
+      totalPrice: number;
+      /** Format: double */
+      downPaymentAmount: number;
+      /** Format: int32 */
+      monthsFinanced: number;
+      /** Format: double */
+      exchangeRate?: number;
+      /** Format: date-time */
+      startDate?: string | null;
+      coOwners?: string | null;
     };
     UpdatePaymentHistoryDto: {
       id?: string;

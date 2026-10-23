@@ -22,6 +22,7 @@ export const paymentTransactionCreateSchema = z.object({
   referenceNumber: z.string().max(100, "La referencia no puede exceder 100 caracteres.").optional(),
   paymentIds: z.array(z.string().uuid()).optional(),
   reservationId: z.string().uuid("ID de reserva debe ser un UUID válido.").optional(),
+  contractId: z.string().uuid("ID de contrato debe ser un UUID válido.").optional(),
   comprobanteFile: z.instanceof(File).optional(),
 });
 

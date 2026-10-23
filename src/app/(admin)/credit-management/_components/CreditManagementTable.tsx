@@ -8,23 +8,20 @@ import {
   CustomPaginationTableParams,
   ServerPaginationChangeEventCallback,
 } from "@/types/tanstack-table/CustomPagination";
-import { createPendingContractsFacetedFilters } from "../_utils/credit-management.filter.utils";
-import { ReservationDto, ReservationWithPendingPaymentsDto } from "../../reservations/_types/reservation";
+import { createCreditManagementFacetedFilters } from "../_utils/credit-management.filter.utils";
+import { ContractDto } from "../../contracts/_types/contract";
 import { creditManagementColumns } from "./CreditManagementTableColumns";
 import { CreditManagementTableToolbarActions } from "./CreditManagementTableToolbarActions";
 
 interface CreditManagementTableProps {
-  data: Array<ReservationWithPendingPaymentsDto>;
+  data: Array<ContractDto>;
   pagination: CustomPaginationTableParams;
   onPaginationChange: ServerPaginationChangeEventCallback;
   search?: string;
   onSearchChange: (search: string) => void;
   status?: Array<string>;
   onStatusChange: (status: Array<string>) => void;
-  paymentMethod?: Array<string>;
-  onPaymentMethodChange: (paymentMethod: Array<string>) => void;
-  contractValidationStatus?: Array<string>;
-  onContractValidationStatusChange: (contractValidationStatus: Array<string>) => void;
+  isLoading?: boolean;
 }
 
 export function CreditManagementTable({
@@ -35,40 +32,21 @@ export function CreditManagementTable({
   onSearchChange,
   status,
   onStatusChange,
-  paymentMethod,
-  onPaymentMethodChange,
-  contractValidationStatus,
-  onContractValidationStatusChange,
+  isLoading = false,
 }: CreditManagementTableProps) {
   const columns = useMemo(() => creditManagementColumns(), []);
-
-  // Crear filtros personalizados con callbacks del servidor
   const customFacetedFilters = useMemo(
-    () =>
-      createPendingContractsFacetedFilters(
-        onStatusChange,
-        onPaymentMethodChange,
-        onContractValidationStatusChange,
-        status ?? [],
-        paymentMethod ?? [],
-        contractValidationStatus ?? []
-      ),
-    [
-      onStatusChange,
-      onPaymentMethodChange,
-      onContractValidationStatusChange,
-      status,
-      paymentMethod,
-      contractValidationStatus,
-    ]
+    () => createCreditManagementFacetedFilters(onStatusChange, status ?? []),
+    [onStatusChange, status]
   );
 
   return (
     <DataTable
+      isLoading={isLoading}
       data={data}
       columns={columns}
-      toolbarActions={(table: TableInstance<ReservationDto>) => <CreditManagementTableToolbarActions table={table} />}
-      filterPlaceholder="Buscar separaciones con pagos pendientes..."
+      toolbarActions={(_table: TableInstance<ContractDto>) => <CreditManagementTableToolbarActions />}
+      filterPlaceholder="Buscar contratos con saldo pendiente..."
       facetedFilters={customFacetedFilters}
       externalFilterValue={search}
       onGlobalFilterChange={onSearchChange}

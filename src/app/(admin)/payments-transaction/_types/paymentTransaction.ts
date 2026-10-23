@@ -1,7 +1,9 @@
 import { components } from "@/types/api";
 
 // Tipos DTO
-export type PaymentTransaction = components["schemas"]["PaymentTransactionDTO"];
+export type PaymentTransaction = components["schemas"]["PaymentTransactionDTO"] & {
+  contractId?: string | null;
+};
 export type PaymentQuotaSimple = components["schemas"]["PaymentQuotaSimpleDTO"];
 export type PaymentQuotaStatus = components["schemas"]["PaymentQuotaStatusDTO"];
 

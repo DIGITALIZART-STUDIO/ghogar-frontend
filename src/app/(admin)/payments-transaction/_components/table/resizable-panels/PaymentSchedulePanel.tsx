@@ -4,17 +4,25 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { AlertTriangle, Calendar, CheckCircle, Clock, DollarSign } from "lucide-react";
 
-import type { PaymentDto } from "@/app/(admin)/reservations/[reservationId]/payments/_types/payments";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { PaymentStatus } from "../../../_types/paymentTransaction";
 
+type SchedulePayment = {
+  id?: string;
+  paid?: boolean;
+  dueDate?: string | null;
+  amountDue?: number | null;
+  amountPaid?: number | null;
+  remainingAmount?: number | null;
+};
+
 interface PaymentSchedulePanelProps {
-  payments: Array<PaymentDto>;
+  payments: Array<SchedulePayment>;
   currency: string;
 }
 
-const getPaymentStatus = (payment: PaymentDto): PaymentStatus => {
+const getPaymentStatus = (payment: SchedulePayment): PaymentStatus => {
   if (payment.paid) {
     return PaymentStatus.PAID;
   }

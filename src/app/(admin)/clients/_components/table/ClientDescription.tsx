@@ -25,6 +25,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Client, CoOwner, SeparatePropertyData } from "../../_types/client";
 import { ClientTypesLabels } from "../../_utils/clients.utils";
+import { ClientContractsPanel } from "./ClientContractsPanel";
 import ContactItem from "./ContactItem";
 
 interface ClientDescriptionProps {
@@ -415,6 +416,11 @@ export const ClientDescription = ({ row }: ClientDescriptionProps) => {
           </div>
         )}
       </div>
+      {row.id ? (
+        <div className="p-6 pt-0">
+          <ClientContractsPanel clientId={row.id} />
+        </div>
+      ) : null}
     </div>
   );
 };

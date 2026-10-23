@@ -107,6 +107,7 @@ export const rolePermissions: Record<string, Array<string>> = {
     "/contracts",
     "/payments-transaction",
     "/credit-management",
+    "/reports",
   ],
   CommercialManager: [
     "/",

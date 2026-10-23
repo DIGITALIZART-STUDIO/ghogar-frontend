@@ -1,17 +1,27 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { HeaderPage } from "@/components/common/HeaderPage";
 import { DataTableSkeleton } from "@/components/datatable/data-table-skeleton";
 import ErrorGeneral from "@/components/errors/general-error";
 import { useSelectedProject } from "@/hooks/use-selected-project";
+import { ReportAccessGuard } from "../../_components/ReportAccessGuard";
+import { COMMERCIAL_REPORT_ROLES } from "../../_utils/report-permissions";
 import { AdvisorActivityFiltersBar } from "./_components/AdvisorActivityFiltersBar";
 import { AdvisorActivityTable } from "./_components/AdvisorActivityTable";
 import { useAdvisorActivityReport } from "./_hooks/useAdvisorActivityReport";
 import { useExportAdvisorActivityReport } from "./_hooks/useExportAdvisorActivityReport";
 
 export default function AdvisorActivityReportPage() {
+  return (
+    <ReportAccessGuard allowedRoles={COMMERCIAL_REPORT_ROLES}>
+      <AdvisorActivityReportPageContent />
+    </ReportAccessGuard>
+  );
+}
+
+function AdvisorActivityReportPageContent() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -36,6 +46,10 @@ export default function AdvisorActivityReportPage() {
 
   const exportMutation = useExportAdvisorActivityReport();
 
+  useEffect(() => {
+    setPage(1);
+  }, [projectId]);
+
   const handlePaginationChange = useCallback(async (newPage: number, newPageSize: number) => {
     setPage(newPage);
     setPageSize(newPageSize);
@@ -45,23 +59,23 @@ export default function AdvisorActivityReportPage() {
     exportMutation.mutate(filters);
   }, [exportMutation, filters]);
 
-  if (isLoading && !data) {
+  if (!data) {
+    if (error) {
+      return (
+        <div>
+          <HeaderPage
+            title="Actividad de Asesores"
+            description="Leads ingresados, estado y tareas realizadas por los asesores en el periodo seleccionado."
+          />
+          <ErrorGeneral />
+        </div>
+      );
+    }
+
     return (
       <div>
         <HeaderPage title="Actividad de Asesores" description="Cargando reporte de actividad comercial..." />
         <DataTableSkeleton columns={8} numFilters={2} />
-      </div>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <div>
-        <HeaderPage
-          title="Actividad de Asesores"
-          description="Leads ingresados, estado y tareas realizadas por los asesores en el periodo seleccionado."
-        />
-        <ErrorGeneral />
       </div>
     );
   }

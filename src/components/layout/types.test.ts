@@ -21,4 +21,14 @@ describe("rolePermissions", () => {
     expect(rolePermissions.FinanceManager).toContain("/payments-transaction");
     expect(rolePermissions.FinanceManager).toContain("/credit-management");
   });
+
+  it("lets finance managers open administrative reports", () => {
+    expect(rolePermissions.FinanceManager).toContain("/reports");
+    expect(rolePermissions.Admin).toContain("/reports");
+    expect(rolePermissions.Manager).toContain("/reports");
+    expect(rolePermissions.SuperAdmin).toContain("/reports");
+    expect(rolePermissions.CommercialManager).toContain("/reports");
+    expect(rolePermissions.Supervisor).toContain("/reports");
+    expect(rolePermissions.SalesAdvisor).not.toContain("/reports");
+  });
 });

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { format, startOfMonth } from "date-fns";
 import { Download, Loader2, RotateCcw } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
@@ -13,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Label } from "@/components/ui/label";
 import { AdvisorActivityFilters, HasAdvisorFilter } from "../_types/advisorActivity";
+import { nextReportDateRange, parseLocalDate } from "../../../_utils/report-dates";
 
 interface AdvisorActivityFiltersBarProps {
   filters: AdvisorActivityFilters;
@@ -28,22 +28,6 @@ const HAS_ADVISOR_OPTIONS = [
   { label: "Con asesor asignado", value: "with-advisor" },
   { label: "Sin asesor asignado", value: "without-advisor" },
 ];
-
-function parseLocalDate(dateOnly: string): Date {
-  return new Date(`${dateOnly}T00:00:00`);
-}
-
-function toDateOnly(date: Date): string {
-  return format(date, "yyyy-MM-dd");
-}
-
-function defaultDateRange(): { from: string; to: string } {
-  const now = new Date();
-  return {
-    from: toDateOnly(startOfMonth(now)),
-    to: toDateOnly(now),
-  };
-}
 
 export function AdvisorActivityFiltersBar({
   filters,
@@ -66,13 +50,12 @@ export function AdvisorActivityFiltersBar({
     // from/to son obligatorios en el API. Si limpia, volvemos al mes actual.
     // Mientras elige el primer día o navega meses, DateRangePicker usa estado
     // temporal y solo llama aquí con el rango completo (o al limpiar).
-    if (!range?.from || !range.to) {
-      const defaults = defaultDateRange();
-      onDateRangeChange(defaults.from, defaults.to);
+    const next = nextReportDateRange(range, filters.from, filters.to);
+    if (!next) {
       return;
     }
 
-    onDateRangeChange(toDateOnly(range.from), toDateOnly(range.to));
+    onDateRangeChange(next.from, next.to);
   };
 
   return (
